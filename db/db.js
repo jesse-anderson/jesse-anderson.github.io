@@ -72,7 +72,7 @@ export const projects = {
       projectName: "Biochemical Plant Simulation",
       image: "images/seniorDesign.jpg",
       summary:
-        "Simulated a l. reuteri 1,3-propanediol plant producing ~60,000 tons/year of product with 99% purity and generating a net profit. Simulation done in SUPERPRO and distillation columns in ASPEN PLUS. Project won 1st Place in the Engineering Expo at UIC 2023, Chemical Engineering Division.",
+        "Simulated a l. reuteri 1,3-propanediol plant producing ~60,000 tons/year. Project won 1st Place in the Engineering Expo at UIC 2023, ChE Division.",
       preview: "files/seniorDesign.pdf",
       techStack: ["Aspen Plus","SuperPro Designer", "Chemical Engineering"],
     },
