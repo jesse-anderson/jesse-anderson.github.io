@@ -1,0 +1,244 @@
+export const bio = [
+  "I am Jesse Anderson, a recent Chemical Engineering Graduate from the University of Illinois at Chicago. I have a passion for engineering and building tools to solve problems.",
+  "Besides coding, I enjoy reading, woodworking, and climbing.",
+  "I consider myself a lifelong learner and everyday presents a possibility to grow further. ",
+  "Thanks for taking the time to learn a little about me!",
+];
+
+export const skills = [
+  {
+    title: "MATLAB",
+    skillName: "MATLAB",
+    color: "1",
+    percentage: "90",
+  },
+  {
+    title: "Python",
+    skillName: "Python",
+    color: "2",
+    percentage: "75",
+  },
+  {
+    title: "Web",
+    skillName: "HTML, CSS,Javascript",
+    color: "4",
+    percentage: "60",
+  },
+  {
+    title: "R",
+    skillName: "R",
+    color: "6",
+    percentage: "75",
+  },
+  {
+    title: "Version Control",
+    skillName: "GitHub, Git, Github Desktop",
+    color: "7",
+    percentage: "70",
+  },
+  {
+    title: "VBA",
+    skillName: "VBA - Excel",
+    color: "3",
+    percentage: "80",
+  },
+  {
+    title: "C++ & Julia",
+    skillName: "C++ & Julia",
+    color: "5",
+    percentage: "50",
+  },
+  {
+    title: "Editor",
+    skillName: "VS Code, Spyder",
+    color: "1",
+    percentage: "70",
+  },
+];
+
+export const projects = {
+  disclaimer:
+    "*** All the projects I listed were completed in an academic or research setting. As for my work in industry, those projects are proprietary and cannot be disclosed.",
+  cheProjects: [
+    {
+      projectName: "Smog Modeling as a Chemical Engineering",
+      image: "images/smogModel.jpg",
+      summary:
+        "A model of accumulation and depletion of smog in Los Angeles was modeled in MATLAB.",
+      preview: "https://github.com/jesse-anderson/MATLAB/tree/main/Chemical_Engineering/Modeling-Smog-In-LA",
+      techStack: ["MATLAB","Chemical Engineering"],
+    },
+    {
+      projectName: "Biochemical Plant Simulation",
+      image: "images/seniorDesign.jpg",
+      summary:
+        "Simulated a l. reuteri 1,3-propanediol plant producing ~60,000 tons/year of product with 99% purity and generating a net profit. Simulation done in SUPERPRO and distillation columns in ASPEN PLUS. Project won 1st Place in the Engineering Expo at UIC 2023, Chemical Engineering Division.",
+      preview: "files/SeniorDesign.pdf",
+      techStack: ["Aspen Plus","SuperPro Designer", "Chemical Engineering"],
+    },
+  ],
+  mlProjects: [
+    {
+      projectName: "Python Clustering Toolbox",
+      image: "images/pythonClustering.jpg",
+      summary:
+        "Python program which performs Ripley's K/L analysis, DBSCAN clustering, and OPTICS clustering",
+      preview: "https://github.com/jesse-anderson/Python/tree/main/Cluster-Analysis-with-GUI",
+      techStack: ["Python","Cluster Analysis"],
+    },
+  ],
+  researchProjects: [
+    {
+      projectName: "Superresolution Imaging with Single-Antibody Labeling",
+      image: "images/DBSCANresearch.jpg",
+      summary:
+        "The project uses DBSCAN clustering as a means of identifying high density regions in superresolution imaging with single-antibody labeling.",
+      preview: "https://pubs.acs.org/doi/full/10.1021/acs.bioconjchem.3c00178",
+      techStack: ["MATLAB", "Cluster Analysis"],
+    },
+  ],
+  webProjects: [
+    {
+      projectName: "UIC Faculty Web Scraping",
+      image: "images/WebScraping.png",
+      summary:
+        "Developed an automated python script to scrape from the web University of Illinois Faculty Information",
+      preview: "https://github.com/jesse-anderson/Python",
+      techStack: ["Python"],
+    },
+  ],
+};
+
+
+
+
+
+
+
+export const experience = [
+  {
+    title: "Undergraduate Research Assistant",
+    duration: "December 2020-Present",
+    subtitle: "Programmer",
+    details: [
+      "Develop Matlab/R/Python code for image analysis and clustering algorithms(DBSCAN/OPTICS/Ripley’s K) for single molecule localization microscopy imaging."
+    ],
+    tags: ["MATLAB", "R", "C++","Python"],
+    icon: "flask",
+  },
+  {
+    title: "Engineering Intern",
+    duration: "May 2022-August 2022",
+    subtitle: "Conveyor & Piping Support Design",
+    details: [
+      "Develop engineering software in VBA to automate design workflow and assist in engineering design calculations.",
+    "Developed software to improve analysis workflow bottleneck by 540,000% by eliminating manual data entry.",
+    "Automated 150 hours/yr of data entry, comparison and analysis tasks.",
+    "Created and implemented a library of software tools for thermoplastic and thermoset material property analysis per ASME/AWWA/PPI standards."
+
+    ],
+    tags: ["VBA-Excel"],
+    icon: "gears",
+  },
+];
+
+export const education = [
+  {
+    title: "Bachelors in Chemical Engineering",
+    duration: "",
+    subtitle: "University of Illinois at Chicago",
+    details: [
+      "I completed my degree with a final GPA of 3.77 and concentrations in Biochemical Engineering and Process Automation.",
+      "My minor was in Mathematics & Computer Science where I completed 2 courses in Python, Discrete Math, Data Structures in C++, and Industrial Mathematics[400 level].",
+      "My education exposed me to Computer Science as a tool to solve difficult problems and I keep that mentality as I learn new skillsets.",
+    ],
+    tags: [
+      "Data Structures & Algorithms",
+      "Python",
+      "ASPEN Plus",
+      "SuperPro Designer",
+      "SnapGene",
+      "Raspberyy Pi",
+    ],
+    icon: "graduation-cap",
+  },
+  {
+    title: "Associate's In Science",
+    duration: "",
+    subtitle: "College of DuPage",
+    details: [
+      "Completion of A.S. with coursework in Chemistry, Biology, and Mathematics with a final GPA of 3.65",
+      "Additionally, I am proud to have presented at the college's research symposium where I presented on the topic of Learned Helplessness",
+    ],
+    tags: ["Chemistry", "Biology", "Mathematics"],
+    icon: "book",
+  },
+];
+
+export const footer = [
+  {
+    label: "Dev Profiles",
+    data: [
+      {
+        text: "GitHub",
+        link: "https://github.com/jesse-anderson",
+      },
+      {
+        text: "Kaggle",
+        link: "https://www.kaggle.com/jesseanderson777",
+      },
+      {
+        text: "LeetCode",
+        link: "https://leetcode.com/Jesse-Anderson/",
+      },
+    ],
+  },
+  {
+    label: "Resources",
+    data: [
+      {
+        text: "Enable Dark/Light Mode",
+        func: "enableDarkMode()",
+      },
+      {
+        text: "Print this page",
+        func: "window.print()",
+      },
+      {
+        text: "Clone this page",
+        link: "https://github.com/jesse-anderson/jesse-anderson.github.io",
+      },
+    ],
+  },
+  {
+    label: "Social Profiles",
+    data: [
+      {
+        text: "Linkedin",
+        link: "https://www.linkedin.com/in/jesse-anderson-a7c5/",
+      },
+      {
+        text: "ORCID",
+        link: "https://orcid.org/0000-0001-5731-5511",
+      },
+      {
+        text: "Buy me a coffee",
+        link: "https://www.buymeacoffee.com/JesseAnderson",
+      },
+    ],
+  },
+  {
+    label: "copyright-text",
+    data: [
+      "Made with &hearts; by Jesse Anderson.",
+      "&copy; No Copyrights. Feel free to use this template.",
+    ],
+  },
+];
+
+const gitUserName = "jesse-anderson";
+const mediumUserName = "Jesse-Anderson";
+
+export const URLs = {
+  mediumURL: `https://api.rss2json.com/v1/api.json?rss_url=https://medium.com/feed/@${mediumUserName}`,
+};
