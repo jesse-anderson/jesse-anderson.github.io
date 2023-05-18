@@ -80,7 +80,7 @@ export const projects = {
   mlProjects: [
     {
       projectName: "Python Clustering Toolbox",
-      image: "images/pythonClustering.jpg",
+      image: "images/pythonClustering.JPG",
       summary:
         "Python program which performs Ripley's K/L analysis, DBSCAN clustering, and OPTICS clustering",
       preview: "https://github.com/jesse-anderson/Python/tree/main/Cluster-Analysis-with-GUI",
