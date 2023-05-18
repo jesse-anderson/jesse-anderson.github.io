@@ -90,7 +90,7 @@ export const projects = {
   researchProjects: [
     {
       projectName: "Superresolution Imaging with Single-Antibody Labeling",
-      image: "images/DBSCANresearch.jpg",
+      image: "images/DBSCANresearch.JPG",
       summary:
         "The project uses DBSCAN clustering as a means of identifying high density regions in superresolution imaging with single-antibody labeling.",
       preview: "https://pubs.acs.org/doi/full/10.1021/acs.bioconjchem.3c00178",
@@ -100,7 +100,7 @@ export const projects = {
   webProjects: [
     {
       projectName: "UIC Faculty Web Scraping",
-      image: "images/WebScraping.png",
+      image: "images/webScraping.png",
       summary:
         "Developed an automated python script to scrape from the web University of Illinois Faculty Information",
       preview: "https://github.com/jesse-anderson/Python",
