@@ -120,7 +120,7 @@ export const projects = {
 export const experience = [
   {
     title: "Undergraduate Research Assistant",
-    duration: "December 2020-Present",
+    duration: "December 2020-June 2023",
     subtitle: "Programmer",
     details: [
       "Develop Matlab/R/Python code for image analysis and clustering algorithms (DBSCAN/OPTICS/Ripley’s K) for single molecule localization microscopy imaging."
