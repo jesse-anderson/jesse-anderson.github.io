@@ -4,6 +4,7 @@ import {
   URLs,
   projects,
   education,
+  volunteering,
   experience,
   footer,
 } from "../db/db.js";
@@ -280,7 +281,7 @@ function populateExp_Edu(items, id) {
     for (let j = 0; j < items[i].details.length; j++) {
       let pTimelineText = document.createElement("p");
       pTimelineText.className = "timeline-text";
-      pTimelineText.innerHTML = "&blacksquare; " + items[i].details[j];
+      pTimelineText.innerHTML = "&#8226; " + items[i].details[j];
       divTimelineLabel.append(pTimelineText);
     }
 
@@ -417,5 +418,6 @@ populateDisclaimer(disclaimer, "project-disclaimer");
 
 populateExp_Edu(experience, "experience");
 populateExp_Edu(education, "education");
+populateExp_Edu(volunteering, "volunteering");
 
 populateLinks(footer, "footer");

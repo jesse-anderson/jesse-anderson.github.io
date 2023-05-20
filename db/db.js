@@ -1,8 +1,9 @@
 export const bio = [
   "I am Jesse Anderson, a recent Chemical Engineering Graduate from the University of Illinois at Chicago. I have a passion for engineering and building tools to solve problems.",
   "Besides coding, I enjoy reading, woodworking, and climbing.",
-  "I consider myself a lifelong learner and everyday presents a possibility to grow further. ",
+  "I consider myself a lifelong learner, and every day presents a possibility to grow further. ",
   "Thanks for taking the time to learn a little about me!",
+  "<em>**The projects are interactive! Click on any project to get directed to its page.**"
 ];
 
 export const skills = [
@@ -58,10 +59,10 @@ export const skills = [
 
 export const projects = {
   disclaimer:
-    "*** All the projects I listed were completed in an academic or research setting. As for my work in industry, those projects are proprietary and cannot be disclosed.",
+    "<em>***All the projects I listed were completed in an academic or research setting. As for my work in industry, those projects are proprietary and cannot be disclosed.***",
   cheProjects: [
     {
-      projectName: "Smog Modeling as a Chemical Engineering",
+      projectName: "Smog Modeling as Chemical Engineering",
       image: "images/smogModel.jpg",
       summary:
         "A model of accumulation and depletion of smog in Los Angeles was modeled in MATLAB.",
@@ -175,6 +176,21 @@ export const education = [
     icon: "book",
   },
 ];
+export const volunteering = [
+  {
+    title: "Remote Area Medical",
+    duration: "July 2018-August 2018",
+    subtitle: "Equipment Technician",
+    details: [
+      "Volunteer to assist medical providers in providing care in remote areas to underserved populations.",
+      "Maintain generators, hydraulic/pneumatic dental tools, mix sanitizing agents on site, and worksite preparations.",
+      "Disposal of hazardous waste post treatment.",
+    ],
+    tags: ["Chemistry", "Biology", "Mathematics"],
+    icon: "heart",
+  },
+];
+
 
 export const footer = [
   {
