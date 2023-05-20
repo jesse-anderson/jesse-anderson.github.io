@@ -72,7 +72,8 @@ export const projects = {
       projectName: "Biochemical Plant Simulation",
       image: "images/seniorDesign.jpg",
       summary:
-        "Simulated a l. reuteri 1,3-propanediol plant producing ~60,000 tons/year. Project won 1st Place in the Engineering Expo at UIC 2023, ChE Division.",
+        "Simulated a l. reuteri 1,3-propanediol plant producing ~60,000 tons/year. Project won 1st Place in the Engineering Expo at UIC 2023, ChE Division. ",
+        
       preview: "files/seniorDesign.pdf",
       techStack: ["Aspen Plus","SuperPro Designer", "Chemical Engineering"],
     },
@@ -121,7 +122,7 @@ export const experience = [
     duration: "December 2020-Present",
     subtitle: "Programmer",
     details: [
-      "Develop Matlab/R/Python code for image analysis and clustering algorithms(DBSCAN/OPTICS/Ripley’s K) for single molecule localization microscopy imaging."
+      "Develop Matlab/R/Python code for image analysis and clustering algorithms (DBSCAN/OPTICS/Ripley’s K) for single molecule localization microscopy imaging."
     ],
     tags: ["MATLAB", "R", "C++","Python"],
     icon: "flask",
