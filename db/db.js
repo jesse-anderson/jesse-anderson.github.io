@@ -102,8 +102,8 @@ export const projects = {
       projectName: "UIC Faculty Web Scraping",
       image: "images/webScraping.png",
       summary:
-        "Developed an automated python script to scrape from the web University of Illinois Faculty Information",
-      preview: "https://github.com/jesse-anderson/Python",
+        "Developed an automated python script to scrape from the web University of Illinois Faculty Information via Beautiful Soup and shown via a Flask implementation to display data on a local server.",
+      preview: "https://github.com/jesse-anderson/Python/tree/main/Python-Flask-Web-Scraping",
       techStack: ["Python"],
     },
   ],
