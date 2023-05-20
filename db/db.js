@@ -186,7 +186,7 @@ export const volunteering = [
       "Maintain generators, hydraulic/pneumatic dental tools, mix sanitizing agents on site, and worksite preparations.",
       "Disposal of hazardous waste post treatment.",
     ],
-    tags: ["Chemistry", "Biology", "Mathematics"],
+    tags: [""],
     icon: "heart",
   },
 ];
