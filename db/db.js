@@ -32,12 +32,6 @@ export const skills = [
     percentage: "75",
   },
   {
-    title: "Version Control",
-    skillName: "GitHub, Git, Github Desktop",
-    color: "7",
-    percentage: "70",
-  },
-  {
     title: "VBA",
     skillName: "VBA - Excel",
     color: "3",
@@ -50,10 +44,16 @@ export const skills = [
     percentage: "50",
   },
   {
-    title: "Editor",
+    title: "Version Control",
+    skillName: "GitHub, Git, Github Desktop",
+    color: "7",
+    percentage: "70",
+  },
+  {
+    title: "Editors",
     skillName: "VS Code, Spyder",
     color: "1",
-    percentage: "70",
+    percentage: "75",
   },
 ];
 
@@ -171,6 +171,7 @@ export const education = [
     details: [
       "Completion of A.S. with coursework in Chemistry, Biology, and Mathematics with a final GPA of 3.65",
       "Additionally, I am proud to have presented at the college's research symposium where I presented on the topic of Learned Helplessness",
+      
     ],
     tags: ["Chemistry", "Biology", "Mathematics"],
     icon: "book",

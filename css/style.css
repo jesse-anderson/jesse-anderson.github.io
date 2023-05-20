@@ -1944,7 +1944,7 @@ body.offcanvas .colorlib-nav-toggle {
 }
 @media screen and (max-width: 768px) {
 	.colorlib-nav-toggle {
-		opacity: 0.3;
+		opacity: 0.5;
 		visibility: visible;
 	}
 }
