@@ -1,7 +1,6 @@
 export const bio = [
-  "I am Jesse Anderson, a recent Chemical Engineering Graduate from the University of Illinois at Chicago. I have a passion for engineering and building tools to solve problems.",
-  "Besides coding, I enjoy reading, woodworking, and climbing.",
-  "I consider myself a lifelong learner, and every day presents a possibility to grow further. ",
+  "Hello! Thank you for visiting my page. My name is <b>Jesse Anderson</b> and I have a passion for building engineering and automation tools to solve problems.",
+  "Besides coding, I enjoy reading, woodworking, and climbing. Constantly expanding one's skillsets and learning by doing are central tenets in my life. I consider myself a lifelong learner, and every day presents a possibility to grow further. ",
   "Thanks for taking the time to learn a little about me!",
   "<em>**The projects are interactive! Click on any project to get directed to its page.**"
 ];
@@ -15,7 +14,7 @@ export const skills = [
   },
   {
     title: "Python",
-    skillName: "Python",
+    skillName: "Python[scipy, scikitlearn, pandas, numpy, ...]",
     color: "2",
     percentage: "75",
   },
@@ -23,7 +22,7 @@ export const skills = [
     title: "Web",
     skillName: "HTML, CSS,Javascript",
     color: "4",
-    percentage: "60",
+    percentage: "50",
   },
   {
     title: "R",
@@ -32,14 +31,14 @@ export const skills = [
     percentage: "75",
   },
   {
-    title: "VBA",
-    skillName: "VBA - Excel",
+    title: "Visual Basic, VBA",
+    skillName: "Visual Basic, VBA, OLE Automation",
     color: "3",
     percentage: "80",
   },
   {
     title: "C++ & Julia",
-    skillName: "C++ & Julia",
+    skillName: "C++, Julia",
     color: "5",
     percentage: "50",
   },
@@ -51,9 +50,15 @@ export const skills = [
   },
   {
     title: "Editors",
-    skillName: "VS Code, Spyder",
+    skillName: "VS Code, Spyder, Jupyter",
     color: "1",
     percentage: "75",
+  },
+  {
+    title: "Data Science",
+    skillName: "Power BI, Tableau",
+    color: "1",
+    percentage: "30",
   },
 ];
 
@@ -111,33 +116,64 @@ export const projects = {
   ],
 };
 
-
-
-
-
-
-
 export const experience = [
   {
-    title: "Undergraduate Research Assistant",
-    duration: "December 2020-June 2023",
-    subtitle: "Programmer",
+    title: "Engineer",
+    duration: "June 2023 - Present",
+    subtitle: "UL Solutions",
     details: [
-      "Develop Matlab/R/Python code for image analysis and clustering algorithms (DBSCAN/OPTICS/Ripley’s K) for single molecule localization microscopy imaging."
+    "Develop automation software in Python and VBA to eliminate 500+ hours of tedious workflows annually.",
+    "Develop software to automatically detect changes in CAD files and alert engineers to such changes in Python using OpenCV/PyMuPDF.",
+    "Determine project scope, preliminary plan of investigation, and project specifications to initiate technical projects in testing and verification of products to UL's standards.",
+    ],
+    tags: ["Engineering", "Python", "VBA", "CAD", "Fire Protection"],
+    icon: "gears",
+  },
+  {
+    title: "Undergraduate Research",
+    duration: "December 2020 - June 2023",
+    subtitle: "University of Illinois at Chicago",
+    details: [
+      "Developed novel software in MATLAB, R, and Python for image and computational analysis of single molecule localization microscopy images.",
+      "Utilized clustering algorithms (DBSCAN/OPTICS/Ripley's K) to determine spatiotemporal properties of single-molecule localizations.",
+      "Optimized existing numerical algorithms to decrease the time it takes for a bottlenecked lab operation by 267%."
     ],
     tags: ["MATLAB", "R", "C++","Python"],
     icon: "flask",
   },
   {
     title: "Engineering Intern",
-    duration: "May 2022-August 2022",
-    subtitle: "Conveyor & Piping Support Design",
+    duration: "May 2022 - August 2022",
+    subtitle: "United Conveyor Corporation",
     details: [
       "Develop engineering software in VBA to automate design workflow and assist in engineering design calculations.",
     "Developed software to improve analysis workflow bottleneck by 540,000% by eliminating manual data entry.",
     "Automated 150 hours/yr of data entry, comparison and analysis tasks.",
     "Created and implemented a library of software tools for thermoplastic and thermoset material property analysis per ASME/AWWA/PPI standards."
 
+    ],
+    tags: ["VBA-Excel", "P&ID"],
+    icon: "gears",
+  },
+  {
+    title: "Peer Leader, Calculus Based Physics",
+    duration: "August 2020 - December 2021",
+    subtitle: "Conveyor & Piping Support Design",
+    details: [
+      "Ensured student success in Calculus-Based Physics (Mechanics) via one-on-one and group tutoring through online platforms (Blackboard, Zoom) with a focus on problem solving methodology.",
+    "Developed an automated attendance analytics program to measure student attrition in Physics I."
+    ],
+    tags: ["VBA-Excel"],
+    icon: "gears",
+  },
+  {
+    title: "Safety/Project Manager",
+    duration: "June 2016-August 2019",
+    subtitle: "G5 Environmental",
+    details: [
+      "Served as project lead at job sites by ensuring  completion of contract requirements by CDL team members",
+    "Ensured safe execution of any mechanical repairs by mechanics.",
+    "Acquired parts on an as needed basis to ensure that contracts serviced did not experience time offline"
     ],
     tags: ["VBA-Excel"],
     icon: "gears",
