@@ -9,16 +9,165 @@
 
 <body>
     <div id="simple-example">
-
-        Output:
-        <textarea id='output' style='width: 100%;' rows='10' disabled></textarea>
+        <div>Click the button to execute the Python Code.</div>
+        <button id='run' onclick='evaluatePython()' value ='code'>Run</button>
+        <!-- added value = 'code' to prevent automatic clearing. Can run repeatedly.  -->
+        <br></br>
         <textarea id='code' rows='3' disabled>
 import numpy as np
-np.ones((10,))
-            </textarea>
-        <button id='run' onclick='evaluatePython()'>Run</button>
-        <div>You can execute any Python code. Just enter something in the box above and click the button. </div>
+import matplotlib.pyplot as plt
+from sklearn.cluster import OPTICS
+from sklearn.neighbors import KDTree
+import io, base64
+from js import document
+import math
+#polar to cartesian
+def polar2cart(r, theta, phi):
+    return [
+         r * math.sin(theta) * math.cos(phi),
+         r * math.sin(theta) * math.sin(phi),
+         r * math.cos(theta)
+    ]
+#spherical to cartesian
+def sph2cart(azimuth, elevation, radius):
+    """
+    Transform spherical coordinates to Cartesian coordinates.
 
+    Parameters:
+    - azimuth: The counterclockwise angle in the xy-plane measured from the positive x-axis.
+    - elevation: The elevation angle from the xy-plane.
+    - radius: The distance from the origin to the point.
+
+    Returns:
+    - x, y, z: Cartesian coordinates corresponding to the input spherical coordinates.
+
+    Notes:
+    - Azimuth and elevation must be in radians.
+    - The arrays azimuth, elevation, and radius must have compatible sizes. In the simplest cases,
+      they can be the same size or one can be a scalar. Two inputs have compatible sizes if, for
+      every dimension, the dimension sizes of the inputs are either the same or one of them is 1.
+
+    Class support for inputs azimuth, elevation, radius:
+      float: double, single
+    """
+    
+    # Calculate the z-coordinate using the sine of the elevation angle
+    z = radius * np.sin(elevation)
+    
+    # Calculate the component of the radius in the xy-plane
+    rcoselev = radius * np.cos(elevation)
+    
+    # Calculate the x and y coordinates
+    x = rcoselev * np.cos(azimuth)
+    y = rcoselev * np.sin(azimuth)
+    
+    return x, y, z
+
+
+# Function to generate spherical data with both surface and core points
+def generate_spherical_data(center, n_points):
+    rvals = 2 * np.random.rand(n_points, 1) - 1
+    elevation = np.arcsin(rvals)
+    azimuth = 2 * np.pi * np.random.rand(n_points, 1)
+    radii = 2 * (np.random.rand(n_points, 1) ** (1 / 3))
+    
+    x, y, z = sph2cart(azimuth, elevation, radii)
+
+    # First loop: translate points in the x-direction
+    for i in range(5, 16, 10):
+        x = np.concatenate([x, x + i])
+        y = np.concatenate([y, y])
+        z = np.concatenate([z, z])
+
+    # Second loop: translate points in the y-direction
+    for i in range(5, 16, 10):
+        x = np.concatenate([x, x])
+        y = np.concatenate([y, y + i])
+        z = np.concatenate([z, z])
+
+    # Third loop: translate points in the z-direction
+    for i in range(5, 16, 10):
+        x = np.concatenate([x, x])
+        y = np.concatenate([y, y])
+        z = np.concatenate([z, z + i])
+
+    # Generate random points and concatenate them to x, y, and z
+    xr = (np.random.rand(10, 1) - 0.1) * 25
+    x = np.concatenate([x, xr])
+    yr = (np.random.rand(10, 1) - 0.1) * 25
+    y = np.concatenate([y, yr])
+    zr = (np.random.rand(10, 1) - 0.1) * 25
+    z = np.concatenate([z, zr])
+    return np.column_stack((x, y, z))
+
+# Generate initial spherical data sets
+# Place centers at the corners of a cube in 3D space
+centers = [(x, y, z) for x in [0, 15] for y in [0, 15] for z in [0, 15]]
+n_points_list = [10, 10, 10, 10]
+
+spheres = [generate_spherical_data(center, n_points) for center, n_points in zip(centers, n_points_list)]
+all_data = np.vstack(spheres)
+
+# Perform OPTICS clustering
+clustering = OPTICS(min_samples=10).fit(all_data)
+labels = clustering.labels_
+
+# Plot OPTICS Clusters
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+
+for label in np.unique(labels):
+    if label == -1:  # Skip the 'noise' label
+        continue
+    cluster_data = all_data[labels == label]
+    ax.scatter(cluster_data[:, 0], cluster_data[:, 1], cluster_data[:, 2], label=f'Cluster {label}')
+
+ax.set_title('OPTICS Clusters')
+ax.set_xlabel('X')
+ax.set_ylabel('Y')
+ax.set_zlabel('Z')
+
+buf = io.BytesIO()
+# copy the plot into the buffer
+plt.savefig(buf, format='png')
+buf.seek(0)
+# encode the image as Base64 string    
+img_str = 'data:image/png;base64,' + base64.b64encode(buf.read()).decode('UTF-8')
+# show the image
+img_tag = document.getElementById('fig1')
+img_tag.src = img_str
+buf.close()
+
+# Show the legend below the plot
+legend = ax.legend(ncol=4)
+# Save just the legend to a file
+legend_figure = plt.figure()
+ax = legend_figure.add_subplot(111)
+ax.axis('off')
+legend_figure.legend(handles=legend.legendHandles, labels=[t.get_text() for t in legend.texts], ncol =4)
+buf = io.BytesIO()
+legend_figure.savefig(buf, format='png')
+buf.seek(0)
+img_str = 'data:image/png;base64,' + base64.b64encode(buf.read()).decode('UTF-8')
+buf.close()
+img_tag = document.getElementById('fig2')
+img_tag.src = img_str
+buf.close()
+plt.close()
+plt.close(legend_figure)
+#plt.show()
+
+
+
+        </textarea>
+        <br></br>
+        Output:
+        <textarea id='output' style='width: 100%;' rows='10' disabled></textarea>
+        <a href = "https://jesse-anderson.github.io/" > Return to Main</a>
+        <br></br>
+        <img id = "fig1" />
+
+        <img id = "fig2" />
         <script type='text/javascript'>
             const output = document.getElementById("output")
             const code = document.getElementById("code")
