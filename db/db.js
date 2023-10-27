@@ -101,7 +101,7 @@ export const projects = {
       summary:
         "The project uses DBSCAN clustering as a means of identifying high density regions in superresolution imaging with single-antibody labeling.",
       preview: "https://pubs.acs.org/doi/full/10.1021/acs.bioconjchem.3c00178",
-      techStack: ["MATLAB", "Cluster Analysis"],
+      techStack: ["MATLAB", "Cluster Analysis", "DBSCAN", "OPTICS"],
     },
   ],
   webProjects: [
@@ -111,7 +111,15 @@ export const projects = {
       summary:
         "Developed an automated python script to scrape from the web University of Illinois Faculty Information via Beautiful Soup and shown via a Flask implementation to display data on a local server.",
       preview: "https://github.com/jesse-anderson/Python/tree/main/Python-Flask-Web-Scraping",
-      techStack: ["Python"],
+      techStack: ["Python","Beautiful Soup", "Flask"],
+    },
+    {
+      projectName: "Pyodide Project Online Python Execution",
+      image: "images/pyodide-logo.png",
+      summary:
+        "Pyodide project to showcase spherical Random Number Generation and perform OPTICS clustering on the spheres. Proof of concept Python in browser via Pyodide.",
+      preview: "https://jesse-anderson.github.io/files/pyodide_runCalcs.html",
+      techStack: ["Python", "Pyodide", "Clustering"],
     },
   ],
 };
