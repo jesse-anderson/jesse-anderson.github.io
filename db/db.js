@@ -72,7 +72,7 @@ export const projects = {
       image: "images/DBSCAN_JS_Img.png",
       summary:
         "Javascript program which will perform DBSCAN clustering on various distributions in 2 dimensions.",
-      preview: "https://github.com/jesse-anderson/DBSCANProj/index.html",
+      preview: "https://github.com/jesse-anderson/DBSCANProj/tryDB/index.html",
       techStack: ["Javascript","Cluster Analysis", "DBSCAN","d3.v7.js"],
     },
     {
