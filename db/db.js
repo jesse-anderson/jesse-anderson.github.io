@@ -58,13 +58,13 @@ export const skills = [
     title: "Data Science",
     skillName: "Power BI, Tableau",
     color: "1",
-    percentage: "30",
+    percentage: "60",
   },
 ];
 
 export const projects = {
   disclaimer:
-    "<em>***All the projects I listed were completed in an academic or research setting. As for my work in industry, those projects are proprietary and cannot be disclosed.***",
+    "<em>***All the projects I listed were completed in an academic or research setting. As for my work in industry, many projects are proprietary and cannot be disclosed.***",
   
   mlProjects: [
     {
@@ -84,14 +84,23 @@ export const projects = {
       techStack: ["Python","Cluster Analysis"],
     },
   ],
+
   researchProjects: [
+    {
+      projectName: "Increased vesicular dynamics and nanoscale clustering of IL-2 after T cell activation",
+      image: "images/VesiclesPaper.png",
+      summary:
+        "In this research, DBSCAN clustering was used to analyze the distribution of IL-2 within Jurkat T cells through superresolution imaging, specifically dSTORM. This clustering method enabled the researchers to identify and characterize nanoscale clusters of IL-2, revealing that activation of the T cells led to more pronounced and elongated clusters compared to non-activated control cells.",
+      preview: "https://www.sciencedirect.com/science/article/abs/pii/S0006349524002091",
+      techStack: ["Immunology","MATLAB", "Cluster Analysis", "DBSCAN"],
+    },
     {
       projectName: "Superresolution Imaging with Single-Antibody Labeling",
       image: "images/DBSCANresearch.JPG",
       summary:
         "The project uses DBSCAN clustering as a means of identifying high density regions in superresolution imaging with single-antibody labeling.",
       preview: "https://pubs.acs.org/doi/full/10.1021/acs.bioconjchem.3c00178",
-      techStack: ["MATLAB", "Cluster Analysis", "DBSCAN", "OPTICS"],
+      techStack: ["MATLAB", "Cluster Analysis", "DBSCAN"],
     },
   ],
   cheProjects: [
