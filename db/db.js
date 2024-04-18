@@ -65,26 +65,16 @@ export const skills = [
 export const projects = {
   disclaimer:
     "<em>***All the projects I listed were completed in an academic or research setting. As for my work in industry, those projects are proprietary and cannot be disclosed.***",
-  cheProjects: [
-    {
-      projectName: "Smog Modeling as Chemical Engineering",
-      image: "images/smogModel.jpg",
-      summary:
-        "A model of accumulation and depletion of smog in Los Angeles was modeled in MATLAB.",
-      preview: "https://github.com/jesse-anderson/MATLAB/tree/main/Chemical_Engineering/Modeling-Smog-In-LA",
-      techStack: ["MATLAB","Chemical Engineering"],
-    },
-    {
-      projectName: "Biochemical Plant Simulation",
-      image: "images/seniorDesign.jpg",
-      summary:
-        "Simulated a l. reuteri 1,3-propanediol plant producing ~60,000 tons/year. Project won 1st Place in the Engineering Expo at UIC 2023, ChE Division. ",
-        
-      preview: "files/seniorDesign.pdf",
-      techStack: ["Aspen Plus","SuperPro Designer", "Chemical Engineering"],
-    },
-  ],
+  
   mlProjects: [
+    {
+      projectName: "Educational DBSCAN Tool",
+      image: "images/DBSCAN_JS_Img.png",
+      summary:
+        "Javascript program which will perform DBSCAN clustering on various distributions in 2 dimensions.",
+      preview: "https://github.com/jesse-anderson/DBSCANProj/index.html",
+      techStack: ["Javascript","Cluster Analysis", "DBSCAN","d3.v7.js"],
+    },
     {
       projectName: "Python Clustering Toolbox",
       image: "images/pythonClustering.JPG",
@@ -102,6 +92,25 @@ export const projects = {
         "The project uses DBSCAN clustering as a means of identifying high density regions in superresolution imaging with single-antibody labeling.",
       preview: "https://pubs.acs.org/doi/full/10.1021/acs.bioconjchem.3c00178",
       techStack: ["MATLAB", "Cluster Analysis", "DBSCAN", "OPTICS"],
+    },
+  ],
+  cheProjects: [
+    {
+      projectName: "Smog Modeling as Chemical Engineering",
+      image: "images/smogModel.jpg",
+      summary:
+        "A model of accumulation and depletion of smog in Los Angeles was modeled in MATLAB.",
+      preview: "https://github.com/jesse-anderson/MATLAB/tree/main/Chemical_Engineering/Modeling-Smog-In-LA",
+      techStack: ["MATLAB","Chemical Engineering"],
+    },
+    {
+      projectName: "Biochemical Plant Simulation",
+      image: "images/seniorDesign.jpg",
+      summary:
+        "Simulated a l. reuteri 1,3-propanediol plant producing ~60,000 tons/year. Project won 1st Place in the Engineering Expo at UIC 2023, ChE Division. ",
+        
+      preview: "files/seniorDesign.pdf",
+      techStack: ["Aspen Plus","SuperPro Designer", "Chemical Engineering"],
     },
   ],
   webProjects: [
@@ -127,12 +136,12 @@ export const projects = {
 export const experience = [
   {
     title: "Engineer",
-    duration: "June 2023 - Present",
+    duration: "June 2023 - April 2024",
     subtitle: "UL Solutions",
     details: [
-    "Develop automation software in Python and VBA to eliminate 500+ hours of tedious workflows annually.",
+    "Develop automation software in Python and VBA to eliminate 533+ hours of tedious workflows annually.",
     "Develop software to automatically detect changes in CAD files and alert engineers to such changes in Python using OpenCV/PyMuPDF.",
-    "Determine project scope, preliminary plan of investigation, and project specifications to initiate technical projects in testing and verification of products to UL's standards.",
+    "Enhance data driven decision making by implementing real time data analysis for Large Scale testing.",
     ],
     tags: ["Engineering", "Python", "VBA", "CAD", "Fire Protection"],
     icon: "gears",
@@ -189,6 +198,22 @@ export const experience = [
 ];
 
 export const education = [
+  {
+    title: "Master's in Computer Science",
+    duration: "",
+    subtitle: "University of Illinois at Urbana-Champaign",
+    details: [
+      "IN PROGRESS",
+      "Professional Master of Computer Science (MCS) at UIUC. The University of Illinois CS graduate program is ranked 5th by U.S. News & World Report (2022)."
+    ],
+    tags: [
+      "Machine Learning",
+      "AI",
+      "Python",
+      "Automation",
+    ],
+    icon: "graduation-cap",
+  },
   {
     title: "Bachelors in Chemical Engineering",
     duration: "",

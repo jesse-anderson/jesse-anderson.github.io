@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Visualization of DBSCAN</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #f1f1f1;
+            padding: 20px;
+            text-align: center;
+        }
+        nav {
+            text-align: center;
+            background-color: #333;
+            color: white;
+        }
+        nav ul {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+        nav ul li {
+            display: inline;
+            margin-right: 20px;
+        }
+        main {
+            display: flex;
+            padding: 20px;
+        }
+        article {
+            flex: 70%;
+            padding: 20px;
+        }
+        aside {
+            flex: 30%;
+            padding: 20px;
+            background-color: #f1f1f1;
+        }
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <h1>Visualization of DBSCAN</h1>
+    </header>
+
+    <!-- Navigation -->
+    <nav>
+        <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+
+        <!-- Article -->
+        <article>
+            <h2>Visualization of DBSCAN</h2>
+            
+            <p>Code Below:</p>
+
+            <script src="./d3.v7.min.js"></script>
+            <script src="./choose.js"></script>
+            <script src="./generate.js"></script>
+            <script src="./config.js"></script>
+            <script src="./dbscan.js"></script>
+            <script src="./mainDBSCAN.js"></script>
+            
+            <div id="svg_area" style="margin-top: 40px;"></div>
+            <div id="button_area" style="margin-top: 10px;"></div>
+            <script>restart();</script>
+            <p>Code based on Naftali Harris' <a href ="https://www.naftaliharris.com/blog/visualizing-dbscan-clustering/">Original DBSCAN visualization</a> </p>
+        </article>
+
+        <!-- Sidebar -->
+        <aside>
+            <h3>About Me</h3>
+            <p>This is really a generic placeholder for what will eventually be a blog. My obsession with finally getting this clustering framework updated for v7 of d3.js and throwing in some distributions relevant to my previous work was higher priority. I plan on extending this to 3 dimensions eventually.</p>
+            <!-- Add more sidebar content here -->
+        </aside>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>Copyright © 2023 My Blog</p>
+    </footer>
+
+</body>
+</html>
