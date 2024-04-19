@@ -24,17 +24,17 @@ const { mediumURL } = URLs;
  * @returns {void}
  */
 
-async function fetchBlogsFromMedium(url) {
-  try {
-    const response = await fetch(url);
-    const { items } = await response.json();
-    populateBlogsMedium(items, "blogs");
-  } catch (error) {
-    throw new Error(
-      `Error in fetching the blogs from Medium profile: ${error}`
-    );
-  }
-}
+// async function fetchBlogsFromMedium(url) {
+//   try {
+//     const response = await fetch(url);
+//     const { items } = await response.json();
+//     populateBlogsMedium(items, "blogs");
+//   } catch (error) {
+//     throw new Error(
+//       `Error in fetching the blogs from Medium profile: ${error}`
+//     );
+//   }
+// }
 
 
 async function fetchBlogsFromQuarto(url) {
