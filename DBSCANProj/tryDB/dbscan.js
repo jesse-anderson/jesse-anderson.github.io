@@ -74,8 +74,8 @@ function dbscan_iter(data) {
             d3.select("#minPoints_select").remove();
             d3.select('#speed_select').remove();
             d3.select("#pause").remove();
-            d3.select('#button_area').select('.restart_button').style("display", "");
-            d3.select('#button_area').select('.restart_button').style("display", "block");
+            // d3.select('#button_area').select('.restart_button').style("display", "");
+            // d3.select('#button_area').select('.restart_button').style("display", "block");
             return;
         }
         dbscan_state.index = index + 1;

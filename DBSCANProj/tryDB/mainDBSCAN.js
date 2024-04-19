@@ -11,7 +11,7 @@ function twodecs(x) {
 
 function go() {
     // Correct way to remove the button using D3.js
-    d3.select('#button_area').select('.restart_button').style("display", "none");
+    // d3.select('#button_area').select('.restart_button').style("display", "none");
 
     dbscan_state.phase = "inprogress";
     d3.selectAll(".choose_eps_ball").remove()
@@ -58,7 +58,7 @@ function restart() {
     algo_delay = 125; //default 125
     clearInterval(process);
     process = null;
-    
+
     if (d3.select("svg").node()) {
         d3.select("svg").remove();
     }
