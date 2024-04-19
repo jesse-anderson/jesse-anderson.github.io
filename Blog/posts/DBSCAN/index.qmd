@@ -44,7 +44,7 @@ Spatiotemporal data, such as geographic locations recorded over time, often exhi
 
 -   **Lower MinPts**: A lower MinPts value makes the algorithm more sensitive to noise, and can lead to detecting more clusters. This setting is beneficial when the dataset contains many small but meaningful clusters that you do not want to miss.
 
-![K-Nearest Neighbor Graph, 2000 points, 4 clusters. Code [here](elbow.py)](Elbow-Graph.png){fig-alt="K-Nearest Neighbor Graph, 2000 points, 4 clusters" fig-align="center"}
+![K-Nearest Neighbor Graph, 2000 points, 4 clusters. Code here](Elbow-Graph.png){width="300%"}{fig-alt="K-Nearest Neighbor Graph, 2000 points, 4 clusters" fig-align="center"}
 
 ## **Practical Tips for Using DBSCAN in Spatiotemporal Analysis**
 
