@@ -156,9 +156,9 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<section id="understanding-dbscan-parameters-and-adjustments-for-temporospatial-data-clustering" class="level1">
-<h1><strong>Understanding DBSCAN: Parameters and Adjustments for Temporospatial Data Clustering</strong></h1>
-<p>Density-Based Spatial Clustering of Applications with Noise (DBSCAN) is a popular clustering algorithm notable for its proficiency in identifying clusters of varying shapes and sizes in large spatial datasets. This algorithm is especially useful in the field of temporospatial data analysis, where the goal is often to group similar data points that are in close proximity over time and space. In this blog post, we’ll delve into the mechanics of DBSCAN, discuss its critical parameters, and provide guidance on adjusting these parameters to achieve optimal clustering results for temporospatial data.</p>
+<section id="understanding-dbscan-parameters-and-adjustments-for-spatiotemporal-data-clustering" class="level1">
+<h1><strong>Understanding DBSCAN: Parameters and Adjustments for Spatiotemporal Data Clustering</strong></h1>
+<p>Density-Based Spatial Clustering of Applications with Noise (DBSCAN) is a popular clustering algorithm notable for its proficiency in identifying clusters of varying shapes and sizes in large spatial datasets. This algorithm is especially useful in the field of spatiotemporal data analysis, where the goal is often to group similar data points that are in close proximity over time and space. In this blog post, we’ll delve into the mechanics of DBSCAN, discuss its critical parameters, and provide guidance on adjusting these parameters to achieve optimal clustering results for spatiotemporal data.</p>
 <section id="what-is-dbscan" class="level2">
 <h2 class="anchored" data-anchor-id="what-is-dbscan">What is DBSCAN?</h2>
 <p>DBSCAN is a non-parametric clustering algorithm that focuses on the concept of density. Unlike centroid-based algorithms like K-means, DBSCAN categorizes points into clusters based on their density connectivity, thereby capably handling anomalies or noise. This makes it an excellent choice for data with irregular patterns and an undefined number of clusters. Note that DBSCAN is a great multi-purpose clustering algorithm, but it does not handle clusters with differing densities quite as well as OPTICS (to be blogged about later…). While DBSCAN requires a single set of parameters (ε and MinPts) across the entire dataset, which can be limiting in complex datasets with varying densities, OPTICS (Ordering Points To Identify the Clustering Structure) addresses this by creating a reachability plot that adapts to density variations, allowing for the identification of clusters based on varying density thresholds. This feature makes OPTICS particularly useful for more heterogeneous datasets where cluster density isn’t uniform.</p>
@@ -172,9 +172,9 @@ ul.task-list li input[type="checkbox"] {
 <p><img src="BorderPoints.png" class="img-fluid" alt="Core, Border, and Noise Points with Epsilon = 3.0, minPts = 4, Samples = 300, and 4 distinct centers."> Core, Border, and Noise Points with Epsilon = 3.0, minPts = 4, Samples = 300, and 4 distinct centers. Code <a href="borderpoints.py">here</a></p></li>
 </ul>
 </section>
-<section id="adjusting-dbscan-parameters-for-temporospatial-data" class="level2">
-<h2 class="anchored" data-anchor-id="adjusting-dbscan-parameters-for-temporospatial-data">Adjusting DBSCAN Parameters for Temporospatial Data</h2>
-<p>Temporospatial data, such as geographic locations recorded over time, often exhibits complexities like varying density and noise. The correct setting of DBSCAN’s ε and MinPts parameters is crucial for effective clustering:</p>
+<section id="adjusting-dbscan-parameters-for-spatiotemporal-data" class="level2">
+<h2 class="anchored" data-anchor-id="adjusting-dbscan-parameters-for-spatiotemporal-data">Adjusting DBSCAN Parameters for Spatiotemporal Data</h2>
+<p>Spatiotemporal data, such as geographic locations recorded over time, often exhibits complexities like varying density and noise. The correct setting of DBSCAN’s ε and MinPts parameters is crucial for effective clustering:</p>
 <p><strong>Choosing the Right Epsilon (ε)</strong></p>
 <ul>
 <li><p><strong>Spatial Component:</strong> The choice of ε can depend on the scale and resolution of your spatial data. For geographic data, ε might be set based on meaningful physical distances (e.g., meters or kilometers).</p></li>
@@ -182,7 +182,7 @@ ul.task-list li input[type="checkbox"] {
 </ul>
 <p><strong>Setting Minimum Points (MinPts)</strong></p>
 <ul>
-<li><p><strong>Data Dimensionality:</strong> A general rule of thumb is to set MinPts at least one greater than the dimensionality of the dataset. For temporospatial data, if you consider time as an additional dimension, this might increase MinPts accordingly.</p></li>
+<li><p><strong>Data Dimensionality:</strong> A general rule of thumb is to set MinPts at least one greater than the dimensionality of the dataset. For spatiotemporal data, if you consider time as an additional dimension, this might increase MinPts accordingly.</p></li>
 <li><p><strong>Density Expectation:</strong> In areas where temporal density (i.e., frequent data points over short periods) is high, a larger MinPts may be necessary to differentiate between actual clusters and random fluctuations.</p></li>
 <li><p><strong>Higher MinPts</strong>: Increasing the MinPts value generally results in a greater focus on more significant clusters, thus reducing the noise sensitivity. This setting can be useful in datasets where noise points are close to actual clusters, helping to distinguish between them more clearly.</p></li>
 <li><p><strong>Lower MinPts</strong>: A lower MinPts value makes the algorithm more sensitive to noise, and can lead to detecting more clusters. This setting is beneficial when the dataset contains many small but meaningful clusters that you do not want to miss.</p></li>
@@ -194,20 +194,20 @@ ul.task-list li input[type="checkbox"] {
 </figure>
 </div>
 </section>
-<section id="practical-tips-for-using-dbscan-in-temporospatial-analysis" class="level2">
-<h2 class="anchored" data-anchor-id="practical-tips-for-using-dbscan-in-temporospatial-analysis"><strong>Practical Tips for Using DBSCAN in Temporospatial Analysis</strong></h2>
+<section id="practical-tips-for-using-dbscan-in-spatiotemporal-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="practical-tips-for-using-dbscan-in-spatiotemporal-analysis"><strong>Practical Tips for Using DBSCAN in Spatiotemporal Analysis</strong></h2>
 <ul>
 <li><p><strong>Scale and Normalize</strong>:Ensure that spatial and temporal measurements are on comparable scales to avoid one type of distance overpowering the other.</p></li>
-<li><p><strong>Experiment with Parameters:</strong> Due to the nature of DBSCAN and the diversity of temporospatial data, iterative testing and adjustment of parameters are often required.</p></li>
+<li><p><strong>Experiment with Parameters:</strong> Due to the nature of DBSCAN and the diversity of spatiotemporal data, iterative testing and adjustment of parameters are often required.</p></li>
 <li><p><strong>Visualize Results:</strong> Use visual tools to examine the clustering outcomes. This can help in fine-tuning parameters and understanding the spatial-temporal distribution of the data.</p></li>
 </ul>
 </section>
 <section id="conclusion" class="level2">
 <h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-<p>DBSCAN stands out for its ability to handle anomalies and discover clusters of arbitrary shapes, making it ideal for analyzing complex temporospatial datasets. By carefully selecting the parameters ε and MinPts, you can tailor DBSCAN effectively to your specific data characteristics, enhancing both the accuracy and relevancy of your clustering results.</p>
+<p>DBSCAN stands out for its ability to handle anomalies and discover clusters of arbitrary shapes, making it ideal for analyzing complex spatiotemporal datasets. By carefully selecting the parameters ε and MinPts, you can tailor DBSCAN effectively to your specific data characteristics, enhancing both the accuracy and relevancy of your clustering results.</p>
 <p>Incorporating visual aids, like plots of ε values or animations of the clustering process, can greatly enhance the understanding and application of DBSCAN in real-world scenarios. Whether dealing with urban planning, environmental monitoring, or dynamic population studies, DBSCAN offers a robust framework for insightful data analysis.</p>
 <p>Please see the visualization below written in Javascript, based on Naftali Harris’ <a href="https://www.naftaliharris.com/blog/visualizing-dbscan-clustering/">original implementation</a>:</p>
-<p>
+<article>
 <script src="https://jesse-anderson.github.io/DBSCANProj/tryDB/d3.v7.min.js"></script>
 <script src="https://jesse-anderson.github.io/DBSCANProj/tryDB/choose.js"></script>
 <script src="https://jesse-anderson.github.io/DBSCANProj/tryDB/generate.js"></script>
@@ -215,10 +215,10 @@ ul.task-list li input[type="checkbox"] {
 <script src="https://jesse-anderson.github.io/DBSCANProj/tryDB/dbscan.js"></script>
 <script src="https://jesse-anderson.github.io/DBSCANProj/tryDB/mainDBSCAN.js"></script>
         
-</p><div id="svg_area" style="margin-top: 40px;"></div>
+<div id="svg_area" style="margin-top: 40px;"></div>
  <div id="button_area" style="margin-top: 10px;"></div>
 <script>restart();</script>
-<p></p>
+</article>
 
 
 </section>

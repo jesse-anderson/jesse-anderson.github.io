@@ -6,9 +6,9 @@ categories: [ML, Clustering, DBSCAN]
 image: "image.jpg"
 ---
 
-# **Understanding DBSCAN: Parameters and Adjustments for Temporospatial Data Clustering**
+# **Understanding DBSCAN: Parameters and Adjustments for Spatiotemporal Data Clustering**
 
-Density-Based Spatial Clustering of Applications with Noise (DBSCAN) is a popular clustering algorithm notable for its proficiency in identifying clusters of varying shapes and sizes in large spatial datasets. This algorithm is especially useful in the field of temporospatial data analysis, where the goal is often to group similar data points that are in close proximity over time and space. In this blog post, we'll delve into the mechanics of DBSCAN, discuss its critical parameters, and provide guidance on adjusting these parameters to achieve optimal clustering results for temporospatial data.
+Density-Based Spatial Clustering of Applications with Noise (DBSCAN) is a popular clustering algorithm notable for its proficiency in identifying clusters of varying shapes and sizes in large spatial datasets. This algorithm is especially useful in the field of spatiotemporal data analysis, where the goal is often to group similar data points that are in close proximity over time and space. In this blog post, we'll delve into the mechanics of DBSCAN, discuss its critical parameters, and provide guidance on adjusting these parameters to achieve optimal clustering results for spatiotemporal data.
 
 ## What is DBSCAN?
 
@@ -24,9 +24,9 @@ The effectiveness of DBSCAN hinges on two primary parameters:
 
     ![Core, Border, and Noise Points with Epsilon = 3.0, minPts = 4, Samples = 300, and 4 distinct centers.](BorderPoints.png) Core, Border, and Noise Points with Epsilon = 3.0, minPts = 4, Samples = 300, and 4 distinct centers. Code [here](borderpoints.py)
 
-## Adjusting DBSCAN Parameters for Temporospatial Data
+## Adjusting DBSCAN Parameters for Spatiotemporal Data
 
-Temporospatial data, such as geographic locations recorded over time, often exhibits complexities like varying density and noise. The correct setting of DBSCAN's ε and MinPts parameters is crucial for effective clustering:
+Spatiotemporal data, such as geographic locations recorded over time, often exhibits complexities like varying density and noise. The correct setting of DBSCAN's ε and MinPts parameters is crucial for effective clustering:
 
 **Choosing the Right Epsilon (ε)**
 
@@ -36,7 +36,7 @@ Temporospatial data, such as geographic locations recorded over time, often exhi
 
 **Setting Minimum Points (MinPts)**
 
--   **Data Dimensionality:** A general rule of thumb is to set MinPts at least one greater than the dimensionality of the dataset. For temporospatial data, if you consider time as an additional dimension, this might increase MinPts accordingly.
+-   **Data Dimensionality:** A general rule of thumb is to set MinPts at least one greater than the dimensionality of the dataset. For spatiotemporal data, if you consider time as an additional dimension, this might increase MinPts accordingly.
 
 -   **Density Expectation:** In areas where temporal density (i.e., frequent data points over short periods) is high, a larger MinPts may be necessary to differentiate between actual clusters and random fluctuations.
 
@@ -46,24 +46,24 @@ Temporospatial data, such as geographic locations recorded over time, often exhi
 
 ![K-Nearest Neighbor Graph, 2000 points, 4 clusters. Code [here](elbow.py)](Elbow-Graph.png){fig-alt="K-Nearest Neighbor Graph, 2000 points, 4 clusters" fig-align="center"}
 
-## **Practical Tips for Using DBSCAN in Temporospatial Analysis**
+## **Practical Tips for Using DBSCAN in Spatiotemporal Analysis**
 
 -   **Scale and Normalize**:Ensure that spatial and temporal measurements are on comparable scales to avoid one type of distance overpowering the other.
 
--   **Experiment with Parameters:** Due to the nature of DBSCAN and the diversity of temporospatial data, iterative testing and adjustment of parameters are often required.
+-   **Experiment with Parameters:** Due to the nature of DBSCAN and the diversity of spatiotemporal data, iterative testing and adjustment of parameters are often required.
 
 -   **Visualize Results:** Use visual tools to examine the clustering outcomes. This can help in fine-tuning parameters and understanding the spatial-temporal distribution of the data.
 
 ## Conclusion
 
-DBSCAN stands out for its ability to handle anomalies and discover clusters of arbitrary shapes, making it ideal for analyzing complex temporospatial datasets. By carefully selecting the parameters ε and MinPts, you can tailor DBSCAN effectively to your specific data characteristics, enhancing both the accuracy and relevancy of your clustering results.
+DBSCAN stands out for its ability to handle anomalies and discover clusters of arbitrary shapes, making it ideal for analyzing complex spatiotemporal datasets. By carefully selecting the parameters ε and MinPts, you can tailor DBSCAN effectively to your specific data characteristics, enhancing both the accuracy and relevancy of your clustering results.
 
 Incorporating visual aids, like plots of ε values or animations of the clustering process, can greatly enhance the understanding and application of DBSCAN in real-world scenarios. Whether dealing with urban planning, environmental monitoring, or dynamic population studies, DBSCAN offers a robust framework for insightful data analysis.
 
 Please see the visualization below written in Javascript, based on Naftali Harris' [original implementation](https://www.naftaliharris.com/blog/visualizing-dbscan-clustering/):
 
 ```{=html}
-<p>
+<article>
 <script src="https://jesse-anderson.github.io/DBSCANProj/tryDB/d3.v7.min.js"></script>
 <script src="https://jesse-anderson.github.io/DBSCANProj/tryDB/choose.js"></script>
 <script src="https://jesse-anderson.github.io/DBSCANProj/tryDB/generate.js"></script>
@@ -74,5 +74,5 @@ Please see the visualization below written in Javascript, based on Naftali Harri
 <div id="svg_area" style="margin-top: 40px;"></div>
  <div id="button_area" style="margin-top: 10px;"></div>
 <script>restart();</script>
-</p>
+</article>
 ```
