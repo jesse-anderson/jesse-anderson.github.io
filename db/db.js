@@ -337,4 +337,5 @@ const mediumUserName = "Jesse-Anderson";
 
 export const URLs = {
   mediumURL: `https://api.rss2json.com/v1/api.json?rss_url=https://medium.com/feed/@${mediumUserName}`,
+  quartoURL: 'https://jesse-anderson.github.io/Blog/_site/index.html'
 };

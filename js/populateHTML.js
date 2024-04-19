@@ -28,11 +28,52 @@ async function fetchBlogsFromMedium(url) {
   try {
     const response = await fetch(url);
     const { items } = await response.json();
-    populateBlogs(items, "blogs");
+    populateBlogsMedium(items, "blogs");
   } catch (error) {
     throw new Error(
       `Error in fetching the blogs from Medium profile: ${error}`
     );
+  }
+}
+
+
+async function fetchBlogsFromQuarto(url) {
+  try {
+    // Fetch the HTML content of the blog page
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const html = await response.text();
+
+    // Create a new DOM parser
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, "text/html");
+
+    // Select all blog posts
+    const blogPosts = doc.querySelectorAll('.quarto-post');
+    const items = Array.from(blogPosts).map(post => {
+      const title = post.querySelector('h3.listing-title a').textContent;
+      const link =   post.querySelector('h3.listing-title a').href;
+      const thumbnail = post.querySelector('div.thumbnail img').src;
+      const description = post.querySelector('div.listing-description a').textContent;
+      const categories = Array.from(post.querySelectorAll('.listing-category')).map(category => category.textContent);
+
+      // Construct an object with the structure expected by populateBlogs
+      return {
+        title,
+        link,
+        thumbnail,
+        content: description,
+        categories
+      };
+    });
+
+    // Populate blogs with the structured data
+    populateBlogs(items, "blogs");
+  } catch (error) {
+    console.error('Failed to fetch the blog posts:', error);
+    throw new Error(`Error in fetching the blog posts: ${error}`);
   }
 }
 
@@ -181,7 +222,7 @@ function populateProjects(items, id) {
  * @returns {undefined}
  */
 
-function populateBlogs(items, id) {
+function populateBlogsMedium(items, id) {
   const projectdesign = document.getElementById(id);
   const count = 3;
 
@@ -246,6 +287,85 @@ function populateBlogs(items, id) {
     }
   }
 }
+
+/**
+ * Creates and populates a list of blog posts with specified properties.
+ * Assumes each item in 'items' contains:
+ * - title: String
+ * - link: URL String
+ * - thumbnail: URL String for an image
+ * - content: HTML content as String
+ * - categories: Array of category names
+ *
+ * @param {Array} items - An array of objects, each representing a blog post.
+ * @param {string} id - The ID of the parent element where the list of posts will be appended.
+ */
+function populateBlogs(items, id) {
+  const projectdesign = document.getElementById(id);
+
+  items.slice(0, 3).forEach(item => {
+    const h4 = document.createElement("h4");
+    h4.className = "project-heading";
+    h4.textContent = item.title;
+
+    const a = document.createElement("a");
+    a.href = item.link;
+    a.target = "_blank";
+    a.appendChild(h4);
+
+    const img = document.createElement("img");
+    img.src = item.thumbnail;
+    img.className = "img-fluid";
+    img.alt = item.title;
+
+    const divResumeContentLeft = document.createElement("div");
+    divResumeContentLeft.className = "resume-content";
+    divResumeContentLeft.id = "left-div";
+    divResumeContentLeft.appendChild(img);
+
+    const divResumeContentRight = document.createElement("div");
+    divResumeContentRight.className = "resume-content";
+    divResumeContentRight.id = "right-div";
+
+    const p = document.createElement("p");
+    p.className = "project-description";
+    p.innerHTML = item.content; // Directly use the HTML content if well-formed and trusted
+
+    const divSpan = document.createElement("div");
+    item.categories.forEach(category => {
+      const span = document.createElement("span");
+      span.className = "badge badge-secondary";
+      span.textContent = category;
+      divSpan.appendChild(span);
+    });
+
+    const divSubHeading = document.createElement("div");
+    divSubHeading.className = "sub-heading";
+    divSubHeading.appendChild(p);
+    divSubHeading.appendChild(divSpan);
+    divResumeContentRight.appendChild(divSubHeading);
+
+    const divResumeItem = document.createElement("div");
+    divResumeItem.className = "resume-item";
+    divResumeItem.appendChild(divResumeContentLeft);
+    divResumeItem.appendChild(divResumeContentRight);
+    a.appendChild(divResumeItem);
+
+    const divProjectCard = document.createElement("div");
+    divProjectCard.className = "project-card";
+    divProjectCard.appendChild(a);
+
+    const li = document.createElement("li");
+    li.appendChild(divProjectCard);
+    projectdesign.appendChild(li);
+
+    // Optionally add a horizontal rule between items
+    if (items.indexOf(item) !== items.length - 1) {
+      projectdesign.appendChild(document.createElement("hr"));
+    }
+  });
+}
+
 
 /**
  * Populate the HTML timeline with items.
@@ -408,7 +528,8 @@ populateBio(bio, "bio");
 
 populateSkills(skills, "skills");
 
-fetchBlogsFromMedium(mediumURL);
+fetchBlogsFromQuarto(URLs.quartoURL);
+// populateBlogsMedium(mediumURL)
 
 populateProjects(cheProjects, "che-projects");
 populateProjects(mlProjects, "ml-projects");
