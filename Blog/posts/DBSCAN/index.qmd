@@ -22,7 +22,7 @@ The effectiveness of DBSCAN hinges on two primary parameters:
 
 -   **Minimum Points (MinPts):** This parameter specifies the minimum number of points required to form a dense region. A point is classified as a core point if there are at least MinPts within its ε-neighborhood, including itself. A "noise" point or non-clustered point may exist if the point does not have enough points in its ε-neighborhood to meet the MinPts criterion. Specifically, if the number of points within ε distance of a point is less than MinPts, that point is labeled as "noise" or an outlier. This classification as noise means the point does not belong to any cluster. It is important to note that noise points are not included in any cluster, but they are crucial for identifying and isolating outliers in the dataset.
 
-    ![Core, Border, and Noise Points with Epsilon = 3.0, minPts = 4, Samples = 300, and 4 distinct centers.](BorderPoints.png) Core, Border, and Noise Points with Epsilon = 3.0, minPts = 4, Samples = 300, and 4 distinct centers. Code [here](borderpoints.py)
+    [![Core, Border, and Noise Points with Epsilon = 3.0, minPts = 4, Samples = 300, and 4 distinct centers.](BorderPoints.png)](BorderPoints.png) Core, Border, and Noise Points with Epsilon = 3.0, minPts = 4, Samples = 300, and 4 distinct centers. Code [here](borderpoints.py)
 
 ## Adjusting DBSCAN Parameters for Spatiotemporal Data
 
@@ -44,7 +44,9 @@ Spatiotemporal data, such as geographic locations recorded over time, often exhi
 
 -   **Lower MinPts**: A lower MinPts value makes the algorithm more sensitive to noise, and can lead to detecting more clusters. This setting is beneficial when the dataset contains many small but meaningful clusters that you do not want to miss.
 
-![K-Nearest Neighbor Graph, 2000 points, 4 clusters. Code here](Elbow-Graph.png){width="300%"}{fig-alt="K-Nearest Neighbor Graph, 2000 points, 4 clusters" fig-align="center"}
+[![](Elbow-Graph.png)](Elbow-Graph.png)
+
+K-Nearest Neighbor Graph, 2000 points, 4 clusters. Code [here](elbow.py)
 
 ## **Practical Tips for Using DBSCAN in Spatiotemporal Analysis**
 

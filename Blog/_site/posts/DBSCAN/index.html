@@ -169,7 +169,7 @@ ul.task-list li input[type="checkbox"] {
 <ul>
 <li><p><strong>Epsilon (ε):</strong> This parameter defines the radius of a neighborhood around a given point. Points within this radius are considered directly reachable from the initial point and potentially part of the same cluster. You can think of epsilon as a circle around which a point is “searched” to find the parameter MinPts. In optimizing the value of this parameter and avoiding repeat trials try to product a k-distance elbow plot and finding the “elbow” of the plot(discussed below).</p></li>
 <li><p><strong>Minimum Points (MinPts):</strong> This parameter specifies the minimum number of points required to form a dense region. A point is classified as a core point if there are at least MinPts within its ε-neighborhood, including itself. A “noise” point or non-clustered point may exist if the point does not have enough points in its ε-neighborhood to meet the MinPts criterion. Specifically, if the number of points within ε distance of a point is less than MinPts, that point is labeled as “noise” or an outlier. This classification as noise means the point does not belong to any cluster. It is important to note that noise points are not included in any cluster, but they are crucial for identifying and isolating outliers in the dataset.</p>
-<p><img src="BorderPoints.png" class="img-fluid" alt="Core, Border, and Noise Points with Epsilon = 3.0, minPts = 4, Samples = 300, and 4 distinct centers."> Core, Border, and Noise Points with Epsilon = 3.0, minPts = 4, Samples = 300, and 4 distinct centers. Code <a href="borderpoints.py">here</a></p></li>
+<p><a href="BorderPoints.png"><img src="BorderPoints.png" class="img-fluid" alt="Core, Border, and Noise Points with Epsilon = 3.0, minPts = 4, Samples = 300, and 4 distinct centers."></a> Core, Border, and Noise Points with Epsilon = 3.0, minPts = 4, Samples = 300, and 4 distinct centers. Code <a href="borderpoints.py">here</a></p></li>
 </ul>
 </section>
 <section id="adjusting-dbscan-parameters-for-spatiotemporal-data" class="level2">
@@ -187,7 +187,8 @@ ul.task-list li input[type="checkbox"] {
 <li><p><strong>Higher MinPts</strong>: Increasing the MinPts value generally results in a greater focus on more significant clusters, thus reducing the noise sensitivity. This setting can be useful in datasets where noise points are close to actual clusters, helping to distinguish between them more clearly.</p></li>
 <li><p><strong>Lower MinPts</strong>: A lower MinPts value makes the algorithm more sensitive to noise, and can lead to detecting more clusters. This setting is beneficial when the dataset contains many small but meaningful clusters that you do not want to miss.</p></li>
 </ul>
-<p><img src="Elbow-Graph.png" class="img-fluid" style="width:300.0%" alt="K-Nearest Neighbor Graph, 2000 points, 4 clusters. Code here">{fig-alt=“K-Nearest Neighbor Graph, 2000 points, 4 clusters” fig-align=“center”}</p>
+<p><a href="Elbow-Graph.png"><img src="Elbow-Graph.png" class="img-fluid"></a></p>
+<p>K-Nearest Neighbor Graph, 2000 points, 4 clusters. Code <a href="elbow.py">here</a></p>
 </section>
 <section id="practical-tips-for-using-dbscan-in-spatiotemporal-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="practical-tips-for-using-dbscan-in-spatiotemporal-analysis"><strong>Practical Tips for Using DBSCAN in Spatiotemporal Analysis</strong></h2>
