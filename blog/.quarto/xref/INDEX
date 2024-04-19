@@ -1,5 +1,14 @@
 {
+  "about.qmd": {
+    "about.html": "77d5052d"
+  },
   "index.qmd": {
-    "index.html": "7d274b38"
+    "index.html": "e2bc6652"
+  },
+  "posts/post-with-code/index.qmd": {
+    "index.html": "6cd6eb1b"
+  },
+  "posts/welcome/index.qmd": {
+    "index.html": "63005c48"
   }
 }
