@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Jesse Anderson">
+<meta name="dcterms.date" content="2024-04-19">
 
-<title>Jesse Anderson’s Blog - A blog to dump random ideas</title>
+<title>Jesse Anderson’s Blog - DBSCAN Intro</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -23,24 +25,22 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="site_libs/quarto-html/quarto.js"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -68,77 +68,19 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
 
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
 
-    const options = {
-      valueNames: ['listing-date','listing-title','listing-author','listing-image','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-date","listing-title","listing-author","listing-image","listing-description","listing-categories"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
-
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
-
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../../styles.css">
 </head>
 
-<body class="nav-fixed">
+<body class="nav-fixed fullcontent">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top quarto-banner">
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">Jesse Anderson’s Blog</span>
     </a>
   </div>
@@ -149,7 +91,7 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./about.html"> 
+    <a class="nav-link" href="../../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
   <li class="nav-item compact">
@@ -172,155 +114,117 @@ window.Quarto = {
 <!-- content -->
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
-    <div class="quarto-title column-page-left">
-      <h1 class="title">A blog to dump random ideas</h1>
-                      </div>
+    <div class="quarto-title column-body">
+      <h1 class="title">DBSCAN Intro</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">ML</div>
+                <div class="quarto-category">Clustering</div>
+                <div class="quarto-category">DBSCAN</div>
+              </div>
+                  </div>
   </div>
     
   
-  <div class="quarto-title-meta column-page-left">
+  <div class="quarto-title-meta">
 
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Jesse Anderson </p>
+            </div>
+    </div>
       
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">April 19, 2024</p>
+      </div>
+    </div>
     
       
     </div>
     
   
-  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(3)</span></div><div class="category" data-category="Clustering">Clustering <span class="quarto-category-count">(1)</span></div><div class="category" data-category="DBSCAN">DBSCAN <span class="quarto-category-count">(1)</span></div><div class="category" data-category="ML">ML <span class="quarto-category-count">(1)</span></div><div class="category" data-category="analysis">analysis <span class="quarto-category-count">(1)</span></div><div class="category" data-category="code">code <span class="quarto-category-count">(1)</span></div><div class="category" data-category="news">news <span class="quarto-category-count">(2)</span></div></div></div>
+    
 <!-- main -->
-<main class="content quarto-banner-title-block column-page-left" id="quarto-document-content">
+<main class="content quarto-banner-title-block" id="quarto-document-content">
 
 
 
 
 
+<section id="understanding-dbscan-parameters-and-adjustments-for-temporospatial-data-clustering" class="level1">
+<h1><strong>Understanding DBSCAN: Parameters and Adjustments for Temporospatial Data Clustering</strong></h1>
+<p>Density-Based Spatial Clustering of Applications with Noise (DBSCAN) is a popular clustering algorithm notable for its proficiency in identifying clusters of varying shapes and sizes in large spatial datasets. This algorithm is especially useful in the field of temporospatial data analysis, where the goal is often to group similar data points that are in close proximity over time and space. In this blog post, we’ll delve into the mechanics of DBSCAN, discuss its critical parameters, and provide guidance on adjusting these parameters to achieve optimal clustering results for temporospatial data.</p>
+<section id="what-is-dbscan" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-dbscan">What is DBSCAN?</h2>
+<p>DBSCAN is a non-parametric clustering algorithm that focuses on the concept of density. Unlike centroid-based algorithms like K-means, DBSCAN categorizes points into clusters based on their density connectivity, thereby capably handling anomalies or noise. This makes it an excellent choice for data with irregular patterns and an undefined number of clusters. Note that DBSCAN is a great multi-purpose clustering algorithm, but it does not handle clusters with differing densities quite as well as OPTICS (to be blogged about later…). While DBSCAN requires a single set of parameters (ε and MinPts) across the entire dataset, which can be limiting in complex datasets with varying densities, OPTICS (Ordering Points To Identify the Clustering Structure) addresses this by creating a reachability plot that adapts to density variations, allowing for the identification of clusters based on varying density thresholds. This feature makes OPTICS particularly useful for more heterogeneous datasets where cluster density isn’t uniform.</p>
+</section>
+<section id="key-parameters-of-dbscan" class="level2">
+<h2 class="anchored" data-anchor-id="key-parameters-of-dbscan">Key Parameters of DBSCAN</h2>
+<p>The effectiveness of DBSCAN hinges on two primary parameters:</p>
+<ul>
+<li><p><strong>Epsilon (ε):</strong> This parameter defines the radius of a neighborhood around a given point. Points within this radius are considered directly reachable from the initial point and potentially part of the same cluster. You can think of epsilon as a circle around which a point is “searched” to find the parameter MinPts. In optimizing the value of this parameter and avoiding repeat trials try to product a k-distance elbow plot and finding the “elbow” of the plot(discussed below).</p></li>
+<li><p><strong>Minimum Points (MinPts):</strong> This parameter specifies the minimum number of points required to form a dense region. A point is classified as a core point if there are at least MinPts within its ε-neighborhood, including itself. A “noise” point or non-clustered point may exist if the point does not have enough points in its ε-neighborhood to meet the MinPts criterion. Specifically, if the number of points within ε distance of a point is less than MinPts, that point is labeled as “noise” or an outlier. This classification as noise means the point does not belong to any cluster. It is important to note that noise points are not included in any cluster, but they are crucial for identifying and isolating outliers in the dataset.</p>
+<p><img src="BorderPoints.png" class="img-fluid" alt="Core, Border, and Noise Points with Epsilon = 3.0, minPts = 4, Samples = 300, and 4 distinct centers."> Core, Border, and Noise Points with Epsilon = 3.0, minPts = 4, Samples = 300, and 4 distinct centers. Code <a href="borderpoints.py">here</a></p></li>
+</ul>
+</section>
+<section id="adjusting-dbscan-parameters-for-temporospatial-data" class="level2">
+<h2 class="anchored" data-anchor-id="adjusting-dbscan-parameters-for-temporospatial-data">Adjusting DBSCAN Parameters for Temporospatial Data</h2>
+<p>Temporospatial data, such as geographic locations recorded over time, often exhibits complexities like varying density and noise. The correct setting of DBSCAN’s ε and MinPts parameters is crucial for effective clustering:</p>
+<p><strong>Choosing the Right Epsilon (ε)</strong></p>
+<ul>
+<li><p><strong>Spatial Component:</strong> The choice of ε can depend on the scale and resolution of your spatial data. For geographic data, ε might be set based on meaningful physical distances (e.g., meters or kilometers).</p></li>
+<li><p><strong>Temporal Component:</strong> If time is a factor, ε should also consider temporal proximity. This could mean setting ε to encapsulate points that occur within a certain time frame (e.g., seconds, minutes). One practical method to determine an appropriate ε value is to plot a k-distance graph, where you plot the distance to the k-th nearest neighbor for each point, sorted by distance. The point of maximum curvature in this plot often gives a good indication of a suitable ε. I particularly enjoy MATLAB’s documentation <a href="https://www.mathworks.com/help/radar/ref/clusterdbscan.clusterdbscan.estimateepsilon.html">here</a>.</p></li>
+</ul>
+<p><strong>Setting Minimum Points (MinPts)</strong></p>
+<ul>
+<li><p><strong>Data Dimensionality:</strong> A general rule of thumb is to set MinPts at least one greater than the dimensionality of the dataset. For temporospatial data, if you consider time as an additional dimension, this might increase MinPts accordingly.</p></li>
+<li><p><strong>Density Expectation:</strong> In areas where temporal density (i.e., frequent data points over short periods) is high, a larger MinPts may be necessary to differentiate between actual clusters and random fluctuations.</p></li>
+<li><p><strong>Higher MinPts</strong>: Increasing the MinPts value generally results in a greater focus on more significant clusters, thus reducing the noise sensitivity. This setting can be useful in datasets where noise points are close to actual clusters, helping to distinguish between them more clearly.</p></li>
+<li><p><strong>Lower MinPts</strong>: A lower MinPts value makes the algorithm more sensitive to noise, and can lead to detecting more clusters. This setting is beneficial when the dataset contains many small but meaningful clusters that you do not want to miss.</p></li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="Elbow-Graph.png" class="img-fluid figure-img"></p>
+<figcaption>K-Nearest Neighbor Graph, 2000 points, 4 clusters. Code <a href="elbow.py">here</a></figcaption>
+</figure>
+</div>
+</section>
+<section id="practical-tips-for-using-dbscan-in-temporospatial-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="practical-tips-for-using-dbscan-in-temporospatial-analysis"><strong>Practical Tips for Using DBSCAN in Temporospatial Analysis</strong></h2>
+<ul>
+<li><p><strong>Scale and Normalize</strong>:Ensure that spatial and temporal measurements are on comparable scales to avoid one type of distance overpowering the other.</p></li>
+<li><p><strong>Experiment with Parameters:</strong> Due to the nature of DBSCAN and the diversity of temporospatial data, iterative testing and adjustment of parameters are often required.</p></li>
+<li><p><strong>Visualize Results:</strong> Use visual tools to examine the clustering outcomes. This can help in fine-tuning parameters and understanding the spatial-temporal distribution of the data.</p></li>
+</ul>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>DBSCAN stands out for its ability to handle anomalies and discover clusters of arbitrary shapes, making it ideal for analyzing complex temporospatial datasets. By carefully selecting the parameters ε and MinPts, you can tailor DBSCAN effectively to your specific data characteristics, enhancing both the accuracy and relevancy of your clustering results.</p>
+<p>Incorporating visual aids, like plots of ε values or animations of the clustering process, can greatly enhance the understanding and application of DBSCAN in real-world scenarios. Whether dealing with urban planning, environmental monitoring, or dynamic population studies, DBSCAN offers a robust framework for insightful data analysis.</p>
+<p>Please see the visualization below written in Javascript, based on Naftali Harris’ <a href="https://www.naftaliharris.com/blog/visualizing-dbscan-clustering/">original implementation</a>:</p>
+<p>
+<script src="https://jesse-anderson.github.io/DBSCANProj/tryDB/d3.v7.min.js"></script>
+<script src="https://jesse-anderson.github.io/DBSCANProj/tryDB/choose.js"></script>
+<script src="https://jesse-anderson.github.io/DBSCANProj/tryDB/generate.js"></script>
+<script src="https://jesse-anderson.github.io/DBSCANProj/tryDB/config.js"></script>
+<script src="https://jesse-anderson.github.io/DBSCANProj/tryDB/dbscan.js"></script>
+<script src="https://jesse-anderson.github.io/DBSCANProj/tryDB/mainDBSCAN.js"></script>
+        
+</p><div id="svg_area" style="margin-top: 40px;"></div>
+ <div id="button_area" style="margin-top: 10px;"></div>
+<script>restart();</script>
+<p></p>
 
 
+</section>
+</section>
 
-
-<div class="quarto-listing quarto-listing-container-default" id="listing-listing">
-<div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-categories="ML,Clustering,DBSCAN" data-listing-date-sort="1713502800000" data-listing-file-modified-sort="1713563776478" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1054">
-<div class="thumbnail">
-<p><a href="./posts/DBSCAN/index.html" class="no-external"></a></p><a href="./posts/DBSCAN/index.html" class="no-external">
-<p><img src="./posts/DBSCAN/image.jpg" class="thumbnail-image"></p>
-</a><p><a href="./posts/DBSCAN/index.html" class="no-external"></a></p>
-</div>
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/DBSCAN/index.html" class="no-external">DBSCAN Intro</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./posts/DBSCAN/index.html" class="no-external"></a>
-</div>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('ML'); return false;">
-ML
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('Clustering'); return false;">
-Clustering
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('DBSCAN'); return false;">
-DBSCAN
-</div>
-</div>
-<div class="listing-description">
-<a href="./posts/DBSCAN/index.html" class="no-external">Density-Based Spatial Clustering of Applications with Noise (DBSCAN) is a popular clustering algorithm notable for its proficiency in identifying clusters of varying shapes…</a>
-</div>
-</div>
-<div class="metadata">
-<a href="./posts/DBSCAN/index.html" class="no-external">
-<div class="listing-date">
-Apr 19, 2024
-</div>
-<div class="listing-author">
-Jesse Anderson
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="1" data-categories="news,code,analysis" data-listing-date-sort="1713502800000" data-listing-file-modified-sort="1713509751277" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="7">
-<div class="thumbnail">
-<p><a href="./posts/post-with-code/index.html" class="no-external"></a></p><a href="./posts/post-with-code/index.html" class="no-external">
-<p><img src="./posts/post-with-code/image.jpg" class="thumbnail-image"></p>
-</a><p><a href="./posts/post-with-code/index.html" class="no-external"></a></p>
-</div>
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/post-with-code/index.html" class="no-external">Post With Code</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./posts/post-with-code/index.html" class="no-external"></a>
-</div>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('news'); return false;">
-news
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('code'); return false;">
-code
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('analysis'); return false;">
-analysis
-</div>
-</div>
-<div class="listing-description">
-<a href="./posts/post-with-code/index.html" class="no-external">This is a post with executable code.</a>
-</div>
-</div>
-<div class="metadata">
-<a href="./posts/post-with-code/index.html" class="no-external">
-<div class="listing-date">
-Apr 19, 2024
-</div>
-<div class="listing-author">
-Harlow Malloc
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="2" data-categories="news" data-listing-date-sort="1713243600000" data-listing-file-modified-sort="1713509751274" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="32">
-<div class="thumbnail">
-<p><a href="./posts/welcome/index.html" class="no-external"></a></p><a href="./posts/welcome/index.html" class="no-external">
-<p class="card-img-top"><img src="posts\welcome\thumbnail.jpg"  class="thumbnail-image card-img"/></p>
-</a><p><a href="./posts/welcome/index.html" class="no-external"></a></p>
-</div>
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/welcome/index.html" class="no-external">Welcome To My Blog</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./posts/welcome/index.html" class="no-external"></a>
-</div>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('news'); return false;">
-news
-</div>
-</div>
-<div class="listing-description">
-<a href="./posts/welcome/index.html" class="no-external">This is the first post in a Quarto blog. Welcome!</a>
-</div>
-</div>
-<div class="metadata">
-<a href="./posts/welcome/index.html" class="no-external">
-<div class="listing-date">
-Apr 16, 2024
-</div>
-<div class="listing-author">
-Tristan O’Malley
-</div>
-</a>
-</div>
-</div>
-</div>
-<div class="listing-no-matching d-none">
-No matching items
-</div>
-</div></main> <!-- /main -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {

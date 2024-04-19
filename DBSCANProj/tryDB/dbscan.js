@@ -54,6 +54,7 @@ function eps_ball(z, keep) {
         .attr("opacity", 0.0)
         .remove();
     }
+    
 }
 
 function dbscan_iter(data) {
@@ -73,6 +74,8 @@ function dbscan_iter(data) {
             d3.select("#minPoints_select").remove();
             d3.select('#speed_select').remove();
             d3.select("#pause").remove();
+            d3.select('#button_area').select('.restart_button').style("display", "");
+            d3.select('#button_area').select('.restart_button').style("display", "block");
             return;
         }
         dbscan_state.index = index + 1;
@@ -111,6 +114,7 @@ function dbscan_iter(data) {
             eps_ball(z, false);
         }
     }
+    
 }
 
 function update_eps(value) {
@@ -166,4 +170,5 @@ function draw_eps_balls() {
         balls.attr("r", x(eps) - x(0))
         .style("fill", fill_color);
     }
+    
 }

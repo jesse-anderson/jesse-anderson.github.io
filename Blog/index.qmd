@@ -1,5 +1,5 @@
 ---
-title: "Blog"
+title: "A blog to dump random ideas"
 listing:
   contents: posts
   sort: "date desc"

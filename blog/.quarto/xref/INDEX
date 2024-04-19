@@ -10,5 +10,11 @@
   },
   "posts/welcome/index.qmd": {
     "index.html": "63005c48"
+  },
+  "posts/DBSCAN/index.qmd": {
+    "index.html": "9c16e669"
+  },
+  "readme.md": {
+    "readme.html": "da192b1c"
   }
 }

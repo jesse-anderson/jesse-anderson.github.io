@@ -10,6 +10,9 @@ function twodecs(x) {
 }
 
 function go() {
+    // Correct way to remove the button using D3.js
+    d3.select('#button_area').select('.restart_button').style("display", "none");
+
     dbscan_state.phase = "inprogress";
     d3.selectAll(".choose_eps_ball").remove()
     
@@ -42,10 +45,14 @@ function go() {
     d3.select("#eps_select").remove();
     d3.select("#minPoints_select").remove();
     d3.select('#speed_select').remove();
+    
 }
+
+
 
 function restart() {
     // Reset global variables
+
     data = [];
     dbscan_state = {eps: 1.0, minPoints: 4, cluster: 0, index: 0, neigh: [], phase: "choose"};
     algo_delay = 125; //default 125
@@ -138,5 +145,6 @@ function restart() {
 
         // Call the draw_eps_balls function after a delay
         setTimeout(draw_eps_balls, 500);
+    
     });
 }
