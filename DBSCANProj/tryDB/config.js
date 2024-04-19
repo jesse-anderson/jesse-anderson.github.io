@@ -42,7 +42,9 @@ function setup() {
     }
 
     // Remove any existing SVG element
-    d3.select("svg").remove();
+    if (d3.select("svg").node()) {
+        d3.select("svg").remove();
+    }
 
     // Initialize the SVG element
      svg = d3.select("#svg_area")

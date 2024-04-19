@@ -59,6 +59,9 @@ function restart() {
     clearInterval(process);
     process = null;
     
+    if (d3.select("svg").node()) {
+        d3.select("svg").remove();
+    }
     // Call the setup function to initialize the SVG and buttons
     setup();
 
