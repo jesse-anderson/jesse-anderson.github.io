@@ -51,23 +51,35 @@ async function fetchBlogsFromQuarto(url) {
     const doc = parser.parseFromString(html, "text/html");
 
     // Select all blog posts
-    const blogPosts = doc.querySelectorAll('.quarto-post');
-    const items = Array.from(blogPosts).map(post => {
-      const title = post.querySelector('h3.listing-title a').textContent;
-      const link =   post.querySelector('h3.listing-title a').href;
-      const thumbnail = post.querySelector('div.thumbnail img').src;
-      const description = post.querySelector('div.listing-description a').textContent;
-      const categories = Array.from(post.querySelectorAll('.listing-category')).map(category => category.textContent);
+    const baseURL = 'https://jesse-anderson.github.io/Blog/_site/';
 
-      // Construct an object with the structure expected by populateBlogs
-      return {
-        title,
-        link,
-        thumbnail,
-        content: description,
-        categories
-      };
-    });
+  const blogPosts = doc.querySelectorAll('.quarto-post');
+  const items = Array.from(blogPosts).map(post => {
+    const titleElement = post.querySelector('h3.listing-title a');
+    const title = titleElement.textContent;
+    const link = baseURL + titleElement.getAttribute('href').replace(/^\.\//, '');  // Removing './' if present and prepending base URL
+
+  const imgElement = post.querySelector('div.thumbnail img');
+  let thumbnail = imgElement ? imgElement.getAttribute('src') : '';
+
+  // Normalize the thumbnail URL and prepend base URL
+  if (thumbnail) {
+    thumbnail = baseURL + thumbnail.replace(/^\.\//, '').replace(/\\/g, '/');  // Fixing slashes and removing './' if present
+  }
+
+  const descriptionElement = post.querySelector('div.listing-description a');
+  const description = descriptionElement ? descriptionElement.textContent : '';
+
+  const categories = Array.from(post.querySelectorAll('.listing-category')).map(category => category.textContent);
+
+  return {
+    title,
+    link,
+    thumbnail,
+    content: description,
+    categories
+  };
+});
 
     // Populate blogs with the structured data
     populateBlogs(items, "blogs");
