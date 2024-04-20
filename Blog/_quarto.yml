@@ -7,6 +7,9 @@ website:
   navbar:
     right:
       - about.qmd
+      - icon: Folder symlink fill
+        text: Portfolio
+        href: https://jesse-anderson.github.io
       - icon: github
         href: https://github.com/jesse-anderson/
       - icon: linkedin

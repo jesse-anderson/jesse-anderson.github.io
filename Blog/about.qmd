@@ -10,7 +10,16 @@ about:
     - icon: github
       text: Github
       href: https://github.com/jesse-anderson/
-
+    - icon: Folder symlink fill
+      text: Portfolio
+      href: https://jesse-anderson.github.io
 ---
 
-About this blog
+I launched this blog in April of 2024 as part of a unique project aimed at creating a space for my thoughts and analyses, free from the constraints and subscriptions of platforms like Medium, and distinct from the algorithm-driven feeds of LinkedIn. While there's certainly more content on the way, I hope this introduction serves as a more engaging placeholder than a simple "This is my blog."
+
+
+
+
+
+
+
