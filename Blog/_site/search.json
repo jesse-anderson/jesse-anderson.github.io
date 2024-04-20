@@ -7,27 +7,6 @@
     "text": "General readme.\n\n\nTo push a new blog or rather statically generate one.\n\n\ncd this folder in cmd\n\n\nquarto render"
   },
   {
-    "objectID": "posts/post-with-code/index.html",
-    "href": "posts/post-with-code/index.html",
-    "title": "Post With Code",
-    "section": "",
-    "text": "This is a post with executable code."
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "A blog to dump random ideas",
-    "section": "",
-    "text": "DBSCAN Intro\n\n\n\n\n\n\nML\n\n\nClustering\n\n\nDBSCAN\n\n\n\n\n\n\n\n\n\nApr 19, 2024\n\n\nJesse Anderson\n\n\n\n\n\n\n\n\n\n\n\n\nPost With Code\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nApr 19, 2024\n\n\nHarlow Malloc\n\n\n\n\n\n\n\n\n\n\n\n\nWelcome To My Blog\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\nApr 16, 2024\n\n\nJesse Anderson\n\n\n\n\n\n\nNo matching items"
-  },
-  {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
-    "section": "",
-    "text": "About this blog"
-  },
-  {
     "objectID": "posts/DBSCAN/index.html",
     "href": "posts/DBSCAN/index.html",
     "title": "DBSCAN Intro",
@@ -68,6 +47,20 @@
     "title": "DBSCAN Intro",
     "section": "",
     "text": "DBSCAN stands out for its ability to handle anomalies and discover clusters of arbitrary shapes, making it ideal for analyzing complex spatiotemporal datasets. By carefully selecting the parameters ε and MinPts, you can tailor DBSCAN effectively to your specific data characteristics, enhancing both the accuracy and relevancy of your clustering results.\nIncorporating visual aids, like plots of ε values or animations of the clustering process, can greatly enhance the understanding and application of DBSCAN in real-world scenarios. Whether dealing with urban planning, environmental monitoring, or dynamic population studies, DBSCAN offers a robust framework for insightful data analysis.\nPlease see the visualization below written in Javascript, based on Naftali Harris’ original implementation:"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this blog"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "A blog to dump random ideas",
+    "section": "",
+    "text": "DBSCAN Intro\n\n\n\n\n\n\nML\n\n\nClustering\n\n\nDBSCAN\n\n\n\n\n\n\n\n\n\nApr 19, 2024\n\n\nJesse Anderson\n\n\n\n\n\n\n\n\n\n\n\n\nWelcome To My Blog\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\nApr 16, 2024\n\n\nJesse Anderson\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "posts/welcome/index.html",
