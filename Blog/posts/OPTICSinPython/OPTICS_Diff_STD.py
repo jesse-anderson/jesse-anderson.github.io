@@ -10,7 +10,7 @@ from scipy.spatial import ConvexHull
 # Load example data
 n_samples = 1000
 min_samples = 15
-data, _ = datasets.make_blobs(n_samples=n_samples, centers=4, random_state=42, cluster_std=2.0)
+data, _ = datasets.make_blobs(n_samples=n_samples, centers=5, random_state=42, cluster_std=[0.5,1,2,3,4])
 
 # Plot the original data
 plt.figure(figsize=(8, 6))

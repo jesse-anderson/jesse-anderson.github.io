@@ -16,5 +16,14 @@
   },
   "readme.md": {
     "readme.html": "da192b1c"
+  },
+  "posts/OPTICS/OPTICS.qmd": {
+    "OPTICS.html": "cacd25d3"
+  },
+  "posts/OPTICSinPython/OPTICS.qmd": {
+    "OPTICS.html": "64ca3707"
+  },
+  "posts/OPTICSWriteup/index.qmd": {
+    "index.html": "3c66291e"
   }
 }

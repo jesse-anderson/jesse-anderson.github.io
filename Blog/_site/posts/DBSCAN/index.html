@@ -68,9 +68,22 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-5CSPYCMY55"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-5CSPYCMY55', { 'anonymize_ip': true});
+</script>
 
 
 <link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="Jesse Anderson’s Blog - DBSCAN Intro">
+<meta property="og:description" content="">
+<meta property="og:image" content="image.jpg">
+<meta property="og:site_name" content="Jesse Anderson's Blog">
 </head>
 
 <body class="nav-fixed fullcontent">
@@ -226,6 +239,197 @@ ul.task-list li input[type="checkbox"] {
 </section>
 
 </main> <!-- /main -->
+<!--  General footer to put at bottom of page.   -->
+
+
+
+<footer>
+
+    <p>Copyright © <span id="copyright-year"></span> Jesse Anderson</p>
+
+    <!-- Other footer details -->
+
+  </footer>
+
+<div>
+
+    <hr>
+
+    <h3> Support my work with a Coffee/Monster </h3>
+
+
+
+<script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="jesseanderson" data-color="#06436e" data-emoji="☕" data-font="Lato" data-text="Support me" data-outline-color="#ffffff" data-font-color="#ffffff" data-coffee-color="#FFDD00" data-height="40px"></script>
+
+
+
+<!-- Footer content -->
+
+
+
+  
+
+  <!-- Share Buttons -->
+
+  <div id="share-buttons">
+
+      <h3>Share</h3>
+
+  
+
+      <!-- Twitter Share Button, dynamically setting the URL -->
+
+      <a href="#" class="share-button twitter-share-button" data-size="large" data-hashtags="#computerscience" data-show-count="false">Tweet</a>
+
+      <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+  
+
+      <!-- Facebook SDK with Dynamic Nonce -->
+
+      <div id="fb-root"></div>
+
+      <script id="facebook-jssdk" async="" defer="" crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&amp;version=v10.0"></script>
+
+      <div class="fb-share-button share-button" data-href="" data-layout="button_count">
+
+      </div>
+
+  
+
+      <!-- LinkedIn Share Button -->
+
+    <!-- LinkedIn Share Button -->
+
+    <script src="https://platform.linkedin.com/in.js" type="text/javascript">lang: en_US</script>
+
+    <script type="IN/Share" data-url=""></script>
+
+    </div>
+
+  </div>
+
+  
+
+  <script>
+
+    // Function to generate a random nonce
+
+    function generateNonce(length = 16) {
+
+      const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+      let text = "";
+
+      for (let i = 0; i < length; i++) {
+
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+      }
+
+      return text;
+
+    }
+
+  
+
+    // Set the nonce attribute for the Facebook SDK script and dynamically set URLs
+
+    document.addEventListener('DOMContentLoaded', function() {
+
+      const nonce = generateNonce();
+
+      const facebookSDKScript = document.getElementById('facebook-jssdk');
+
+      facebookSDKScript.setAttribute('nonce', nonce);
+
+      var elems = document.querySelectorAll('script[type="IN/Share"]');
+
+        for (var i = 0; i < elems.length; i++) {
+
+            elems[i].setAttribute('data-url', window.location.href);
+
+        }
+
+      // Set URLs dynamically for Facebook and Twitter
+
+      const currentUrl = window.location.href;
+
+      document.querySelector('.fb-share-button').setAttribute('data-href', currentUrl);
+
+      document.querySelectorAll('script[type="IN/Share"]')[0].setAttribute('data-url', currentUrl);
+
+      document.querySelector('.twitter-share-button').setAttribute('href', 'https://twitter.com/share?url=' + encodeURIComponent(currentUrl) + '&hashtags=rstats');
+
+      // Dynamically set the current year in the copyright footer
+
+      document.getElementById('copyright-year').textContent = new Date().getFullYear();
+
+    });
+
+  </script>
+
+  
+
+  <style>
+
+      #share-buttons {
+
+          display: flex;
+
+          align-items: center;
+
+          justify-content: center;
+
+          gap: 20px;
+
+      }
+
+  
+
+      .share-button {
+
+          display: inline-block;
+
+          padding: 8px 16px;
+
+          font-size: 14px;
+
+          cursor: pointer;
+
+          text-align: center;
+
+          color: white;
+
+          border-radius: 4px;
+
+      }
+
+  
+
+      .twitter-share-button {
+
+          background: #1DA1F2;
+
+      }
+
+  
+
+      .fb-share-button {
+
+          background: #1877F2;
+
+      }
+
+  
+
+      .linkedin-share-button {
+
+          background: #0077b5;
+
+      }
+
+  </style>
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
@@ -634,6 +838,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
   }
 });
+</script>
+<script src="https://utteranc.es/client.js" repo="jesse-anderson/blogComments" issue-term="pathname" theme="github-light" crossorigin="anonymous" async="">
 </script>
 </div> <!-- /content -->
 

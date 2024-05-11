@@ -1,9 +1,13 @@
 project:
   type: website
   output-dir: _site
+  resources:
+  - "*.ipynb"
 
 website:
   title: "Jesse Anderson's Blog"
+  open-graph: true
+  google-analytics: "G-5CSPYCMY55"
   navbar:
     right:
       - about.qmd
@@ -14,6 +18,8 @@ website:
         href: https://github.com/jesse-anderson/
       - icon: linkedin
         href: https://www.linkedin.com/in/jesse-anderson-a7c5/
+
+
 format:
   html:
     theme: cosmo

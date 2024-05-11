@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Jesse Anderson">
-<meta name="dcterms.date" content="2024-04-16">
+<meta name="dcterms.date" content="2024-05-11">
 
-<title>Jesse Anderson’s Blog - Welcome To My Blog</title>
+<title>Jesse Anderson’s Blog - Intro to OPTICS</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -80,9 +80,9 @@ gtag('config', 'G-5CSPYCMY55', { 'anonymize_ip': true});
 
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="Jesse Anderson’s Blog - Welcome To My Blog">
+<meta property="og:title" content="Jesse Anderson’s Blog - Intro to OPTICS">
 <meta property="og:description" content="">
-<meta property="og:image" content="image.jpg">
+<meta property="og:image" content="ClusterOrdering.png">
 <meta property="og:site_name" content="Jesse Anderson's Blog">
 </head>
 
@@ -133,9 +133,11 @@ gtag('config', 'G-5CSPYCMY55', { 'anonymize_ip': true});
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Welcome To My Blog</h1>
+      <h1 class="title">Intro to OPTICS</h1>
                                 <div class="quarto-categories">
-                <div class="quarto-category">news</div>
+                <div class="quarto-category">ML</div>
+                <div class="quarto-category">Clustering</div>
+                <div class="quarto-category">OPTICS</div>
               </div>
                   </div>
   </div>
@@ -153,7 +155,7 @@ gtag('config', 'G-5CSPYCMY55', { 'anonymize_ip': true});
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">April 16, 2024</p>
+        <p class="date">May 11, 2024</p>
       </div>
     </div>
     
@@ -172,25 +174,110 @@ gtag('config', 'G-5CSPYCMY55', { 'anonymize_ip': true});
 
 
 
-<p>Welcome to my inaugural Quarto post! Though this marks my official entry into the Quarto blogging sphere, it isn’t my first dive into writing here. I initially crafted an insightful(?) post about the Density-Based Spatial Clustering of Applications with Noise (DBSCAN), a fascinating clustering algorithm that piqued my interest due to its rigorous yet intuitive approach to handling complex data sets.</p>
-<p>My name is Jesse Anderson, and my academic and professional journey began in the world of chemical engineering, where I specialized in biochemical engineering and process automation. The intricate dance of chemical processes, moving systematically from one unit to another, serendipitously mirrored the logic and flow of computer science. It was this realization that bridged my transition from engineering physical processes to engineering digital ones.</p>
-<p>This transition felt incredibly natural. In both domains, you’re essentially inputting a series of commands—whether to a machine in a lab or a line of code in a software program—and watching as complex processes unfold, often with a satisfying precision. This similarity is what drew me deeper into the world of computing, leading me to pursue a Master’s in Computer Science at the University of Illinois at Urbana-Champaign (UIUC). My undergraduate studies were completed at the University of Illinois at Chicago (UIC), where I earned a Bachelor of Science in Chemical Engineering.</p>
-<p>During my time at UIC, my fascination with optimization and automation took root. This passion wasn’t confined to coursework and theory. I actively engaged in developing research software, working closely with Dr.&nbsp;Ying Hu. My contributions during this period were not only fulfilling but also fruitful, culminating in several scholarly publications.</p>
-<p>Outside of academia, my hobbies closely mirror my professional interests, intertwining a love for optimization with a hands-on approach to problem-solving that spans far beyond algorithms and lab reactors. This passion for efficiency and process improvement extends into crafting tools and scripts that enhance productivity and automate the more mundane tasks of everyday life. But my knack for tool-making isn’t just confined to the digital realm; it’s a skill I’ve honed over many years, influenced heavily by my extensive background as an independent contractor.</p>
-<p>Before venturing into the world of chemical engineering and computer science, I spent several years in the trades, tackling every aspect of plumbing, electrical work, HVAC, carpentry, and remodeling. This experience taught me the value of precision and strategic planning, skills that are just as applicable to programming as they are to physical construction and maintenance. Each project, whether installing a complex plumbing system or wiring a newly constructed home, sharpened my ability to think critically and adapt quickly—traits that have proven indispensable throughout my career.</p>
-<p>In addition to my hands-on trade work, I managed the safety and project planning operations at G5 Environmental, a prominent street sweeping company based in Chicago. My role involved ensuring the smooth execution of projects, maintaining rigorous safety standards, and optimizing operations to enhance efficiency. This experience not only broadened my understanding of large-scale project management but also deepened my appreciation for the intricate dance between man, machine, and the environment. At G5 Environmental, we were committed to maintaining the cleanliness and safety of public spaces, a mission that echoes my current work’s focus on sustainability and environmental preservation through technology.</p>
-<p>More recently, during my tenure at UL Solutions, I further developed my technical skills and applied them to real-world challenges:</p>
+<section id="clustering-with-optics" class="level1">
+<h1>Clustering with OPTICS</h1>
+<p>Within the realm of unsupervised machine learning, clustering methods play a critical role in unraveling patterns and groupings within datasets where the labels are unknown. Among these clustering techniques, OPTICS(Ordering Points To Identify the Clustering Structure) stands out as a particularly powerful tool when dealing with complex datasets with varying densities or non-globular shapes. This exploration of OPTICS should get you up to speed on the basics of what OPTICS does and will help you understand its mechanics, benefits, and practical applications.</p>
+<section id="introduction-to-optics-clustering" class="level2">
+<h2 class="anchored" data-anchor-id="introduction-to-optics-clustering">Introduction to OPTICS Clustering</h2>
+<p>Developed in <a href="https://www.dbs.ifi.lmu.de/Publikationen/Papers/OPTICS.pdf"> 1999 by Mihael Ankerst, Markus M. Breunig, Hans-Peter Kriegel, and Jörg Sander(it’s worth a read) </a>, extends the concepts of traditional density-based clustering algorithms. Unlike its predecessor DBSCAN, which partitions the data into clusters based on a set radius and minimum number of points, OPTICS explores data relationships at various scales of density. This flexibility allows it to identify clusters with varying densities and/or complex structures.</p>
+</section>
+<section id="core-concepts-of-optics" class="level2">
+<h2 class="anchored" data-anchor-id="core-concepts-of-optics">Core Concepts of OPTICS</h2>
+<p>The core of OPTICS is built around two concepts which are Reachability Distance and Ordering of Points.</p>
 <ul>
-<li><p><strong>Automation Software Development:</strong> I developed automation software in Python and VBA that successfully eliminated over 664+ hours on average of tedious engineering workflows annually.</p></li>
-<li><p><strong>CAD/PDF Change Detection:</strong> I developed a few python scripts to automatically compare CAD files and compare long PDFs(like Acrobat Pro, but free and simpler).</p></li>
-<li><p><strong>Real-Time Data Analysis for Testing</strong>: I implemented systems for real-time data analysis to support large-scale testing projects. This advancement has enabled more data-driven decision-making, optimizing testing procedures and outcomes through immediate feedback and analysis.</p></li>
+<li><strong>Reachability Distance:</strong> Central to the functionality of OPTICS is the concept of reachability distance. This metric doesn’t merely measure the physical proximity between points(as DBSCAN might) but also considers the density of the surrounding area. It blends the spatial distance with local density to provide a high level perspective on how the points are related, highlighting the edges of clusters and distinguishing outliers. This reachability distance is absolutely critical in visualizing the data density which traditional distance measures might gloss over. In the image below from Ankerst et al(1999) we see three distinct clusters wherein the highest density region is indicated. <img src="ClusterOrdering.png" class="img-fluid"></li>
+<li><strong>Ordering of Points:</strong> OPTICS excels in its ability to produce an ordered list of the dataset’s points based on their density connectivity. This ordering goes beyond a simple sequence; it tells a story about how each point relates to its neighbors, forming a continuous, density-based narrative of the dataset. Such an ordered arrangement is not only pivotal for identifying clusters but also enhances the interpretability of the data, allowing clearer visualizations of the clustering structure. In the above structure, if we drew a horizontal line such that we would have 3 “valleys” we can establish a ceiling upon which points below the ceiling belong to a cluster and points above are noise. This is coded in Python and described in detail in my Optics In Python post: <a href="https://jesse-anderson.github.io/Blog/_site/posts/OpticsinPython/index.html">here</a>. Please see the image below for an example of synthetic data of 4 clusters clustered using OPTICS. Note the colored data below the threshold and the noise above it.</li>
 </ul>
-<p>While I massively enjoyed the automation projects I took on at UL, I was seeking broader challenges and opportunities for growth that UL could no longer provide. This realization led me to pursue a more fitting opportunity elsewhere, where I could further expand my expertise and impact in the fields of process automation and data-driven technology.</p>
-<p>This diverse background has equipped me with a unique perspective that I bring to my current studies and research. Whether refining code to streamline data processing or rethinking a workflow to enhance laboratory operations, I am constantly learning and applying, pushing the boundaries of what I know about both chemical engineering and computer science. These experiences have molded me into a versatile professional capable of adapting to various roles and continuously refining my approach to both new and familiar challenges.</p>
-<p>As I continue my studies at UIUC, my goal is to further explore how advanced computational techniques can be applied to solve complex problems in biochemical engineering and beyond. The integration of process automation into digital applications opens up exciting possibilities for innovation in both fields. Through this blog, I aim to share insights from my journey, discussing both the theoretical and practical aspects of my work and studies in hopes of connecting with fellow enthusiasts and professionals who share my zeal for optimization and automation.</p>
-<p>Stay tuned for more posts where I’ll delve deeper into specific projects, challenges I’ve faced, and solutions I’ve discovered along the way. Thank you for joining me on this adventure in merging the systematic worlds of engineering and computing into one coherent, intertwined narrative.</p>
+<p><img src="Reachability Distance.png" class="img-fluid"></p>
+<p><img src="ClustersManual.png" class="img-fluid"></p>
+</section>
+<section id="benefits-of-using-optics" class="level2">
+<h2 class="anchored" data-anchor-id="benefits-of-using-optics"><strong>Benefits of Using OPTICS</strong></h2>
+<p>OPTICS offers several advantages over more rigid clustering algorithms, making it particularly useful in diverse analytical scenarios:</p>
+<p><strong>Handling Varying Density:</strong> One of the standout features of OPTICS is its ability to manage clusters of varying densities. In many real-world datasets, clusters aren’t uniform; some are tightly packed, while others are spread out. OPTICS adapts to these variations seamlessly, capturing a wide range of cluster configurations without the need for prior knowledge about their properties. Recall in the above example where the reachability distance value was set to identify four distinct clusters. It is also possible to first segment the clusters into three distinct clusters, segment that data into three parts, then perform cluster analysis again on the larger chunk in the upper right to further segment. This is one way of handling density issues with OPTICS.</p>
+<p><strong>Flexibility in Cluster Shape:</strong> Unlike algorithms that assume clusters to be of a roughly spherical shape, OPTICS is effective at identifying clusters of arbitrary shapes. This capability is crucial when dealing with complex spatial data patterns that are common in many scientific and industrial applications such as biology where cells can take on a variety of shapes.</p>
+<p><strong>Reduced Sensitivity to Parameters:</strong> While OPTICS does require parameters similar to DBSCAN, such as the minimum number of points to form a cluster, it is less sensitive to the settings compared to DBSCAN’s reliance on the epsilon parameter. This reduced sensitivity decreases the need for repeated trial-and-error parameter tuning, which can be both time-consuming and technically challenging. In the example above, the only parameter set for the initial OPTICS model was min_pts. From there the optimal cutoff was determined mathematically using an elbow cutoff point as in the image below and then clustered using that parameter. Upon further analysis, it was determined by looking at the reachability plot that a value of 0.88 would more accurately capture the four clusters.</p>
+<p><img src="ElbowPlot.png" class="img-fluid"></p>
+<section id="practical-applications-of-optics" class="level3">
+<h3 class="anchored" data-anchor-id="practical-applications-of-optics"><strong>Practical Applications of OPTICS</strong></h3>
+<p>OPTICS has been applied successfully across a broad spectrum of fields:</p>
+<ul>
+<li><p><strong>Ecology:</strong> For studying spatial patterns of species distributions and identifying environmental niches.</p></li>
+<li><p><strong>Market Research:</strong> In identifying customer segments based on purchasing behavior or preferences, which may vary greatly in their characteristics.</p></li>
+<li><p><strong>Astronomy:</strong> Useful in star cluster analysis, where the density and shape of clusters can provide insights into cosmic structures and processes.</p></li>
+<li><p><strong>Traffic Management:</strong> For analyzing congestion patterns across different times and areas, aiding in more dynamic traffic planning and management.</p></li>
+</ul>
+</section>
+</section>
+<section id="evaluating-the-performance-of-optics-clustering" class="level2">
+<h2 class="anchored" data-anchor-id="evaluating-the-performance-of-optics-clustering"><strong>Evaluating the Performance of OPTICS Clustering</strong></h2>
+<p>To determine the effectiveness of the OPTICS clustering algorithm, several metrics can be employed that assess different aspects of clustering quality. Each metric provides valuable insights into how well the algorithm has identified meaningful clusters, offering a comprehensive view of its performance. Below, we discuss the most commonly used evaluation metrics for clustering algorithms such as OPTICS:</p>
+<p><strong>1. Silhouette Score:</strong> This metric measures the degree of separation between clusters. The silhouette score evaluates how close each point in one cluster is to points in the neighboring clusters. This score ranges from -1 to 1, where a high value indicates that the clusters are well-separated and clearly defined. A <u><strong>high silhouette score</strong></u> is often indicative of a model that has effectively captured the natural groupings in the data.</p>
+<p><strong>2. Davies-Bouldin Index:</strong> The Davies-Bouldin index is a measure of the clustering validation technique which provides a score for each cluster. This index is essentially the ratio of the sum of within-cluster scatter to between-cluster separation. <u><strong>The lower the Davies-Bouldin index, the better</strong></u>, as it indicates that the clusters are more compact and well-separated from each other. This index is particularly useful in scenarios where one needs to compare the performance of different clustering algorithms or configurations.</p>
+<p><strong>3. Calinski-Harabasz Index (Variance Ratio Criterion):</strong> This index evaluates clusters by computing the ratio of the sum of between-clusters dispersion and of within-cluster dispersion for all clusters (where dispersion is defined as the sum of distances squared). <u><strong>The higher the Calinski-Harabasz index, the better the clustering performance</strong></u>, suggesting that the clusters are dense and well-separated, which is an ideal scenario in many practical applications.</p>
+<p><strong>4. Adjusted Rand Index (ARI):</strong> The Adjusted Rand Index is a measure of the similarity between two data clusterings - from the same dataset - and is adjusted for the chance grouping of elements. This index takes values between -1 and 1, where <u><strong>higher values indicate that the clusters in the dataset largely agree</strong></u>, except for some pairs of objects that are put in the same or different clusters across the compared clusterings. The ARI is particularly useful for validating the consistency of clustering results across different runs of the algorithm or parameter settings.</p>
+<p><strong>5. Mutual Information:</strong> Mutual information measures the amount of information shared between two clusterings, providing insights into their similarity. It assesses how well one clustering predicts the other, with higher values indicating more shared information. <u><strong>Ideally, a high mutual information score, adjusted for chance (such as Adjusted Mutual Information), suggests that significant and relevant information about the dataset’s structure is captured by the clustering.</strong></u> This makes mutual information a robust assessment of clustering quality, especially in complex datasets with underlying patterns not readily discernible by other metrics</p>
+<p>These evaluation metrics collectively offer a holistic view of OPTICS’ performance, highlighting its strengths and weaknesses in various data scenarios. By carefully analyzing these scores, one can gauge the clustering’s effectiveness and make informed decisions about the use of OPTICS in specific contexts or datasets.</p>
+</section>
+<section id="understanding-the-role-of-xi-in-optics-clustering" class="level2">
+<h2 class="anchored" data-anchor-id="understanding-the-role-of-xi-in-optics-clustering"><strong>Understanding the Role of Xi in OPTICS Clustering</strong></h2>
+<section id="functionality-of-xi-in-clustering" class="level4">
+<h4 class="anchored" data-anchor-id="functionality-of-xi-in-clustering"><strong>Functionality of Xi in Clustering</strong></h4>
+<p><strong>Xi (ξ):</strong> A crucial parameter in the OPTICS algorithm is Xi (ξ), which significantly influences how clusters are determined and extracted from the reachability plot. Xi represents the maximum steepness or relative decrease in reachability within a sequence of points that must be present for it to be considered the start or end of a cluster. Essentially, Xi is a threshold that defines what constitutes a sufficient density drop to separate clusters.</p>
+<p>Xi plays a pivotal role by acting as a sensitivity parameter that helps in defining cluster boundaries based on reachability distances. It’s particularly useful in distinguishing between points that belong to separate clusters versus those that are merely outliers or noise within a single cluster. A lower Xi value typically results in more clusters with finer granularity, as it identifies smaller changes in density as significant. Conversely, a higher Xi value tends to produce fewer, larger clusters, indicating that only larger changes in reachability are considered meaningful for cluster separation.</p>
+</section>
+<section id="choosing-an-optimal-xi-value" class="level4">
+<h4 class="anchored" data-anchor-id="choosing-an-optimal-xi-value"><strong>Choosing an Optimal Xi Value</strong></h4>
+<p>Selecting an appropriate Xi value is critical for achieving effective clustering results with OPTICS. There isn’t a one-size-fits-all value for Xi, as the optimal setting depends on the specific characteristics and distribution of the data. Experimentation and domain knowledge are often necessary to determine the most suitable Xi value for a given dataset. Visualization tools such as reachability plots can be extremely helpful in this process, providing a visual representation of how different Xi values affect clustering outcomes.</p>
+</section>
+<section id="impact-of-xi-on-clustering-outcomes" class="level4">
+<h4 class="anchored" data-anchor-id="impact-of-xi-on-clustering-outcomes"><strong>Impact of Xi on Clustering Outcomes</strong></h4>
+<p>The choice of Xi can have profound effects on the resulting cluster structure:</p>
+<ul>
+<li><p><strong>High Xi Values:</strong> May overlook subtle but potentially meaningful cluster boundaries, merging distinct groups into broader clusters.</p></li>
+<li><p><strong>Low Xi Values:</strong> Can over-segment the data, identifying many small clusters that might better be understood as variations within larger clusters.</p></li>
+</ul>
+<p>It’s also important to consider that the performance of clustering with different Xi values should be evaluated using metrics like the Silhouette Score, Davies-Bouldin Index, and others discussed earlier. These evaluations can confirm whether the selected Xi value effectively captures the underlying patterns in the data without introducing too much noise or losing significant structures. One such way of evaluating Xi is to evaluate the metrics discussed above with values of Xi between 0.01 and 1 in linspace() of roughly 1000. This way one can determine what the optimal value of Xi is based on each of those five metrics and also average the metrics with different weights to arrive at an ideal clustering. This is performed in the code described in this <a href="https://jesse-anderson.github.io/Blog/_site/posts/OpticsInPython/index.html">post</a>. Please see the image below for the Xi values for each metric for the dataset shown above and the resulting “optimal” Xi clustering:</p>
+<p><img src="MetricsScores.png" class="img-fluid"></p>
+<p><img src="MetricsClustering.png" class="img-fluid"></p>
+<p>As one can see optimizing Xi sometimes has strange end results and sometimes it is best to stick with arbitrary cutoff points of reachability distance visually.</p>
+</section>
+</section>
+<section id="extending-optics-to-3-dimensions-and-beyond" class="level2">
+<h2 class="anchored" data-anchor-id="extending-optics-to-3-dimensions-and-beyond"><strong>Extending OPTICS to 3 Dimensions and Beyond</strong></h2>
+<p>As datasets grow in complexity and dimensionality, traditional clustering algorithms often struggle to maintain effectiveness and efficiency. OPTICS, with its robust framework, scales well into higher dimensions, including three-dimensional (3D) data and beyond. This adaptability makes it particularly useful in fields such as geospatial analysis, 3D medical imaging, and multidimensional market segmentation.</p>
+<section id="challenges-of-higher-dimensional-clustering" class="level4">
+<h4 class="anchored" data-anchor-id="challenges-of-higher-dimensional-clustering"><strong>Challenges of Higher Dimensional Clustering</strong></h4>
+<p>As the dimensionality of the data increases, several challenges arise:</p>
+<ul>
+<li><p><strong>Curse of Dimensionality</strong>: In higher dimensions, the volume of the space increases exponentially, making the data sparse. This sparsity dilutes the concept of proximity because all points tend to be equally far from each other, complicating the task of identifying dense regions.</p></li>
+<li><p><strong>Computational Complexity</strong>: Calculating distances and maintaining neighborhood information becomes computationally more demanding as the number of dimensions grows.</p></li>
+<li><p><strong>Interpretability</strong>: Visualizing and interpreting results in high-dimensional spaces is inherently difficult, which can make it challenging to derive actionable insights from the clustering output.</p></li>
+</ul>
+</section>
+<section id="adapting-optics-for-higher-dimensions" class="level4">
+<h4 class="anchored" data-anchor-id="adapting-optics-for-higher-dimensions"><strong>Adapting OPTICS for Higher Dimensions</strong></h4>
+<p>Despite these challenges, OPTICS’s methodology is well-suited for high-dimensional spaces due to its focus on relative density rather than absolute distance measures. Here’s how OPTICS can be effectively applied to higher-dimensional data:</p>
+<ul>
+<li><p><strong>Dimensionality Reduction Techniques</strong>: Before applying OPTICS, it can be beneficial to employ techniques such as PCA (Principal Component Analysis) or t-SNE (t-Distributed Stochastic Neighbor Embedding) to reduce the dimensionality of the data. This preprocessing step helps mitigate the curse of dimensionality and can highlight inherent structures in the data more effectively.</p></li>
+<li><p><strong>Parameter Adjustment</strong>: In higher dimensions, the parameters of OPTICS, especially min_samples and Xi, might need adjustment. A higher min_samples value might be necessary to adequately capture the density structure in a more sparse environment.</p></li>
+<li><p><strong>Enhanced Distance Metrics</strong>: Employing different metrics for calculating distances (e.g., Manhattan distance for higher-dimensional geometrical data or cosine similarity for text data) can help in better capturing the true dissimilarities between data points in higher-dimensional spaces.</p></li>
+</ul>
+</section>
+<section id="practical-applications-in-higher-dimensions" class="level4">
+<h4 class="anchored" data-anchor-id="practical-applications-in-higher-dimensions"><strong>Practical Applications in Higher Dimensions</strong></h4>
+<p>OPTICS’ flexibility in dealing with different types of data and its robustness in various dimensions have facilitated its application across a wide range of domains:</p>
+<ul>
+<li><p><strong>Geospatial Analysis</strong>: Clustering geographical data points not only based on latitude and longitude but also considering elevation, leading to more nuanced cluster formations that can inform environmental studies and urban planning.</p></li>
+<li><p><strong>Medical Imaging</strong>: In medical imaging, especially in studies involving 3D scans, OPTICS can be used to identify regions of interest, such as tumors in 3D MRI scans, based on their density and spatial properties.</p></li>
+<li><p><strong>Financial Markets</strong>: Analyzing multi-dimensional data in finance, such as movements in various market indicators, where OPTICS can help identify anomalous behaviors or cluster markets by trading patterns.</p></li>
+</ul>
+<p>In conclusion, OPTICS stands as a formidable and versatile tool within the field of unsupervised machine learning, adept at uncovering intricate cluster patterns in complex datasets where traditional methods might falter. Its unique approach to handling varying densities and shapes of data clusters makes it invaluable for a wide array of practical applications, from ecological studies to advanced medical imaging and beyond. By integrating sophisticated metrics to evaluate its performance and extending its capabilities into higher dimensions, OPTICS not only meets the demands of modern data challenges but also opens new avenues for innovative data exploration and analysis. Whether dealing with 2D or multi-dimensional datasets, OPTICS offers a powerful, flexible solution for extracting meaningful insights from raw data, demonstrating its enduring relevance and utility in an increasingly data-driven world.</p>
 
 
+</section>
+</section>
+</section>
 
 </main> <!-- /main -->
 <!--  General footer to put at bottom of page.   -->
