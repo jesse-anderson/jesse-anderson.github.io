@@ -8,8 +8,10 @@ website:
   title: "Jesse Anderson's Blog"
   open-graph: true
   google-analytics: "G-5CSPYCMY55"
+  cookie-consent: true
   navbar:
     right:
+      - archive.qmd
       - about.qmd
       - icon: Folder symlink fill
         text: Portfolio

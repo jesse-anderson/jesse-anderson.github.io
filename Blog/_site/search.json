@@ -98,6 +98,13 @@
     "text": "DBSCAN stands out for its ability to handle anomalies and discover clusters of arbitrary shapes, making it ideal for analyzing complex spatiotemporal datasets. By carefully selecting the parameters ε and MinPts, you can tailor DBSCAN effectively to your specific data characteristics, enhancing both the accuracy and relevancy of your clustering results.\nIncorporating visual aids, like plots of ε values or animations of the clustering process, can greatly enhance the understanding and application of DBSCAN in real-world scenarios. Whether dealing with urban planning, environmental monitoring, or dynamic population studies, DBSCAN offers a robust framework for insightful data analysis.\nPlease see the visualization below written in Javascript, based on Naftali Harris’ original implementation:"
   },
   {
+    "objectID": "archive.html",
+    "href": "archive.html",
+    "title": "Archive",
+    "section": "",
+    "text": "OPTICS in Python\n\n\n\n\n\n\n\n\nMay 12, 2024\n\n\n\n\n\n\n\nIntro to OPTICS\n\n\n\n\n\n\n\n\nMay 11, 2024\n\n\n\n\n\n\n\nDBSCAN Intro\n\n\n\n\n\n\n\n\nApr 19, 2024\n\n\n\n\n\n\n\nWelcome To My Blog\n\n\n\n\n\n\n\n\nApr 16, 2024\n\n\n\n\n\n\nNo matching items"
+  },
+  {
     "objectID": "about.html",
     "href": "about.html",
     "title": "About",

@@ -1,5 +1,14 @@
 [
   {
+    "listing": "/archive.html",
+    "items": [
+      "/posts/OPTICSinPython/OPTICS.html",
+      "/posts/OPTICSWriteup/index.html",
+      "/posts/DBSCAN/index.html",
+      "/posts/welcome/index.html"
+    ]
+  },
+  {
     "listing": "/index.html",
     "items": [
       "/posts/OPTICSinPython/OPTICS.html",
