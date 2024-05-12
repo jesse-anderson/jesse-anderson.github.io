@@ -4,6 +4,7 @@ author: "Jesse Anderson"
 date: "2024-04-19"
 categories: [ML, Clustering, DBSCAN]
 image: "image.jpg"
+lightbox: true
 ---
 
 # **Understanding DBSCAN: Parameters and Adjustments for Spatiotemporal Data Clustering**
