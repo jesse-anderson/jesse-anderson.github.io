@@ -1917,6 +1917,16 @@ body.offcanvas .colorlib-nav-toggle {
 	background: transparent;
 }
 
+/* Fix: Reset transformations when the menu is not active */
+.colorlib-nav-toggle:not(.active) i::before,
+.colorlib-nav-toggle:not(.active) i::after {
+    -webkit-transform: rotateZ(0);
+    -moz-transform: rotateZ(0);
+    -ms-transform: rotateZ(0);
+    -o-transform: rotateZ(0);
+    transform: rotateZ(0);
+}
+
 .colorlib-nav-toggle.active i::before {
 	top: 0;
 	-webkit-transform: rotateZ(45deg);

@@ -90,7 +90,7 @@ export const projects = {
       projectName: "Increased vesicular dynamics and nanoscale clustering of IL-2 after T cell activation",
       image: "images/VesiclesPaper.png",
       summary:
-        "In this research, DBSCAN clustering was used to analyze the distribution of IL-2 within Jurkat T cells through superresolution imaging, specifically dSTORM. This clustering method enabled the researchers to identify and characterize nanoscale clusters of IL-2, revealing that activation of the T cells led to more pronounced and elongated clusters compared to non-activated control cells.",
+        "In this study, DBSCAN clustering analyzed IL-2 distribution in Jurkat T cells via dSTORM imaging, revealing that T cell activation results in more pronounced and elongated nanoscale clusters compared to controls.",
       preview: "https://www.sciencedirect.com/science/article/abs/pii/S0006349524002091",
       techStack: ["Immunology","MATLAB", "Cluster Analysis", "DBSCAN"],
     },
