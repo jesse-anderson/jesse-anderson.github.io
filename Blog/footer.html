@@ -1,22 +1,38 @@
 <!--  General footer to put at bottom of page.   -->
-
-<footer>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support Page</title>
+    <style>
+        .centered-text {
+            text-align: center; /* Centers text for elements with this class */
+        }
+    </style>
+    <style>
+      .centered-content {
+          display: flex; /* Uses Flexbox for layout */
+          justify-content: center; /* Horizontally centers the content within the container */
+      }
+  </style>
+</head>
+<footer class="centered-text">
     <p>Copyright &copy; <span id="copyright-year"></span> Jesse Anderson</p>
     <!-- Other footer details -->
   </footer>
-<div>
+<div >
     <hr>
-    <h3> Support my work with a Coffee/Monster </h3>
-
-<script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="jesseanderson" data-color="#06436e" data-emoji="☕"  data-font="Lato" data-text="Support me" data-outline-color="#ffffff" data-font-color="#ffffff" data-coffee-color="#FFDD00" data-height="40px" ></script>
-
+    <h3 class="centered-text"> Support my work with a Coffee/Monster </h3>
+<div class="centered-content">
+  <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="jesseanderson" data-color="#06436e" data-emoji="☕"  data-font="Lato" data-text="Support me" data-outline-color="#ffffff" data-font-color="#ffffff" data-coffee-color="#FFDD00" data-height="40px" ></script>
+</div>
 <!-- Footer content -->
 
-  
+<p><h3 class="centered-text">Share</h3></p>
   <!-- Share Buttons -->
-  <div id="share-buttons">
-      <h3>Share</h3>
-  
+  <div id="share-buttons" >
+ 
+
       <!-- Twitter Share Button, dynamically setting the URL -->
       <a href="#" class="share-button twitter-share-button" data-size="large" data-hashtags="#computerscience" data-show-count="false">Tweet</a>
       <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
@@ -96,3 +112,4 @@
           background: #0077b5;
       }
   </style>
+</html>
