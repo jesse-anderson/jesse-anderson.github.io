@@ -282,25 +282,29 @@ cookieconsent.run({
 
 
 <meta charset="UTF-8">
-<title>Video Player</title>
+<style>
+  video {
+    max-width: 90%; /* Adjust width as necessary */
+    max-height: 90%; /* Adjust height as necessary */
+  }
+  </style>
 
 
 
 <h1>Click to Play Video</h1>
 
 <!-- Video container -->
-<video id="myVideo" width="640" height="480" controls="">
-  <source id="videoSource" src="../../posts/VAE_GAN/MNIST_GAN_Training.mp4" type="video/mp4">
+<video id="myVideo1" controls="">
+  <source id="videoSource1" src="../../posts/VAE_GAN/MNIST_GAN_Training.mp4" type="video/mp4">
   Your browser does not support MP4 videos.
 </video>
-
 <!-- Button to load and play the video -->
-<button onclick="loadAndPlayVideo('../../posts/VAE_GAN/MNIST_GAN_Training.mp4')">Load and Play Video</button>
+<button onclick="loadAndPlayVideo(myVideo1'../../posts/VAE_GAN/MNIST_GAN_Training.mp4')">Load and Play Video</button>
 
 <script>
-  function loadAndPlayVideo(src) {
-    var video = document.getElementById('myVideo');
-    var source = document.getElementById('videoSource');
+  function loadAndPlayVideo(videoId, src) {
+    var video = document.getElementById(videoId);
+    var source = video.getElementsByTagName('source')[0];
     source.src = src;
     video.load(); // Load the new video source
     video.style.display = "block"; // Make the video visible
@@ -322,25 +326,30 @@ cookieconsent.run({
 
 
 <meta charset="UTF-8">
-<title>Video Player</title>
+<style>
+  video {
+    max-width: 90%; /* Adjust width as necessary */
+    max-height: 90%; /* Adjust height as necessary */
+  }
+  </style>
 
 
 
 <h1>Click to Play Video</h1>
 
 <!-- Video container -->
-<video id="myVideo" width="640" height="480" controls="">
-  <source id="videoSource" src="../../posts/VAE_GAN/MNIST_VAE_GAN_Training.mp4" type="video/mp4">
+<video id="myVideo2" controls="">
+  <source id="videoSource2" src="../../posts/VAE_GAN/MNIST_VAE_GAN_Training.mp4" type="video/mp4">
   Your browser does not support MP4 videos.
 </video>
 
 <!-- Button to load and play the video -->
-<button onclick="loadAndPlayVideo('../../posts/VAE_GAN/MNIST_VAE_GAN_Training.mp4')">Load and Play Video</button>
+<button onclick="loadAndPlayVideo(myVideo2,'../../posts/VAE_GAN/MNIST_VAE_GAN_Training.mp4')">Load and Play Video</button>
 
 <script>
-  function loadAndPlayVideo(src) {
-    var video = document.getElementById('myVideo');
-    var source = document.getElementById('videoSource');
+  function loadAndPlayVideo(videoId,src) {
+    var video = document.getElementById(videoId);
+    var source = video.getElementsByTagName('source')[0];
     source.src = src;
     video.load(); // Load the new video source
     video.style.display = "block"; // Make the video visible
@@ -444,7 +453,7 @@ cookieconsent.run({
 
       <!-- Twitter Share Button, dynamically setting the URL -->
 
-      <a href="#" class="share-button twitter-share-button" data-hashtags="computerscience" data-via="JesseA7C5" data-show-count="false">Tweet</a>
+      <a href="#" class="share-button twitter-share-button" data-size="large" data-hashtags="computerscience" data-via="JesseA7C5" data-show-count="false">Tweet</a>
 
       <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
@@ -1018,7 +1027,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","selector":".lightbox","loop":false,"descPosition":"bottom","openEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;
