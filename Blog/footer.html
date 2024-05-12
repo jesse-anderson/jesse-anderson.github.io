@@ -4,16 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Support Page</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         .centered-text {
             text-align: center; /* Centers text for elements with this class */
         }
-    </style>
-    <style>
       .centered-content {
           display: flex; /* Uses Flexbox for layout */
           justify-content: center; /* Horizontally centers the content within the container */
+          vertical-align: middle;
       }
+      .email-share-button {
+          background: #007BFF; /* Example: a distinct blue color for the email button */
+          color: white; /* Ensure text and icon are white for visibility */
+      }
+
   </style>
 </head>
 <footer class="centered-text">
@@ -30,11 +35,15 @@
 
 <p><h3 class="centered-text">Share</h3></p>
   <!-- Share Buttons -->
-  <div id="share-buttons" >
+  <div id="share-buttons" class="centered-content">
  
 
       <!-- Twitter Share Button, dynamically setting the URL -->
-      <a href="#" class="share-button twitter-share-button" data-size="large" data-hashtags="#computerscience" data-show-count="false">Tweet</a>
+      <a href="#" class="share-button twitter-share-button"
+   
+      data-hashtags="computerscience" 
+      data-via="JesseA7C5"
+      data-show-count="false">Tweet</a>
       <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
   
       <!-- Facebook SDK with Dynamic Nonce -->
@@ -49,6 +58,8 @@
     <!-- LinkedIn Share Button -->
     <script src="https://platform.linkedin.com/in.js" type="text/javascript">lang: en_US</script>
     <script type="IN/Share" data-url=""></script>
+    <!-- Email Share Button -->
+    <a href="#" class="share-button email-share-button"><i class="fas fa-envelope"></i></a>
     </div>
   </div>
   
@@ -72,11 +83,18 @@
         for (var i = 0; i < elems.length; i++) {
             elems[i].setAttribute('data-url', window.location.href);
         }
-      // Set URLs dynamically for Facebook and Twitter
+
+      // Set dynamic URLs for social sharing
       const currentUrl = window.location.href;
+      const currentTitle = document.title; // Use the current document title as the email subject
+      //Facebook
       document.querySelector('.fb-share-button').setAttribute('data-href', currentUrl);
+      //LinkedIn
       document.querySelectorAll('script[type="IN/Share"]')[0].setAttribute('data-url', currentUrl);
+      //Twitter
       document.querySelector('.twitter-share-button').setAttribute('href', 'https://twitter.com/share?url=' + encodeURIComponent(currentUrl) + '&hashtags=rstats');
+      // Email
+      document.querySelector('.email-share-button').setAttribute('href', `mailto:?subject=${encodeURIComponent(currentTitle)}&body=Check out this link: ${encodeURIComponent(currentUrl)}`);
       // Dynamically set the current year in the copyright footer
       document.getElementById('copyright-year').textContent = new Date().getFullYear();
     });
@@ -87,29 +105,18 @@
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 20px;
+          gap: 5px;
       }
   
       .share-button {
-          display: inline-block;
-          padding: 8px 16px;
+          display: inline-flex;
+          padding: 2px 4px;
           font-size: 14px;
           cursor: pointer;
           text-align: center;
           color: white;
-          border-radius: 4px;
+          border-radius: 0px;
       }
   
-      .twitter-share-button {
-          background: #1DA1F2;
-      }
-  
-      .fb-share-button {
-          background: #1877F2;
-      }
-  
-      .linkedin-share-button {
-          background: #0077b5;
-      }
   </style>
 </html>
