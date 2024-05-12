@@ -43,6 +43,9 @@ ul.task-list li input[type="checkbox"] {
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -207,7 +210,7 @@ cookieconsent.run({
 <p>The latent space in VAEs is the core feature that distinguishes them from other types of autoencoders. It is a probabilistic space where each point is defined not just by coordinates, but by a distribution over possible values. This stochastic nature of the latent space allows VAEs to generate new data points by sampling from these distributions, providing a mechanism to capture and represent the underlying probabilistic properties of the data. It essentially acts as a compressed knowledge base of the data’s attributes.</p>
 <p>Once a point in the latent space is sampled, the decoder part of the VAE takes over to map this probabilistic representation back to the original data space. The decoder learns to reconstruct the input data from its latent representation, aiming to minimize the difference between the original input and its reconstruction. This process is governed by a loss function that has two components: a reconstruction loss that measures how effectively the decoder reconstructs the input data from the latent space, and a regularization term that ensures the distribution characteristics in the latent space do not deviate significantly from a predefined prior (often a standard normal distribution).</p>
 <p>In practice, the encoder’s output of means and variances provides a smooth and continuous latent space, which is crucial for generating new data points that are similar but not identical to the original data. This property makes VAEs particularly useful in tasks requiring a deep generative model, such as synthesizing new images that share characteristics with a training set, or identifying anomalies by seeing how well data points reconstruct using the learned distributions.</p>
-<p><img src="VAE_Basic.png" class="img-fluid"></p>
+<p><a href="VAE_Basic.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="VAE_Basic.png" class="img-fluid"></a></p>
 
 
 
@@ -221,7 +224,7 @@ cookieconsent.run({
 <section id="denoising-autoencoders" class="level3">
 <h3 class="anchored" data-anchor-id="denoising-autoencoders"><strong>Denoising AutoEncoders</strong></h3>
 <p>Denoising Autoencoders (DAEs) are specialized neural networks aimed at improving the quality of corrupted input data by learning to restore its original, uncorrupted state. This functionality is crucial in applications such as image restoration, where DAEs enhance image clarity by effectively removing noise. They achieve this through a training process that involves a dataset containing pairs of noisy and clean images. By continually adjusting through this training set, the DAE learns the underlying patterns necessary to filter out the distortions and recover the clean data. This ability to directly process and improve corrupted data makes DAEs valuable for various tasks beyond image restoration, including audio cleaning and improving data quality for analytical purposes.</p>
-<p><img src="DAE_Image.png" class="img-fluid"></p>
+<p><a href="DAE_Image.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="DAE_Image.png" class="img-fluid"></a></p>
 <p>Source: <a href="https://blog.keras.io/building-autoencoders-in-keras.html" class="uri">https://blog.keras.io/building-autoencoders-in-keras.html</a></p>
 </section>
 <section id="generative-adversarial-networks-gans" class="level3">
@@ -229,7 +232,7 @@ cookieconsent.run({
 <p>Generative Adversarial Networks (GANs) utilize a unique framework involving two competing neural networks: a generator and a discriminator. These networks engage in an adversarial game, where the generator’s goal is to create synthetic data that is indistinguishable from real-world data, effectively “fooling” the discriminator. The discriminator’s job, on the other hand, is to distinguish between the authentic data and the synthetic creations of the generator.</p>
 <p>This dynamic creates a feedback loop where the generator continually learns from the discriminator’s ability to detect fakes, driving it to improve its data generation. As the generator gets better, the discriminator’s task becomes more challenging, forcing it to improve its detection capabilities. Over time, this adversarial process leads to the generation of highly realistic and convincing data outputs.</p>
 <p>GANs have been particularly successful in the field of image generation, where they are used to create highly realistic images that are often indistinguishable from actual photographs. A prominent example is the <a href="https://thispersondoesnotexist.com/"><strong>ThisPersonDoesNotExist</strong></a>website, which uses a model called <a href="https://github.com/NVlabs/stylegan2">StyleGAN2</a>to generate lifelike images of human faces that do not correspond to real individuals. This technology has also been applied in other areas such as art creation, style transfer, and more. Eerie.</p>
-<p><img src="gan_diagram.png" class="img-fluid"></p>
+<p><a href="gan_diagram.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3"><img src="gan_diagram.png" class="img-fluid"></a></p>
 <p>Source: <a href="https://developers.google.com/machine-learning/gan/gan_structure" class="uri">https://developers.google.com/machine-learning/gan/gan_structure</a></p>
 </section>
 <section id="variational-autoencoder-generative-adversarial-networks-vae-gans" class="level3">
@@ -237,7 +240,7 @@ cookieconsent.run({
 <p>VAE-GANs are an innovative hybrid model that synergistically combines Variational Autoencoders (VAEs) and Generative Adversarial Networks (GANs) to enhance the quality and control of data generation. The model integrates the VAE’s capability for creating a compressed, latent representation of data with the GAN’s strength in generating high-fidelity outputs.</p>
 <p>In a VAE-GAN system, the encoder part of the VAE compresses input data into a latent space (a condensed representation), which the GAN’s generator then uses to reconstruct outputs that are as realistic as possible. This setup leverages the VAE’s ability to manage and interpret the latent space effectively, providing a structured, meaningful input for the GAN’s generator. The discriminator in the GAN setup then evaluates these outputs against real data, guiding the generator to improve its outputs continually.</p>
 <p>The fusion of these two models allows for a more controlled generation process, which can lead to higher quality outputs than what might be achieved by either model alone. This approach not only enhances the detail and realism of the generated data but also improves the model’s ability to learn diverse and complex data distributions, making VAE-GANs particularly useful in tasks that require a high level of detail and accuracy, such as in image generation and modification.</p>
-<p><img src="VAE_GAN_Diagram.png" class="img-fluid"></p>
+<p><a href="VAE_GAN_Diagram.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4"><img src="VAE_GAN_Diagram.png" class="img-fluid"></a></p>
 <p>Source: Larsen, Anders &amp; Sønderby, Søren &amp; Winther, Ole. (2015). Autoencoding beyond pixels using a learned similarity metric.</p>
 </section>
 <section id="project-outcomes" class="level3">
@@ -250,31 +253,31 @@ cookieconsent.run({
 </section>
 <section id="denoising-autoencoder" class="level3">
 <h3 class="anchored" data-anchor-id="denoising-autoencoder">Denoising AutoEncoder</h3>
-<p><img src="DAEBeforeAndAfter.png" class="img-fluid"></p>
+<p><a href="DAEBeforeAndAfter.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5"><img src="DAEBeforeAndAfter.png" class="img-fluid"></a></p>
 <p>As you can see in the image above, it does an ok job of denoising the middle image. The top image is the original image, the middle is the image with 50% noise, and the bottom is the model’s outputted denoised image. If I trained the model longer and varied up the training data I likely would have been able to get a better result. Additionally Principal Component Analysis and calculation of the Mean Residual Error was performed to determine how well the model works. See below:</p>
-<p><img src="DAE_PCA_Analysis.png" class="img-fluid"></p>
+<p><a href="DAE_PCA_Analysis.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6"><img src="DAE_PCA_Analysis.png" class="img-fluid"></a></p>
 <p>Loss over Epochs(Note the plots say reconstruction error when I really meant Mean Squared Error Loss):</p>
-<p><img src="DAE_Losses.png" class="img-fluid"></p>
+<p><a href="DAE_Losses.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7"><img src="DAE_Losses.png" class="img-fluid"></a></p>
 <p>I decided to use a standard fixed learning rate here and only trained for 240 epochs.</p>
 </section>
 <section id="variational-autoencoder" class="level3">
 <h3 class="anchored" data-anchor-id="variational-autoencoder">Variational AutoEncoder</h3>
 <p>Here we were tasked with coming up with a VAE which would generate images and also be able to interpolate between images.</p>
 <p>Same Digits:</p>
-<p><img src="VAESameDigits.png" class="img-fluid"></p>
+<p><a href="VAESameDigits.png" class="lightbox" data-gallery="quarto-lightbox-gallery-8"><img src="VAESameDigits.png" class="img-fluid"></a></p>
 <p>Different Digits:</p>
-<p><img src="VAEDifferentDigits.png" class="img-fluid"></p>
+<p><a href="VAEDifferentDigits.png" class="lightbox" data-gallery="quarto-lightbox-gallery-9"><img src="VAEDifferentDigits.png" class="img-fluid"></a></p>
 <p>Original vs.&nbsp;Reconstructed:</p>
-<p><img src="VAEOriginalVsReconstructed.png" class="img-fluid"></p>
+<p><a href="VAEOriginalVsReconstructed.png" class="lightbox" data-gallery="quarto-lightbox-gallery-10"><img src="VAEOriginalVsReconstructed.png" class="img-fluid"></a></p>
 <p>As you can see the VAE did a fairly good job of generating images.</p>
 <p>Loss over 400 Epochs:</p>
-<p><img src="VAE_Losses.png" class="img-fluid"></p>
+<p><a href="VAE_Losses.png" class="lightbox" data-gallery="quarto-lightbox-gallery-11"><img src="VAE_Losses.png" class="img-fluid"></a></p>
 <p>I was playing around with progressively reducing the learning rate as parameters changed(or didn’t) and thus reduced the learning rate progressively. This actually seemed to result in the exponentialLR type scheduler funnily enough. See <a href="https://pytorch.org/docs/stable/generated/torch.optim.lr_scheduler.ExponentialLR.html">here</a>. The model was trained for 400 epochs. I likely won’t spin the DAE/VAE back up for videos as I did for the GAN and VAE-GAN.</p>
 </section>
 <section id="generative-adversarial-network" class="level3">
 <h3 class="anchored" data-anchor-id="generative-adversarial-network">Generative Adversarial Network</h3>
 <p>I decided to go a bit further and try to get a Generative Adversarial Network running to generate new images of numbers. I went beyond the standard requirements of the course, but not too far as I didn’t want to “waste” too much time as there are newer technologies nowadays. <a href="https://github.com/jesse-anderson/GAN-MNIST-PyTorch/tree/main">Here’s the repo</a>. There is a video below that shows the evolution of the training of the model. Additionally here’s the final result and video below:</p>
-<p><img src="GANOutput.png" class="img-fluid"></p>
+<p><a href="GANOutput.png" class="lightbox" data-gallery="quarto-lightbox-gallery-12"><img src="GANOutput.png" class="img-fluid"></a></p>
 
 
 
@@ -308,13 +311,13 @@ cookieconsent.run({
 
 
 <p>Losses over 540 Epochs:</p>
-<p><img src="GANLosses540Epoch.png" class="img-fluid"></p>
+<p><a href="GANLosses540Epoch.png" class="lightbox" data-gallery="quarto-lightbox-gallery-13"><img src="GANLosses540Epoch.png" class="img-fluid"></a></p>
 </section>
 <section id="vae-gan" class="level3">
 <h3 class="anchored" data-anchor-id="vae-gan">VAE-GAN</h3>
 <p>I finally went a bit further(probably too far) and decided to implement a VAE-GAN. There was a lot more balancing involved between the autoencoder portion and the generative portion and I was able to achieve a passable result, but definitely not worth the time and effort to balance parameters. It was strangely smoothed out, yet blurred where it mattered to generate the images.</p>
 <p>Final result image and video below:</p>
-<p><img src="VAE_GANOutput.png" class="img-fluid"></p>
+<p><a href="VAE_GANOutput.png" class="lightbox" data-gallery="quarto-lightbox-gallery-14"><img src="VAE_GANOutput.png" class="img-fluid"></a></p>
 
 
 
@@ -348,7 +351,7 @@ cookieconsent.run({
 
 
 <p>Here’s the associated Losses over 1000 Epochs(note my discriminator freaking out…):</p>
-<p><img src="VAEGanLosses1000epochs.png" class="img-fluid"></p>
+<p><a href="VAEGanLosses1000epochs.png" class="lightbox" data-gallery="quarto-lightbox-gallery-15"><img src="VAEGanLosses1000epochs.png" class="img-fluid"></a></p>
 </section>
 <section id="final-thoughts" class="level3">
 <h3 class="anchored" data-anchor-id="final-thoughts"><strong>Final Thoughts</strong></h3>
@@ -1009,6 +1012,31 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","openEffect":"zoom","selector":".lightbox","descPosition":"bottom","loop":false});
+window.onload = () => {
+  lightboxQuarto.on('slide_before_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    const href = trigger.getAttribute('href');
+    if (href !== null) {
+      const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+      if (imgEl !== null) {
+        const srcAttr = imgEl.getAttribute("src");
+        if (srcAttr && srcAttr.startsWith("data:")) {
+          slideConfig.href = srcAttr;
+        }
+      }
+    } 
+  });
+
+  lightboxQuarto.on('slide_after_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    if (window.Quarto?.typesetMath) {
+      window.Quarto.typesetMath(slideNode);
+    }
+  });
+
+};
+          </script>
 
 
 

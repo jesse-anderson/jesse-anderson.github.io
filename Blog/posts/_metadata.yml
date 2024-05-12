@@ -14,3 +14,5 @@ format:
 comments: 
   utterances: 
     repo:  jesse-anderson/blogComments
+
+lightbox: auto

@@ -43,6 +43,9 @@ ul.task-list li input[type="checkbox"] {
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -212,8 +215,8 @@ cookieconsent.run({
 <li><strong>Reachability Distance:</strong> Central to the functionality of OPTICS is the concept of reachability distance. This metric doesn’t merely measure the physical proximity between points(as DBSCAN might) but also considers the density of the surrounding area. It blends the spatial distance with local density to provide a high level perspective on how the points are related, highlighting the edges of clusters and distinguishing outliers. This reachability distance is absolutely critical in visualizing the data density which traditional distance measures might gloss over. In the image below from Ankerst et al(1999) we see three distinct clusters wherein the highest density region is indicated. <img src="ClusterOrdering.png" class="img-fluid"></li>
 <li><strong>Ordering of Points:</strong> OPTICS excels in its ability to produce an ordered list of the dataset’s points based on their density connectivity. This ordering goes beyond a simple sequence; it tells a story about how each point relates to its neighbors, forming a continuous, density-based narrative of the dataset. Such an ordered arrangement is not only pivotal for identifying clusters but also enhances the interpretability of the data, allowing clearer visualizations of the clustering structure. In the above structure, if we drew a horizontal line such that we would have 3 “valleys” we can establish a ceiling upon which points below the ceiling belong to a cluster and points above are noise. This is coded in Python and described in detail in my Optics In Python post: <a href="https://jesse-anderson.github.io/Blog/_site/posts/OpticsinPython/index.html">here</a>. Please see the image below for an example of synthetic data of 4 clusters clustered using OPTICS. Note the colored data below the threshold and the noise above it.</li>
 </ul>
-<p><img src="Reachability Distance.png" class="img-fluid"></p>
-<p><img src="ClustersManual.png" class="img-fluid"></p>
+<p><a href="Reachability Distance.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="Reachability Distance.png" class="img-fluid"></a></p>
+<p><a href="ClustersManual.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="ClustersManual.png" class="img-fluid"></a></p>
 </section>
 <section id="benefits-of-using-optics" class="level2">
 <h2 class="anchored" data-anchor-id="benefits-of-using-optics"><strong>Benefits of Using OPTICS</strong></h2>
@@ -221,7 +224,7 @@ cookieconsent.run({
 <p><strong>Handling Varying Density:</strong> One of the standout features of OPTICS is its ability to manage clusters of varying densities. In many real-world datasets, clusters aren’t uniform; some are tightly packed, while others are spread out. OPTICS adapts to these variations seamlessly, capturing a wide range of cluster configurations without the need for prior knowledge about their properties. Recall in the above example where the reachability distance value was set to identify four distinct clusters. It is also possible to first segment the clusters into three distinct clusters, segment that data into three parts, then perform cluster analysis again on the larger chunk in the upper right to further segment. This is one way of handling density issues with OPTICS.</p>
 <p><strong>Flexibility in Cluster Shape:</strong> Unlike algorithms that assume clusters to be of a roughly spherical shape, OPTICS is effective at identifying clusters of arbitrary shapes. This capability is crucial when dealing with complex spatial data patterns that are common in many scientific and industrial applications such as biology where cells can take on a variety of shapes.</p>
 <p><strong>Reduced Sensitivity to Parameters:</strong> While OPTICS does require parameters similar to DBSCAN, such as the minimum number of points to form a cluster, it is less sensitive to the settings compared to DBSCAN’s reliance on the epsilon parameter. This reduced sensitivity decreases the need for repeated trial-and-error parameter tuning, which can be both time-consuming and technically challenging. In the example above, the only parameter set for the initial OPTICS model was min_pts. From there the optimal cutoff was determined mathematically using an elbow cutoff point as in the image below and then clustered using that parameter. Upon further analysis, it was determined by looking at the reachability plot that a value of 0.88 would more accurately capture the four clusters.</p>
-<p><img src="ElbowPlot.png" class="img-fluid"></p>
+<p><a href="ElbowPlot.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3"><img src="ElbowPlot.png" class="img-fluid"></a></p>
 <section id="practical-applications-of-optics" class="level3">
 <h3 class="anchored" data-anchor-id="practical-applications-of-optics"><strong>Practical Applications of OPTICS</strong></h3>
 <p>OPTICS has been applied successfully across a broad spectrum of fields:</p>
@@ -262,8 +265,8 @@ cookieconsent.run({
 <li><p><strong>Low Xi Values:</strong> Can over-segment the data, identifying many small clusters that might better be understood as variations within larger clusters.</p></li>
 </ul>
 <p>It’s also important to consider that the performance of clustering with different Xi values should be evaluated using metrics like the Silhouette Score, Davies-Bouldin Index, and others discussed earlier. These evaluations can confirm whether the selected Xi value effectively captures the underlying patterns in the data without introducing too much noise or losing significant structures. One such way of evaluating Xi is to evaluate the metrics discussed above with values of Xi between 0.01 and 1 in linspace() of roughly 1000. This way one can determine what the optimal value of Xi is based on each of those five metrics and also average the metrics with different weights to arrive at an ideal clustering. This is performed in the code described in this <a href="https://jesse-anderson.github.io/Blog/_site/posts/OpticsInPython/index.html">post</a>. Please see the image below for the Xi values for each metric for the dataset shown above and the resulting “optimal” Xi clustering:</p>
-<p><img src="MetricsScores.png" class="img-fluid"></p>
-<p><img src="MetricsClustering.png" class="img-fluid"></p>
+<p><a href="MetricsScores.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4"><img src="MetricsScores.png" class="img-fluid"></a></p>
+<p><a href="MetricsClustering.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5"><img src="MetricsClustering.png" class="img-fluid"></a></p>
 <p>As one can see optimizing Xi sometimes has strange end results and sometimes it is best to stick with arbitrary cutoff points of reachability distance visually.</p>
 </section>
 </section>
@@ -954,6 +957,31 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
+<script>var lightboxQuarto = GLightbox({"loop":false,"closeEffect":"zoom","selector":".lightbox","descPosition":"bottom","openEffect":"zoom"});
+window.onload = () => {
+  lightboxQuarto.on('slide_before_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    const href = trigger.getAttribute('href');
+    if (href !== null) {
+      const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+      if (imgEl !== null) {
+        const srcAttr = imgEl.getAttribute("src");
+        if (srcAttr && srcAttr.startsWith("data:")) {
+          slideConfig.href = srcAttr;
+        }
+      }
+    } 
+  });
+
+  lightboxQuarto.on('slide_after_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    if (window.Quarto?.typesetMath) {
+      window.Quarto.typesetMath(slideNode);
+    }
+  });
+
+};
+          </script>
 
 
 

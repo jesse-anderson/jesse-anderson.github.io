@@ -77,6 +77,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -271,7 +274,7 @@ cookieconsent.run({
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="OPTICS_files/figure-html/cell-3-output-1.png" width="670" height="523" class="figure-img"></p>
+<p><a href="OPTICS_files/figure-html/cell-3-output-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="OPTICS_files/figure-html/cell-3-output-1.png" width="670" height="523" class="figure-img"></a></p>
 </figure>
 </div>
 </div>
@@ -319,7 +322,7 @@ cookieconsent.run({
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="OPTICS_files/figure-html/cell-5-output-2.png" width="812" height="449" class="figure-img"></p>
+<p><a href="OPTICS_files/figure-html/cell-5-output-2.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="OPTICS_files/figure-html/cell-5-output-2.png" width="812" height="449" class="figure-img"></a></p>
 </figure>
 </div>
 </div>
@@ -365,7 +368,7 @@ cookieconsent.run({
 <span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.legend()</span></span>
 <span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.show()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p><img src="ElbowPlot.png" class="img-fluid"></p>
+<p><a href="ElbowPlot.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3"><img src="ElbowPlot.png" class="img-fluid"></a></p>
 <p>We plot the reachability distances sorted from least to greatest to get an idea of how the distribution looks. In this case we have a nice transition point where the distance explodes and that is roughly where we are aiming for our first “guess” of the reachability distance cutoff. We then implement a pretty basic algorithm wherein we find the maximum deviation point, that is the point farthest from the horizontal line drawn between the first and last reachability points. You will find a MATLAB based explaination <a href="https://www.mathworks.com/help/radar/ref/clusterdbscan.clusterdbscan.estimateepsilon.html">here</a>. Note that we do NOT use KneeLocator from the kneed library as it gives erroneous results in this case.</p>
 </section>
 <section id="trying-the-maximum-deviation-line-for-clustering" class="level1">
@@ -456,8 +459,8 @@ cookieconsent.run({
 <span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.legend()</span></span>
 <span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.show()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p><img src="ReachabilityElbowOptimal.png" class="img-fluid"></p>
-<p><img src="ClustersElbowAutomatic.png" class="img-fluid"></p>
+<p><a href="ReachabilityElbowOptimal.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4"><img src="ReachabilityElbowOptimal.png" class="img-fluid"></a></p>
+<p><a href="ClustersElbowAutomatic.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5"><img src="ClustersElbowAutomatic.png" class="img-fluid"></a></p>
 <p>As you can see above we get three clusters based on one of the clusters encountering significant overlap. We can stop here and examine why this may be when we don’t have synthetic data, but at least for the purposes of this demonstration I will find the point at which I need to set the reachability distance to distinguish that first cluster by hovering over that point in Python’s matplotlib plot. As you can see below that value is roughly 0.88 . See that all we have to do is change one line and we can rerun the reachability distance.</p>
 <div id="6339ba58" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>elbow_cutoff <span class="op">=</span><span class="fl">0.866</span> <span class="co">##THIS IS A GREAT EXAMPLE OF WHEN YOUR ELBOW FAILS YOU AND YOU NEED TO PLAY AROUND WITH VALUES!!!!</span></span>
@@ -497,7 +500,7 @@ cookieconsent.run({
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="OPTICS_files/figure-html/cell-9-output-1.png" width="812" height="449" class="figure-img"></p>
+<p><a href="OPTICS_files/figure-html/cell-9-output-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6"><img src="OPTICS_files/figure-html/cell-9-output-1.png" width="812" height="449" class="figure-img"></a></p>
 </figure>
 </div>
 </div>
@@ -555,8 +558,8 @@ cookieconsent.run({
 <span id="cb10-49"><a href="#cb10-49" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.legend()</span></span>
 <span id="cb10-50"><a href="#cb10-50" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.show()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p><img src="Reachability Distance.png" class="img-fluid"></p>
-<p><img src="ClustersManual.png" class="img-fluid"></p>
+<p><a href="Reachability Distance.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7"><img src="Reachability Distance.png" class="img-fluid"></a></p>
+<p><a href="ClustersManual.png" class="lightbox" data-gallery="quarto-lightbox-gallery-8"><img src="ClustersManual.png" class="img-fluid"></a></p>
 <p>And that’s it. Given this data and the significant overlap between cluster’s 0 and 1 I would definitely just go with the original reachability distance found by the elbow, but given that we have ZERO underlying knowledge besides here’s 4 clusters here we are. Note that the ratio of noise:data changed and more points are discarded. Evaluate whether or not those points are important and if so consider other clustering algorithms(I’m looking at you Esimation Maximization). For an example with differing STD see <a href="Optics_Diff_STD.py">here</a>.</p>
 <p>If we want to use the Xi clustering method on this data by evaluating the relative slopes of the reachability plot or by evaluating the silhouette score of a variety of Xi values we can proceed with the below. Please note that we use the same data as before.</p>
 <div id="a97756d5" class="cell" data-execution_count="10">
@@ -638,7 +641,7 @@ Xi_value[Significanty Slopes]:  0.06486873356523164</code></pre>
   slopes = np.diff(reachabilities_initial) / reachabilities_initial[:-1]</code></pre>
 </div>
 </div>
-<p><img src="SilhouetteScore.png" class="img-fluid"></p>
+<p><a href="SilhouetteScore.png" class="lightbox" data-gallery="quarto-lightbox-gallery-9"><img src="SilhouetteScore.png" class="img-fluid"></a></p>
 <p>As one can see in the image above, the silhouette score is maximized at a value of: 0.1725225…. and thus that is what we will use. The silhouette score is a measure of how similar an object is to its own cluster compared to other clusters. This metric ranges from -1 to +1, where a high value indicates that the object is well matched to its own cluster and poorly matched to neighboring clusters. A score close to 1 signifies that the object is far away from its neighboring clusters, a score of 0 indicates that the object is on or very close to the decision boundary between two neighboring clusters, and a negative score indicates that the object might have been assigned to the wrong cluster. From here we will select the best Xi to use based on the maximum silhouette score.</p>
 <div id="e2ec73b6" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Select the best Xi based on maximum silhouette score</span></span>
@@ -681,8 +684,8 @@ Xi_value[Significanty Slopes]:  0.06486873356523164</code></pre>
 <pre><code>Xi Value[Silhouette Score Iterative] 0.17252252252252254</code></pre>
 </div>
 </div>
-<p><img src="ReachabilityXi.png" class="img-fluid"></p>
-<p><img src="ClustersDynamicXi.png" class="img-fluid"></p>
+<p><a href="ReachabilityXi.png" class="lightbox" data-gallery="quarto-lightbox-gallery-10"><img src="ReachabilityXi.png" class="img-fluid"></a></p>
+<p><a href="ClustersDynamicXi.png" class="lightbox" data-gallery="quarto-lightbox-gallery-11"><img src="ClustersDynamicXi.png" class="img-fluid"></a></p>
 <p>As one can see the number of clusters is different here and more likely than not indicative of my ability/willingness to play with Xi values than the inherent performance of OPTICS. Regardless, it was much faster to simply establish a cutoff with the first method described than it was to iterate over Xi for this particular dataset. There may be cases where Xi is better equipped to cluster the dataset and as a result I kept it here for my own reference sometime in the future.</p>
 <p>The resultant clustering is performed below:</p>
 <div id="9f6f65f3" class="cell" data-execution_count="12">
@@ -840,10 +843,10 @@ Average Optimal Xi: 0.1667747747747748</code></pre>
 </div>
 </div>
 <p>Here are the scores:</p>
-<p><img src="MetricsScores.png" class="img-fluid"></p>
+<p><a href="MetricsScores.png" class="lightbox" data-gallery="quarto-lightbox-gallery-12"><img src="MetricsScores.png" class="img-fluid"></a></p>
 <p>And the resultant clustering:</p>
-<p><img src="ReachabilityMetricsXi.png" class="img-fluid"></p>
-<p><img src="MetricsClustering.png" class="img-fluid"></p>
+<p><a href="ReachabilityMetricsXi.png" class="lightbox" data-gallery="quarto-lightbox-gallery-13"><img src="ReachabilityMetricsXi.png" class="img-fluid"></a></p>
+<p><a href="MetricsClustering.png" class="lightbox" data-gallery="quarto-lightbox-gallery-14"><img src="MetricsClustering.png" class="img-fluid"></a></p>
 <p>As you can see the data gets segmented into 2 distinct clusters. Interestingly enough the values obtained for the metrics are below:</p>
 <table class="table">
 <caption>Metrics, Score Normalized, Xi Value</caption>
@@ -877,7 +880,7 @@ Average Optimal Xi: 0.1667747747747748</code></pre>
 </tbody>
 </table>
 <p>If we omit the Silhouette Score and Davies-Bouldin Index we get the resulting clustering:</p>
-<p><img src="MetricsClusteringOmitSilhouetteDBIndex.png" class="img-fluid"></p>
+<p><a href="MetricsClusteringOmitSilhouetteDBIndex.png" class="lightbox" data-gallery="quarto-lightbox-gallery-15"><img src="MetricsClusteringOmitSilhouetteDBIndex.png" class="img-fluid"></a></p>
 <p>This can be viewed as an improvement if the upper left cluster could be considered sparse enough to be considered noise/irrelevant.</p>
 <p>Overall, I could see how Xi could be useful in clustering datasets, but I definitely prefer to extract a DBSCAN-like clustering from an OPTICS model and work with that as its pretty fast. Iteratively using Xi has been outlined here and if I ever come across a use case this will be a pretty good reference.</p>
 <p>And there you have it. Original code <a href="Optics.py">here</a>.</p>
@@ -1536,6 +1539,31 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","loop":false,"openEffect":"zoom","descPosition":"bottom","selector":".lightbox"});
+window.onload = () => {
+  lightboxQuarto.on('slide_before_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    const href = trigger.getAttribute('href');
+    if (href !== null) {
+      const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+      if (imgEl !== null) {
+        const srcAttr = imgEl.getAttribute("src");
+        if (srcAttr && srcAttr.startsWith("data:")) {
+          slideConfig.href = srcAttr;
+        }
+      }
+    } 
+  });
+
+  lightboxQuarto.on('slide_after_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    if (window.Quarto?.typesetMath) {
+      window.Quarto.typesetMath(slideNode);
+    }
+  });
+
+};
+          </script>
 
 
 
