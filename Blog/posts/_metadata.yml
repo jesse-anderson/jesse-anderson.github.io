@@ -10,7 +10,6 @@ title-block-banner: true
 format:
   html:
     include-after-body: ../footer.html
-
 comments: 
   utterances: 
     repo:  jesse-anderson/blogComments
