@@ -1,7 +1,8 @@
 [
   {
-    "listing": "/index.html",
+    "listing": "/archive.html",
     "items": [
+      "/posts/Pi-Sensor-Proj-May-2024/index.html",
       "/posts/OPTICSinPython/OPTICS.html",
       "/posts/VAE_GAN/VAEGAN.html",
       "/posts/OPTICSWriteup/index.html",
@@ -10,8 +11,9 @@
     ]
   },
   {
-    "listing": "/archive.html",
+    "listing": "/index.html",
     "items": [
+      "/posts/Pi-Sensor-Proj-May-2024/index.html",
       "/posts/OPTICSinPython/OPTICS.html",
       "/posts/VAE_GAN/VAEGAN.html",
       "/posts/OPTICSWriteup/index.html",

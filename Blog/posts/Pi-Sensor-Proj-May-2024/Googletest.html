@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Sheets Data Display</title>
+    <style>
+        #google-data-table {
+            width: 50%;
+            border-collapse: collapse;
+            margin: 50px auto;
+        }
+        #google-data-table th, #google-data-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        #google-data-table th {
+            background-color: #f2f2f2;
+        }
+        #load-button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        async function loadLastRow() {
+            const url = 'https://script.google.com/macros/s/AKfycbxs1lTq0o8Abb_iggM7yxQybOsWRAE_DPf7Gr4EE_ID9rSLonikadwaHlnzPlFwjOp3WQ/exec';
+
+            try {
+                const response = await fetch(url);
+                const json = await response.json();
+                const rows = json;
+                if (rows && rows.length) {
+                    const lastRow = rows[rows.length - 1];
+                    displayTable(lastRow);
+                } else {
+                    console.log('No data found.');
+                }
+            } catch (error) {
+                console.error("Error fetching data from Google Sheets:", error);
+            }
+        }
+
+        function displayTable(row) {
+            const table = document.getElementById('google-data-table');
+            const tbody = table.querySelector('tbody');
+            const newRow = tbody.insertRow();
+            newRow.id = 'google-data-table-row';
+
+            row.forEach((cell, index) => {
+                const newCell = newRow.insertCell();
+                newCell.id = `google-data-table-cell-${index + 1}`;
+                const text = document.createTextNode(cell);
+                newCell.appendChild(text);
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>Google Sheets Data Display</h1>
+    <button id="load-button" onclick="loadLastRow()">Load Data</button>
+    <table id="google-data-table">
+        <thead>
+            <tr id="google-data-table-header">
+                <th id="google-data-table-header-date">Date</th>
+                <th id="google-data-table-header-time">Time</th>
+                <th id="google-data-table-header-humidity">Humidity</th>
+                <th id="google-data-table-header-temp-f">Temp F</th>
+                <th id="google-data-table-header-temp-c">Temp C</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data will be inserted here -->
+        </tbody>
+    </table>
+</body>
+</html>

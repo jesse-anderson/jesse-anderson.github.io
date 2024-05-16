@@ -243,7 +243,7 @@ cookieconsent.run({
 
 <section id="import-libraries" class="level2">
 <h2 class="anchored" data-anchor-id="import-libraries">Import Libraries</h2>
-<div id="0c833175" class="cell" data-execution_count="1">
+<div id="5725734d" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.cluster <span class="im">import</span> OPTICS</span>
@@ -257,7 +257,7 @@ cookieconsent.run({
 </section>
 <section id="load-and-visualize-the-blob-data" class="level1">
 <h1>Load and Visualize the Blob Data</h1>
-<div id="fb323fec" class="cell" data-execution_count="2">
+<div id="990a6fbb" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load example data</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>n_samples <span class="op">=</span> <span class="dv">1000</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>min_samples <span class="op">=</span> <span class="dv">15</span></span>
@@ -283,7 +283,7 @@ cookieconsent.run({
 </section>
 <section id="apply-sklearn-optics-clustering" class="level1">
 <h1>Apply sklearn OPTICS Clustering</h1>
-<div id="34f9e7e9" class="cell" data-execution_count="3">
+<div id="a0982a2a" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 1: Apply OPTICS</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>optics_model <span class="op">=</span> OPTICS(min_samples<span class="op">=</span>min_samples)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>optics_model.fit(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -295,7 +295,7 @@ cookieconsent.run({
 </section>
 <section id="get-reachability-distances-handle-infinity-values" class="level1">
 <h1>Get Reachability Distances &amp; Handle Infinity Values</h1>
-<div id="249f76ec" class="cell" data-execution_count="4">
+<div id="7557136a" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 2: Plot the reachability diagram</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>space <span class="op">=</span> np.arange(<span class="bu">len</span>(data))</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>reachability <span class="op">=</span> optics_model.reachability_[optics_model.ordering_]</span>
@@ -331,7 +331,7 @@ cookieconsent.run({
 </section>
 <section id="identify-the-elbow-point-in-the-sorted-reachability-plot" class="level1">
 <h1>Identify the “Elbow” Point in the Sorted Reachability Plot</h1>
-<div id="5b157d9e" class="cell" data-execution_count="5">
+<div id="23e6ac23" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot sorted reachability distances</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>sorted_reachability <span class="op">=</span> np.sort(reachability)</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>indices <span class="op">=</span> np.arange(<span class="bu">len</span>(sorted_reachability))</span>
@@ -373,7 +373,7 @@ cookieconsent.run({
 </section>
 <section id="trying-the-maximum-deviation-line-for-clustering" class="level1">
 <h1>Trying the Maximum Deviation Line for Clustering</h1>
-<div id="0a740cac" class="cell" data-execution_count="6">
+<div id="5e5cf153" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">#  Create a list of colors to use for bars below the threshold, and black for above</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co"># We'll generate a color map to cycle through a set of colors for segments below the threshold</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>below_threshold_colors <span class="op">=</span> <span class="bu">list</span>(mcolors.TABLEAU_COLORS.values())  <span class="co"># Get a set of unique colors</span></span>
@@ -407,7 +407,7 @@ cookieconsent.run({
 <span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.legend()</span></span>
 <span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.show()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="764c76e4" class="cell" data-execution_count="7">
+<div id="3022ef65" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 3: Extract clusters using the reachability distance at the elbow point as a cutoff</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># The reachability distance at the elbow is used as a threshold for cluster extraction</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>reachability_distance_at_elbow <span class="op">=</span> elbow_cutoff</span>
@@ -462,7 +462,7 @@ cookieconsent.run({
 <p><a href="ReachabilityElbowOptimal.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4"><img src="ReachabilityElbowOptimal.png" class="img-fluid"></a></p>
 <p><a href="ClustersElbowAutomatic.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5"><img src="ClustersElbowAutomatic.png" class="img-fluid"></a></p>
 <p>As you can see above we get three clusters based on one of the clusters encountering significant overlap. We can stop here and examine why this may be when we don’t have synthetic data, but at least for the purposes of this demonstration I will find the point at which I need to set the reachability distance to distinguish that first cluster by hovering over that point in Python’s matplotlib plot. As you can see below that value is roughly 0.88 . See that all we have to do is change one line and we can rerun the reachability distance.</p>
-<div id="6339ba58" class="cell" data-execution_count="8">
+<div id="540921e2" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>elbow_cutoff <span class="op">=</span><span class="fl">0.866</span> <span class="co">##THIS IS A GREAT EXAMPLE OF WHEN YOUR ELBOW FAILS YOU AND YOU NEED TO PLAY AROUND WITH VALUES!!!!</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co">#  Create a list of colors to use for bars below the threshold, and black for above</span></span>
@@ -506,7 +506,7 @@ cookieconsent.run({
 </div>
 </div>
 <p>Now that we have broken out the clusters we can now reassign clusters based on the new threshold.</p>
-<div id="aae23c76" class="cell" data-execution_count="9">
+<div id="89cf0eca" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 3: Extract clusters using the reachability distance at the elbow point as a cutoff</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co"># The reachability distance at the elbow is used as a threshold for cluster extraction</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>reachability_distance_at_elbow <span class="op">=</span> elbow_cutoff</span>
@@ -562,7 +562,7 @@ cookieconsent.run({
 <p><a href="ClustersManual.png" class="lightbox" data-gallery="quarto-lightbox-gallery-8"><img src="ClustersManual.png" class="img-fluid"></a></p>
 <p>And that’s it. Given this data and the significant overlap between cluster’s 0 and 1 I would definitely just go with the original reachability distance found by the elbow, but given that we have ZERO underlying knowledge besides here’s 4 clusters here we are. Note that the ratio of noise:data changed and more points are discarded. Evaluate whether or not those points are important and if so consider other clustering algorithms(I’m looking at you Esimation Maximization). For an example with differing STD see <a href="Optics_Diff_STD.py">here</a>.</p>
 <p>If we want to use the Xi clustering method on this data by evaluating the relative slopes of the reachability plot or by evaluating the silhouette score of a variety of Xi values we can proceed with the below. Please note that we use the same data as before.</p>
-<div id="a97756d5" class="cell" data-execution_count="10">
+<div id="2be8712a" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Now instead of using the reachability metric we use the Xi clustering method to apply OPTICS</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co">#Please note I tried relative differences in reachability distances by calculating their relative slopes and another method using significant slopes</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co"># using a percentile approach and they both performed poor.</span></span>
@@ -637,13 +637,13 @@ cookieconsent.run({
 Xi_value[Significanty Slopes]:  0.06486873356523164</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>C:\Users\Jesse\AppData\Local\Temp\ipykernel_231840\2141299887.py:25: RuntimeWarning: invalid value encountered in divide
+<pre><code>C:\Users\Jesse\AppData\Local\Temp\ipykernel_282880\2141299887.py:25: RuntimeWarning: invalid value encountered in divide
   slopes = np.diff(reachabilities_initial) / reachabilities_initial[:-1]</code></pre>
 </div>
 </div>
 <p><a href="SilhouetteScore.png" class="lightbox" data-gallery="quarto-lightbox-gallery-9"><img src="SilhouetteScore.png" class="img-fluid"></a></p>
 <p>As one can see in the image above, the silhouette score is maximized at a value of: 0.1725225…. and thus that is what we will use. The silhouette score is a measure of how similar an object is to its own cluster compared to other clusters. This metric ranges from -1 to +1, where a high value indicates that the object is well matched to its own cluster and poorly matched to neighboring clusters. A score close to 1 signifies that the object is far away from its neighboring clusters, a score of 0 indicates that the object is on or very close to the decision boundary between two neighboring clusters, and a negative score indicates that the object might have been assigned to the wrong cluster. From here we will select the best Xi to use based on the maximum silhouette score.</p>
-<div id="e2ec73b6" class="cell" data-execution_count="11">
+<div id="c416c607" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Select the best Xi based on maximum silhouette score</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>best_xi_index <span class="op">=</span> np.argmax(silhouette_scores)</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>best_xi <span class="op">=</span> xi_values[best_xi_index]</span>
@@ -688,7 +688,7 @@ Xi_value[Significanty Slopes]:  0.06486873356523164</code></pre>
 <p><a href="ClustersDynamicXi.png" class="lightbox" data-gallery="quarto-lightbox-gallery-11"><img src="ClustersDynamicXi.png" class="img-fluid"></a></p>
 <p>As one can see the number of clusters is different here and more likely than not indicative of my ability/willingness to play with Xi values than the inherent performance of OPTICS. Regardless, it was much faster to simply establish a cutoff with the first method described than it was to iterate over Xi for this particular dataset. There may be cases where Xi is better equipped to cluster the dataset and as a result I kept it here for my own reference sometime in the future.</p>
 <p>The resultant clustering is performed below:</p>
-<div id="9f6f65f3" class="cell" data-execution_count="12">
+<div id="08e737d1" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Scatter plot of clusters</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.figure(figsize=(10, 7))</span></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -719,7 +719,7 @@ Xi_value[Significanty Slopes]:  0.06486873356523164</code></pre>
 <li><p><strong>Mutual Information</strong>: This measures the amount of information one can obtain about one random variable by observing another random variable. The Adjusted Mutual Information (AMI) score is an adjustment of the Mutual Information Score that accounts for chance, making it a more reliable metric in assessing the agreement of the clustering result with the ground truth, if available. This one is really just thrown because why not?</p></li>
 </ol>
 <p>The code is below and I parallelized the calculations as it would have taken quite some time otherwise.</p>
-<div id="0fb34549" class="cell" data-execution_count="13">
+<div id="3445219f" class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Neuroticism:</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> davies_bouldin_score, calinski_harabasz_score, adjusted_rand_score, adjusted_mutual_info_score</span>
@@ -1545,7 +1545,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","openEffect":"zoom","loop":false,"descPosition":"bottom","selector":".lightbox"});
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","selector":".lightbox","openEffect":"zoom","loop":false});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

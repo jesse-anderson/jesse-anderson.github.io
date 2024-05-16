@@ -9,6 +9,9 @@ categories:
 format: html
 jupyter: python3
 image: ElbowPlot.png
+freeze: true
+execute:
+  freeze: true
 ---
 
 ## Import Libraries
