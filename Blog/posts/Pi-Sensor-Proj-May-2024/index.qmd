@@ -2027,7 +2027,7 @@ This was fairly straightforward and with one function and a couple of lines of P
 Timings:
 
 |                   |                                           |                                          |
-|------------------|---------------------------|---------------------------|
+|-------------------|---------------------------|---------------------------|
 | Database          | Update Interval                           | Capacity                                 |
 | Google Sheets     | 1 second(with network delay more like 2)  | 2 million entries(10 million cells)      |
 | ThingSpeak        | 15 seconds(bulk update works around this) | 2 million entries(this is suspicious...) |
@@ -2806,19 +2806,19 @@ Latest sensor reading Google Sheets(button loads latest data):
     <h2>Google Sheets Data Display</h2>
     <button class="load-button" onclick="loadLastRowGoogle()">Load Google Sheets Data</button>
     <table id="google-data-table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Humidity (%)</th>
-                <th>Temp F</th>
-                <th>Temp C</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Data will be inserted here -->
-        </tbody>
-    </table>
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Humidity (%)</th>
+            <th>Temp F</th>
+            <th>Temp C</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Data will be inserted here -->
+    </tbody>
+</table>
 </section>
 <script>
     async function loadLastRowGoogle() {
@@ -2884,7 +2884,6 @@ Latest sensor reading Google Sheets(button loads latest data):
     }
 </style>
 
-
 ```
 Latest Sensor Reading ThingSpeak(press button):
 
@@ -2894,21 +2893,21 @@ Latest Sensor Reading ThingSpeak(press button):
     <h2>ThingSpeak Data Display</h2>
     <button class="load-button" onclick="loadThingSpeakData()">Load ThingSpeak Data</button>
     <table id="thingspeak-data-table">
-        <thead>
-            <tr>
-                <th>Created At</th>
-                <th>Entry ID</th>
-                <th>Temperature C</th>
-                <th>Temperature F</th>
-                <th>Humidity</th>
-                <th>Time</th>
-                <th>Date</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Data will be inserted here -->
-        </tbody>
-    </table>
+    <thead>
+        <tr>
+            <th>Created At</th>
+            <th>Entry ID</th>
+            <th>Temperature C</th>
+            <th>Temperature F</th>
+            <th>Humidity</th>
+            <th>Time</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Data will be inserted here -->
+    </tbody>
+</table>
 </section>
 <script>
     async function loadThingSpeakData() {
@@ -2965,7 +2964,6 @@ Latest Sensor Reading ThingSpeak(press button):
         cursor: pointer;
     }
 </style>
-
 ```
 Configuring MongoDB to grab the sensor readings and the CSV required me to do quite a bit of configuring of Vercel(timeout increase) and making sure that the MongoDB was no longer using fixed IP addresses(I'm not implementing some cursed dynamic IP allocation). I also implement a 3 second wait just in case there's a lot of requests/readers(unlikely).
 
@@ -2978,19 +2976,19 @@ Latest Sensor Reading MongoDB(Read-Only User):
     <a href="https://vercel-raspberry-pi-server.vercel.app/api/displaySQLMongoDB">Download MongoDB Table Data as CSV</a>
     <button class="load-button" onclick="loadMongoDBData()">Load MongoDB Data</button>
     <table id="mongodb-data-table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Humidity (%)</th>
-                <th>Temperature (F)</th>
-                <th>Temperature (C)</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Data will be inserted here -->
-        </tbody>
-    </table>
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Humidity (%)</th>
+            <th>Temperature (F)</th>
+            <th>Temperature (C)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Data will be inserted here -->
+    </tbody>
+</table>
 </section>
 <script>
     async function loadMongoDBData() {
@@ -3055,19 +3053,19 @@ Latest Sensor Reading Vercel PostgreSQL(Read-Only User):
     <a href="https://vercel-raspberry-pi-server.vercel.app/api/displaySQL">Download Vercel Table Data as CSV</a>
     <button class="load-button" onclick="loadVercelData()">Load Vercel Data</button>
     <table id="vercel-data-table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Humidity (%)</th>
-                <th>Temperature (F)</th>
-                <th>Temperature (C)</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Data will be inserted here -->
-        </tbody>
-    </table>
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Humidity (%)</th>
+            <th>Temperature (F)</th>
+            <th>Temperature (C)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Data will be inserted here -->
+    </tbody>
+</table>
 </section>
 <script>
     async function loadVercelData() {
@@ -3575,3 +3573,121 @@ Temperature/Humidity\[DHT22\]: <https://www.amazon.com/SHILLEHTEK-Digital-Temper
 Temp/Humidity/Pressure/VOC\[BME680\]: <https://www.amazon.com/CJMCU-680-Temperature-Humidity-Ultra-Small-Development/dp/B07K1CGQTJ/>
 
 Air Quality/VOC\[MQ135\]: <https://www.amazon.com/Ximimark-Quality-Hazardous-Detection-Arduino/dp/B07L73VTTY/>
+
+While a description of extract, transform, and load(ETL) probably belongs up top I feel like it fits the narrative better to define it here and describe how this project is one giant homegrown ETL pipeline...
+
+## **What is an ETL Pipeline?**
+
+### **Definition**
+
+ETL stands for Extract, Transform, Load. It's a process used in data management to:
+
+1.  **Extract** data from various sources.
+
+2.  **Transform** the data into a suitable format or structure for analysis and reporting.
+
+3.  **Load** the transformed data into a target database, data warehouse, or data lake.
+
+### **How it Works**
+
+1.  **Extract**:
+
+    -   Data is collected from different sources like databases, APIs, files, or sensors.
+
+    -   This step involves connecting to the source, querying or retrieving the data, and pulling it into the pipeline.
+
+2.  **Transform**:
+
+    -   The extracted data is cleaned, validated, and transformed to fit the schema of the target system.
+
+    -   Transformations might include filtering, aggregating, joining, sorting, or converting data types.
+
+    -   This step ensures data quality and prepares it for efficient loading and querying in the target system.
+
+3.  **Load**:
+
+    -   The transformed data is loaded into the target database, data warehouse, or data lake.
+
+    -   This involves writing the data into the storage system, ensuring it's available for querying and analysis.
+
+    -   The loading process can be a full load (overwriting existing data) or an incremental load (updating or adding new data).
+
+### **Applications**
+
+ETL pipelines are used in various scenarios, including:
+
+-   **Data Warehousing**: Collecting and consolidating data from multiple sources into a central repository for reporting and analysis.
+
+-   **Business Intelligence (BI)**: Providing clean and structured data for BI tools to generate insights and reports.
+
+-   **Data Integration**: Integrating data from different systems to provide a unified view.
+
+-   **Data Migration**: Moving data from one system to another, often during system upgrades or cloud migrations.
+
+-   **Data Analytics**: Preparing data for analysis and machine learning models.
+
+### **Example of a Homegrown ETL Pipeline in the Project**
+
+The project described above is a great example of a homegrown ETL pipeline, using a Raspberry Pi and various data storage solutions.
+
+#### **Extract**
+
+-   **Data Sources**: Environmental data is extracted from various sensors (e.g., DHT11 for temperature and humidity).
+
+-   **Data Collection**: The sensors are connected to the Raspberry Pi, which reads data at regular intervals.
+
+#### **Transform**
+
+-   **Data Processing**: The raw data from the sensors is processed to convert it into a readable format (e.g., converting temperature from Celsius to Fahrenheit).
+
+-   **Data Formatting**: The data is formatted into JSON objects for a consistent structure across different storage solutions.
+
+#### **Load**
+
+-   **Data Storage**: The transformed data is loaded into multiple storage solutions:
+
+    -   **Google Sheets**: For easy access and sharing.
+
+    -   **ThingSpeak**: For real-time visualization and monitoring.
+
+    -   **MongoDB**: For flexible, document-based storage.
+
+    -   **Vercel PostgreSQL**: For relational database storage.
+
+### **How the Project Implements ETL**
+
+1.  **Extract**:
+
+    -   The Raspberry Pi reads data from the DHT11 sensor every second using the **`Adafruit_DHT`** library.
+
+2.  **Transform**:
+
+    -   The raw data (humidity and temperature) is processed to convert temperature to Fahrenheit and format the date and time.
+
+    -   The data is structured into JSON objects for consistency.
+
+3.  **Load**:
+
+    -   The data is sent to multiple endpoints:
+
+        -   **Google Sheets**: Using the Google Sheets API to append new rows.
+
+        -   **ThingSpeak**: Using the ThingSpeak API for both simple and bulk updates.
+
+        -   **MongoDB**: Using the MongoDB Python client to insert data into the collection.
+
+        -   **Vercel PostgreSQL**: Sending data to a Vercel serverless function which writes to a PostgreSQL database.
+
+### **Benefits of this ETL Pipeline**
+
+-   **Real-time Data Processing**: The pipeline processes and loads data in near real-time, providing up-to-date information.
+
+-   **Multi-Storage Integration**: The data is stored in various platforms, each with its strengths, ensuring data availability and flexibility.
+
+-   **Scalability**: The modular approach allows easy addition of new sensors or data sources.
+
+-   **Automation**: The use of scheduled tasks and services ensures continuous data collection and processing without manual intervention.
+
+### **Conclusion**
+
+This project shows off a homegrown ETL pipeline that efficiently collects, processes, and stores environmental data from sensors. By using various storage solutions, it demonstrates how a flexible and scalable ETL process can be implemented for real-time data monitoring and analysis in a home automation context.

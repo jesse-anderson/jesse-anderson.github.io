@@ -2026,9 +2026,9 @@ Code Summary
 <p>Timings:</p>
 <table class="table">
 <colgroup>
-<col style="width: 25%">
-<col style="width: 37%">
-<col style="width: 37%">
+<col style="width: 26%">
+<col style="width: 36%">
+<col style="width: 36%">
 </colgroup>
 <tbody>
 <tr class="odd">
@@ -2784,7 +2784,6 @@ Code Summary
     }
 </style>
 
-
 </div>
 <p>Latest Sensor Reading ThingSpeak(press button):</p>
 <div>
@@ -2865,7 +2864,6 @@ Code Summary
         cursor: pointer;
     }
 </style>
-
 </div>
 <p>Configuring MongoDB to grab the sensor readings and the CSV required me to do quite a bit of configuring of Vercel(timeout increase) and making sure that the MongoDB was no longer using fixed IP addresses(I’m not implementing some cursed dynamic IP allocation). I also implement a 3 second wait just in case there’s a lot of requests/readers(unlikely).</p>
 <p>Latest Sensor Reading MongoDB(Read-Only User):</p>
@@ -3462,9 +3460,122 @@ Code
 <p>Temperature/Humidity[DHT22]: <a href="https://www.amazon.com/SHILLEHTEK-Digital-Temperature-Humidity-Sensor/dp/B0CN5PN225/" class="uri">https://www.amazon.com/SHILLEHTEK-Digital-Temperature-Humidity-Sensor/dp/B0CN5PN225/</a></p>
 <p>Temp/Humidity/Pressure/VOC[BME680]: <a href="https://www.amazon.com/CJMCU-680-Temperature-Humidity-Ultra-Small-Development/dp/B07K1CGQTJ/" class="uri">https://www.amazon.com/CJMCU-680-Temperature-Humidity-Ultra-Small-Development/dp/B07K1CGQTJ/</a></p>
 <p>Air Quality/VOC[MQ135]: <a href="https://www.amazon.com/Ximimark-Quality-Hazardous-Detection-Arduino/dp/B07L73VTTY/" class="uri">https://www.amazon.com/Ximimark-Quality-Hazardous-Detection-Arduino/dp/B07L73VTTY/</a></p>
+<p>While a description of extract, transform, and load(ETL) probably belongs up top I feel like it fits the narrative better to define it here and describe how this project is one giant homegrown ETL pipeline…</p>
+
+<section id="what-is-an-etl-pipeline" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-an-etl-pipeline"><strong>What is an ETL Pipeline?</strong></h2>
+<section id="definition" class="level3">
+<h3 class="anchored" data-anchor-id="definition"><strong>Definition</strong></h3>
+<p>ETL stands for Extract, Transform, Load. It’s a process used in data management to:</p>
+<ol type="1">
+<li><p><strong>Extract</strong> data from various sources.</p></li>
+<li><p><strong>Transform</strong> the data into a suitable format or structure for analysis and reporting.</p></li>
+<li><p><strong>Load</strong> the transformed data into a target database, data warehouse, or data lake.</p></li>
+</ol>
+</section>
+<section id="how-it-works" class="level3">
+<h3 class="anchored" data-anchor-id="how-it-works"><strong>How it Works</strong></h3>
+<ol type="1">
+<li><p><strong>Extract</strong>:</p>
+<ul>
+<li><p>Data is collected from different sources like databases, APIs, files, or sensors.</p></li>
+<li><p>This step involves connecting to the source, querying or retrieving the data, and pulling it into the pipeline.</p></li>
+</ul></li>
+<li><p><strong>Transform</strong>:</p>
+<ul>
+<li><p>The extracted data is cleaned, validated, and transformed to fit the schema of the target system.</p></li>
+<li><p>Transformations might include filtering, aggregating, joining, sorting, or converting data types.</p></li>
+<li><p>This step ensures data quality and prepares it for efficient loading and querying in the target system.</p></li>
+</ul></li>
+<li><p><strong>Load</strong>:</p>
+<ul>
+<li><p>The transformed data is loaded into the target database, data warehouse, or data lake.</p></li>
+<li><p>This involves writing the data into the storage system, ensuring it’s available for querying and analysis.</p></li>
+<li><p>The loading process can be a full load (overwriting existing data) or an incremental load (updating or adding new data).</p></li>
+</ul></li>
+</ol>
+</section>
+<section id="applications" class="level3">
+<h3 class="anchored" data-anchor-id="applications"><strong>Applications</strong></h3>
+<p>ETL pipelines are used in various scenarios, including:</p>
+<ul>
+<li><p><strong>Data Warehousing</strong>: Collecting and consolidating data from multiple sources into a central repository for reporting and analysis.</p></li>
+<li><p><strong>Business Intelligence (BI)</strong>: Providing clean and structured data for BI tools to generate insights and reports.</p></li>
+<li><p><strong>Data Integration</strong>: Integrating data from different systems to provide a unified view.</p></li>
+<li><p><strong>Data Migration</strong>: Moving data from one system to another, often during system upgrades or cloud migrations.</p></li>
+<li><p><strong>Data Analytics</strong>: Preparing data for analysis and machine learning models.</p></li>
+</ul>
+</section>
+<section id="example-of-a-homegrown-etl-pipeline-in-the-project" class="level3">
+<h3 class="anchored" data-anchor-id="example-of-a-homegrown-etl-pipeline-in-the-project"><strong>Example of a Homegrown ETL Pipeline in the Project</strong></h3>
+<p>The project described above is a great example of a homegrown ETL pipeline, using a Raspberry Pi and various data storage solutions.</p>
+<section id="extract" class="level4">
+<h4 class="anchored" data-anchor-id="extract"><strong>Extract</strong></h4>
+<ul>
+<li><p><strong>Data Sources</strong>: Environmental data is extracted from various sensors (e.g., DHT11 for temperature and humidity).</p></li>
+<li><p><strong>Data Collection</strong>: The sensors are connected to the Raspberry Pi, which reads data at regular intervals.</p></li>
+</ul>
+</section>
+<section id="transform" class="level4">
+<h4 class="anchored" data-anchor-id="transform"><strong>Transform</strong></h4>
+<ul>
+<li><p><strong>Data Processing</strong>: The raw data from the sensors is processed to convert it into a readable format (e.g., converting temperature from Celsius to Fahrenheit).</p></li>
+<li><p><strong>Data Formatting</strong>: The data is formatted into JSON objects for a consistent structure across different storage solutions.</p></li>
+</ul>
+</section>
+<section id="load" class="level4">
+<h4 class="anchored" data-anchor-id="load"><strong>Load</strong></h4>
+<ul>
+<li><p><strong>Data Storage</strong>: The transformed data is loaded into multiple storage solutions:</p>
+<ul>
+<li><p><strong>Google Sheets</strong>: For easy access and sharing.</p></li>
+<li><p><strong>ThingSpeak</strong>: For real-time visualization and monitoring.</p></li>
+<li><p><strong>MongoDB</strong>: For flexible, document-based storage.</p></li>
+<li><p><strong>Vercel PostgreSQL</strong>: For relational database storage.</p></li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section id="how-the-project-implements-etl" class="level3">
+<h3 class="anchored" data-anchor-id="how-the-project-implements-etl"><strong>How the Project Implements ETL</strong></h3>
+<ol type="1">
+<li><p><strong>Extract</strong>:</p>
+<ul>
+<li>The Raspberry Pi reads data from the DHT11 sensor every second using the <strong><code>Adafruit_DHT</code></strong> library.</li>
+</ul></li>
+<li><p><strong>Transform</strong>:</p>
+<ul>
+<li><p>The raw data (humidity and temperature) is processed to convert temperature to Fahrenheit and format the date and time.</p></li>
+<li><p>The data is structured into JSON objects for consistency.</p></li>
+</ul></li>
+<li><p><strong>Load</strong>:</p>
+<ul>
+<li><p>The data is sent to multiple endpoints:</p>
+<ul>
+<li><p><strong>Google Sheets</strong>: Using the Google Sheets API to append new rows.</p></li>
+<li><p><strong>ThingSpeak</strong>: Using the ThingSpeak API for both simple and bulk updates.</p></li>
+<li><p><strong>MongoDB</strong>: Using the MongoDB Python client to insert data into the collection.</p></li>
+<li><p><strong>Vercel PostgreSQL</strong>: Sending data to a Vercel serverless function which writes to a PostgreSQL database.</p></li>
+</ul></li>
+</ul></li>
+</ol>
+</section>
+<section id="benefits-of-this-etl-pipeline" class="level3">
+<h3 class="anchored" data-anchor-id="benefits-of-this-etl-pipeline"><strong>Benefits of this ETL Pipeline</strong></h3>
+<ul>
+<li><p><strong>Real-time Data Processing</strong>: The pipeline processes and loads data in near real-time, providing up-to-date information.</p></li>
+<li><p><strong>Multi-Storage Integration</strong>: The data is stored in various platforms, each with its strengths, ensuring data availability and flexibility.</p></li>
+<li><p><strong>Scalability</strong>: The modular approach allows easy addition of new sensors or data sources.</p></li>
+<li><p><strong>Automation</strong>: The use of scheduled tasks and services ensures continuous data collection and processing without manual intervention.</p></li>
+</ul>
+</section>
+<section id="conclusion" class="level3">
+<h3 class="anchored" data-anchor-id="conclusion"><strong>Conclusion</strong></h3>
+<p>This project shows off a homegrown ETL pipeline that efficiently collects, processes, and stores environmental data from sensors. By using various storage solutions, it demonstrates how a flexible and scalable ETL process can be implemented for real-time data monitoring and analysis in a home automation context.</p>
 
 
-
+</section>
+</section>
 
 </main> <!-- /main -->
 <!--  General footer to put at bottom of page.   -->
@@ -4123,7 +4234,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"loop":false,"openEffect":"zoom","closeEffect":"zoom","selector":".lightbox","descPosition":"bottom"});
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","loop":false,"openEffect":"zoom","selector":".lightbox","descPosition":"bottom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;
