@@ -31,12 +31,19 @@
             const url = 'https://script.google.com/macros/s/AKfycbxs1lTq0o8Abb_iggM7yxQybOsWRAE_DPf7Gr4EE_ID9rSLonikadwaHlnzPlFwjOp3WQ/exec';
 
             try {
+                console.log('Fetching data from URL:', url);
                 const response = await fetch(url);
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+
                 const json = await response.json();
-                const rows = json;
-                if (rows && rows.length) {
-                    const lastRow = rows[rows.length - 1];
-                    displayTable(lastRow);
+                console.log('Fetched data:', json);
+                
+                if (json && json.length) {
+                    displayTable(json);
                 } else {
                     console.log('No data found.');
                 }
@@ -46,11 +53,13 @@
         }
 
         function displayTable(row) {
+            console.log('Displaying data in table:', row);
             const table = document.getElementById('google-data-table');
             const tbody = table.querySelector('tbody');
             const newRow = tbody.insertRow();
             newRow.id = 'google-data-table-row';
 
+            const fields = ['date', 'time', 'humidity', 'temp_f', 'temp_c'];
             row.forEach((cell, index) => {
                 const newCell = newRow.insertCell();
                 newCell.id = `google-data-table-cell-${index + 1}`;
@@ -68,7 +77,7 @@
             <tr id="google-data-table-header">
                 <th id="google-data-table-header-date">Date</th>
                 <th id="google-data-table-header-time">Time</th>
-                <th id="google-data-table-header-humidity">Humidity</th>
+                <th id="google-data-table-header-humidity">Humidity (%)</th>
                 <th id="google-data-table-header-temp-f">Temp F</th>
                 <th id="google-data-table-header-temp-c">Temp C</th>
             </tr>

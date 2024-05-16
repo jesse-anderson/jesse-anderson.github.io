@@ -2648,11 +2648,44 @@ Code Summary
 <p>Go to script.google.com and create a new project</p>
 <p>Write a function to fetch data from my Google Sheets:</p>
 <div class="sourceCode" id="cb44"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">doGet</span>(e) {</span>
-<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> sheet <span class="op">=</span> SpreadsheetApp<span class="op">.</span><span class="fu">openById</span>(<span class="st">'1n4iZYfgdhv08PeREqz26F4-eQYfnXdHaSQywnQ8UYWk'</span>)<span class="op">.</span><span class="fu">getSheetByName</span>(<span class="st">'Sheet1'</span>)<span class="op">;</span></span>
-<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> data <span class="op">=</span> sheet<span class="op">.</span><span class="fu">getRange</span>(<span class="st">'A:E'</span>)<span class="op">.</span><span class="fu">getValues</span>()<span class="op">;</span></span>
-<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> json <span class="op">=</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>(data)<span class="op">;</span></span>
-<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> ContentService<span class="op">.</span><span class="fu">createTextOutput</span>(json)<span class="op">.</span><span class="fu">setMimeType</span>(ContentService<span class="op">.</span><span class="at">MimeType</span><span class="op">.</span><span class="at">JSON</span>)<span class="op">;</span></span>
-<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">try</span> {</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Open the spreadsheet by ID and get the specified sheet</span></span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> sheet <span class="op">=</span> SpreadsheetApp<span class="op">.</span><span class="fu">openById</span>(<span class="st">'1n4iZYfgdhv08PeREqz26F4-eQYfnXdHaSQywnQ8UYWk'</span>)<span class="op">.</span><span class="fu">getSheetByName</span>(<span class="st">'Sheet1'</span>)<span class="op">;</span></span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Sheet accessed successfully'</span>)<span class="op">;</span></span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Get the last row number</span></span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> lastRow <span class="op">=</span> sheet<span class="op">.</span><span class="fu">getLastRow</span>()<span class="op">;</span></span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Last row number: '</span> <span class="op">+</span> lastRow)<span class="op">;</span></span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Get the values of the last row</span></span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> lastRowData <span class="op">=</span> sheet<span class="op">.</span><span class="fu">getRange</span>(lastRow<span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> sheet<span class="op">.</span><span class="fu">getLastColumn</span>())<span class="op">.</span><span class="fu">getValues</span>()[<span class="dv">0</span>]<span class="op">;</span></span>
+<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Last row data: '</span> <span class="op">+</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>(lastRowData))<span class="op">;</span></span>
+<span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb44-15"><a href="#cb44-15" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Get the headers from the first row</span></span>
+<span id="cb44-16"><a href="#cb44-16" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> headers <span class="op">=</span> sheet<span class="op">.</span><span class="fu">getRange</span>(<span class="dv">1</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> sheet<span class="op">.</span><span class="fu">getLastColumn</span>())<span class="op">.</span><span class="fu">getValues</span>()[<span class="dv">0</span>]<span class="op">;</span></span>
+<span id="cb44-17"><a href="#cb44-17" aria-hidden="true" tabindex="-1"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Headers: '</span> <span class="op">+</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>(headers))<span class="op">;</span></span>
+<span id="cb44-18"><a href="#cb44-18" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb44-19"><a href="#cb44-19" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Create an object to store the last row data</span></span>
+<span id="cb44-20"><a href="#cb44-20" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> result <span class="op">=</span> {}<span class="op">;</span></span>
+<span id="cb44-21"><a href="#cb44-21" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb44-22"><a href="#cb44-22" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Populate the result object with the headers as keys and last row data as values</span></span>
+<span id="cb44-23"><a href="#cb44-23" aria-hidden="true" tabindex="-1"></a>    headers<span class="op">.</span><span class="fu">forEach</span>((header<span class="op">,</span> index) <span class="kw">=&gt;</span> {</span>
+<span id="cb44-24"><a href="#cb44-24" aria-hidden="true" tabindex="-1"></a>      result[header] <span class="op">=</span> lastRowData[index]<span class="op">;</span></span>
+<span id="cb44-25"><a href="#cb44-25" aria-hidden="true" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb44-26"><a href="#cb44-26" aria-hidden="true" tabindex="-1"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Result object: '</span> <span class="op">+</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>(result))<span class="op">;</span></span>
+<span id="cb44-27"><a href="#cb44-27" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb44-28"><a href="#cb44-28" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Convert the result object to JSON</span></span>
+<span id="cb44-29"><a href="#cb44-29" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> json <span class="op">=</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>(result)<span class="op">;</span></span>
+<span id="cb44-30"><a href="#cb44-30" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb44-31"><a href="#cb44-31" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Set CORS headers</span></span>
+<span id="cb44-32"><a href="#cb44-32" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> output <span class="op">=</span> ContentService<span class="op">.</span><span class="fu">createTextOutput</span>(json)<span class="op">.</span><span class="fu">setMimeType</span>(ContentService<span class="op">.</span><span class="at">MimeType</span><span class="op">.</span><span class="at">JSON</span>)<span class="op">;</span></span>
+<span id="cb44-33"><a href="#cb44-33" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb44-34"><a href="#cb44-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> output<span class="op">;</span></span>
+<span id="cb44-35"><a href="#cb44-35" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">catch</span> (error) {</span>
+<span id="cb44-36"><a href="#cb44-36" aria-hidden="true" tabindex="-1"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Error: '</span> <span class="op">+</span> error<span class="op">.</span><span class="at">message</span>)<span class="op">;</span></span>
+<span id="cb44-37"><a href="#cb44-37" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ContentService<span class="op">.</span><span class="fu">createTextOutput</span>(<span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>({ <span class="dt">error</span><span class="op">:</span> error<span class="op">.</span><span class="at">message</span> }))<span class="op">.</span><span class="fu">setMimeType</span>(ContentService<span class="op">.</span><span class="at">MimeType</span><span class="op">.</span><span class="at">JSON</span>)<span class="op">;</span></span>
+<span id="cb44-38"><a href="#cb44-38" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb44-39"><a href="#cb44-39" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <ol type="1">
 <li><p><strong>Deploy the script</strong> as a web app:</p>
 <ul>
@@ -2667,349 +2700,327 @@ Code Summary
 <pre class="plaintext"><code>Access to fetch at 'https://docs.google.com/spreadsheets/d/1n4iZYfgdhv08PeREqz26F4-eQYfnXdHaSQywnQ8UYWk/gviz/tq?tqx=out:json&amp;sheet=Sheet1&amp;range=A:E' from origin 'null' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.</code></pre>
 <p>Latest sensor reading Google Sheets(button loads latest data):</p>
 <div>
-
-
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google Sheets Data Display</title>
-    <style>
-        #google-data-table {
-            width: 50%;
-            border-collapse: collapse;
-            margin: 50px auto;
-        }
-        #google-data-table th, #google-data-table td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-        #google-data-table th {
-            background-color: #f2f2f2;
-        }
-        #load-button {
-            display: block;
-            margin: 20px auto;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-    </style>
-    <script>
-        async function loadLastRow() {
-            const url = 'https://script.google.com/macros/s/AKfycbxs1lTq0o8Abb_iggM7yxQybOsWRAE_DPf7Gr4EE_ID9rSLonikadwaHlnzPlFwjOp3WQ/exec';
-
-            try {
-                const response = await fetch(url);
-                const json = await response.json();
-                const rows = json;
-                if (rows && rows.length) {
-                    const lastRow = rows[rows.length - 1];
-                    displayTable(lastRow);
-                } else {
-                    console.log('No data found.');
-                }
-            } catch (error) {
-                console.error("Error fetching data from Google Sheets:", error);
-            }
-        }
-
-        function displayTable(row) {
-            const table = document.getElementById('google-data-table');
-            const tbody = table.querySelector('tbody');
-            const newRow = tbody.insertRow();
-            newRow.id = 'google-data-table-row';
-
-            row.forEach((cell, index) => {
-                const newCell = newRow.insertCell();
-                newCell.id = `google-data-table-cell-${index + 1}`;
-                const text = document.createTextNode(cell);
-                newCell.appendChild(text);
-            });
-        }
-    </script>
-
-
-    <h1>Google Sheets Data Display</h1>
-    <button id="load-button" onclick="loadLastRow()">Load Data</button>
+<!-- Google Sheets Data Display -->
+<section>
+    <h2 class="anchored">Google Sheets Data Display</h2>
+    <button class="load-button" onclick="loadLastRowGoogle()">Load Google Sheets Data</button>
     
 <table id="google-data-table" data-quarto-postprocess="true">
 <thead>
-<tr id="google-data-table-header" class="header">
-<th id="google-data-table-header-date" data-quarto-table-cell-role="th">Date</th>
-<th id="google-data-table-header-time" data-quarto-table-cell-role="th">Time</th>
-<th id="google-data-table-header-humidity" data-quarto-table-cell-role="th">Humidity</th>
-<th id="google-data-table-header-temp-f" data-quarto-table-cell-role="th">Temp F</th>
-<th id="google-data-table-header-temp-c" data-quarto-table-cell-role="th">Temp C</th>
+<tr class="header">
+<th data-quarto-table-cell-role="th">Date</th>
+<th data-quarto-table-cell-role="th">Time</th>
+<th data-quarto-table-cell-role="th">Humidity (%)</th>
+<th data-quarto-table-cell-role="th">Temp F</th>
+<th data-quarto-table-cell-role="th">Temp C</th>
 </tr>
 </thead>
 <tbody>
 </tbody>
 </table>
 
+</section>
+<script>
+    async function loadLastRowGoogle() {
+        const url = 'https://script.google.com/macros/s/AKfycbxs1lTq0o8Abb_iggM7yxQybOsWRAE_DPf7Gr4EE_ID9rSLonikadwaHlnzPlFwjOp3WQ/exec';
+
+        try {
+            console.log('Fetching data from URL:', url);
+            const response = await fetch(url);
+            console.log('Response status:', response.status);
+            
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+
+            const json = await response.json();
+            console.log('Fetched data:', json);
+            
+            if (json && json.length) {
+                displayTableGoogle(json);
+            } else {
+                console.log('No data found.');
+            }
+        } catch (error) {
+            console.error("Error fetching data from Google Sheets:", error);
+        }
+    }
+
+    function displayTableGoogle(row) {
+        console.log('Displaying data in Google Sheets table:', row);
+        const table = document.getElementById('google-data-table');
+        const tbody = table.querySelector('tbody');
+        const newRow = tbody.insertRow();
+        newRow.id = 'google-data-table-row';
+
+        row.forEach((cell, index) => {
+            const newCell = newRow.insertCell();
+            newCell.id = `google-data-table-cell-${index + 1}`;
+            const text = document.createTextNode(cell);
+            newCell.appendChild(text);
+        });
+    }
+</script>
+<style>
+    #google-data-table {
+        width: 50%;
+        border-collapse: collapse;
+        margin: 50px auto;
+    }
+    #google-data-table th, #google-data-table td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: center;
+    }
+    #google-data-table th {
+        background-color: #f2f2f2;
+    }
+    .load-button {
+        display: block;
+        margin: 20px auto;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+</style>
 
 
 </div>
 <p>Latest Sensor Reading ThingSpeak(press button):</p>
 <div>
-
-
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ThingSpeak Data Display</title>
-    <style>
-        #thingspeak-data-table {
-            width: 70%;
-            border-collapse: collapse;
-            margin: 50px auto;
-        }
-        #thingspeak-data-table th, #thingspeak-data-table td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-        #thingspeak-data-table th {
-            background-color: #f2f2f2;
-        }
-        #load-button {
-            display: block;
-            margin: 20px auto;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-    </style>
-    <script>
-        async function loadThingSpeakData() {
-            const url = 'https://api.thingspeak.com/channels/2545447/feeds.json?results=1';
-
-            try {
-                const response = await fetch(url);
-                const json = await response.json();
-                const feeds = json.feeds;
-                if (feeds && feeds.length) {
-                    const lastFeed = feeds[feeds.length - 1];
-                    displayTable(lastFeed);
-                } else {
-                    console.log('No data found.');
-                }
-            } catch (error) {
-                console.error("Error fetching data from ThingSpeak:", error);
-            }
-        }
-
-        function displayTable(feed) {
-            const table = document.getElementById('thingspeak-data-table');
-            const tbody = table.querySelector('tbody');
-            const newRow = tbody.insertRow();
-            newRow.id = 'thingspeak-data-table-row';
-
-            const fields = ['created_at', 'entry_id', 'field1', 'field2', 'field3', 'field4', 'field5'];
-            fields.forEach((field, index) => {
-                const newCell = newRow.insertCell();
-                newCell.id = `thingspeak-data-table-cell-${index + 1}`;
-                const text = document.createTextNode(feed[field] || '');
-                newCell.appendChild(text);
-            });
-        }
-    </script>
-
-
-    <h1>ThingSpeak Data Display</h1>
-    <button id="load-button" onclick="loadThingSpeakData()">Load Data</button>
+<!-- ThingSpeak Data Display -->
+<section>
+    <h2 class="anchored">ThingSpeak Data Display</h2>
+    <button class="load-button" onclick="loadThingSpeakData()">Load ThingSpeak Data</button>
     
 <table id="thingspeak-data-table" data-quarto-postprocess="true">
 <thead>
-<tr id="thingspeak-data-table-header" class="header">
-<th id="thingspeak-data-table-header-created-at" data-quarto-table-cell-role="th">Created At</th>
-<th id="thingspeak-data-table-header-entry-id" data-quarto-table-cell-role="th">Entry ID</th>
-<th id="thingspeak-data-table-header-field1" data-quarto-table-cell-role="th">Temperature C</th>
-<th id="thingspeak-data-table-header-field2" data-quarto-table-cell-role="th">Temperature F</th>
-<th id="thingspeak-data-table-header-field3" data-quarto-table-cell-role="th">Humidity</th>
-<th id="thingspeak-data-table-header-field4" data-quarto-table-cell-role="th">Time</th>
-<th id="thingspeak-data-table-header-field5" data-quarto-table-cell-role="th">Date</th>
+<tr class="header">
+<th data-quarto-table-cell-role="th">Created At</th>
+<th data-quarto-table-cell-role="th">Entry ID</th>
+<th data-quarto-table-cell-role="th">Temperature C</th>
+<th data-quarto-table-cell-role="th">Temperature F</th>
+<th data-quarto-table-cell-role="th">Humidity</th>
+<th data-quarto-table-cell-role="th">Time</th>
+<th data-quarto-table-cell-role="th">Date</th>
 </tr>
 </thead>
 <tbody>
 </tbody>
 </table>
 
+</section>
+<script>
+    async function loadThingSpeakData() {
+        const url = 'https://api.thingspeak.com/channels/2545447/feeds.json?results=1';
 
+        try {
+            const response = await fetch(url);
+            const json = await response.json();
+            if (json.feeds && json.feeds.length) {
+                const lastFeed = json.feeds[json.feeds.length - 1];
+                displayTableThingSpeak(lastFeed);
+            } else {
+                console.log('No data found.');
+            }
+        } catch (error) {
+            console.error("Error fetching data from ThingSpeak:", error);
+        }
+    }
+
+    function displayTableThingSpeak(feed) {
+        const table = document.getElementById('thingspeak-data-table');
+        const tbody = table.querySelector('tbody');
+        const newRow = tbody.insertRow();
+        newRow.id = 'thingspeak-data-table-row';
+
+        const fields = ['created_at', 'entry_id', 'field1', 'field2', 'field3', 'field4', 'field5'];
+        fields.forEach((field) => {
+            const newCell = newRow.insertCell();
+            newCell.id = `thingspeak-data-table-cell-${field}`;
+            const text = document.createTextNode(feed[field] || '');
+            newCell.appendChild(text);
+        });
+    }
+</script>
+<style>
+    #thingspeak-data-table {
+        width: 70%;
+        border-collapse: collapse;
+        margin: 50px auto;
+    }
+    #thingspeak-data-table th, #thingspeak-data-table td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: center;
+    }
+    #thingspeak-data-table th {
+        background-color: #f2f2f2;
+    }
+    .load-button {
+        display: block;
+        margin: 20px auto;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+</style>
 
 </div>
 <p>Configuring MongoDB to grab the sensor readings and the CSV required me to do quite a bit of configuring of Vercel(timeout increase) and making sure that the MongoDB was no longer using fixed IP addresses(I’m not implementing some cursed dynamic IP allocation). I also implement a 3 second wait just in case there’s a lot of requests/readers(unlikely).</p>
 <p>Latest Sensor Reading MongoDB(Read-Only User):</p>
 <div>
-
-
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MongoDB Data Display</title>
-    <style>
-        #mongodb-data-table {
-            width: 70%;
-            border-collapse: collapse;
-            margin: 50px auto;
-        }
-        #mongodb-data-table th, #mongodb-data-table td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-        #mongodb-data-table th {
-            background-color: #f2f2f2;
-        }
-        #load-button {
-            display: block;
-            margin: 20px auto;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-    </style>
-    <script>
-        async function loadMongoDBData() {
-            const url = 'https://vercel-raspberry-pi-server.vercel.app/api/displayLastRowSQLMongoDB';
-
-            try {
-                const response = await fetch(url);
-                const json = await response.json();
-                const data = json;
-                if (data) {
-                    setTimeout(() => displayTable(data), 3000); // Wait for 3 seconds before populating the table
-                } else {
-                    console.log('No data found.');
-                }
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        }
-
-        function displayTable(data) {
-            const table = document.getElementById('mongodb-data-table');
-            const tbody = table.querySelector('tbody');
-            const newRow = tbody.insertRow();
-            newRow.id = 'mongodb-data-table-row';
-
-            const fields = ['date', 'time', 'humidityPercent', 'temperatureFahrenheit', 'temperatureCelsius'];
-            fields.forEach((field, index) => {
-                const newCell = newRow.insertCell();
-                newCell.id = `mongodb-data-table-cell-${index + 1}`;
-                const text = document.createTextNode(data[field] || '');
-                newCell.appendChild(text);
-            });
-        }
-    </script>
-
-
-    <h1>MongoDB Sensor Readings</h1>
-    <a href="https://vercel-raspberry-pi-server.vercel.app/api/displaySQLMongoDB">Download MongoDB Table Data as CSV[Latest ~4.0mb of readings]</a>
-    <button id="load-button" onclick="loadMongoDBData()">Load Data</button>
+<!-- MongoDB Data Display -->
+<section>
+    <h2 class="anchored">MongoDB Data Display</h2>
+    <a href="https://vercel-raspberry-pi-server.vercel.app/api/displaySQLMongoDB">Download MongoDB Table Data as CSV</a>
+    <button class="load-button" onclick="loadMongoDBData()">Load MongoDB Data</button>
     
 <table id="mongodb-data-table" data-quarto-postprocess="true">
 <thead>
-<tr id="mongodb-data-table-header" class="header">
-<th id="mongodb-data-table-header-date" data-quarto-table-cell-role="th">Date</th>
-<th id="mongodb-data-table-header-time" data-quarto-table-cell-role="th">Time</th>
-<th id="mongodb-data-table-header-humiditypercent" data-quarto-table-cell-role="th">Humidity (%)</th>
-<th id="mongodb-data-table-header-temperaturefahrenheit" data-quarto-table-cell-role="th">Temperature (F)</th>
-<th id="mongodb-data-table-header-temperaturecelsius" data-quarto-table-cell-role="th">Temperature (C)</th>
+<tr class="header">
+<th data-quarto-table-cell-role="th">Date</th>
+<th data-quarto-table-cell-role="th">Time</th>
+<th data-quarto-table-cell-role="th">Humidity (%)</th>
+<th data-quarto-table-cell-role="th">Temperature (F)</th>
+<th data-quarto-table-cell-role="th">Temperature (C)</th>
 </tr>
 </thead>
 <tbody>
 </tbody>
 </table>
 
+</section>
+<script>
+    async function loadMongoDBData() {
+        const url = 'https://vercel-raspberry-pi-server.vercel.app/api/displayLastRowSQLMongoDB';
 
+        try {
+            const response = await fetch(url);
+            const json = await response.json();
+            if (json) {
+                setTimeout(() => displayTableMongo(json), 3000); // Wait for 3 seconds before populating the table
+            } else {
+                console.log('No data found.');
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    }
 
+    function displayTableMongo(data) {
+        const table = document.getElementById('mongodb-data-table');
+        const tbody = table.querySelector('tbody');
+        const newRow = tbody.insertRow();
+
+        const fields = ['date', 'time', 'humidityPercent', 'temperatureFahrenheit', 'temperatureCelsius'];
+        fields.forEach((field) => {
+            const newCell = newRow.insertCell();
+            newCell.id = `mongodb-data-table-cell-${field}`;
+            const text = document.createTextNode(data[field] || '');
+            newCell.appendChild(text);
+        });
+    }
+</script>
+<style>
+    #mongodb-data-table {
+        width: 70%;
+        border-collapse: collapse;
+        margin: 50px auto;
+    }
+    #mongodb-data-table th, #mongodb-data-table td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: center;
+    }
+    #mongodb-data-table th {
+        background-color: #f2f2f2;
+    }
+    .load-button {
+        display: block;
+        margin: 20px auto;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+</style>
 </div>
 <p>Latest Sensor Reading Vercel PostgreSQL(Read-Only User):</p>
 <div>
-
-
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vercel Data Display</title>
-    <style>
-        #vercel-data-table {
-            width: 70%;
-            border-collapse: collapse;
-            margin: 50px auto;
-        }
-        #vercel-data-table th, #vercel-data-table td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-        #vercel-data-table th {
-            background-color: #f2f2f2;
-        }
-        #load-button {
-            display: block;
-            margin: 20px auto;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-    </style>
-    <script>
-        async function loadVercelData() {
-            const url = 'https://vercel-raspberry-pi-server.vercel.app/api/displayLastRowSQL';
-
-            try {
-                const response = await fetch(url);
-                const json = await response.json();
-                const data = json;
-                if (data) {
-                    setTimeout(() => displayTable(data), 3000); // Wait for 3 seconds before populating the table
-                } else {
-                    console.log('No data found.');
-                }
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        }
-
-        function displayTable(data) {
-            const table = document.getElementById('vercel-data-table');
-            const tbody = table.querySelector('tbody');
-            const newRow = tbody.insertRow();
-            newRow.id = 'vercel-data-table-row';
-
-            const fields = ['date', 'time', 'humiditypercent', 'temperaturefahrenheit', 'temperaturecelsius'];
-            fields.forEach((field, index) => {
-                const newCell = newRow.insertCell();
-                newCell.id = `vercel-data-table-cell-${index + 1}`;
-                const text = document.createTextNode(data[field] || '');
-                newCell.appendChild(text);
-            });
-        }
-    </script>
-
-
-    <h1>Data Display</h1>
+<!-- Vercel Data Display -->
+<section>
+    <h2 class="anchored">Vercel Data Display</h2>
     <a href="https://vercel-raspberry-pi-server.vercel.app/api/displaySQL">Download Vercel Table Data as CSV</a>
-    <button id="load-button" onclick="loadVercelData()">Load Data</button>
+    <button class="load-button" onclick="loadVercelData()">Load Vercel Data</button>
     
 <table id="vercel-data-table" data-quarto-postprocess="true">
 <thead>
-<tr id="vercel-data-table-header" class="header">
-<th id="vercel-data-table-header-date" data-quarto-table-cell-role="th">Date</th>
-<th id="vercel-data-table-header-time" data-quarto-table-cell-role="th">Time</th>
-<th id="vercel-data-table-header-humiditypercent" data-quarto-table-cell-role="th">Humidity (%)</th>
-<th id="vercel-data-table-header-temperaturefahrenheit" data-quarto-table-cell-role="th">Temperature (F)</th>
-<th id="vercel-data-table-header-temperaturecelsius" data-quarto-table-cell-role="th">Temperature (C)</th>
+<tr class="header">
+<th data-quarto-table-cell-role="th">Date</th>
+<th data-quarto-table-cell-role="th">Time</th>
+<th data-quarto-table-cell-role="th">Humidity (%)</th>
+<th data-quarto-table-cell-role="th">Temperature (F)</th>
+<th data-quarto-table-cell-role="th">Temperature (C)</th>
 </tr>
 </thead>
 <tbody>
 </tbody>
 </table>
 
+</section>
+<script>
+    async function loadVercelData() {
+        const url = 'https://vercel-raspberry-pi-server.vercel.app/api/displayLastRowSQL';
 
+        try {
+            const response = await fetch(url);
+            const json = await response.json();
+            if (json) {
+                setTimeout(() => displayTableVercel(json), 3000); // Wait for 3 seconds before populating the table
+            } else {
+                console.log('No data found.');
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    }
 
+    function displayTableVercel(data) {
+        const table = document.getElementById('vercel-data-table');
+        const tbody = table.querySelector('tbody');
+        const newRow = tbody.insertRow();
+
+        const fields = ['date', 'time', 'humiditypercent', 'temperaturefahrenheit', 'temperaturecelsius'];
+        fields.forEach((field) => {
+            const newCell = newRow.insertCell();
+            newCell.id = `vercel-data-table-cell-${field}`;
+            const text = document.createTextNode(data[field] || '');
+            newCell.appendChild(text);
+        });
+    }
+</script>
+<style>
+    #vercel-data-table {
+        width: 70%;
+        border-collapse: collapse;
+        margin: 50px auto;
+    }
+    #vercel-data-table th, #vercel-data-table td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: center;
+    }
+    #vercel-data-table th {
+        background-color: #f2f2f2;
+    }
+    .load-button {
+        display: block;
+        margin: 20px auto;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+</style>
 </div>
 <p>Final Python Script on the off chance something changed:</p>
 <p><strong><em>*Note you can run with this pretty easily, change the flags to True for whatever “database” you’re using.</em></strong>*</p>
@@ -3447,9 +3458,9 @@ Code
 <p>And there you have it. 4 different databases and the ability to write/read to them in near real time via a simple web portal. I could have used any of these individually but I wanted to explore the strengths/weaknesses of different configurations. I like the idea of just using a pretty long Google Sheet for most projects and completely ignoring actual databases for simple home automation. Using MongoDB was pretty straightforward via VSCode and it is a strong second choice. Tying for second would be ThingSpeak with its cool online interface, but I’m wary of Mathworks in general with their pay to play scheme. Last place is definitely Vercel’s own implementation of PostgreSQL mostly because of the compute/size limitations.</p>
 <p>I would have implemented multiple sensors, likely in the form of PM2.5/10, CO2, a better DHT22 sensor, and a VOC sensor. Here’s my Amazon wish list for future projects:</p>
 <p>PM2.5/10[PMS5003]: <a href="https://www.adafruit.com/product/3686" class="uri">https://www.adafruit.com/product/3686</a></p>
-<p>CO2[MH-Z19]: <a href="https://www.amazon.com/EC-Buying-Monitoring-Concentration-Detection/dp/B0CRKH5XVX/">https://www.amazon.com/EC-Buying-Monitoring-Concentration-Detection/dp/B0CRKH5XVX/</a></p>
-<p>Temperature/Humidity[DHT22]: <a href="https://www.amazon.com/SHILLEHTEK-Digital-Temperature-Humidity-Sensor/dp/B0CN5PN225/">https://www.amazon.com/SHILLEHTEK-Digital-Temperature-Humidity-Sensor/dp/B0CN5PN225/</a></p>
-<p>Temp/Humidity/Pressure/VOC[BME680]: <a href="https://www.amazon.com/CJMCU-680-Temperature-Humidity-Ultra-Small-Development/dp/B07K1CGQTJ/">https://www.amazon.com/CJMCU-680-Temperature-Humidity-Ultra-Small-Development/dp/B07K1CGQTJ/</a></p>
+<p>CO2[MH-Z19]: <a href="https://www.amazon.com/EC-Buying-Monitoring-Concentration-Detection/dp/B0CRKH5XVX/" class="uri">https://www.amazon.com/EC-Buying-Monitoring-Concentration-Detection/dp/B0CRKH5XVX/</a></p>
+<p>Temperature/Humidity[DHT22]: <a href="https://www.amazon.com/SHILLEHTEK-Digital-Temperature-Humidity-Sensor/dp/B0CN5PN225/" class="uri">https://www.amazon.com/SHILLEHTEK-Digital-Temperature-Humidity-Sensor/dp/B0CN5PN225/</a></p>
+<p>Temp/Humidity/Pressure/VOC[BME680]: <a href="https://www.amazon.com/CJMCU-680-Temperature-Humidity-Ultra-Small-Development/dp/B07K1CGQTJ/" class="uri">https://www.amazon.com/CJMCU-680-Temperature-Humidity-Ultra-Small-Development/dp/B07K1CGQTJ/</a></p>
 <p>Air Quality/VOC[MQ135]: <a href="https://www.amazon.com/Ximimark-Quality-Hazardous-Detection-Arduino/dp/B07L73VTTY/" class="uri">https://www.amazon.com/Ximimark-Quality-Hazardous-Detection-Arduino/dp/B07L73VTTY/</a></p>
 
 
@@ -4112,7 +4123,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","loop":false,"selector":".lightbox","descPosition":"bottom","openEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"loop":false,"openEffect":"zoom","closeEffect":"zoom","selector":".lightbox","descPosition":"bottom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

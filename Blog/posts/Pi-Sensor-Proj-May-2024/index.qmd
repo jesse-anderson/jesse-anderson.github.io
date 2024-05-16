@@ -2020,7 +2020,7 @@ This script facilitates continuous monitoring and logging of environmental data 
 
 That's 3 services down, with one more crack at MongoDB. The tentative plan is to push everything from the Python script then use some form of authentication to eventually be able to grab the data directly from MongoDB but use the Vercel site to "host" the csv/data. A rough sketch of the setup is below:
 
-![](Pi Sensor Flow Complete.png)
+![](Pi%20Sensor%20Flow%20Complete.png)
 
 This was fairly straightforward and with one function and a couple of lines of Python I was all set up. Note that I changed the timings, notably Vercel. As the server spins up and stays active for 5 minutes after it receives data. The limit for Compute time is 60 hrs/month, so at the basic vCPU of 0.6 I will be at 0.6\*(5minutes/60minutes)\*24hour\*30days=36 hours if I update it hourly. This is just safe enough for me to do and as a bonus its not like this is an AWS instance with my Credit Card linked.
 
@@ -2740,10 +2740,43 @@ Write a function to fetch data from my Google Sheets:
 
 ``` javascript
 function doGet(e) {
-  const sheet = SpreadsheetApp.openById('1n4iZYfgdhv08PeREqz26F4-eQYfnXdHaSQywnQ8UYWk').getSheetByName('Sheet1');
-  const data = sheet.getRange('A:E').getValues();
-  const json = JSON.stringify(data);
-  return ContentService.createTextOutput(json).setMimeType(ContentService.MimeType.JSON);
+  try {
+    // Open the spreadsheet by ID and get the specified sheet
+    const sheet = SpreadsheetApp.openById('1n4iZYfgdhv08PeREqz26F4-eQYfnXdHaSQywnQ8UYWk').getSheetByName('Sheet1');
+    Logger.log('Sheet accessed successfully');
+    
+    // Get the last row number
+    const lastRow = sheet.getLastRow();
+    Logger.log('Last row number: ' + lastRow);
+    
+    // Get the values of the last row
+    const lastRowData = sheet.getRange(lastRow, 1, 1, sheet.getLastColumn()).getValues()[0];
+    Logger.log('Last row data: ' + JSON.stringify(lastRowData));
+    
+    // Get the headers from the first row
+    const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    Logger.log('Headers: ' + JSON.stringify(headers));
+    
+    // Create an object to store the last row data
+    const result = {};
+    
+    // Populate the result object with the headers as keys and last row data as values
+    headers.forEach((header, index) => {
+      result[header] = lastRowData[index];
+    });
+    Logger.log('Result object: ' + JSON.stringify(result));
+    
+    // Convert the result object to JSON
+    const json = JSON.stringify(result);
+    
+    // Set CORS headers
+    const output = ContentService.createTextOutput(json).setMimeType(ContentService.MimeType.JSON);
+    
+    return output;
+  } catch (error) {
+    Logger.log('Error: ' + error.message);
+    return ContentService.createTextOutput(JSON.stringify({ error: error.message })).setMimeType(ContentService.MimeType.JSON);
+  }
 }
 ```
 
@@ -2768,349 +2801,327 @@ Access to fetch at 'https://docs.google.com/spreadsheets/d/1n4iZYfgdhv08PeREqz26
 Latest sensor reading Google Sheets(button loads latest data):
 
 ```{=html}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google Sheets Data Display</title>
-    <style>
-        #google-data-table {
-            width: 50%;
-            border-collapse: collapse;
-            margin: 50px auto;
-        }
-        #google-data-table th, #google-data-table td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-        #google-data-table th {
-            background-color: #f2f2f2;
-        }
-        #load-button {
-            display: block;
-            margin: 20px auto;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-    </style>
-    <script>
-        async function loadLastRow() {
-            const url = 'https://script.google.com/macros/s/AKfycbxs1lTq0o8Abb_iggM7yxQybOsWRAE_DPf7Gr4EE_ID9rSLonikadwaHlnzPlFwjOp3WQ/exec';
-
-            try {
-                const response = await fetch(url);
-                const json = await response.json();
-                const rows = json;
-                if (rows && rows.length) {
-                    const lastRow = rows[rows.length - 1];
-                    displayTable(lastRow);
-                } else {
-                    console.log('No data found.');
-                }
-            } catch (error) {
-                console.error("Error fetching data from Google Sheets:", error);
-            }
-        }
-
-        function displayTable(row) {
-            const table = document.getElementById('google-data-table');
-            const tbody = table.querySelector('tbody');
-            const newRow = tbody.insertRow();
-            newRow.id = 'google-data-table-row';
-
-            row.forEach((cell, index) => {
-                const newCell = newRow.insertCell();
-                newCell.id = `google-data-table-cell-${index + 1}`;
-                const text = document.createTextNode(cell);
-                newCell.appendChild(text);
-            });
-        }
-    </script>
-</head>
-<body>
-    <h1>Google Sheets Data Display</h1>
-    <button id="load-button" onclick="loadLastRow()">Load Data</button>
+<!-- Google Sheets Data Display -->
+<section>
+    <h2>Google Sheets Data Display</h2>
+    <button class="load-button" onclick="loadLastRowGoogle()">Load Google Sheets Data</button>
     <table id="google-data-table">
-<thead>
-<tr id="google-data-table-header">
-<th id="google-data-table-header-date">Date</th>
-<th id="google-data-table-header-time">Time</th>
-<th id="google-data-table-header-humidity">Humidity</th>
-<th id="google-data-table-header-temp-f">Temp F</th>
-<th id="google-data-table-header-temp-c">Temp C</th>
-</tr>
-</thead>
-<tbody>
-<!-- Data will be inserted here -->
-</tbody>
-</table>
-</body>
-</html>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Humidity (%)</th>
+                <th>Temp F</th>
+                <th>Temp C</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data will be inserted here -->
+        </tbody>
+    </table>
+</section>
+<script>
+    async function loadLastRowGoogle() {
+        const url = 'https://script.google.com/macros/s/AKfycbxs1lTq0o8Abb_iggM7yxQybOsWRAE_DPf7Gr4EE_ID9rSLonikadwaHlnzPlFwjOp3WQ/exec';
+
+        try {
+            console.log('Fetching data from URL:', url);
+            const response = await fetch(url);
+            console.log('Response status:', response.status);
+            
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+
+            const json = await response.json();
+            console.log('Fetched data:', json);
+            
+            if (json && json.length) {
+                displayTableGoogle(json);
+            } else {
+                console.log('No data found.');
+            }
+        } catch (error) {
+            console.error("Error fetching data from Google Sheets:", error);
+        }
+    }
+
+    function displayTableGoogle(row) {
+        console.log('Displaying data in Google Sheets table:', row);
+        const table = document.getElementById('google-data-table');
+        const tbody = table.querySelector('tbody');
+        const newRow = tbody.insertRow();
+        newRow.id = 'google-data-table-row';
+
+        row.forEach((cell, index) => {
+            const newCell = newRow.insertCell();
+            newCell.id = `google-data-table-cell-${index + 1}`;
+            const text = document.createTextNode(cell);
+            newCell.appendChild(text);
+        });
+    }
+</script>
+<style>
+    #google-data-table {
+        width: 50%;
+        border-collapse: collapse;
+        margin: 50px auto;
+    }
+    #google-data-table th, #google-data-table td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: center;
+    }
+    #google-data-table th {
+        background-color: #f2f2f2;
+    }
+    .load-button {
+        display: block;
+        margin: 20px auto;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+</style>
+
+
 ```
 Latest Sensor Reading ThingSpeak(press button):
 
 ```{=html}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ThingSpeak Data Display</title>
-    <style>
-        #thingspeak-data-table {
-            width: 70%;
-            border-collapse: collapse;
-            margin: 50px auto;
-        }
-        #thingspeak-data-table th, #thingspeak-data-table td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-        #thingspeak-data-table th {
-            background-color: #f2f2f2;
-        }
-        #load-button {
-            display: block;
-            margin: 20px auto;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-    </style>
-    <script>
-        async function loadThingSpeakData() {
-            const url = 'https://api.thingspeak.com/channels/2545447/feeds.json?results=1';
-
-            try {
-                const response = await fetch(url);
-                const json = await response.json();
-                const feeds = json.feeds;
-                if (feeds && feeds.length) {
-                    const lastFeed = feeds[feeds.length - 1];
-                    displayTable(lastFeed);
-                } else {
-                    console.log('No data found.');
-                }
-            } catch (error) {
-                console.error("Error fetching data from ThingSpeak:", error);
-            }
-        }
-
-        function displayTable(feed) {
-            const table = document.getElementById('thingspeak-data-table');
-            const tbody = table.querySelector('tbody');
-            const newRow = tbody.insertRow();
-            newRow.id = 'thingspeak-data-table-row';
-
-            const fields = ['created_at', 'entry_id', 'field1', 'field2', 'field3', 'field4', 'field5'];
-            fields.forEach((field, index) => {
-                const newCell = newRow.insertCell();
-                newCell.id = `thingspeak-data-table-cell-${index + 1}`;
-                const text = document.createTextNode(feed[field] || '');
-                newCell.appendChild(text);
-            });
-        }
-    </script>
-</head>
-<body>
-    <h1>ThingSpeak Data Display</h1>
-    <button id="load-button" onclick="loadThingSpeakData()">Load Data</button>
+<!-- ThingSpeak Data Display -->
+<section>
+    <h2>ThingSpeak Data Display</h2>
+    <button class="load-button" onclick="loadThingSpeakData()">Load ThingSpeak Data</button>
     <table id="thingspeak-data-table">
-<thead>
-<tr id="thingspeak-data-table-header">
-<th id="thingspeak-data-table-header-created-at">Created At</th>
-<th id="thingspeak-data-table-header-entry-id">Entry ID</th>
-<th id="thingspeak-data-table-header-field1">Temperature C</th>
-<th id="thingspeak-data-table-header-field2">Temperature F</th>
-<th id="thingspeak-data-table-header-field3">Humidity</th>
-<th id="thingspeak-data-table-header-field4">Time</th>
-<th id="thingspeak-data-table-header-field5">Date</th>
-</tr>
-</thead>
-<tbody>
-<!-- Data will be inserted here -->
-</tbody>
-</table>
-</body>
-</html>
+        <thead>
+            <tr>
+                <th>Created At</th>
+                <th>Entry ID</th>
+                <th>Temperature C</th>
+                <th>Temperature F</th>
+                <th>Humidity</th>
+                <th>Time</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data will be inserted here -->
+        </tbody>
+    </table>
+</section>
+<script>
+    async function loadThingSpeakData() {
+        const url = 'https://api.thingspeak.com/channels/2545447/feeds.json?results=1';
+
+        try {
+            const response = await fetch(url);
+            const json = await response.json();
+            if (json.feeds && json.feeds.length) {
+                const lastFeed = json.feeds[json.feeds.length - 1];
+                displayTableThingSpeak(lastFeed);
+            } else {
+                console.log('No data found.');
+            }
+        } catch (error) {
+            console.error("Error fetching data from ThingSpeak:", error);
+        }
+    }
+
+    function displayTableThingSpeak(feed) {
+        const table = document.getElementById('thingspeak-data-table');
+        const tbody = table.querySelector('tbody');
+        const newRow = tbody.insertRow();
+        newRow.id = 'thingspeak-data-table-row';
+
+        const fields = ['created_at', 'entry_id', 'field1', 'field2', 'field3', 'field4', 'field5'];
+        fields.forEach((field) => {
+            const newCell = newRow.insertCell();
+            newCell.id = `thingspeak-data-table-cell-${field}`;
+            const text = document.createTextNode(feed[field] || '');
+            newCell.appendChild(text);
+        });
+    }
+</script>
+<style>
+    #thingspeak-data-table {
+        width: 70%;
+        border-collapse: collapse;
+        margin: 50px auto;
+    }
+    #thingspeak-data-table th, #thingspeak-data-table td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: center;
+    }
+    #thingspeak-data-table th {
+        background-color: #f2f2f2;
+    }
+    .load-button {
+        display: block;
+        margin: 20px auto;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+</style>
+
 ```
 Configuring MongoDB to grab the sensor readings and the CSV required me to do quite a bit of configuring of Vercel(timeout increase) and making sure that the MongoDB was no longer using fixed IP addresses(I'm not implementing some cursed dynamic IP allocation). I also implement a 3 second wait just in case there's a lot of requests/readers(unlikely).
 
 Latest Sensor Reading MongoDB(Read-Only User):
 
 ```{=html}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MongoDB Data Display</title>
-    <style>
-        #mongodb-data-table {
-            width: 70%;
-            border-collapse: collapse;
-            margin: 50px auto;
-        }
-        #mongodb-data-table th, #mongodb-data-table td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-        #mongodb-data-table th {
-            background-color: #f2f2f2;
-        }
-        #load-button {
-            display: block;
-            margin: 20px auto;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-    </style>
-    <script>
-        async function loadMongoDBData() {
-            const url = 'https://vercel-raspberry-pi-server.vercel.app/api/displayLastRowSQLMongoDB';
-
-            try {
-                const response = await fetch(url);
-                const json = await response.json();
-                const data = json;
-                if (data) {
-                    setTimeout(() => displayTable(data), 3000); // Wait for 3 seconds before populating the table
-                } else {
-                    console.log('No data found.');
-                }
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        }
-
-        function displayTable(data) {
-            const table = document.getElementById('mongodb-data-table');
-            const tbody = table.querySelector('tbody');
-            const newRow = tbody.insertRow();
-            newRow.id = 'mongodb-data-table-row';
-
-            const fields = ['date', 'time', 'humidityPercent', 'temperatureFahrenheit', 'temperatureCelsius'];
-            fields.forEach((field, index) => {
-                const newCell = newRow.insertCell();
-                newCell.id = `mongodb-data-table-cell-${index + 1}`;
-                const text = document.createTextNode(data[field] || '');
-                newCell.appendChild(text);
-            });
-        }
-    </script>
-</head>
-<body>
-    <h1>MongoDB Sensor Readings</h1>
-    <a href="https://vercel-raspberry-pi-server.vercel.app/api/displaySQLMongoDB">Download MongoDB Table Data as CSV[Latest ~4.0mb of readings]</a>
-    <button id="load-button" onclick="loadMongoDBData()">Load Data</button>
+<!-- MongoDB Data Display -->
+<section>
+    <h2>MongoDB Data Display</h2>
+    <a href="https://vercel-raspberry-pi-server.vercel.app/api/displaySQLMongoDB">Download MongoDB Table Data as CSV</a>
+    <button class="load-button" onclick="loadMongoDBData()">Load MongoDB Data</button>
     <table id="mongodb-data-table">
-<thead>
-<tr id="mongodb-data-table-header">
-    <th id="mongodb-data-table-header-date">Date</th>
-    <th id="mongodb-data-table-header-time">Time</th>
-    <th id="mongodb-data-table-header-humiditypercent">Humidity (%)</th>
-    <th id="mongodb-data-table-header-temperaturefahrenheit">Temperature (F)</th>
-    <th id="mongodb-data-table-header-temperaturecelsius">Temperature (C)</th>
-</tr>
-</thead>
-<tbody>
-<!-- Data will be inserted here -->
-</tbody>
-</table>
-</body>
-</html>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Humidity (%)</th>
+                <th>Temperature (F)</th>
+                <th>Temperature (C)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data will be inserted here -->
+        </tbody>
+    </table>
+</section>
+<script>
+    async function loadMongoDBData() {
+        const url = 'https://vercel-raspberry-pi-server.vercel.app/api/displayLastRowSQLMongoDB';
+
+        try {
+            const response = await fetch(url);
+            const json = await response.json();
+            if (json) {
+                setTimeout(() => displayTableMongo(json), 3000); // Wait for 3 seconds before populating the table
+            } else {
+                console.log('No data found.');
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    }
+
+    function displayTableMongo(data) {
+        const table = document.getElementById('mongodb-data-table');
+        const tbody = table.querySelector('tbody');
+        const newRow = tbody.insertRow();
+
+        const fields = ['date', 'time', 'humidityPercent', 'temperatureFahrenheit', 'temperatureCelsius'];
+        fields.forEach((field) => {
+            const newCell = newRow.insertCell();
+            newCell.id = `mongodb-data-table-cell-${field}`;
+            const text = document.createTextNode(data[field] || '');
+            newCell.appendChild(text);
+        });
+    }
+</script>
+<style>
+    #mongodb-data-table {
+        width: 70%;
+        border-collapse: collapse;
+        margin: 50px auto;
+    }
+    #mongodb-data-table th, #mongodb-data-table td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: center;
+    }
+    #mongodb-data-table th {
+        background-color: #f2f2f2;
+    }
+    .load-button {
+        display: block;
+        margin: 20px auto;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+</style>
 ```
 Latest Sensor Reading Vercel PostgreSQL(Read-Only User):
 
 ```{=html}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vercel Data Display</title>
-    <style>
-        #vercel-data-table {
-            width: 70%;
-            border-collapse: collapse;
-            margin: 50px auto;
-        }
-        #vercel-data-table th, #vercel-data-table td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-        #vercel-data-table th {
-            background-color: #f2f2f2;
-        }
-        #load-button {
-            display: block;
-            margin: 20px auto;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-    </style>
-    <script>
-        async function loadVercelData() {
-            const url = 'https://vercel-raspberry-pi-server.vercel.app/api/displayLastRowSQL';
-
-            try {
-                const response = await fetch(url);
-                const json = await response.json();
-                const data = json;
-                if (data) {
-                    setTimeout(() => displayTable(data), 3000); // Wait for 3 seconds before populating the table
-                } else {
-                    console.log('No data found.');
-                }
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        }
-
-        function displayTable(data) {
-            const table = document.getElementById('vercel-data-table');
-            const tbody = table.querySelector('tbody');
-            const newRow = tbody.insertRow();
-            newRow.id = 'vercel-data-table-row';
-
-            const fields = ['date', 'time', 'humiditypercent', 'temperaturefahrenheit', 'temperaturecelsius'];
-            fields.forEach((field, index) => {
-                const newCell = newRow.insertCell();
-                newCell.id = `vercel-data-table-cell-${index + 1}`;
-                const text = document.createTextNode(data[field] || '');
-                newCell.appendChild(text);
-            });
-        }
-    </script>
-</head>
-<body>
-    <h1>Data Display</h1>
+<!-- Vercel Data Display -->
+<section>
+    <h2>Vercel Data Display</h2>
     <a href="https://vercel-raspberry-pi-server.vercel.app/api/displaySQL">Download Vercel Table Data as CSV</a>
-    <button id="load-button" onclick="loadVercelData()">Load Data</button>
+    <button class="load-button" onclick="loadVercelData()">Load Vercel Data</button>
     <table id="vercel-data-table">
-    <thead>
-        <tr id="vercel-data-table-header">
-            <th id="vercel-data-table-header-date">Date</th>
-            <th id="vercel-data-table-header-time">Time</th>
-            <th id="vercel-data-table-header-humiditypercent">Humidity (%)</th>
-            <th id="vercel-data-table-header-temperaturefahrenheit">Temperature (F)</th>
-            <th id="vercel-data-table-header-temperaturecelsius">Temperature (C)</th>
-        </tr>
-    </thead>
-    <tbody>
-        <!-- Data will be inserted here -->
-    </tbody>
-</table>
-</body>
-</html>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Humidity (%)</th>
+                <th>Temperature (F)</th>
+                <th>Temperature (C)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data will be inserted here -->
+        </tbody>
+    </table>
+</section>
+<script>
+    async function loadVercelData() {
+        const url = 'https://vercel-raspberry-pi-server.vercel.app/api/displayLastRowSQL';
+
+        try {
+            const response = await fetch(url);
+            const json = await response.json();
+            if (json) {
+                setTimeout(() => displayTableVercel(json), 3000); // Wait for 3 seconds before populating the table
+            } else {
+                console.log('No data found.');
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    }
+
+    function displayTableVercel(data) {
+        const table = document.getElementById('vercel-data-table');
+        const tbody = table.querySelector('tbody');
+        const newRow = tbody.insertRow();
+
+        const fields = ['date', 'time', 'humiditypercent', 'temperaturefahrenheit', 'temperaturecelsius'];
+        fields.forEach((field) => {
+            const newCell = newRow.insertCell();
+            newCell.id = `vercel-data-table-cell-${field}`;
+            const text = document.createTextNode(data[field] || '');
+            newCell.appendChild(text);
+        });
+    }
+</script>
+<style>
+    #vercel-data-table {
+        width: 70%;
+        border-collapse: collapse;
+        margin: 50px auto;
+    }
+    #vercel-data-table th, #vercel-data-table td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: center;
+    }
+    #vercel-data-table th {
+        background-color: #f2f2f2;
+    }
+    .load-button {
+        display: block;
+        margin: 20px auto;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+</style>
 ```
 Final Python Script on the off chance something changed:
 
@@ -3547,7 +3558,6 @@ def main():
 
 if __name__ == '__main__':
     main()
-
 ```
 
 </details>
@@ -3558,10 +3568,10 @@ I would have implemented multiple sensors, likely in the form of PM2.5/10, CO2, 
 
 PM2.5/10\[PMS5003\]: <https://www.adafruit.com/product/3686>
 
-CO2\[MH-Z19\]: [https://www.amazon.com/EC-Buying-Monitoring-Concentration-Detection/dp/B0CRKH5XVX/ ](https://www.amazon.com/EC-Buying-Monitoring-Concentration-Detection/dp/B0CRKH5XVX/ )
+CO2\[MH-Z19\]: <https://www.amazon.com/EC-Buying-Monitoring-Concentration-Detection/dp/B0CRKH5XVX/>
 
-Temperature/Humidity\[DHT22\]: [https://www.amazon.com/SHILLEHTEK-Digital-Temperature-Humidity-Sensor/dp/B0CN5PN225/ ](https://www.amazon.com/SHILLEHTEK-Digital-Temperature-Humidity-Sensor/dp/B0CN5PN225/ )
+Temperature/Humidity\[DHT22\]: <https://www.amazon.com/SHILLEHTEK-Digital-Temperature-Humidity-Sensor/dp/B0CN5PN225/>
 
-Temp/Humidity/Pressure/VOC\[BME680\]: [https://www.amazon.com/CJMCU-680-Temperature-Humidity-Ultra-Small-Development/dp/B07K1CGQTJ/ ](https://www.amazon.com/CJMCU-680-Temperature-Humidity-Ultra-Small-Development/dp/B07K1CGQTJ/ )
+Temp/Humidity/Pressure/VOC\[BME680\]: <https://www.amazon.com/CJMCU-680-Temperature-Humidity-Ultra-Small-Development/dp/B07K1CGQTJ/>
 
 Air Quality/VOC\[MQ135\]: <https://www.amazon.com/Ximimark-Quality-Hazardous-Detection-Arduino/dp/B07L73VTTY/>
