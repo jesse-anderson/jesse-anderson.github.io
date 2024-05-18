@@ -19,7 +19,7 @@ I finally decided to use the Raspberry Pi 4 Model B+ 8gb I had lying around to p
 
 ![](GPIO-Pinout-Diagram-2.png)
 
-Image source: <https://www.raspberrypi.com/documentation/computers/raspberry-pi.html>
+[Image source](https://www.raspberrypi.com/documentation/computers/raspberry-pi.html)
 
 And here's the setup:
 

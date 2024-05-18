@@ -236,7 +236,7 @@ cookieconsent.run({
 
 <p>I finally decided to use the Raspberry Pi 4 Model B+ 8gb I had lying around to play around with some sensors. Luckily I took an electrical engineering course in circuits[ECE210 at UIC], which made it pretty straight forward to wire things up. I had also already flashed an OS to the SD card and only encountered a few issues with booting up with the pi in its case(with fan!) and the temperature/humidity sensor plugged in. Please note that setting up VNC Server(RPI) and VNC Viewer(Desktop) will speed this up dramatically. Below is a pretty simple mockup of the connection I used with the Fan’s Power on pin 4[+,5.0VDC] and pin 14[-] and the DHT11 sensor on Pin 2[+,5.0VDC], Pin 6[-], and Pin 7[GPIO7].</p>
 <p><a href="GPIO-Pinout-Diagram-2.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="GPIO-Pinout-Diagram-2.png" class="img-fluid"></a></p>
-<p>Image source: <a href="https://www.raspberrypi.com/documentation/computers/raspberry-pi.html" class="uri">https://www.raspberrypi.com/documentation/computers/raspberry-pi.html</a></p>
+<p><a href="https://www.raspberrypi.com/documentation/computers/raspberry-pi.html">Image source</a></p>
 <p>And here’s the setup:</p>
 <p><a href="DHT11 Project_bb.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="DHT11 Project_bb.png" class="img-fluid"></a></p>
 <p>As a side note, Fritzing worked really well to generate the image above and I used the build at: <a href="https://github.com/Move2win/Fritzing-0.9.9.64.pc-Compiled-Build" class="uri">https://github.com/Move2win/Fritzing-0.9.9.64.pc-Compiled-Build</a></p>
@@ -4233,7 +4233,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"selector":".lightbox","descPosition":"bottom","openEffect":"zoom","loop":false,"closeEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","closeEffect":"zoom","loop":false,"selector":".lightbox","descPosition":"bottom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;
