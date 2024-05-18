@@ -44,7 +44,9 @@ After finally getting everything to work on the [database side of things](https:
 </head>
 <body>
     <h2>Pi Environment Test Data</h2>
-    <button onclick="refreshData()">Refresh</button>
+    <p><button onclick="loadChart()">Load Chart</button></p>
+    <p></p>
+    <p><button onclick="refreshData()">Refresh</button></p>
     <canvas id="myChart" width="400" height="200"></canvas>
     <div id="latestValues"></div>
     <script>
@@ -70,19 +72,19 @@ After finally getting everything to work on the [database side of things](https:
 
             const tableHTML = `
                 <table>
-    <tr>
-        <th>Time</th>
-        <th>Temperature C</th>
-        <th>Temperature F</th>
-        <th>Humidity</th>
-    </tr>
-    <tr>
-        <td>${latestTime.toLocaleDateString('en-US')} ${latestTime.toLocaleTimeString('en-US')}</td>
-        <td>${latestTempC.toFixed(2)}</td>
-        <td>${latestTempF.toFixed(2)}</td>
-        <td>${latestHumidity.toFixed(2)}</td>
-    </tr>
-</table>
+                    <tr>
+                        <th>Time</th>
+                        <th>Temperature C</th>
+                        <th>Temperature F</th>
+                        <th>Humidity</th>
+                    </tr>
+                    <tr>
+                        <td>${latestTime.toLocaleDateString('en-US')} ${latestTime.toLocaleTimeString('en-US')}</td>
+                        <td>${latestTempC.toFixed(2)}</td>
+                        <td>${latestTempF.toFixed(2)}</td>
+                        <td>${latestHumidity.toFixed(2)}</td>
+                    </tr>
+                </table>
             `;
 
             document.getElementById('latestValues').innerHTML = tableHTML;
@@ -102,22 +104,25 @@ After finally getting everything to work on the [database side of things](https:
                             label: 'Temperature C',
                             data: tempC,
                             borderColor: 'rgba(255, 99, 132, 1)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
                             borderWidth: 1,
-                            fill: false
+                            fill: true
                         },
                         {
                             label: 'Temperature F',
                             data: tempF,
-                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderColor: 'rgba(255, 165, 0, 1)',
+                            backgroundColor: 'rgba(255, 165, 0, 0.2)',
                             borderWidth: 1,
-                            fill: false
+                            fill: true
                         },
                         {
                             label: 'Humidity',
                             data: humidity,
-                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
                             borderWidth: 1,
-                            fill: false
+                            fill: true
                         }
                     ]
                 },
@@ -148,6 +153,12 @@ After finally getting everything to work on the [database side of things](https:
                 chartInstance.destroy();
             }
             chartInstance = await createChart();
+        }
+
+        async function loadChart() {
+            if (!chartInstance) {
+                chartInstance = await createChart();
+            }
         }
 
         window.onload = async () => {
@@ -188,6 +199,7 @@ After finally getting everything to work on the [database side of things](https:
 </head>
 <body>
     <h2>Pi Environment Test Data</h2>
+    <button onclick="loadChart()">Load Chart</button>
     <button onclick="refreshData()">Refresh</button>
     <canvas id="myChart" width="400" height="200"></canvas>
     <div id="latestValues"></div>
@@ -214,19 +226,19 @@ After finally getting everything to work on the [database side of things](https:
 
             const tableHTML = `
                 <table>
-    <tr>
-        <th>Time</th>
-        <th>Temperature C</th>
-        <th>Temperature F</th>
-        <th>Humidity</th>
-    </tr>
-    <tr>
-        <td>${latestTime.toLocaleDateString('en-US')} ${latestTime.toLocaleTimeString('en-US')}</td>
-        <td>${latestTempC.toFixed(2)}</td>
-        <td>${latestTempF.toFixed(2)}</td>
-        <td>${latestHumidity.toFixed(2)}</td>
-    </tr>
-</table>
+                    <tr>
+                        <th>Time</th>
+                        <th>Temperature C</th>
+                        <th>Temperature F</th>
+                        <th>Humidity</th>
+                    </tr>
+                    <tr>
+                        <td>${latestTime.toLocaleDateString('en-US')} ${latestTime.toLocaleTimeString('en-US')}</td>
+                        <td>${latestTempC.toFixed(2)}</td>
+                        <td>${latestTempF.toFixed(2)}</td>
+                        <td>${latestHumidity.toFixed(2)}</td>
+                    </tr>
+                </table>
             `;
 
             document.getElementById('latestValues').innerHTML = tableHTML;
@@ -246,22 +258,25 @@ After finally getting everything to work on the [database side of things](https:
                             label: 'Temperature C',
                             data: tempC,
                             borderColor: 'rgba(255, 99, 132, 1)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
                             borderWidth: 1,
-                            fill: false
+                            fill: true
                         },
                         {
                             label: 'Temperature F',
                             data: tempF,
-                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderColor: 'rgba(255, 165, 0, 1)',
+                            backgroundColor: 'rgba(255, 165, 0, 0.2)',
                             borderWidth: 1,
-                            fill: false
+                            fill: true
                         },
                         {
                             label: 'Humidity',
                             data: humidity,
-                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
                             borderWidth: 1,
-                            fill: false
+                            fill: true
                         }
                     ]
                 },
@@ -292,6 +307,12 @@ After finally getting everything to work on the [database side of things](https:
                 chartInstance.destroy();
             }
             chartInstance = await createChart();
+        }
+
+        async function loadChart() {
+            if (!chartInstance) {
+                chartInstance = await createChart();
+            }
         }
 
         window.onload = async () => {
@@ -376,7 +397,7 @@ Regardless I plan on implementing an ESP32 based solution moving forward. Some c
 
 -   **ESP32**:
 
-    -   **Capabilities**: Dual-core processor designed for real-time processing, but might need optimization for simultaneous high-frequency data handling.
+    -   **Capabilities**: Dual-core processor designed for real-time processing, but might need optimization for simultaneous high-frequency data handling(C++).
 
     -   **PMS5003**: Handles 1 Hz output effectively.
 
@@ -606,7 +627,7 @@ Regardless I plan on implementing an ESP32 based solution moving forward. Some c
 
 -   **Security**: Both offer security features, but the ESP32 has built-in hardware security for IoT applications.
 
-In conclusion, the choice between a Raspberry Pi and an ESP32 depends on the specific requirements of your project. The Raspberry Pi offers more computational power and flexibility, making it suitable for complex applications requiring robust data processing and local storage. The ESP32, with its low cost, low power consumption, and efficient real-time processing capabilities, is ideal for simpler, cost-effective, and portable sensor applications. Additionally, the cost of failure for a raspberry pi is quite large while an ESP32 is negligible. I would like to have a real time setup along with a dynamic plot of temp, humidity, etc. for a plant monitoring project. To do this at scale(someone has 50+ plants....) I need to dramatically reduce cost. Additionally, I need to also begin budgeting for a Pi cluster project to learn distributed/parallel computing, which, funny enough, are two classes in my Master's at UIUC that I would like to take(CS425 and CS484 respectively). Truth be told much of this IoT Raspberry Pi/Arduino type work recently stems from a desire to take the IoT class at UIUC, but that class' priority relative to other courses such as Machine Learning, Statistical Learning, etc. is dead last and puts me over the credits I need. Additionally, implementing X/Y/Z with this hardware allows me to learn how things work at a fraction of tuition(1/10).
+In conclusion, the Raspberry Pi offers more computational power and flexibility, making it suitable for complex applications requiring robust data processing and local storage. The ESP32, with its low cost, low power consumption, and efficient real-time processing capabilities, is ideal for simpler, cost-effective, and portable sensor applications. Additionally, the cost of failure for a raspberry pi is quite large while an ESP32 is negligible. I would like to have a real time setup along with a dynamic plot of temp, humidity, etc. for a plant monitoring project. To do this at scale(someone has 50+ plants....) I need to dramatically reduce cost. Additionally, I need to also begin budgeting for a Pi cluster project to learn distributed/parallel computing, which, funny enough, are two classes in my Master's at UIUC that I would like to take(CS425 and CS484 respectively). Truth be told much of this IoT Raspberry Pi/Arduino type work recently stems from a desire to take the IoT class at UIUC, but that class' priority relative to other courses such as Machine Learning, Statistical Learning, etc. is dead last and puts me over the credits I need. Additionally, implementing X/Y/Z with this hardware allows me to learn how things work at a fraction of tuition(1/10).
 
 Ideally the cluster would serve as a way of actually learning parallel computing and also establishing some local web services to make my life easier. The tentative list of local web service projects include:
 
@@ -669,3 +690,9 @@ Ideally the cluster would serve as a way of actually learning parallel computing
     2.  **Tech:** Multiple raspberry pis, networking equipment, cluster management software, and parallel computing libraries(OpenMP/MPI). Plus Kubernetes.
 
     3.  **Benefits:** Hands on experience with distributed systems and parallel processing, cost effective way of exploring high performance computing, and gaining marketable skills in cluster setup, management, and scalability.
+
+Tentatively something like [this tutorial ](https://www.raspberrypi.com/tutorials/cluster-raspberry-pi-tutorial/)will be followed and result in a three pi setup vs the 8 pi setup below(from the tutorial):
+
+![](Bramble-Network-Diagram.png)
+
+Hopefully I have some time before the summer ends and classes begin to experiment. Fingers crossed and my willpower willing, I will take the distributed systems course this fall alongside an intensive statistical learning course!
