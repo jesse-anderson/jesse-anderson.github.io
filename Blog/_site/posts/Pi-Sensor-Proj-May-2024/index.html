@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Jesse Anderson">
-<meta name="dcterms.date" content="2024-05-14">
+<meta name="dcterms.date" content="2024-05-16">
 
 <title>Jesse Anderson’s Blog - Raspberry Pi Sensor Server Project</title>
 <style>
@@ -215,7 +215,7 @@ cookieconsent.run({
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">May 14, 2024</p>
+        <p class="date">May 16, 2024</p>
       </div>
     </div>
     
@@ -2710,7 +2710,7 @@ Code Summary
 <tr class="header">
 <th data-quarto-table-cell-role="th">Date</th>
 <th data-quarto-table-cell-role="th">Time</th>
-<th data-quarto-table-cell-role="th">Humidity (%)</th>
+<th data-quarto-table-cell-role="th">Humidity %</th>
 <th data-quarto-table-cell-role="th">Temp F</th>
 <th data-quarto-table-cell-role="th">Temp C</th>
 </tr>
@@ -2783,7 +2783,6 @@ Code Summary
         cursor: pointer;
     }
 </style>
-
 </div>
 <p>Latest Sensor Reading ThingSpeak(press button):</p>
 <div>
@@ -2795,13 +2794,11 @@ Code Summary
 <table id="thingspeak-data-table" data-quarto-postprocess="true">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th">Created At</th>
-<th data-quarto-table-cell-role="th">Entry ID</th>
-<th data-quarto-table-cell-role="th">Temperature C</th>
-<th data-quarto-table-cell-role="th">Temperature F</th>
-<th data-quarto-table-cell-role="th">Humidity</th>
-<th data-quarto-table-cell-role="th">Time</th>
 <th data-quarto-table-cell-role="th">Date</th>
+<th data-quarto-table-cell-role="th">Time</th>
+<th data-quarto-table-cell-role="th">Humidity %</th>
+<th data-quarto-table-cell-role="th">Temp F</th>
+<th data-quarto-table-cell-role="th">Temp C</th>
 </tr>
 </thead>
 <tbody>
@@ -2809,6 +2806,7 @@ Code Summary
 </table>
 
 </section>
+
 <script>
     async function loadThingSpeakData() {
         const url = 'https://api.thingspeak.com/channels/2545447/feeds.json?results=1';
@@ -2833,7 +2831,7 @@ Code Summary
         const newRow = tbody.insertRow();
         newRow.id = 'thingspeak-data-table-row';
 
-        const fields = ['created_at', 'entry_id', 'field1', 'field2', 'field3', 'field4', 'field5'];
+        const fields = ['field5', 'field4', 'field3', 'field2', 'field1'];
         fields.forEach((field) => {
             const newCell = newRow.insertCell();
             newCell.id = `thingspeak-data-table-cell-${field}`;
@@ -2842,9 +2840,10 @@ Code Summary
         });
     }
 </script>
+
 <style>
     #thingspeak-data-table {
-        width: 70%;
+        width: 50%;
         border-collapse: collapse;
         margin: 50px auto;
     }
@@ -2879,9 +2878,9 @@ Code Summary
 <tr class="header">
 <th data-quarto-table-cell-role="th">Date</th>
 <th data-quarto-table-cell-role="th">Time</th>
-<th data-quarto-table-cell-role="th">Humidity (%)</th>
-<th data-quarto-table-cell-role="th">Temperature (F)</th>
-<th data-quarto-table-cell-role="th">Temperature (C)</th>
+<th data-quarto-table-cell-role="th">Humidity %</th>
+<th data-quarto-table-cell-role="th">Temp F</th>
+<th data-quarto-table-cell-role="th">Temp C</th>
 </tr>
 </thead>
 <tbody>
@@ -2922,7 +2921,7 @@ Code Summary
 </script>
 <style>
     #mongodb-data-table {
-        width: 70%;
+        width: 50%;
         border-collapse: collapse;
         margin: 50px auto;
     }
@@ -2956,9 +2955,9 @@ Code Summary
 <tr class="header">
 <th data-quarto-table-cell-role="th">Date</th>
 <th data-quarto-table-cell-role="th">Time</th>
-<th data-quarto-table-cell-role="th">Humidity (%)</th>
-<th data-quarto-table-cell-role="th">Temperature (F)</th>
-<th data-quarto-table-cell-role="th">Temperature (C)</th>
+<th data-quarto-table-cell-role="th">Humidity %</th>
+<th data-quarto-table-cell-role="th">Temp F</th>
+<th data-quarto-table-cell-role="th">Temp C</th>
 </tr>
 </thead>
 <tbody>
@@ -2999,7 +2998,7 @@ Code Summary
 </script>
 <style>
     #vercel-data-table {
-        width: 70%;
+        width: 50%;
         border-collapse: collapse;
         margin: 50px auto;
     }
@@ -4234,7 +4233,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","loop":false,"openEffect":"zoom","selector":".lightbox","descPosition":"bottom"});
+<script>var lightboxQuarto = GLightbox({"descPosition":"bottom","openEffect":"zoom","closeEffect":"zoom","selector":".lightbox","loop":false});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

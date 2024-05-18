@@ -2806,18 +2806,18 @@ Latest sensor reading Google Sheets(button loads latest data):
     <h2>Google Sheets Data Display</h2>
     <button class="load-button" onclick="loadLastRowGoogle()">Load Google Sheets Data</button>
     <table id="google-data-table">
-    <thead>
-        <tr>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Humidity (%)</th>
-            <th>Temp F</th>
-            <th>Temp C</th>
-        </tr>
-    </thead>
-    <tbody>
-        <!-- Data will be inserted here -->
-    </tbody>
+<thead>
+    <tr>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Humidity %</th>
+        <th>Temp F</th>
+        <th>Temp C</th>
+    </tr>
+</thead>
+<tbody>
+    <!-- Data will be inserted here -->
+</tbody>
 </table>
 </section>
 <script>
@@ -2883,7 +2883,6 @@ Latest sensor reading Google Sheets(button loads latest data):
         cursor: pointer;
     }
 </style>
-
 ```
 Latest Sensor Reading ThingSpeak(press button):
 
@@ -2893,22 +2892,21 @@ Latest Sensor Reading ThingSpeak(press button):
     <h2>ThingSpeak Data Display</h2>
     <button class="load-button" onclick="loadThingSpeakData()">Load ThingSpeak Data</button>
     <table id="thingspeak-data-table">
-    <thead>
-        <tr>
-            <th>Created At</th>
-            <th>Entry ID</th>
-            <th>Temperature C</th>
-            <th>Temperature F</th>
-            <th>Humidity</th>
-            <th>Time</th>
-            <th>Date</th>
-        </tr>
-    </thead>
-    <tbody>
-        <!-- Data will be inserted here -->
-    </tbody>
-</table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Humidity %</th>
+                <th>Temp F</th>
+                <th>Temp C</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data will be inserted here -->
+        </tbody>
+    </table>
 </section>
+
 <script>
     async function loadThingSpeakData() {
         const url = 'https://api.thingspeak.com/channels/2545447/feeds.json?results=1';
@@ -2933,7 +2931,7 @@ Latest Sensor Reading ThingSpeak(press button):
         const newRow = tbody.insertRow();
         newRow.id = 'thingspeak-data-table-row';
 
-        const fields = ['created_at', 'entry_id', 'field1', 'field2', 'field3', 'field4', 'field5'];
+        const fields = ['field5', 'field4', 'field3', 'field2', 'field1'];
         fields.forEach((field) => {
             const newCell = newRow.insertCell();
             newCell.id = `thingspeak-data-table-cell-${field}`;
@@ -2942,9 +2940,10 @@ Latest Sensor Reading ThingSpeak(press button):
         });
     }
 </script>
+
 <style>
     #thingspeak-data-table {
-        width: 70%;
+        width: 50%;
         border-collapse: collapse;
         margin: 50px auto;
     }
@@ -2976,18 +2975,18 @@ Latest Sensor Reading MongoDB(Read-Only User):
     <a href="https://vercel-raspberry-pi-server.vercel.app/api/displaySQLMongoDB">Download MongoDB Table Data as CSV</a>
     <button class="load-button" onclick="loadMongoDBData()">Load MongoDB Data</button>
     <table id="mongodb-data-table">
-    <thead>
-        <tr>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Humidity (%)</th>
-            <th>Temperature (F)</th>
-            <th>Temperature (C)</th>
-        </tr>
-    </thead>
-    <tbody>
-        <!-- Data will be inserted here -->
-    </tbody>
+<thead>
+    <tr>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Humidity %</th>
+        <th>Temp F</th>
+        <th>Temp C</th>
+    </tr>
+</thead>
+<tbody>
+    <!-- Data will be inserted here -->
+</tbody>
 </table>
 </section>
 <script>
@@ -3023,7 +3022,7 @@ Latest Sensor Reading MongoDB(Read-Only User):
 </script>
 <style>
     #mongodb-data-table {
-        width: 70%;
+        width: 50%;
         border-collapse: collapse;
         margin: 50px auto;
     }
@@ -3053,18 +3052,18 @@ Latest Sensor Reading Vercel PostgreSQL(Read-Only User):
     <a href="https://vercel-raspberry-pi-server.vercel.app/api/displaySQL">Download Vercel Table Data as CSV</a>
     <button class="load-button" onclick="loadVercelData()">Load Vercel Data</button>
     <table id="vercel-data-table">
-    <thead>
-        <tr>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Humidity (%)</th>
-            <th>Temperature (F)</th>
-            <th>Temperature (C)</th>
-        </tr>
-    </thead>
-    <tbody>
-        <!-- Data will be inserted here -->
-    </tbody>
+<thead>
+    <tr>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Humidity %</th>
+        <th>Temp F</th>
+        <th>Temp C</th>
+    </tr>
+</thead>
+<tbody>
+    <!-- Data will be inserted here -->
+</tbody>
 </table>
 </section>
 <script>
@@ -3100,7 +3099,7 @@ Latest Sensor Reading Vercel PostgreSQL(Read-Only User):
 </script>
 <style>
     #vercel-data-table {
-        width: 70%;
+        width: 50%;
         border-collapse: collapse;
         margin: 50px auto;
     }
