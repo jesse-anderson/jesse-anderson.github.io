@@ -74,8 +74,8 @@ After finally getting everything to work on the [database side of things](https:
                 <table>
                     <tr>
                         <th>Time</th>
-                        <th>Temperature C</th>
-                        <th>Temperature F</th>
+                        <th>Temp C</th>
+                        <th>Temp F</th>
                         <th>Humidity</th>
                     </tr>
                     <tr>
