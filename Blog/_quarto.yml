@@ -36,3 +36,4 @@ format:
 execute:
   freeze: false
 
+footer: pagefooter.qmd

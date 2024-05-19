@@ -1079,7 +1079,91 @@ Average Optimal Xi: 0.1667747747747748</code></pre>
 
   </script>
 
-  
+  <!-- This script below to put a latest posts list after the comment system was such a pain in the ass. -->
+
+  <script>
+
+  document.addEventListener('DOMContentLoaded', function() {
+
+  // Create the latest posts container
+
+  const latestPostsContainer = document.createElement('div');
+
+  latestPostsContainer.className = 'latest-posts';
+
+  latestPostsContainer.innerHTML = `
+
+    <h3>Latest Posts</h3>
+
+    <ul id="latest-posts-list">
+
+      <!-- Latest posts will be inserted here -->
+
+    </ul>
+
+  `;
+
+
+
+  // Find the footer element
+
+  const footer = document.querySelector('footer.footer');
+
+  // Insert the latest posts container before footer, easier than after utterances.
+
+  footer.parentNode.insertBefore(latestPostsContainer, footer);
+
+
+
+  // Fetch latest posts from the archive page
+
+  fetch('https://jesse-anderson.github.io/Blog/_site/archive.html')
+
+    .then(response => response.text())
+
+    .then(data => {
+
+      const parser = new DOMParser();
+
+      const doc = parser.parseFromString(data, 'text/html');
+
+      const posts = doc.querySelectorAll('.quarto-post');
+
+      const latestPostsList = document.getElementById('latest-posts-list');
+
+      let count = 0;
+
+      posts.forEach(post => {
+
+        if (count < 4) {
+
+          const title = post.querySelector('.listing-title a').textContent;
+
+          const url = post.querySelector('.listing-title a').getAttribute('href');
+
+          const listItem = document.createElement('li');
+
+          listItem.innerHTML = `<a href="${url}">${title}</a>`;
+
+          latestPostsList.appendChild(listItem);
+
+          count++;
+
+        }
+
+      });
+
+    });
+
+});
+
+
+
+
+
+  </script>
+
+
 
   <style>
 
@@ -1529,7 +1613,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script>
-<script src="https://utteranc.es/client.js" repo="jesse-anderson/blogComments" issue-term="pathname" theme="github-light" crossorigin="anonymous" async="">
+<script src="https://utteranc.es/client.js" repo="jesse-anderson/blogComments" issue-term="title" theme="github-dark" crossorigin="anonymous" async="">
 </script>
 </div> <!-- /content -->
 <footer class="footer">
@@ -1545,7 +1629,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"loop":false,"descPosition":"bottom","openEffect":"zoom","closeEffect":"zoom","selector":".lightbox"});
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","loop":false,"descPosition":"bottom","openEffect":"zoom","selector":".lightbox"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

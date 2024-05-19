@@ -2,7 +2,8 @@
 
 # freeze computational output
 # (see https://quarto.org/docs/projects/code-execution.html#freeze)
-freeze: false
+execute:
+  freeze: false
 
 # Enable banner style title blocks
 title-block-banner: true
@@ -10,8 +11,12 @@ title-block-banner: true
 format:
   html:
     include-after-body: ../footer.html
+
 comments: 
   utterances: 
     repo:  jesse-anderson/blogComments
+    label: blogComment
+    theme: github-dark 
+    issue-term: title
 
 lightbox: auto
