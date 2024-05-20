@@ -35,5 +35,3 @@ format:
 # Ensure that code is always executed and not frozen
 execute:
   freeze: false
-
-footer: pagefooter.qmd
