@@ -871,7 +871,7 @@ Code Summary
 </section>
 
 </main> <!-- /main -->
-<!--  General footer to put at bottom of page.   -->
+
 
 
 
@@ -893,307 +893,300 @@ Code Summary
 
         }
 
-      .centered-content {
+        .centered-content {
 
-          display: flex; /* Uses Flexbox for layout */
+            display: flex; /* Uses Flexbox for layout */
 
-          justify-content: center; /* Horizontally centers the content within the container */
+            justify-content: center; /* Horizontally centers the content within the container */
 
-          vertical-align: middle;
+            align-items: center; /* Vertically centers the content within the container */
 
-      }
+        }
 
-      .email-share-button {
+        .email-share-button {
 
-          background: #007BFF; /* Example: a distinct blue color for the email button */
+            background: #007BFF; /* Example: a distinct blue color for the email button */
 
-          color: white; /* Ensure text and icon are white for visibility */
+            color: white; /* Ensure text and icon are white for visibility */
 
-      }
+        }
 
+        #share-buttons {
 
+            display: flex;
 
-  </style>
+            align-items: center;
 
+            justify-content: center;
 
+            gap: 5px;
 
-<footer class="centered-text">
+        }
 
-    <p>Copyright © <span id="copyright-year"></span> Jesse Anderson</p>
+        .share-button {
 
-    <!-- Other footer details -->
+            display: inline-flex;
 
-  </footer>
+            padding: 2px 4px;
 
-<div>
+            font-size: 14px;
 
-    <hr>
+            cursor: pointer;
 
-    <h3 class="centered-text"> Support my work with a Coffee/Monster </h3>
+            text-align: center;
 
-<div class="centered-content">
+            color: white;
 
-  <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="jesseanderson" data-color="#06436e" data-emoji="☕" data-font="Lato" data-text="Support me" data-outline-color="#ffffff" data-font-color="#ffffff" data-coffee-color="#FFDD00" data-height="40px"></script>
+            border-radius: 0px;
 
-</div>
+        }
 
-<!-- Footer content -->
-
-
-
-<p></p><h3 class="centered-text">Share</h3><p></p>
-
-  <!-- Share Buttons -->
-
-  <div id="share-buttons" class="centered-content">
-
- 
+    </style>
 
 
 
-      <!-- Twitter Share Button, dynamically setting the URL -->
 
-      <a href="#" class="share-button twitter-share-button" data-size="large" data-hashtags="computerscience" data-via="JesseA7C5" data-show-count="false">Tweet</a>
 
-      <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    <footer class="centered-text">
 
-  
+        <p>Copyright © <span id="copyright-year"></span> Jesse Anderson</p>
 
-      <!-- Facebook SDK with Dynamic Nonce -->
+        <!-- Other footer details -->
 
-      <div id="fb-root"></div>
+    </footer>
 
-      <script id="facebook-jssdk" async="" defer="" crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&amp;version=v10.0"></script>
+    <div>
 
-      <div class="fb-share-button share-button" data-href="" data-layout="button_count">
+        <hr>
 
-      </div>
+        <h3 class="centered-text">Support my work with a Coffee/Monster</h3>
 
-  
+        <div class="centered-content">
 
-      <!-- LinkedIn Share Button -->
+            <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="jesseanderson" data-color="#06436e" data-emoji="☕" data-font="Lato" data-text="Support me" data-outline-color="#ffffff" data-font-color="#ffffff" data-coffee-color="#FFDD00" data-height="40px"></script>
 
-    <!-- LinkedIn Share Button -->
+        </div>
 
-    <script src="https://platform.linkedin.com/in.js" type="text/javascript">lang: en_US</script>
+        <!-- Footer content -->
 
-    <script type="IN/Share" data-url=""></script>
+        <h3 class="centered-text">Share</h3>
 
-    <!-- Email Share Button -->
+        <!-- Share Buttons -->
 
-    <a href="#" class="share-button email-share-button"><i class="fas fa-envelope"></i></a>
+        <div id="share-buttons" class="centered-content">
+
+            <!-- Twitter Share Button, dynamically setting the URL -->
+
+            <a href="#" class="share-button twitter-share-button" data-size="large" data-hashtags="computerscience" data-via="JesseA7C5" data-show-count="false">Tweet</a>
+
+            <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+            <!-- Facebook SDK with Dynamic Nonce -->
+
+            <div id="fb-root"></div>
+
+            <script id="facebook-jssdk" async="" defer="" crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&amp;version=v10.0"></script>
+
+            <div class="fb-share-button share-button" data-href="" data-layout="button_count">
+
+            </div>
+
+            <!-- LinkedIn Share Button -->
+
+            <script src="https://platform.linkedin.com/in.js" type="text/javascript">lang: en_US</script>
+
+            <script type="IN/Share" data-url=""></script>
+
+            <!-- Email Share Button -->
+
+            <a href="#" class="share-button email-share-button"><i class="fas fa-envelope"></i></a>
+
+        </div>
 
     </div>
 
-  </div>
+    <script>
 
-  
+        // Function to generate a random nonce
 
-  <script>
+        function generateNonce(length = 16) {
 
-    // Function to generate a random nonce
+            const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-    function generateNonce(length = 16) {
+            let text = "";
 
-      const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            for (let i = 0; i < length; i++) {
 
-      let text = "";
-
-      for (let i = 0; i < length; i++) {
-
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
-
-      }
-
-      return text;
-
-    }
-
-  
-
-    // Set the nonce attribute for the Facebook SDK script and dynamically set URLs
-
-    document.addEventListener('DOMContentLoaded', function() {
-
-      const nonce = generateNonce();
-
-      const facebookSDKScript = document.getElementById('facebook-jssdk');
-
-      facebookSDKScript.setAttribute('nonce', nonce);
-
-      var elems = document.querySelectorAll('script[type="IN/Share"]');
-
-      for (var i = 0; i < elems.length; i++) {
-
-        elems[i].setAttribute('data-url', window.location.href);
-
-      }
-
-  
-
-      // Set dynamic URLs for social sharing
-
-      const currentUrl = window.location.href;
-
-      const currentTitle = document.title; // Use the current document title as the email subject
-
-      // Facebook
-
-      document.querySelector('.fb-share-button').setAttribute('data-href', currentUrl);
-
-      // LinkedIn
-
-      document.querySelectorAll('script[type="IN/Share"]')[0].setAttribute('data-url', currentUrl);
-
-      // Twitter
-
-      document.querySelector('.twitter-share-button').setAttribute('href', 'https://twitter.com/share?url=' + encodeURIComponent(currentUrl) + '&hashtags=rstats');
-
-      // Email
-
-      document.querySelector('.email-share-button').setAttribute('href', `mailto:?subject=${encodeURIComponent(currentTitle)}&body=Check out this link: ${encodeURIComponent(currentUrl)}`);
-
-      // Dynamically set the current year in the copyright footer
-
-      document.getElementById('copyright-year').textContent = new Date().getFullYear();
-
-    });
-
-  
-
-    // This script below to put a latest posts list after the comment system was such a pain in the ass.
-
-    document.addEventListener('DOMContentLoaded', function() {
-
-      // Create the latest posts container
-
-      const latestPostsContainer = document.createElement('div');
-
-      latestPostsContainer.className = 'latest-posts';
-
-      latestPostsContainer.innerHTML = `
-
-        <h3>Latest Posts</h3>
-
-        <ul id="latest-posts-list">
-
-          <!-- Latest posts will be inserted here -->
-
-        </ul>
-
-      `;
-
-  
-
-      // Find the footer element
-
-      const footer = document.querySelector('footer.footer');
-
-      // Insert the latest posts container before the footer, easier than after utterances.
-
-      footer.parentNode.insertBefore(latestPostsContainer, footer);
-
-  
-
-      // Fetch latest posts from the archive page
-
-      fetch('https://jesse-anderson.github.io/Blog/_site/archive.html')
-
-        .then(response => response.text())
-
-        .then(data => {
-
-          const parser = new DOMParser();
-
-          const doc = parser.parseFromString(data, 'text/html');
-
-          const posts = doc.querySelectorAll('.quarto-post');
-
-          const latestPostsList = document.getElementById('latest-posts-list');
-
-          let count = 0;
-
-  
-
-          // Extract base URL
-
-          const baseUrl = 'https://jesse-anderson.github.io/Blog/_site/';
-
-  
-
-          posts.forEach(post => {
-
-            if (count < 4) {
-
-              const title = post.querySelector('.listing-title a').textContent;
-
-              let url = post.querySelector('.listing-title a').getAttribute('href');
-
-              // Fix the URL by removing the leading ./ and appending the base URL
-
-              url = url.replace(/^\.\//, baseUrl);
-
-              const listItem = document.createElement('li');
-
-              listItem.innerHTML = `<a href="${url}">${title}</a>`;
-
-              latestPostsList.appendChild(listItem);
-
-              count++;
+                text += possible.charAt(Math.floor(Math.random() * possible.length));
 
             }
 
-          });
+            return text;
+
+        }
+
+        // Set the nonce attribute for the Facebook SDK script and dynamically set URLs
+
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const nonce = generateNonce();
+
+            const facebookSDKScript = document.getElementById('facebook-jssdk');
+
+            facebookSDKScript.setAttribute('nonce', nonce);
+
+            var elems = document.querySelectorAll('script[type="IN/Share"]');
+
+            for (var i = 0; i < elems.length; i++) {
+
+                elems[i].setAttribute('data-url', window.location.href);
+
+            }
+
+            // Set dynamic URLs for social sharing
+
+            const currentUrl = window.location.href;
+
+            const currentTitle = document.title; // Use the current document title as the email subject
+
+            // Facebook
+
+            document.querySelector('.fb-share-button').setAttribute('data-href', currentUrl);
+
+            // LinkedIn
+
+            document.querySelectorAll('script[type="IN/Share"]')[0].setAttribute('data-url', currentUrl);
+
+            // Twitter
+
+            document.querySelector('.twitter-share-button').setAttribute('href', 'https://twitter.com/share?url=' + encodeURIComponent(currentUrl) + '&hashtags=rstats');
+
+            // Email
+
+            document.querySelector('.email-share-button').setAttribute('href', `mailto:?subject=${encodeURIComponent(currentTitle)}&body=Check out this link: ${encodeURIComponent(currentUrl)}`);
+
+            // Dynamically set the current year in the copyright footer
+
+            document.getElementById('copyright-year').textContent = new Date().getFullYear();
 
         });
 
-    });
+        // This script below to put a latest posts list after the comment system was such a pain in the ass.
 
-  </script>
+        document.addEventListener('DOMContentLoaded', function() {
 
-  
+            console.log("Latest Posts Populating...");
 
-  
+            // Create the latest posts container
+
+            const latestPostsContainer = document.createElement('div');
+
+            latestPostsContainer.className = 'latest-posts';
+
+            latestPostsContainer.innerHTML = `
+
+                <h3>Latest Posts</h3>
+
+                <ul id="latest-posts-list">
+
+                    <!-- Latest posts will be inserted here -->
+
+                </ul>
+
+            `;
+
+            // Find the footer element
+
+            const footer = document.querySelector('footer.footer');
+
+            // Insert the latest posts container before footer, easier than after utterances.
+
+            footer.parentNode.insertBefore(latestPostsContainer, footer);
+
+            // Fetch latest posts from the archive page
+
+            fetch('https://jesse-anderson.github.io/Blog/_site/archive.html')
+
+                .then(response => response.text())
+
+                .then(data => {
+
+                    const parser = new DOMParser();
+
+                    const doc = parser.parseFromString(data, 'text/html');
+
+                    const posts = doc.querySelectorAll('.quarto-listing-container-table tbody tr');
+
+                    // console.log("Posts: ", posts);
+
+                    const latestPostsList = document.getElementById('latest-posts-list');
+
+                    let count = 0;
+
+                    posts.forEach(post => {
+
+                        if (count < 4) {
+
+                            // console.log("Title populating...");
+
+                            const titleElement = post.querySelector('.listing-title'); // Correctly select the <a> tag with the title class
+
+                            // console.log(titleElement)
+
+                              const imageElement = post.querySelector('.listing-image img');
+
+                              // console.log(imageElement)
+
+                            if (titleElement) {
+
+                                const title = titleElement.textContent.trim();
+
+                                // console.log('Title: ', title);
+
+                                let url = titleElement.getAttribute('href');
+
+                                // console.log('URL: ', url);
+
+                                if (url && !url.startsWith('http')) {
+
+                                    url = 'https://jesse-anderson.github.io/Blog/_site/' + url.replace(/^\.\//, '');
+
+                                }
+
+                                // console.log('Formatted URL: ', url);
+
+                                const imageUrl = imageElement ? imageElement.getAttribute('src').replace(/^\.\//, 'https://jesse-anderson.github.io/Blog/_site/') : 'default-image.jpg'; // Fallback image
+
+                                // console.log('Image URL: ', imageUrl);
+
+                                const listItem = document.createElement('li');
+
+                                listItem.innerHTML = `<a href="${url}"><img src="${imageUrl}" alt="Post Image" style="height: 20px;"> ${title}</a>`;
+
+                                latestPostsList.appendChild(listItem);
+
+                                // console.log('ListItem: ', listItem);
+
+                                count++;
+
+                            } else {
+
+                                console.warn('Missing elements for post:', post);
+
+                            }
+
+                        }
+
+                    });
+
+                });
+
+        });
+
+    </script>
 
 
 
-  <style>
-
-      #share-buttons {
-
-          display: flex;
-
-          align-items: center;
-
-          justify-content: center;
-
-          gap: 5px;
-
-      }
-
-  
-
-      .share-button {
-
-          display: inline-flex;
-
-          padding: 2px 4px;
-
-          font-size: 14px;
-
-          cursor: pointer;
-
-          text-align: center;
-
-          color: white;
-
-          border-radius: 0px;
-
-      }
-
-  
-
-  </style>
 
 
 <script id="quarto-html-after-body" type="application/javascript">
@@ -1621,7 +1614,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"selector":".lightbox","openEffect":"zoom","loop":false,"descPosition":"bottom","closeEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"descPosition":"bottom","closeEffect":"zoom","loop":false,"openEffect":"zoom","selector":".lightbox"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;
