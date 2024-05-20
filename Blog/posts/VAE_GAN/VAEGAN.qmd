@@ -12,7 +12,7 @@ image: VAEDifferentDigits.png
 
 During my time in the applied machine learning course(CS441) at the University of Illinois at Urbana-Champaign, I embarked on an ambitious journey into the realm of advanced machine learning technologies. The course required a comprehensive understanding of various machine learning concepts, providing both breadth and depth in our studies. For my final optional project, I chose to specialize in some of the most intriguing areas of generative models: Variational AutoEncoders (VAEs), Denoising AutoEncoders, Generative Adversarial Networks (GANs), and the innovative hybrid, Variational Autoencoder Generative Adversarial Networks (VAE-GANs). Here, I provide a high-level overview of each technology and discuss the outcomes of my experiments. For further information about the course please see [sample syllabus](https://ws.engr.illinois.edu/sitemanager/getfile.asp?id=2218).
 
-### **Variational AutoEncoders (VAEs)**
+### **Variational AutoEncoders (VAEs)** 
 
 VAEs are powerful generative models that use the principles of probability and statistics to produce new data points that are similar to the training data. Unlike traditional autoencoders, which aim to compress and decompress data, VAEs introduce a probabilistic twist to encode input data into a distribution over latent space. This approach not only helps in generating new data but also improves the model's robustness and the quality of generated samples. VAEs are particularly effective in tasks where you need a deep understanding of the data's latent structure, such as in image generation and anomaly detection.
 
