@@ -244,33 +244,33 @@ cookieconsent.run({
 <section id="import-libraries" class="level2">
 <h2 class="anchored" data-anchor-id="import-libraries">Import Libraries</h2>
 <div id="5725734d" class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.cluster <span class="im">import</span> OPTICS</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn <span class="im">import</span> datasets</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> kneed <span class="im">import</span> KneeLocator</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib.patches <span class="im">import</span> Polygon</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.colors <span class="im">as</span> mcolors</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.spatial <span class="im">import</span> ConvexHull</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="im">from</span> sklearn.cluster <span class="im">import</span> OPTICS</span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="im">from</span> sklearn <span class="im">import</span> datasets</span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="im">from</span> kneed <span class="im">import</span> KneeLocator</span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="im">from</span> matplotlib.patches <span class="im">import</span> Polygon</span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="im">import</span> matplotlib.colors <span class="im">as</span> mcolors</span>
+<span id="cb1-8"><a href="#cb1-8"></a><span class="im">from</span> scipy.spatial <span class="im">import</span> ConvexHull</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>This block imports all necessary Python libraries. ‘numpy’ and ‘matplotlib’ are used for numerical operations and plotting(respectively). ‘sklearn’ provides the OPTICS clustering algorithm(for better or worse) and the blob generator. ‘kneed’ is used to identify the “knee”/“elbow” point of the data, but didn’t work in this case. We will explore alternatives below. ‘matplotlib.colors’ and ‘scipy.spatial’ help with the visualization and the convex hull calculations respectively.</p>
 </section>
 <section id="load-and-visualize-the-blob-data" class="level1">
 <h1>Load and Visualize the Blob Data</h1>
 <div id="990a6fbb" class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load example data</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>n_samples <span class="op">=</span> <span class="dv">1000</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>min_samples <span class="op">=</span> <span class="dv">15</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>data, _ <span class="op">=</span> datasets.make_blobs(n_samples<span class="op">=</span>n_samples, centers<span class="op">=</span><span class="dv">4</span>, random_state<span class="op">=</span><span class="dv">42</span>, cluster_std<span class="op">=</span><span class="fl">2.0</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the original data</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">6</span>))</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>plt.scatter(data[:, <span class="dv">0</span>], data[:, <span class="dv">1</span>], alpha<span class="op">=</span><span class="fl">0.6</span>, edgecolors<span class="op">=</span><span class="st">'w'</span>, s<span class="op">=</span><span class="dv">30</span>)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Blob Data Distribution'</span>)</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Feature 1'</span>)</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Feature 2'</span>)</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>)</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Load example data</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>n_samples <span class="op">=</span> <span class="dv">1000</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>min_samples <span class="op">=</span> <span class="dv">15</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>data, _ <span class="op">=</span> datasets.make_blobs(n_samples<span class="op">=</span>n_samples, centers<span class="op">=</span><span class="dv">4</span>, random_state<span class="op">=</span><span class="dv">42</span>, cluster_std<span class="op">=</span><span class="fl">2.0</span>)</span>
+<span id="cb2-5"><a href="#cb2-5"></a></span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="co"># Plot the original data</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">6</span>))</span>
+<span id="cb2-8"><a href="#cb2-8"></a>plt.scatter(data[:, <span class="dv">0</span>], data[:, <span class="dv">1</span>], alpha<span class="op">=</span><span class="fl">0.6</span>, edgecolors<span class="op">=</span><span class="st">'w'</span>, s<span class="op">=</span><span class="dv">30</span>)</span>
+<span id="cb2-9"><a href="#cb2-9"></a>plt.title(<span class="st">'Blob Data Distribution'</span>)</span>
+<span id="cb2-10"><a href="#cb2-10"></a>plt.xlabel(<span class="st">'Feature 1'</span>)</span>
+<span id="cb2-11"><a href="#cb2-11"></a>plt.ylabel(<span class="st">'Feature 2'</span>)</span>
+<span id="cb2-12"><a href="#cb2-12"></a>plt.grid(<span class="va">True</span>)</span>
+<span id="cb2-13"><a href="#cb2-13"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -284,9 +284,9 @@ cookieconsent.run({
 <section id="apply-sklearn-optics-clustering" class="level1">
 <h1>Apply sklearn OPTICS Clustering</h1>
 <div id="a0982a2a" class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 1: Apply OPTICS</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>optics_model <span class="op">=</span> OPTICS(min_samples<span class="op">=</span>min_samples)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>optics_model.fit(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a><span class="co"># Step 1: Apply OPTICS</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>optics_model <span class="op">=</span> OPTICS(min_samples<span class="op">=</span>min_samples)</span>
+<span id="cb3-3"><a href="#cb3-3"></a>optics_model.fit(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
 <style>#sk-container-id-1 {color: black;}#sk-container-id-1 pre{padding: 0;}#sk-container-id-1 div.sk-toggleable {background-color: white;}#sk-container-id-1 label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.3em;box-sizing: border-box;text-align: center;}#sk-container-id-1 label.sk-toggleable__label-arrow:before {content: "▸";float: left;margin-right: 0.25em;color: #696969;}#sk-container-id-1 label.sk-toggleable__label-arrow:hover:before {color: black;}#sk-container-id-1 div.sk-estimator:hover label.sk-toggleable__label-arrow:before {color: black;}#sk-container-id-1 div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}#sk-container-id-1 div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}#sk-container-id-1 input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}#sk-container-id-1 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {content: "▾";}#sk-container-id-1 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}#sk-container-id-1 div.sk-estimator {font-family: monospace;background-color: #f0f8ff;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;margin-bottom: 0.5em;}#sk-container-id-1 div.sk-estimator:hover {background-color: #d4ebff;}#sk-container-id-1 div.sk-parallel-item::after {content: "";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}#sk-container-id-1 div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-serial::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: 0;}#sk-container-id-1 div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;padding-right: 0.2em;padding-left: 0.2em;position: relative;}#sk-container-id-1 div.sk-item {position: relative;z-index: 1;}#sk-container-id-1 div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;position: relative;}#sk-container-id-1 div.sk-item::before, #sk-container-id-1 div.sk-parallel-item::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: -1;}#sk-container-id-1 div.sk-parallel-item {display: flex;flex-direction: column;z-index: 1;position: relative;background-color: white;}#sk-container-id-1 div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}#sk-container-id-1 div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}#sk-container-id-1 div.sk-parallel-item:only-child::after {width: 0;}#sk-container-id-1 div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0 0.4em 0.5em 0.4em;box-sizing: border-box;padding-bottom: 0.4em;background-color: white;}#sk-container-id-1 div.sk-label label {font-family: monospace;font-weight: bold;display: inline-block;line-height: 1.2em;}#sk-container-id-1 div.sk-label-container {text-align: center;}#sk-container-id-1 div.sk-container {/* jupyter's `normalize.less` sets `[hidden] { display: none; }` but bootstrap.min.css set `[hidden] { display: none !important; }` so we also need the `!important` here to be able to override the default hidden behavior on the sphinx rendered scikit-learn.org. See: https://github.com/scikit-learn/scikit-learn/issues/21755 */display: inline-block !important;position: relative;}#sk-container-id-1 div.sk-text-repr-fallback {display: none;}</style><div id="sk-container-id-1" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>OPTICS(min_samples=15)</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br>On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden=""><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-1" type="checkbox" checked=""><label for="sk-estimator-id-1" class="sk-toggleable__label sk-toggleable__label-arrow">OPTICS</label><div class="sk-toggleable__content"><pre>OPTICS(min_samples=15)</pre></div></div></div></div></div>
 </div>
@@ -296,26 +296,26 @@ cookieconsent.run({
 <section id="get-reachability-distances-handle-infinity-values" class="level1">
 <h1>Get Reachability Distances &amp; Handle Infinity Values</h1>
 <div id="7557136a" class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 2: Plot the reachability diagram</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>space <span class="op">=</span> np.arange(<span class="bu">len</span>(data))</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>reachability <span class="op">=</span> optics_model.reachability_[optics_model.ordering_]</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Check for infinity values in reachability distances</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> np.isinf(reachability).<span class="bu">any</span>():</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Infinity values found in reachability distances, handling..."</span>)</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Identify finite indices where reachability values are not infinity</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    finite_indices <span class="op">=</span> np.isfinite(reachability)</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Filter out infinite reachability values and their corresponding indices</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    reachability <span class="op">=</span> reachability[finite_indices]</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    space <span class="op">=</span> space[finite_indices]</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">5</span>))</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>plt.bar(space, reachability, color<span class="op">=</span><span class="st">'g'</span>)</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'OPTICS Reachability Plot'</span>)</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Data points'</span>)</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Reachability Distance'</span>)</span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1"></a><span class="co"># Step 2: Plot the reachability diagram</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a>space <span class="op">=</span> np.arange(<span class="bu">len</span>(data))</span>
+<span id="cb4-3"><a href="#cb4-3"></a>reachability <span class="op">=</span> optics_model.reachability_[optics_model.ordering_]</span>
+<span id="cb4-4"><a href="#cb4-4"></a></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="co"># Check for infinity values in reachability distances</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="cf">if</span> np.isinf(reachability).<span class="bu">any</span>():</span>
+<span id="cb4-7"><a href="#cb4-7"></a>    <span class="bu">print</span>(<span class="st">"Infinity values found in reachability distances, handling..."</span>)</span>
+<span id="cb4-8"><a href="#cb4-8"></a>    <span class="co"># Identify finite indices where reachability values are not infinity</span></span>
+<span id="cb4-9"><a href="#cb4-9"></a>    finite_indices <span class="op">=</span> np.isfinite(reachability)</span>
+<span id="cb4-10"><a href="#cb4-10"></a></span>
+<span id="cb4-11"><a href="#cb4-11"></a>    <span class="co"># Filter out infinite reachability values and their corresponding indices</span></span>
+<span id="cb4-12"><a href="#cb4-12"></a>    reachability <span class="op">=</span> reachability[finite_indices]</span>
+<span id="cb4-13"><a href="#cb4-13"></a>    space <span class="op">=</span> space[finite_indices]</span>
+<span id="cb4-14"><a href="#cb4-14"></a></span>
+<span id="cb4-15"><a href="#cb4-15"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">5</span>))</span>
+<span id="cb4-16"><a href="#cb4-16"></a>plt.bar(space, reachability, color<span class="op">=</span><span class="st">'g'</span>)</span>
+<span id="cb4-17"><a href="#cb4-17"></a>plt.title(<span class="st">'OPTICS Reachability Plot'</span>)</span>
+<span id="cb4-18"><a href="#cb4-18"></a>plt.xlabel(<span class="st">'Data points'</span>)</span>
+<span id="cb4-19"><a href="#cb4-19"></a>plt.ylabel(<span class="st">'Reachability Distance'</span>)</span>
+<span id="cb4-20"><a href="#cb4-20"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Infinity values found in reachability distances, handling...</code></pre>
 </div>
@@ -332,41 +332,41 @@ cookieconsent.run({
 <section id="identify-the-elbow-point-in-the-sorted-reachability-plot" class="level1">
 <h1>Identify the “Elbow” Point in the Sorted Reachability Plot</h1>
 <div id="23e6ac23" class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot sorted reachability distances</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>sorted_reachability <span class="op">=</span> np.sort(reachability)</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>indices <span class="op">=</span> np.arange(<span class="bu">len</span>(sorted_reachability))</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.figure(figsize=(10, 5))</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.plot(indices, sorted_reachability, label='Reachability Distance')</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute the line endpoints based on the first and last reachability distance</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>line_start <span class="op">=</span> np.array([<span class="dv">0</span>, sorted_reachability[<span class="dv">0</span>]])</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>line_end <span class="op">=</span> np.array([<span class="bu">len</span>(sorted_reachability) <span class="op">-</span> <span class="dv">1</span>, sorted_reachability[<span class="op">-</span><span class="dv">1</span>]])</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the slope and intercept of the line (y = mx + b)</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>slope <span class="op">=</span> (line_end[<span class="dv">1</span>] <span class="op">-</span> line_start[<span class="dv">1</span>]) <span class="op">/</span> (line_end[<span class="dv">0</span>] <span class="op">-</span> line_start[<span class="dv">0</span>])</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>intercept <span class="op">=</span> line_start[<span class="dv">1</span>] <span class="op">-</span> (slope <span class="op">*</span> line_start[<span class="dv">0</span>])</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the y-values of the line across all x-values</span></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>line_y <span class="op">=</span> (slope <span class="op">*</span> indices) <span class="op">+</span> intercept</span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the line</span></span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.plot(indices, line_y, 'r--', label='Line from first to last index')</span></span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Find the elbow index (maximum deviation point)</span></span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>deviations <span class="op">=</span> np.<span class="bu">abs</span>(sorted_reachability <span class="op">-</span> line_y)</span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>elbow_index <span class="op">=</span> np.argmax(deviations)</span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>elbow_cutoff <span class="op">=</span> sorted_reachability[elbow_index]</span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Mark the elbow point</span></span>
-<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.axvline(x=elbow_index, color='b', linestyle='--', label=f'Elbow Point at index {elbow_index} = {elbow_cutoff}')</span></span>
-<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.axhline(y = elbow_cutoff, color = 'k', linestyle = ':', label = 'Cutoff for reachability distance.')</span></span>
-<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.title('Sorted Reachability Distances with Maximum Deviation Line')</span></span>
-<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.xlabel('Data points (sorted)')</span></span>
-<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.ylabel('Reachability Distance')</span></span>
-<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.legend()</span></span>
-<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.show()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1"></a><span class="co"># Plot sorted reachability distances</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a>sorted_reachability <span class="op">=</span> np.sort(reachability)</span>
+<span id="cb6-3"><a href="#cb6-3"></a>indices <span class="op">=</span> np.arange(<span class="bu">len</span>(sorted_reachability))</span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="co"># plt.figure(figsize=(10, 5))</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a><span class="co"># plt.plot(indices, sorted_reachability, label='Reachability Distance')</span></span>
+<span id="cb6-6"><a href="#cb6-6"></a></span>
+<span id="cb6-7"><a href="#cb6-7"></a><span class="co"># Compute the line endpoints based on the first and last reachability distance</span></span>
+<span id="cb6-8"><a href="#cb6-8"></a>line_start <span class="op">=</span> np.array([<span class="dv">0</span>, sorted_reachability[<span class="dv">0</span>]])</span>
+<span id="cb6-9"><a href="#cb6-9"></a>line_end <span class="op">=</span> np.array([<span class="bu">len</span>(sorted_reachability) <span class="op">-</span> <span class="dv">1</span>, sorted_reachability[<span class="op">-</span><span class="dv">1</span>]])</span>
+<span id="cb6-10"><a href="#cb6-10"></a></span>
+<span id="cb6-11"><a href="#cb6-11"></a><span class="co"># Calculate the slope and intercept of the line (y = mx + b)</span></span>
+<span id="cb6-12"><a href="#cb6-12"></a>slope <span class="op">=</span> (line_end[<span class="dv">1</span>] <span class="op">-</span> line_start[<span class="dv">1</span>]) <span class="op">/</span> (line_end[<span class="dv">0</span>] <span class="op">-</span> line_start[<span class="dv">0</span>])</span>
+<span id="cb6-13"><a href="#cb6-13"></a>intercept <span class="op">=</span> line_start[<span class="dv">1</span>] <span class="op">-</span> (slope <span class="op">*</span> line_start[<span class="dv">0</span>])</span>
+<span id="cb6-14"><a href="#cb6-14"></a></span>
+<span id="cb6-15"><a href="#cb6-15"></a><span class="co"># Calculate the y-values of the line across all x-values</span></span>
+<span id="cb6-16"><a href="#cb6-16"></a>line_y <span class="op">=</span> (slope <span class="op">*</span> indices) <span class="op">+</span> intercept</span>
+<span id="cb6-17"><a href="#cb6-17"></a></span>
+<span id="cb6-18"><a href="#cb6-18"></a><span class="co"># Plot the line</span></span>
+<span id="cb6-19"><a href="#cb6-19"></a><span class="co"># plt.plot(indices, line_y, 'r--', label='Line from first to last index')</span></span>
+<span id="cb6-20"><a href="#cb6-20"></a></span>
+<span id="cb6-21"><a href="#cb6-21"></a><span class="co"># Find the elbow index (maximum deviation point)</span></span>
+<span id="cb6-22"><a href="#cb6-22"></a>deviations <span class="op">=</span> np.<span class="bu">abs</span>(sorted_reachability <span class="op">-</span> line_y)</span>
+<span id="cb6-23"><a href="#cb6-23"></a>elbow_index <span class="op">=</span> np.argmax(deviations)</span>
+<span id="cb6-24"><a href="#cb6-24"></a></span>
+<span id="cb6-25"><a href="#cb6-25"></a>elbow_cutoff <span class="op">=</span> sorted_reachability[elbow_index]</span>
+<span id="cb6-26"><a href="#cb6-26"></a></span>
+<span id="cb6-27"><a href="#cb6-27"></a></span>
+<span id="cb6-28"><a href="#cb6-28"></a><span class="co"># Mark the elbow point</span></span>
+<span id="cb6-29"><a href="#cb6-29"></a><span class="co"># plt.axvline(x=elbow_index, color='b', linestyle='--', label=f'Elbow Point at index {elbow_index} = {elbow_cutoff}')</span></span>
+<span id="cb6-30"><a href="#cb6-30"></a><span class="co"># plt.axhline(y = elbow_cutoff, color = 'k', linestyle = ':', label = 'Cutoff for reachability distance.')</span></span>
+<span id="cb6-31"><a href="#cb6-31"></a><span class="co"># plt.title('Sorted Reachability Distances with Maximum Deviation Line')</span></span>
+<span id="cb6-32"><a href="#cb6-32"></a><span class="co"># plt.xlabel('Data points (sorted)')</span></span>
+<span id="cb6-33"><a href="#cb6-33"></a><span class="co"># plt.ylabel('Reachability Distance')</span></span>
+<span id="cb6-34"><a href="#cb6-34"></a><span class="co"># plt.legend()</span></span>
+<span id="cb6-35"><a href="#cb6-35"></a><span class="co"># plt.show()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><a href="ElbowPlot.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3"><img src="ElbowPlot.png" class="img-fluid"></a></p>
 <p>We plot the reachability distances sorted from least to greatest to get an idea of how the distribution looks. In this case we have a nice transition point where the distance explodes and that is roughly where we are aiming for our first “guess” of the reachability distance cutoff. We then implement a pretty basic algorithm wherein we find the maximum deviation point, that is the point farthest from the horizontal line drawn between the first and last reachability points. You will find a MATLAB based explaination <a href="https://www.mathworks.com/help/radar/ref/clusterdbscan.clusterdbscan.estimateepsilon.html">here</a>. Note that we do NOT use KneeLocator from the kneed library as it gives erroneous results in this case.</p>
@@ -374,129 +374,129 @@ cookieconsent.run({
 <section id="trying-the-maximum-deviation-line-for-clustering" class="level1">
 <h1>Trying the Maximum Deviation Line for Clustering</h1>
 <div id="5e5cf153" class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">#  Create a list of colors to use for bars below the threshold, and black for above</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co"># We'll generate a color map to cycle through a set of colors for segments below the threshold</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>below_threshold_colors <span class="op">=</span> <span class="bu">list</span>(mcolors.TABLEAU_COLORS.values())  <span class="co"># Get a set of unique colors</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>color_index <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>current_color <span class="op">=</span> below_threshold_colors[color_index]</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>colors <span class="op">=</span> []</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Track whether the previous bar was below the threshold</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>previous_bar_below <span class="op">=</span> <span class="va">False</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Assign colors to bars based on their height relative to the threshold</span></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> val <span class="kw">in</span> reachability:</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> val <span class="op">&lt;=</span> elbow_cutoff:</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        <span class="co"># If we're transitioning from above to below the threshold, change the color</span></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">not</span> previous_bar_below:</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>            color_index <span class="op">=</span> (color_index <span class="op">+</span> <span class="dv">1</span>) <span class="op">%</span> <span class="bu">len</span>(below_threshold_colors)</span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>            current_color <span class="op">=</span> below_threshold_colors[color_index]</span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>        colors.append(current_color)</span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>        previous_bar_below <span class="op">=</span> <span class="va">True</span></span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>        colors.append(<span class="st">'k'</span>)  <span class="co"># Black for bars above the threshold</span></span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>        previous_bar_below <span class="op">=</span> <span class="va">False</span></span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Now, let's create the reachability plot with custom bar colors</span></span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.figure(figsize=(10, 5))</span></span>
-<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.axhline(y=elbow_cutoff, color='k', linestyle=':', label='Cutoff for reachability distance.')</span></span>
-<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.bar(space, reachability, color=colors)</span></span>
-<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.title('OPTICS Reachability Plot')</span></span>
-<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.xlabel('Data points')</span></span>
-<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.ylabel('Reachability Distance')</span></span>
-<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.legend()</span></span>
-<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.show()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1"></a><span class="co">#  Create a list of colors to use for bars below the threshold, and black for above</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="co"># We'll generate a color map to cycle through a set of colors for segments below the threshold</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a>below_threshold_colors <span class="op">=</span> <span class="bu">list</span>(mcolors.TABLEAU_COLORS.values())  <span class="co"># Get a set of unique colors</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a>color_index <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a>current_color <span class="op">=</span> below_threshold_colors[color_index]</span>
+<span id="cb7-6"><a href="#cb7-6"></a>colors <span class="op">=</span> []</span>
+<span id="cb7-7"><a href="#cb7-7"></a></span>
+<span id="cb7-8"><a href="#cb7-8"></a><span class="co"># Track whether the previous bar was below the threshold</span></span>
+<span id="cb7-9"><a href="#cb7-9"></a>previous_bar_below <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb7-10"><a href="#cb7-10"></a></span>
+<span id="cb7-11"><a href="#cb7-11"></a><span class="co"># Assign colors to bars based on their height relative to the threshold</span></span>
+<span id="cb7-12"><a href="#cb7-12"></a><span class="cf">for</span> val <span class="kw">in</span> reachability:</span>
+<span id="cb7-13"><a href="#cb7-13"></a>    <span class="cf">if</span> val <span class="op">&lt;=</span> elbow_cutoff:</span>
+<span id="cb7-14"><a href="#cb7-14"></a>        <span class="co"># If we're transitioning from above to below the threshold, change the color</span></span>
+<span id="cb7-15"><a href="#cb7-15"></a>        <span class="cf">if</span> <span class="kw">not</span> previous_bar_below:</span>
+<span id="cb7-16"><a href="#cb7-16"></a>            color_index <span class="op">=</span> (color_index <span class="op">+</span> <span class="dv">1</span>) <span class="op">%</span> <span class="bu">len</span>(below_threshold_colors)</span>
+<span id="cb7-17"><a href="#cb7-17"></a>            current_color <span class="op">=</span> below_threshold_colors[color_index]</span>
+<span id="cb7-18"><a href="#cb7-18"></a>        colors.append(current_color)</span>
+<span id="cb7-19"><a href="#cb7-19"></a>        previous_bar_below <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb7-20"><a href="#cb7-20"></a>    <span class="cf">else</span>:</span>
+<span id="cb7-21"><a href="#cb7-21"></a>        colors.append(<span class="st">'k'</span>)  <span class="co"># Black for bars above the threshold</span></span>
+<span id="cb7-22"><a href="#cb7-22"></a>        previous_bar_below <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb7-23"><a href="#cb7-23"></a></span>
+<span id="cb7-24"><a href="#cb7-24"></a><span class="co"># Now, let's create the reachability plot with custom bar colors</span></span>
+<span id="cb7-25"><a href="#cb7-25"></a><span class="co"># plt.figure(figsize=(10, 5))</span></span>
+<span id="cb7-26"><a href="#cb7-26"></a><span class="co"># plt.axhline(y=elbow_cutoff, color='k', linestyle=':', label='Cutoff for reachability distance.')</span></span>
+<span id="cb7-27"><a href="#cb7-27"></a><span class="co"># plt.bar(space, reachability, color=colors)</span></span>
+<span id="cb7-28"><a href="#cb7-28"></a><span class="co"># plt.title('OPTICS Reachability Plot')</span></span>
+<span id="cb7-29"><a href="#cb7-29"></a><span class="co"># plt.xlabel('Data points')</span></span>
+<span id="cb7-30"><a href="#cb7-30"></a><span class="co"># plt.ylabel('Reachability Distance')</span></span>
+<span id="cb7-31"><a href="#cb7-31"></a><span class="co"># plt.legend()</span></span>
+<span id="cb7-32"><a href="#cb7-32"></a><span class="co"># plt.show()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div id="3022ef65" class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 3: Extract clusters using the reachability distance at the elbow point as a cutoff</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># The reachability distance at the elbow is used as a threshold for cluster extraction</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>reachability_distance_at_elbow <span class="op">=</span> elbow_cutoff</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Retrieve the ordered reachability distances from the OPTICS model</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>ordered_reachability <span class="op">=</span> optics_model.reachability_[optics_model.ordering_]</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>ordered_indices <span class="op">=</span> optics_model.ordering_</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialize all points as noise (-1)</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> np.full(ordered_reachability.shape, <span class="op">-</span><span class="dv">1</span>)  </span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Manually assign clusters based on the new threshold, apparently OPTICS.expand_clusters or similar doesn't work anymore so here we are...</span></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>cluster_id <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(ordered_reachability)):</span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> ordered_reachability[i] <span class="op">&lt;=</span> reachability_distance_at_elbow:</span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> labels[ordered_indices[i]] <span class="op">==</span> <span class="op">-</span><span class="dv">1</span>:  <span class="co"># If this point has not been assigned a cluster</span></span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Start a new cluster from this point</span></span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>            labels[ordered_indices[i]] <span class="op">=</span> cluster_id</span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Add all directly reachable points to the same cluster</span></span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(i <span class="op">+</span> <span class="dv">1</span>, <span class="bu">len</span>(ordered_reachability)):</span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> ordered_reachability[j] <span class="op">&lt;=</span> reachability_distance_at_elbow:</span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>                    labels[ordered_indices[j]] <span class="op">=</span> cluster_id</span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>                <span class="cf">else</span>:</span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">break</span></span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>            cluster_id <span class="op">+=</span> <span class="dv">1</span></span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 4: Plot the clusters based on the new manually set labels</span></span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.figure(figsize=(10, 7))</span></span>
-<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>unique_labels <span class="op">=</span> <span class="bu">set</span>(labels)</span>
-<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate colors for each cluster label</span></span>
-<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>colors <span class="op">=</span> plt.cm.rainbow(np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, <span class="bu">len</span>(unique_labels)))</span>
-<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a><span class="co"># for klass, color in zip(unique_labels, colors):</span></span>
-<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a><span class="co">#     class_member_mask = (labels == klass)</span></span>
-<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a><span class="co">#     xy = data[class_member_mask]</span></span>
-<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a><span class="co">#     if klass != -1:</span></span>
-<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a><span class="co">#         # Draw the convex hull and fill it with a light shade of the cluster color</span></span>
-<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a><span class="co">#         if xy.shape[0] &gt; 2:  # ConvexHull needs at least 3 points to compute the hull</span></span>
-<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a><span class="co">#             hull = ConvexHull(xy)</span></span>
-<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a><span class="co">#             plt.fill(xy[hull.vertices, 0], xy[hull.vertices, 1], color=color, alpha=0.2, edgecolor='k')</span></span>
-<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a><span class="co">#         plt.scatter(xy[:, 0], xy[:, 1], color=color, edgecolor='k', label=f'Cluster {klass}')</span></span>
-<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a><span class="co">#     else:</span></span>
-<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a><span class="co">#         plt.scatter(xy[:, 0], xy[:, 1], c='k', marker='x', label='Noise')</span></span>
-<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.title('Clusters by OPTICS with Manual Threshold and Hulls')</span></span>
-<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.xlabel('Feature 1')</span></span>
-<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.ylabel('Feature 2')</span></span>
-<span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.legend()</span></span>
-<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.show()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1"></a><span class="co"># Step 3: Extract clusters using the reachability distance at the elbow point as a cutoff</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="co"># The reachability distance at the elbow is used as a threshold for cluster extraction</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a>reachability_distance_at_elbow <span class="op">=</span> elbow_cutoff</span>
+<span id="cb8-4"><a href="#cb8-4"></a></span>
+<span id="cb8-5"><a href="#cb8-5"></a><span class="co"># Retrieve the ordered reachability distances from the OPTICS model</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a>ordered_reachability <span class="op">=</span> optics_model.reachability_[optics_model.ordering_]</span>
+<span id="cb8-7"><a href="#cb8-7"></a>ordered_indices <span class="op">=</span> optics_model.ordering_</span>
+<span id="cb8-8"><a href="#cb8-8"></a></span>
+<span id="cb8-9"><a href="#cb8-9"></a><span class="co"># Initialize all points as noise (-1)</span></span>
+<span id="cb8-10"><a href="#cb8-10"></a>labels <span class="op">=</span> np.full(ordered_reachability.shape, <span class="op">-</span><span class="dv">1</span>)  </span>
+<span id="cb8-11"><a href="#cb8-11"></a></span>
+<span id="cb8-12"><a href="#cb8-12"></a><span class="co"># Manually assign clusters based on the new threshold, apparently OPTICS.expand_clusters or similar doesn't work anymore so here we are...</span></span>
+<span id="cb8-13"><a href="#cb8-13"></a>cluster_id <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb8-14"><a href="#cb8-14"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(ordered_reachability)):</span>
+<span id="cb8-15"><a href="#cb8-15"></a>    <span class="cf">if</span> ordered_reachability[i] <span class="op">&lt;=</span> reachability_distance_at_elbow:</span>
+<span id="cb8-16"><a href="#cb8-16"></a>        <span class="cf">if</span> labels[ordered_indices[i]] <span class="op">==</span> <span class="op">-</span><span class="dv">1</span>:  <span class="co"># If this point has not been assigned a cluster</span></span>
+<span id="cb8-17"><a href="#cb8-17"></a>            <span class="co"># Start a new cluster from this point</span></span>
+<span id="cb8-18"><a href="#cb8-18"></a>            labels[ordered_indices[i]] <span class="op">=</span> cluster_id</span>
+<span id="cb8-19"><a href="#cb8-19"></a>            <span class="co"># Add all directly reachable points to the same cluster</span></span>
+<span id="cb8-20"><a href="#cb8-20"></a>            <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(i <span class="op">+</span> <span class="dv">1</span>, <span class="bu">len</span>(ordered_reachability)):</span>
+<span id="cb8-21"><a href="#cb8-21"></a>                <span class="cf">if</span> ordered_reachability[j] <span class="op">&lt;=</span> reachability_distance_at_elbow:</span>
+<span id="cb8-22"><a href="#cb8-22"></a>                    labels[ordered_indices[j]] <span class="op">=</span> cluster_id</span>
+<span id="cb8-23"><a href="#cb8-23"></a>                <span class="cf">else</span>:</span>
+<span id="cb8-24"><a href="#cb8-24"></a>                    <span class="cf">break</span></span>
+<span id="cb8-25"><a href="#cb8-25"></a>            cluster_id <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb8-26"><a href="#cb8-26"></a></span>
+<span id="cb8-27"><a href="#cb8-27"></a><span class="co"># Step 4: Plot the clusters based on the new manually set labels</span></span>
+<span id="cb8-28"><a href="#cb8-28"></a><span class="co"># plt.figure(figsize=(10, 7))</span></span>
+<span id="cb8-29"><a href="#cb8-29"></a>unique_labels <span class="op">=</span> <span class="bu">set</span>(labels)</span>
+<span id="cb8-30"><a href="#cb8-30"></a></span>
+<span id="cb8-31"><a href="#cb8-31"></a><span class="co"># Generate colors for each cluster label</span></span>
+<span id="cb8-32"><a href="#cb8-32"></a>colors <span class="op">=</span> plt.cm.rainbow(np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, <span class="bu">len</span>(unique_labels)))</span>
+<span id="cb8-33"><a href="#cb8-33"></a></span>
+<span id="cb8-34"><a href="#cb8-34"></a><span class="co"># for klass, color in zip(unique_labels, colors):</span></span>
+<span id="cb8-35"><a href="#cb8-35"></a><span class="co">#     class_member_mask = (labels == klass)</span></span>
+<span id="cb8-36"><a href="#cb8-36"></a><span class="co">#     xy = data[class_member_mask]</span></span>
+<span id="cb8-37"><a href="#cb8-37"></a><span class="co">#     if klass != -1:</span></span>
+<span id="cb8-38"><a href="#cb8-38"></a><span class="co">#         # Draw the convex hull and fill it with a light shade of the cluster color</span></span>
+<span id="cb8-39"><a href="#cb8-39"></a><span class="co">#         if xy.shape[0] &gt; 2:  # ConvexHull needs at least 3 points to compute the hull</span></span>
+<span id="cb8-40"><a href="#cb8-40"></a><span class="co">#             hull = ConvexHull(xy)</span></span>
+<span id="cb8-41"><a href="#cb8-41"></a><span class="co">#             plt.fill(xy[hull.vertices, 0], xy[hull.vertices, 1], color=color, alpha=0.2, edgecolor='k')</span></span>
+<span id="cb8-42"><a href="#cb8-42"></a><span class="co">#         plt.scatter(xy[:, 0], xy[:, 1], color=color, edgecolor='k', label=f'Cluster {klass}')</span></span>
+<span id="cb8-43"><a href="#cb8-43"></a><span class="co">#     else:</span></span>
+<span id="cb8-44"><a href="#cb8-44"></a><span class="co">#         plt.scatter(xy[:, 0], xy[:, 1], c='k', marker='x', label='Noise')</span></span>
+<span id="cb8-45"><a href="#cb8-45"></a></span>
+<span id="cb8-46"><a href="#cb8-46"></a><span class="co"># plt.title('Clusters by OPTICS with Manual Threshold and Hulls')</span></span>
+<span id="cb8-47"><a href="#cb8-47"></a><span class="co"># plt.xlabel('Feature 1')</span></span>
+<span id="cb8-48"><a href="#cb8-48"></a><span class="co"># plt.ylabel('Feature 2')</span></span>
+<span id="cb8-49"><a href="#cb8-49"></a><span class="co"># plt.legend()</span></span>
+<span id="cb8-50"><a href="#cb8-50"></a><span class="co"># plt.show()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><a href="ReachabilityElbowOptimal.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4"><img src="ReachabilityElbowOptimal.png" class="img-fluid"></a></p>
 <p><a href="ClustersElbowAutomatic.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5"><img src="ClustersElbowAutomatic.png" class="img-fluid"></a></p>
 <p>As you can see above we get three clusters based on one of the clusters encountering significant overlap. We can stop here and examine why this may be when we don’t have synthetic data, but at least for the purposes of this demonstration I will find the point at which I need to set the reachability distance to distinguish that first cluster by hovering over that point in Python’s matplotlib plot. As you can see below that value is roughly 0.88 . See that all we have to do is change one line and we can rerun the reachability distance.</p>
 <div id="540921e2" class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>elbow_cutoff <span class="op">=</span><span class="fl">0.866</span> <span class="co">##THIS IS A GREAT EXAMPLE OF WHEN YOUR ELBOW FAILS YOU AND YOU NEED TO PLAY AROUND WITH VALUES!!!!</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co">#  Create a list of colors to use for bars below the threshold, and black for above</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># We'll generate a color map to cycle through a set of colors for segments below the threshold</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>below_threshold_colors <span class="op">=</span> <span class="bu">list</span>(mcolors.TABLEAU_COLORS.values())  <span class="co"># Get a set of unique colors</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>color_index <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>current_color <span class="op">=</span> below_threshold_colors[color_index]</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>colors <span class="op">=</span> []</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Track whether the previous bar was below the threshold</span></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>previous_bar_below <span class="op">=</span> <span class="va">False</span></span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Assign colors to bars based on their height relative to the threshold</span></span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> val <span class="kw">in</span> reachability:</span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> val <span class="op">&lt;=</span> elbow_cutoff:</span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>        <span class="co"># If we're transitioning from above to below the threshold, change the color</span></span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">not</span> previous_bar_below:</span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>            color_index <span class="op">=</span> (color_index <span class="op">+</span> <span class="dv">1</span>) <span class="op">%</span> <span class="bu">len</span>(below_threshold_colors)</span>
-<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>            current_color <span class="op">=</span> below_threshold_colors[color_index]</span>
-<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>        colors.append(current_color)</span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>        previous_bar_below <span class="op">=</span> <span class="va">True</span></span>
-<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
-<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>        colors.append(<span class="st">'k'</span>)  <span class="co"># Black for bars above the threshold</span></span>
-<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>        previous_bar_below <span class="op">=</span> <span class="va">False</span></span>
-<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Now, let's create the reachability plot with custom bar colors</span></span>
-<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">5</span>))</span>
-<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>plt.axhline(y<span class="op">=</span>elbow_cutoff, color<span class="op">=</span><span class="st">'k'</span>, linestyle<span class="op">=</span><span class="st">':'</span>, label<span class="op">=</span><span class="st">'Cutoff for reachability distance.'</span>)</span>
-<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>plt.bar(space, reachability, color<span class="op">=</span>colors)</span>
-<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'OPTICS Reachability Plot'</span>)</span>
-<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Data points'</span>)</span>
-<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Reachability Distance'</span>)</span>
-<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
-<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1"></a>elbow_cutoff <span class="op">=</span><span class="fl">0.866</span> <span class="co">##THIS IS A GREAT EXAMPLE OF WHEN YOUR ELBOW FAILS YOU AND YOU NEED TO PLAY AROUND WITH VALUES!!!!</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a></span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="co">#  Create a list of colors to use for bars below the threshold, and black for above</span></span>
+<span id="cb9-4"><a href="#cb9-4"></a><span class="co"># We'll generate a color map to cycle through a set of colors for segments below the threshold</span></span>
+<span id="cb9-5"><a href="#cb9-5"></a>below_threshold_colors <span class="op">=</span> <span class="bu">list</span>(mcolors.TABLEAU_COLORS.values())  <span class="co"># Get a set of unique colors</span></span>
+<span id="cb9-6"><a href="#cb9-6"></a>color_index <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb9-7"><a href="#cb9-7"></a>current_color <span class="op">=</span> below_threshold_colors[color_index]</span>
+<span id="cb9-8"><a href="#cb9-8"></a>colors <span class="op">=</span> []</span>
+<span id="cb9-9"><a href="#cb9-9"></a></span>
+<span id="cb9-10"><a href="#cb9-10"></a><span class="co"># Track whether the previous bar was below the threshold</span></span>
+<span id="cb9-11"><a href="#cb9-11"></a>previous_bar_below <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb9-12"><a href="#cb9-12"></a></span>
+<span id="cb9-13"><a href="#cb9-13"></a><span class="co"># Assign colors to bars based on their height relative to the threshold</span></span>
+<span id="cb9-14"><a href="#cb9-14"></a><span class="cf">for</span> val <span class="kw">in</span> reachability:</span>
+<span id="cb9-15"><a href="#cb9-15"></a>    <span class="cf">if</span> val <span class="op">&lt;=</span> elbow_cutoff:</span>
+<span id="cb9-16"><a href="#cb9-16"></a>        <span class="co"># If we're transitioning from above to below the threshold, change the color</span></span>
+<span id="cb9-17"><a href="#cb9-17"></a>        <span class="cf">if</span> <span class="kw">not</span> previous_bar_below:</span>
+<span id="cb9-18"><a href="#cb9-18"></a>            color_index <span class="op">=</span> (color_index <span class="op">+</span> <span class="dv">1</span>) <span class="op">%</span> <span class="bu">len</span>(below_threshold_colors)</span>
+<span id="cb9-19"><a href="#cb9-19"></a>            current_color <span class="op">=</span> below_threshold_colors[color_index]</span>
+<span id="cb9-20"><a href="#cb9-20"></a>        colors.append(current_color)</span>
+<span id="cb9-21"><a href="#cb9-21"></a>        previous_bar_below <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb9-22"><a href="#cb9-22"></a>    <span class="cf">else</span>:</span>
+<span id="cb9-23"><a href="#cb9-23"></a>        colors.append(<span class="st">'k'</span>)  <span class="co"># Black for bars above the threshold</span></span>
+<span id="cb9-24"><a href="#cb9-24"></a>        previous_bar_below <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb9-25"><a href="#cb9-25"></a></span>
+<span id="cb9-26"><a href="#cb9-26"></a><span class="co"># Now, let's create the reachability plot with custom bar colors</span></span>
+<span id="cb9-27"><a href="#cb9-27"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">5</span>))</span>
+<span id="cb9-28"><a href="#cb9-28"></a>plt.axhline(y<span class="op">=</span>elbow_cutoff, color<span class="op">=</span><span class="st">'k'</span>, linestyle<span class="op">=</span><span class="st">':'</span>, label<span class="op">=</span><span class="st">'Cutoff for reachability distance.'</span>)</span>
+<span id="cb9-29"><a href="#cb9-29"></a>plt.bar(space, reachability, color<span class="op">=</span>colors)</span>
+<span id="cb9-30"><a href="#cb9-30"></a>plt.title(<span class="st">'OPTICS Reachability Plot'</span>)</span>
+<span id="cb9-31"><a href="#cb9-31"></a>plt.xlabel(<span class="st">'Data points'</span>)</span>
+<span id="cb9-32"><a href="#cb9-32"></a>plt.ylabel(<span class="st">'Reachability Distance'</span>)</span>
+<span id="cb9-33"><a href="#cb9-33"></a>plt.legend()</span>
+<span id="cb9-34"><a href="#cb9-34"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -507,130 +507,130 @@ cookieconsent.run({
 </div>
 <p>Now that we have broken out the clusters we can now reassign clusters based on the new threshold.</p>
 <div id="89cf0eca" class="cell" data-execution_count="9">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 3: Extract clusters using the reachability distance at the elbow point as a cutoff</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co"># The reachability distance at the elbow is used as a threshold for cluster extraction</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>reachability_distance_at_elbow <span class="op">=</span> elbow_cutoff</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Retrieve the ordered reachability distances from the OPTICS model</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>ordered_reachability <span class="op">=</span> optics_model.reachability_[optics_model.ordering_]</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>ordered_indices <span class="op">=</span> optics_model.ordering_</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialize all points as noise (-1)</span></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> np.full(ordered_reachability.shape, <span class="op">-</span><span class="dv">1</span>)  </span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Manually assign clusters based on the new threshold, apparently OPTICS.expand_clusters or similar doesn't work anymore so here we are...</span></span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>cluster_id <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(ordered_reachability)):</span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> ordered_reachability[i] <span class="op">&lt;=</span> reachability_distance_at_elbow:</span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> labels[ordered_indices[i]] <span class="op">==</span> <span class="op">-</span><span class="dv">1</span>:  <span class="co"># If this point has not been assigned a cluster</span></span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Start a new cluster from this point</span></span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>            labels[ordered_indices[i]] <span class="op">=</span> cluster_id</span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Add all directly reachable points to the same cluster</span></span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(i <span class="op">+</span> <span class="dv">1</span>, <span class="bu">len</span>(ordered_reachability)):</span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> ordered_reachability[j] <span class="op">&lt;=</span> reachability_distance_at_elbow:</span>
-<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>                    labels[ordered_indices[j]] <span class="op">=</span> cluster_id</span>
-<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>                <span class="cf">else</span>:</span>
-<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">break</span></span>
-<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>            cluster_id <span class="op">+=</span> <span class="dv">1</span></span>
-<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 4: Plot the clusters based on the new manually set labels</span></span>
-<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.figure(figsize=(10, 7))</span></span>
-<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>unique_labels <span class="op">=</span> <span class="bu">set</span>(labels)</span>
-<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate colors for each cluster label</span></span>
-<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>colors <span class="op">=</span> plt.cm.rainbow(np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, <span class="bu">len</span>(unique_labels)))</span>
-<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a><span class="co"># for klass, color in zip(unique_labels, colors):</span></span>
-<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a><span class="co">#     class_member_mask = (labels == klass)</span></span>
-<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a><span class="co">#     xy = data[class_member_mask]</span></span>
-<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a><span class="co">#     if klass != -1:</span></span>
-<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a><span class="co">#         # Draw the convex hull and fill it with a light shade of the cluster color</span></span>
-<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a><span class="co">#         if xy.shape[0] &gt; 2:  # ConvexHull needs at least 3 points to compute the hull</span></span>
-<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a><span class="co">#             hull = ConvexHull(xy)</span></span>
-<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a><span class="co">#             plt.fill(xy[hull.vertices, 0], xy[hull.vertices, 1], color=color, alpha=0.2, edgecolor='k')</span></span>
-<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a><span class="co">#         plt.scatter(xy[:, 0], xy[:, 1], color=color, edgecolor='k', label=f'Cluster {klass}')</span></span>
-<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a><span class="co">#     else:</span></span>
-<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a><span class="co">#         plt.scatter(xy[:, 0], xy[:, 1], c='k', marker='x', label='Noise')</span></span>
-<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-46"><a href="#cb10-46" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.title('Clusters by OPTICS with Manual Threshold and Hulls')</span></span>
-<span id="cb10-47"><a href="#cb10-47" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.xlabel('Feature 1')</span></span>
-<span id="cb10-48"><a href="#cb10-48" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.ylabel('Feature 2')</span></span>
-<span id="cb10-49"><a href="#cb10-49" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.legend()</span></span>
-<span id="cb10-50"><a href="#cb10-50" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.show()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1"></a><span class="co"># Step 3: Extract clusters using the reachability distance at the elbow point as a cutoff</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="co"># The reachability distance at the elbow is used as a threshold for cluster extraction</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a>reachability_distance_at_elbow <span class="op">=</span> elbow_cutoff</span>
+<span id="cb10-4"><a href="#cb10-4"></a></span>
+<span id="cb10-5"><a href="#cb10-5"></a><span class="co"># Retrieve the ordered reachability distances from the OPTICS model</span></span>
+<span id="cb10-6"><a href="#cb10-6"></a>ordered_reachability <span class="op">=</span> optics_model.reachability_[optics_model.ordering_]</span>
+<span id="cb10-7"><a href="#cb10-7"></a>ordered_indices <span class="op">=</span> optics_model.ordering_</span>
+<span id="cb10-8"><a href="#cb10-8"></a></span>
+<span id="cb10-9"><a href="#cb10-9"></a><span class="co"># Initialize all points as noise (-1)</span></span>
+<span id="cb10-10"><a href="#cb10-10"></a>labels <span class="op">=</span> np.full(ordered_reachability.shape, <span class="op">-</span><span class="dv">1</span>)  </span>
+<span id="cb10-11"><a href="#cb10-11"></a></span>
+<span id="cb10-12"><a href="#cb10-12"></a><span class="co"># Manually assign clusters based on the new threshold, apparently OPTICS.expand_clusters or similar doesn't work anymore so here we are...</span></span>
+<span id="cb10-13"><a href="#cb10-13"></a>cluster_id <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb10-14"><a href="#cb10-14"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(ordered_reachability)):</span>
+<span id="cb10-15"><a href="#cb10-15"></a>    <span class="cf">if</span> ordered_reachability[i] <span class="op">&lt;=</span> reachability_distance_at_elbow:</span>
+<span id="cb10-16"><a href="#cb10-16"></a>        <span class="cf">if</span> labels[ordered_indices[i]] <span class="op">==</span> <span class="op">-</span><span class="dv">1</span>:  <span class="co"># If this point has not been assigned a cluster</span></span>
+<span id="cb10-17"><a href="#cb10-17"></a>            <span class="co"># Start a new cluster from this point</span></span>
+<span id="cb10-18"><a href="#cb10-18"></a>            labels[ordered_indices[i]] <span class="op">=</span> cluster_id</span>
+<span id="cb10-19"><a href="#cb10-19"></a>            <span class="co"># Add all directly reachable points to the same cluster</span></span>
+<span id="cb10-20"><a href="#cb10-20"></a>            <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(i <span class="op">+</span> <span class="dv">1</span>, <span class="bu">len</span>(ordered_reachability)):</span>
+<span id="cb10-21"><a href="#cb10-21"></a>                <span class="cf">if</span> ordered_reachability[j] <span class="op">&lt;=</span> reachability_distance_at_elbow:</span>
+<span id="cb10-22"><a href="#cb10-22"></a>                    labels[ordered_indices[j]] <span class="op">=</span> cluster_id</span>
+<span id="cb10-23"><a href="#cb10-23"></a>                <span class="cf">else</span>:</span>
+<span id="cb10-24"><a href="#cb10-24"></a>                    <span class="cf">break</span></span>
+<span id="cb10-25"><a href="#cb10-25"></a>            cluster_id <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb10-26"><a href="#cb10-26"></a></span>
+<span id="cb10-27"><a href="#cb10-27"></a><span class="co"># Step 4: Plot the clusters based on the new manually set labels</span></span>
+<span id="cb10-28"><a href="#cb10-28"></a><span class="co"># plt.figure(figsize=(10, 7))</span></span>
+<span id="cb10-29"><a href="#cb10-29"></a>unique_labels <span class="op">=</span> <span class="bu">set</span>(labels)</span>
+<span id="cb10-30"><a href="#cb10-30"></a></span>
+<span id="cb10-31"><a href="#cb10-31"></a><span class="co"># Generate colors for each cluster label</span></span>
+<span id="cb10-32"><a href="#cb10-32"></a>colors <span class="op">=</span> plt.cm.rainbow(np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, <span class="bu">len</span>(unique_labels)))</span>
+<span id="cb10-33"><a href="#cb10-33"></a></span>
+<span id="cb10-34"><a href="#cb10-34"></a><span class="co"># for klass, color in zip(unique_labels, colors):</span></span>
+<span id="cb10-35"><a href="#cb10-35"></a><span class="co">#     class_member_mask = (labels == klass)</span></span>
+<span id="cb10-36"><a href="#cb10-36"></a><span class="co">#     xy = data[class_member_mask]</span></span>
+<span id="cb10-37"><a href="#cb10-37"></a><span class="co">#     if klass != -1:</span></span>
+<span id="cb10-38"><a href="#cb10-38"></a><span class="co">#         # Draw the convex hull and fill it with a light shade of the cluster color</span></span>
+<span id="cb10-39"><a href="#cb10-39"></a><span class="co">#         if xy.shape[0] &gt; 2:  # ConvexHull needs at least 3 points to compute the hull</span></span>
+<span id="cb10-40"><a href="#cb10-40"></a><span class="co">#             hull = ConvexHull(xy)</span></span>
+<span id="cb10-41"><a href="#cb10-41"></a><span class="co">#             plt.fill(xy[hull.vertices, 0], xy[hull.vertices, 1], color=color, alpha=0.2, edgecolor='k')</span></span>
+<span id="cb10-42"><a href="#cb10-42"></a><span class="co">#         plt.scatter(xy[:, 0], xy[:, 1], color=color, edgecolor='k', label=f'Cluster {klass}')</span></span>
+<span id="cb10-43"><a href="#cb10-43"></a><span class="co">#     else:</span></span>
+<span id="cb10-44"><a href="#cb10-44"></a><span class="co">#         plt.scatter(xy[:, 0], xy[:, 1], c='k', marker='x', label='Noise')</span></span>
+<span id="cb10-45"><a href="#cb10-45"></a></span>
+<span id="cb10-46"><a href="#cb10-46"></a><span class="co"># plt.title('Clusters by OPTICS with Manual Threshold and Hulls')</span></span>
+<span id="cb10-47"><a href="#cb10-47"></a><span class="co"># plt.xlabel('Feature 1')</span></span>
+<span id="cb10-48"><a href="#cb10-48"></a><span class="co"># plt.ylabel('Feature 2')</span></span>
+<span id="cb10-49"><a href="#cb10-49"></a><span class="co"># plt.legend()</span></span>
+<span id="cb10-50"><a href="#cb10-50"></a><span class="co"># plt.show()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><a href="Reachability Distance.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7"><img src="Reachability Distance.png" class="img-fluid"></a></p>
 <p><a href="ClustersManual.png" class="lightbox" data-gallery="quarto-lightbox-gallery-8"><img src="ClustersManual.png" class="img-fluid"></a></p>
 <p>And that’s it. Given this data and the significant overlap between cluster’s 0 and 1 I would definitely just go with the original reachability distance found by the elbow, but given that we have ZERO underlying knowledge besides here’s 4 clusters here we are. Note that the ratio of noise:data changed and more points are discarded. Evaluate whether or not those points are important and if so consider other clustering algorithms(I’m looking at you Esimation Maximization). For an example with differing STD see <a href="Optics_Diff_STD.py">here</a>.</p>
 <p>If we want to use the Xi clustering method on this data by evaluating the relative slopes of the reachability plot or by evaluating the silhouette score of a variety of Xi values we can proceed with the below. Please note that we use the same data as before.</p>
 <div id="2be8712a" class="cell" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Now instead of using the reachability metric we use the Xi clustering method to apply OPTICS</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co">#Please note I tried relative differences in reachability distances by calculating their relative slopes and another method using significant slopes</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co"># using a percentile approach and they both performed poor.</span></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> silhouette_score</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> joblib <span class="im">import</span> Parallel, delayed <span class="co">#I have 16 cores and I will use 16 cores....</span></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial OPTICS model to get reachability distances</span></span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>optics_model_initial <span class="op">=</span> OPTICS(min_samples<span class="op">=</span>min_samples)</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>optics_model_initial.fit(data)</span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>reachabilities_initial <span class="op">=</span> optics_model_initial.reachability_[optics_model_initial.ordering_]</span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate differences in reachability distances</span></span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>reachability_diffs <span class="op">=</span> np.diff(reachabilities_initial)</span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>reachability_diffs <span class="op">=</span> reachability_diffs[np.isfinite(reachability_diffs)]  <span class="co"># Remove any infinite or NaN values</span></span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Validate differences before calculating statistics</span></span>
-<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">len</span>(reachability_diffs) <span class="op">&gt;</span> <span class="dv">0</span>:</span>
-<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    mean_diff <span class="op">=</span> np.mean(reachability_diffs)</span>
-<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>    std_diff <span class="op">=</span> np.std(reachability_diffs)</span>
-<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>    xi_value <span class="op">=</span> <span class="bu">max</span>(<span class="fl">0.0</span>, <span class="bu">min</span>(mean_diff <span class="op">+</span> std_diff, <span class="fl">1.0</span>))  <span class="co"># Ensure Xi is within [0.0, 1.0] and not NaN</span></span>
-<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
-<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>    xi_value <span class="op">=</span> <span class="fl">0.05</span>  <span class="co"># Fallback value if differences calculation fails</span></span>
-<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Xi Value[Differences]:"</span>, xi_value)</span>
-<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate relative slopes (normalized by preceding reachability value)</span></span>
-<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>slopes <span class="op">=</span> np.diff(reachabilities_initial) <span class="op">/</span> reachabilities_initial[:<span class="op">-</span><span class="dv">1</span>]</span>
-<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a><span class="co"># print(slopes)</span></span>
-<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Handle any NaN or infinity from division by very small numbers</span></span>
-<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>slopes <span class="op">=</span> np.nan_to_num(slopes)</span>
-<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Determine significant slopes using a percentile approach</span></span>
-<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>significant_slope_threshold <span class="op">=</span> np.percentile(np.<span class="bu">abs</span>(slopes), <span class="dv">96</span>)</span>
-<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(significant_slope_threshold)</span>
-<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a><span class="co"># Use this threshold to set Xi</span></span>
-<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>xi_value <span class="op">=</span> significant_slope_threshold</span>
-<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Xi_value[Significanty Slopes]: "</span>, xi_value)</span>
-<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a><span class="co">#Rewrite Me</span></span>
-<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a><span class="co"># Define a function that computes the silhouette score for a given Xi</span></span>
-<span id="cb11-42"><a href="#cb11-42" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> compute_silhouette(xi, data, min_samples):</span>
-<span id="cb11-43"><a href="#cb11-43" aria-hidden="true" tabindex="-1"></a>    model <span class="op">=</span> OPTICS(min_samples<span class="op">=</span>min_samples, xi<span class="op">=</span>xi, cluster_method<span class="op">=</span><span class="st">'xi'</span>)</span>
-<span id="cb11-44"><a href="#cb11-44" aria-hidden="true" tabindex="-1"></a>    model.fit(data)</span>
-<span id="cb11-45"><a href="#cb11-45" aria-hidden="true" tabindex="-1"></a>    labels <span class="op">=</span> model.labels_</span>
-<span id="cb11-46"><a href="#cb11-46" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">len</span>(<span class="bu">set</span>(labels)) <span class="op">&gt;</span> <span class="dv">1</span> <span class="kw">and</span> np.<span class="bu">any</span>(labels <span class="op">!=</span> <span class="op">-</span><span class="dv">1</span>):</span>
-<span id="cb11-47"><a href="#cb11-47" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> silhouette_score(data, labels)</span>
-<span id="cb11-48"><a href="#cb11-48" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
-<span id="cb11-49"><a href="#cb11-49" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="op">-</span><span class="dv">1</span>  <span class="co"># Return a penalty for bad clustering</span></span>
-<span id="cb11-50"><a href="#cb11-50" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb11-51"><a href="#cb11-51" aria-hidden="true" tabindex="-1"></a><span class="co"># Trying a range of potential Xi values to find the best based on silhouette score</span></span>
-<span id="cb11-52"><a href="#cb11-52" aria-hidden="true" tabindex="-1"></a>xi_values <span class="op">=</span> np.linspace(<span class="fl">0.01</span>, <span class="dv">1</span>, <span class="dv">1000</span>)  <span class="co"># Testing Xi values from 0.01 to 0.1</span></span>
-<span id="cb11-53"><a href="#cb11-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-54"><a href="#cb11-54" aria-hidden="true" tabindex="-1"></a><span class="co">#Note this can take some time to calculate...</span></span>
-<span id="cb11-55"><a href="#cb11-55" aria-hidden="true" tabindex="-1"></a>silhouette_scores <span class="op">=</span> []</span>
-<span id="cb11-56"><a href="#cb11-56" aria-hidden="true" tabindex="-1"></a><span class="co">#Silhouette score is a metric used to evaluate the quality of clustering.Aim for highest silhouette score.</span></span>
-<span id="cb11-57"><a href="#cb11-57" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-58"><a href="#cb11-58" aria-hidden="true" tabindex="-1"></a><span class="co"># Use joblib to parallelize the computation of silhouette scores. Update article.</span></span>
-<span id="cb11-59"><a href="#cb11-59" aria-hidden="true" tabindex="-1"></a>silhouette_scores <span class="op">=</span> Parallel(n_jobs<span class="op">=-</span><span class="dv">1</span>)(delayed(compute_silhouette)(xi, data, min_samples) <span class="cf">for</span> xi <span class="kw">in</span> xi_values)</span>
-<span id="cb11-60"><a href="#cb11-60" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-61"><a href="#cb11-61" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the silhouette scores for different Xi values</span></span>
-<span id="cb11-62"><a href="#cb11-62" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.figure(figsize=(10, 5))</span></span>
-<span id="cb11-63"><a href="#cb11-63" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.plot(xi_values, silhouette_scores, marker='o')</span></span>
-<span id="cb11-64"><a href="#cb11-64" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.title('Silhouette Scores for Different Xi Values')</span></span>
-<span id="cb11-65"><a href="#cb11-65" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.xlabel('Xi Value')</span></span>
-<span id="cb11-66"><a href="#cb11-66" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.ylabel('Silhouette Score')</span></span>
-<span id="cb11-67"><a href="#cb11-67" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.grid(True)</span></span>
-<span id="cb11-68"><a href="#cb11-68" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.show()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1"></a><span class="co">#Now instead of using the reachability metric we use the Xi clustering method to apply OPTICS</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a><span class="co">#Please note I tried relative differences in reachability distances by calculating their relative slopes and another method using significant slopes</span></span>
+<span id="cb11-3"><a href="#cb11-3"></a><span class="co"># using a percentile approach and they both performed poor.</span></span>
+<span id="cb11-4"><a href="#cb11-4"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> silhouette_score</span>
+<span id="cb11-5"><a href="#cb11-5"></a><span class="im">from</span> joblib <span class="im">import</span> Parallel, delayed <span class="co">#I have 16 cores and I will use 16 cores....</span></span>
+<span id="cb11-6"><a href="#cb11-6"></a><span class="co"># Initial OPTICS model to get reachability distances</span></span>
+<span id="cb11-7"><a href="#cb11-7"></a>optics_model_initial <span class="op">=</span> OPTICS(min_samples<span class="op">=</span>min_samples)</span>
+<span id="cb11-8"><a href="#cb11-8"></a>optics_model_initial.fit(data)</span>
+<span id="cb11-9"><a href="#cb11-9"></a>reachabilities_initial <span class="op">=</span> optics_model_initial.reachability_[optics_model_initial.ordering_]</span>
+<span id="cb11-10"><a href="#cb11-10"></a></span>
+<span id="cb11-11"><a href="#cb11-11"></a><span class="co"># Calculate differences in reachability distances</span></span>
+<span id="cb11-12"><a href="#cb11-12"></a>reachability_diffs <span class="op">=</span> np.diff(reachabilities_initial)</span>
+<span id="cb11-13"><a href="#cb11-13"></a>reachability_diffs <span class="op">=</span> reachability_diffs[np.isfinite(reachability_diffs)]  <span class="co"># Remove any infinite or NaN values</span></span>
+<span id="cb11-14"><a href="#cb11-14"></a></span>
+<span id="cb11-15"><a href="#cb11-15"></a><span class="co"># Validate differences before calculating statistics</span></span>
+<span id="cb11-16"><a href="#cb11-16"></a><span class="cf">if</span> <span class="bu">len</span>(reachability_diffs) <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb11-17"><a href="#cb11-17"></a>    mean_diff <span class="op">=</span> np.mean(reachability_diffs)</span>
+<span id="cb11-18"><a href="#cb11-18"></a>    std_diff <span class="op">=</span> np.std(reachability_diffs)</span>
+<span id="cb11-19"><a href="#cb11-19"></a>    xi_value <span class="op">=</span> <span class="bu">max</span>(<span class="fl">0.0</span>, <span class="bu">min</span>(mean_diff <span class="op">+</span> std_diff, <span class="fl">1.0</span>))  <span class="co"># Ensure Xi is within [0.0, 1.0] and not NaN</span></span>
+<span id="cb11-20"><a href="#cb11-20"></a><span class="cf">else</span>:</span>
+<span id="cb11-21"><a href="#cb11-21"></a>    xi_value <span class="op">=</span> <span class="fl">0.05</span>  <span class="co"># Fallback value if differences calculation fails</span></span>
+<span id="cb11-22"><a href="#cb11-22"></a><span class="bu">print</span>(<span class="st">"Xi Value[Differences]:"</span>, xi_value)</span>
+<span id="cb11-23"><a href="#cb11-23"></a></span>
+<span id="cb11-24"><a href="#cb11-24"></a><span class="co"># Calculate relative slopes (normalized by preceding reachability value)</span></span>
+<span id="cb11-25"><a href="#cb11-25"></a>slopes <span class="op">=</span> np.diff(reachabilities_initial) <span class="op">/</span> reachabilities_initial[:<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb11-26"><a href="#cb11-26"></a><span class="co"># print(slopes)</span></span>
+<span id="cb11-27"><a href="#cb11-27"></a><span class="co"># Handle any NaN or infinity from division by very small numbers</span></span>
+<span id="cb11-28"><a href="#cb11-28"></a>slopes <span class="op">=</span> np.nan_to_num(slopes)</span>
+<span id="cb11-29"><a href="#cb11-29"></a></span>
+<span id="cb11-30"><a href="#cb11-30"></a><span class="co"># Determine significant slopes using a percentile approach</span></span>
+<span id="cb11-31"><a href="#cb11-31"></a>significant_slope_threshold <span class="op">=</span> np.percentile(np.<span class="bu">abs</span>(slopes), <span class="dv">96</span>)</span>
+<span id="cb11-32"><a href="#cb11-32"></a><span class="bu">print</span>(significant_slope_threshold)</span>
+<span id="cb11-33"><a href="#cb11-33"></a><span class="co"># Use this threshold to set Xi</span></span>
+<span id="cb11-34"><a href="#cb11-34"></a>xi_value <span class="op">=</span> significant_slope_threshold</span>
+<span id="cb11-35"><a href="#cb11-35"></a><span class="bu">print</span>(<span class="st">"Xi_value[Significanty Slopes]: "</span>, xi_value)</span>
+<span id="cb11-36"><a href="#cb11-36"></a></span>
+<span id="cb11-37"><a href="#cb11-37"></a></span>
+<span id="cb11-38"><a href="#cb11-38"></a></span>
+<span id="cb11-39"><a href="#cb11-39"></a><span class="co">#Rewrite Me</span></span>
+<span id="cb11-40"><a href="#cb11-40"></a></span>
+<span id="cb11-41"><a href="#cb11-41"></a><span class="co"># Define a function that computes the silhouette score for a given Xi</span></span>
+<span id="cb11-42"><a href="#cb11-42"></a><span class="kw">def</span> compute_silhouette(xi, data, min_samples):</span>
+<span id="cb11-43"><a href="#cb11-43"></a>    model <span class="op">=</span> OPTICS(min_samples<span class="op">=</span>min_samples, xi<span class="op">=</span>xi, cluster_method<span class="op">=</span><span class="st">'xi'</span>)</span>
+<span id="cb11-44"><a href="#cb11-44"></a>    model.fit(data)</span>
+<span id="cb11-45"><a href="#cb11-45"></a>    labels <span class="op">=</span> model.labels_</span>
+<span id="cb11-46"><a href="#cb11-46"></a>    <span class="cf">if</span> <span class="bu">len</span>(<span class="bu">set</span>(labels)) <span class="op">&gt;</span> <span class="dv">1</span> <span class="kw">and</span> np.<span class="bu">any</span>(labels <span class="op">!=</span> <span class="op">-</span><span class="dv">1</span>):</span>
+<span id="cb11-47"><a href="#cb11-47"></a>        <span class="cf">return</span> silhouette_score(data, labels)</span>
+<span id="cb11-48"><a href="#cb11-48"></a>    <span class="cf">else</span>:</span>
+<span id="cb11-49"><a href="#cb11-49"></a>        <span class="cf">return</span> <span class="op">-</span><span class="dv">1</span>  <span class="co"># Return a penalty for bad clustering</span></span>
+<span id="cb11-50"><a href="#cb11-50"></a>    </span>
+<span id="cb11-51"><a href="#cb11-51"></a><span class="co"># Trying a range of potential Xi values to find the best based on silhouette score</span></span>
+<span id="cb11-52"><a href="#cb11-52"></a>xi_values <span class="op">=</span> np.linspace(<span class="fl">0.01</span>, <span class="dv">1</span>, <span class="dv">1000</span>)  <span class="co"># Testing Xi values from 0.01 to 0.1</span></span>
+<span id="cb11-53"><a href="#cb11-53"></a></span>
+<span id="cb11-54"><a href="#cb11-54"></a><span class="co">#Note this can take some time to calculate...</span></span>
+<span id="cb11-55"><a href="#cb11-55"></a>silhouette_scores <span class="op">=</span> []</span>
+<span id="cb11-56"><a href="#cb11-56"></a><span class="co">#Silhouette score is a metric used to evaluate the quality of clustering.Aim for highest silhouette score.</span></span>
+<span id="cb11-57"><a href="#cb11-57"></a></span>
+<span id="cb11-58"><a href="#cb11-58"></a><span class="co"># Use joblib to parallelize the computation of silhouette scores. Update article.</span></span>
+<span id="cb11-59"><a href="#cb11-59"></a>silhouette_scores <span class="op">=</span> Parallel(n_jobs<span class="op">=-</span><span class="dv">1</span>)(delayed(compute_silhouette)(xi, data, min_samples) <span class="cf">for</span> xi <span class="kw">in</span> xi_values)</span>
+<span id="cb11-60"><a href="#cb11-60"></a></span>
+<span id="cb11-61"><a href="#cb11-61"></a><span class="co"># Plot the silhouette scores for different Xi values</span></span>
+<span id="cb11-62"><a href="#cb11-62"></a><span class="co"># plt.figure(figsize=(10, 5))</span></span>
+<span id="cb11-63"><a href="#cb11-63"></a><span class="co"># plt.plot(xi_values, silhouette_scores, marker='o')</span></span>
+<span id="cb11-64"><a href="#cb11-64"></a><span class="co"># plt.title('Silhouette Scores for Different Xi Values')</span></span>
+<span id="cb11-65"><a href="#cb11-65"></a><span class="co"># plt.xlabel('Xi Value')</span></span>
+<span id="cb11-66"><a href="#cb11-66"></a><span class="co"># plt.ylabel('Silhouette Score')</span></span>
+<span id="cb11-67"><a href="#cb11-67"></a><span class="co"># plt.grid(True)</span></span>
+<span id="cb11-68"><a href="#cb11-68"></a><span class="co"># plt.show()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Xi Value[Differences]: 0.06738467759335512
 0.06486873356523164
@@ -644,42 +644,42 @@ Xi_value[Significanty Slopes]:  0.06486873356523164</code></pre>
 <p><a href="SilhouetteScore.png" class="lightbox" data-gallery="quarto-lightbox-gallery-9"><img src="SilhouetteScore.png" class="img-fluid"></a></p>
 <p>As one can see in the image above, the silhouette score is maximized at a value of: 0.1725225…. and thus that is what we will use. The silhouette score is a measure of how similar an object is to its own cluster compared to other clusters. This metric ranges from -1 to +1, where a high value indicates that the object is well matched to its own cluster and poorly matched to neighboring clusters. A score close to 1 signifies that the object is far away from its neighboring clusters, a score of 0 indicates that the object is on or very close to the decision boundary between two neighboring clusters, and a negative score indicates that the object might have been assigned to the wrong cluster. From here we will select the best Xi to use based on the maximum silhouette score.</p>
 <div id="c416c607" class="cell" data-execution_count="11">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Select the best Xi based on maximum silhouette score</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>best_xi_index <span class="op">=</span> np.argmax(silhouette_scores)</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>best_xi <span class="op">=</span> xi_values[best_xi_index]</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>xi_value <span class="op">=</span> best_xi</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Xi Value[Silhouette Score Iterative]"</span>, xi_value)</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply OPTICS using dynamically determined xi clustering method</span></span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>optics_model <span class="op">=</span> OPTICS(min_samples<span class="op">=</span>min_samples, xi<span class="op">=</span>xi_value, cluster_method<span class="op">=</span><span class="st">'xi'</span>)</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>optics_model.fit(data)</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract the clusters using the xi method</span></span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> optics_model.labels_</span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Reachability plot</span></span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>reachabilities <span class="op">=</span> optics_model.reachability_[optics_model.ordering_]</span>
-<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>space <span class="op">=</span> np.arange(<span class="bu">len</span>(data))</span>
-<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.figure(figsize=(12, 6))</span></span>
-<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.bar(space, reachabilities, color='g')</span></span>
-<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.title('OPTICS Reachability Plot with Dynamic Xi Clustering')</span></span>
-<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.xlabel('Ordered Data Points')</span></span>
-<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.ylabel('Reachability Distance')</span></span>
-<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.show()</span></span>
-<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the clusters</span></span>
-<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>unique_labels <span class="op">=</span> <span class="bu">set</span>(labels)</span>
-<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate colors for each cluster label</span></span>
-<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>colors <span class="op">=</span> plt.cm.rainbow(np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, <span class="bu">len</span>(unique_labels)))</span>
-<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>cluster_colors <span class="op">=</span> [colors[<span class="bu">list</span>(unique_labels).index(label)] <span class="cf">if</span> label <span class="op">!=</span> <span class="op">-</span><span class="dv">1</span> <span class="cf">else</span> <span class="st">'k'</span> <span class="cf">for</span> label <span class="kw">in</span> labels[optics_model.ordering_]]</span>
-<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.figure(figsize=(12, 6))</span></span>
-<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.bar(space, reachabilities, color=cluster_colors)</span></span>
-<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.title('OPTICS Reachability Plot with Cluster Coloring and Dynamic Xi')</span></span>
-<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.xlabel('Ordered Data Points')</span></span>
-<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.ylabel('Reachability Distance')</span></span>
-<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.show()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1"></a><span class="co"># Select the best Xi based on maximum silhouette score</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a>best_xi_index <span class="op">=</span> np.argmax(silhouette_scores)</span>
+<span id="cb14-3"><a href="#cb14-3"></a>best_xi <span class="op">=</span> xi_values[best_xi_index]</span>
+<span id="cb14-4"><a href="#cb14-4"></a>xi_value <span class="op">=</span> best_xi</span>
+<span id="cb14-5"><a href="#cb14-5"></a><span class="bu">print</span>(<span class="st">"Xi Value[Silhouette Score Iterative]"</span>, xi_value)</span>
+<span id="cb14-6"><a href="#cb14-6"></a><span class="co"># Apply OPTICS using dynamically determined xi clustering method</span></span>
+<span id="cb14-7"><a href="#cb14-7"></a>optics_model <span class="op">=</span> OPTICS(min_samples<span class="op">=</span>min_samples, xi<span class="op">=</span>xi_value, cluster_method<span class="op">=</span><span class="st">'xi'</span>)</span>
+<span id="cb14-8"><a href="#cb14-8"></a>optics_model.fit(data)</span>
+<span id="cb14-9"><a href="#cb14-9"></a></span>
+<span id="cb14-10"><a href="#cb14-10"></a><span class="co"># Extract the clusters using the xi method</span></span>
+<span id="cb14-11"><a href="#cb14-11"></a>labels <span class="op">=</span> optics_model.labels_</span>
+<span id="cb14-12"><a href="#cb14-12"></a></span>
+<span id="cb14-13"><a href="#cb14-13"></a><span class="co"># Reachability plot</span></span>
+<span id="cb14-14"><a href="#cb14-14"></a>reachabilities <span class="op">=</span> optics_model.reachability_[optics_model.ordering_]</span>
+<span id="cb14-15"><a href="#cb14-15"></a>space <span class="op">=</span> np.arange(<span class="bu">len</span>(data))</span>
+<span id="cb14-16"><a href="#cb14-16"></a></span>
+<span id="cb14-17"><a href="#cb14-17"></a><span class="co"># plt.figure(figsize=(12, 6))</span></span>
+<span id="cb14-18"><a href="#cb14-18"></a><span class="co"># plt.bar(space, reachabilities, color='g')</span></span>
+<span id="cb14-19"><a href="#cb14-19"></a><span class="co"># plt.title('OPTICS Reachability Plot with Dynamic Xi Clustering')</span></span>
+<span id="cb14-20"><a href="#cb14-20"></a><span class="co"># plt.xlabel('Ordered Data Points')</span></span>
+<span id="cb14-21"><a href="#cb14-21"></a><span class="co"># plt.ylabel('Reachability Distance')</span></span>
+<span id="cb14-22"><a href="#cb14-22"></a><span class="co"># plt.show()</span></span>
+<span id="cb14-23"><a href="#cb14-23"></a></span>
+<span id="cb14-24"><a href="#cb14-24"></a><span class="co"># Plot the clusters</span></span>
+<span id="cb14-25"><a href="#cb14-25"></a>unique_labels <span class="op">=</span> <span class="bu">set</span>(labels)</span>
+<span id="cb14-26"><a href="#cb14-26"></a></span>
+<span id="cb14-27"><a href="#cb14-27"></a><span class="co"># Generate colors for each cluster label</span></span>
+<span id="cb14-28"><a href="#cb14-28"></a>colors <span class="op">=</span> plt.cm.rainbow(np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, <span class="bu">len</span>(unique_labels)))</span>
+<span id="cb14-29"><a href="#cb14-29"></a>cluster_colors <span class="op">=</span> [colors[<span class="bu">list</span>(unique_labels).index(label)] <span class="cf">if</span> label <span class="op">!=</span> <span class="op">-</span><span class="dv">1</span> <span class="cf">else</span> <span class="st">'k'</span> <span class="cf">for</span> label <span class="kw">in</span> labels[optics_model.ordering_]]</span>
+<span id="cb14-30"><a href="#cb14-30"></a></span>
+<span id="cb14-31"><a href="#cb14-31"></a><span class="co"># plt.figure(figsize=(12, 6))</span></span>
+<span id="cb14-32"><a href="#cb14-32"></a><span class="co"># plt.bar(space, reachabilities, color=cluster_colors)</span></span>
+<span id="cb14-33"><a href="#cb14-33"></a><span class="co"># plt.title('OPTICS Reachability Plot with Cluster Coloring and Dynamic Xi')</span></span>
+<span id="cb14-34"><a href="#cb14-34"></a><span class="co"># plt.xlabel('Ordered Data Points')</span></span>
+<span id="cb14-35"><a href="#cb14-35"></a><span class="co"># plt.ylabel('Reachability Distance')</span></span>
+<span id="cb14-36"><a href="#cb14-36"></a><span class="co"># plt.show()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Xi Value[Silhouette Score Iterative] 0.17252252252252254</code></pre>
 </div>
@@ -689,26 +689,26 @@ Xi_value[Significanty Slopes]:  0.06486873356523164</code></pre>
 <p>As one can see the number of clusters is different here and more likely than not indicative of my ability/willingness to play with Xi values than the inherent performance of OPTICS. Regardless, it was much faster to simply establish a cutoff with the first method described than it was to iterate over Xi for this particular dataset. There may be cases where Xi is better equipped to cluster the dataset and as a result I kept it here for my own reference sometime in the future.</p>
 <p>The resultant clustering is performed below:</p>
 <div id="08e737d1" class="cell" data-execution_count="12">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Scatter plot of clusters</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.figure(figsize=(10, 7))</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co"># for klass, color in zip(unique_labels, colors):</span></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co">#     class_member_mask = (labels == klass)</span></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="co">#     xy = data[class_member_mask]</span></span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="co">#     if klass != -1:</span></span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="co">#         # Draw the convex hull and fill it with a light shade of the cluster color</span></span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="co">#         if xy.shape[0] &gt; 2:  # ConvexHull needs at least 3 points to compute the hull</span></span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="co">#             hull = ConvexHull(xy)</span></span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="co">#             plt.fill(xy[hull.vertices, 0], xy[hull.vertices, 1], color=color, alpha=0.2, edgecolor='k')</span></span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a><span class="co">#         plt.scatter(xy[:, 0], xy[:, 1], color=color, edgecolor='k', label=f'Cluster {klass}')</span></span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="co">#     else:</span></span>
-<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a><span class="co">#         plt.scatter(xy[:, 0], xy[:, 1], c='k', marker='x', label='Noise')</span></span>
-<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.title('Clusters by OPTICS with Dynamically Determined Xi and Hulls')</span></span>
-<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.xlabel('Feature 1')</span></span>
-<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.ylabel('Feature 2')</span></span>
-<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.legend()</span></span>
-<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.show()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1"></a><span class="co"># Scatter plot of clusters</span></span>
+<span id="cb16-2"><a href="#cb16-2"></a><span class="co"># plt.figure(figsize=(10, 7))</span></span>
+<span id="cb16-3"><a href="#cb16-3"></a></span>
+<span id="cb16-4"><a href="#cb16-4"></a><span class="co"># for klass, color in zip(unique_labels, colors):</span></span>
+<span id="cb16-5"><a href="#cb16-5"></a><span class="co">#     class_member_mask = (labels == klass)</span></span>
+<span id="cb16-6"><a href="#cb16-6"></a><span class="co">#     xy = data[class_member_mask]</span></span>
+<span id="cb16-7"><a href="#cb16-7"></a><span class="co">#     if klass != -1:</span></span>
+<span id="cb16-8"><a href="#cb16-8"></a><span class="co">#         # Draw the convex hull and fill it with a light shade of the cluster color</span></span>
+<span id="cb16-9"><a href="#cb16-9"></a><span class="co">#         if xy.shape[0] &gt; 2:  # ConvexHull needs at least 3 points to compute the hull</span></span>
+<span id="cb16-10"><a href="#cb16-10"></a><span class="co">#             hull = ConvexHull(xy)</span></span>
+<span id="cb16-11"><a href="#cb16-11"></a><span class="co">#             plt.fill(xy[hull.vertices, 0], xy[hull.vertices, 1], color=color, alpha=0.2, edgecolor='k')</span></span>
+<span id="cb16-12"><a href="#cb16-12"></a><span class="co">#         plt.scatter(xy[:, 0], xy[:, 1], color=color, edgecolor='k', label=f'Cluster {klass}')</span></span>
+<span id="cb16-13"><a href="#cb16-13"></a><span class="co">#     else:</span></span>
+<span id="cb16-14"><a href="#cb16-14"></a><span class="co">#         plt.scatter(xy[:, 0], xy[:, 1], c='k', marker='x', label='Noise')</span></span>
+<span id="cb16-15"><a href="#cb16-15"></a></span>
+<span id="cb16-16"><a href="#cb16-16"></a><span class="co"># plt.title('Clusters by OPTICS with Dynamically Determined Xi and Hulls')</span></span>
+<span id="cb16-17"><a href="#cb16-17"></a><span class="co"># plt.xlabel('Feature 1')</span></span>
+<span id="cb16-18"><a href="#cb16-18"></a><span class="co"># plt.ylabel('Feature 2')</span></span>
+<span id="cb16-19"><a href="#cb16-19"></a><span class="co"># plt.legend()</span></span>
+<span id="cb16-20"><a href="#cb16-20"></a><span class="co"># plt.show()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Finally, I got a little bit more neurotic and decided to iteratively vary Xi and analyze a number of metrics including the Silhouette Score, Davies-Bouldin Index, Calinski-Harabasz Index(Variance Ratio Criterion), the Adjusted Rand Index, and Mutual Information. A short description of each is below:</p>
 <ol type="1">
@@ -720,123 +720,123 @@ Xi_value[Significanty Slopes]:  0.06486873356523164</code></pre>
 </ol>
 <p>The code is below and I parallelized the calculations as it would have taken quite some time otherwise.</p>
 <div id="3445219f" class="cell" data-execution_count="13">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Neuroticism:</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> davies_bouldin_score, calinski_harabasz_score, adjusted_rand_score, adjusted_mutual_info_score</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> joblib <span class="im">import</span> Parallel, delayed <span class="co">#I have 16 cores and I will use 16 cores....</span></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the function to compute all metrics</span></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> compute_metrics(xi, data, labels_true):</span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    model <span class="op">=</span> OPTICS(min_samples<span class="op">=</span>min_samples, xi<span class="op">=</span>xi, cluster_method<span class="op">=</span><span class="st">'xi'</span>)</span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    model.fit(data)</span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    labels <span class="op">=</span> model.labels_</span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Calculate metrics only if valid clustering is formed</span></span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">len</span>(<span class="bu">set</span>(labels)) <span class="op">&gt;</span> <span class="dv">1</span> <span class="kw">and</span> np.<span class="bu">any</span>(labels <span class="op">!=</span> <span class="op">-</span><span class="dv">1</span>):</span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>        sil_score <span class="op">=</span> silhouette_score(data, labels)</span>
-<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>        db_score <span class="op">=</span> davies_bouldin_score(data, labels)</span>
-<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>        ch_score <span class="op">=</span> calinski_harabasz_score(data, labels)</span>
-<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>        ar_score <span class="op">=</span> adjusted_rand_score(labels_true, labels)</span>
-<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>        mi_score <span class="op">=</span> adjusted_mutual_info_score(labels_true, labels)</span>
-<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
-<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>        sil_score <span class="op">=</span> db_score <span class="op">=</span> ch_score <span class="op">=</span> ar_score <span class="op">=</span> mi_score <span class="op">=</span> <span class="op">-</span><span class="dv">1</span>  <span class="co"># Penalty for bad or invalid clustering</span></span>
-<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (sil_score, db_score, ch_score, ar_score, mi_score)</span>
-<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Range of Xi values</span></span>
-<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>xi_values <span class="op">=</span> np.linspace(<span class="fl">0.01</span>, <span class="dv">1</span>, <span class="dv">1000</span>)  <span class="co"># Using 20 Xi values for demonstration</span></span>
-<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Parallel computation of metrics</span></span>
-<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> Parallel(n_jobs<span class="op">=-</span><span class="dv">1</span>)(delayed(compute_metrics)(xi, data, labels) <span class="cf">for</span> xi <span class="kw">in</span> xi_values)</span>
-<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract the results</span></span>
-<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a>silhouette_scores, db_scores, ch_scores, ar_scores, mi_scores <span class="op">=</span> <span class="bu">zip</span>(<span class="op">*</span>results)</span>
-<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-33"><a href="#cb17-33" aria-hidden="true" tabindex="-1"></a><span class="co"># # Plotting all the metrics</span></span>
-<span id="cb17-34"><a href="#cb17-34" aria-hidden="true" tabindex="-1"></a><span class="co"># fig, axs = plt.subplots(5, 1, figsize=(10, 25))</span></span>
-<span id="cb17-35"><a href="#cb17-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-36"><a href="#cb17-36" aria-hidden="true" tabindex="-1"></a><span class="co"># # Silhouette Score</span></span>
-<span id="cb17-37"><a href="#cb17-37" aria-hidden="true" tabindex="-1"></a><span class="co"># axs[0].plot(xi_values, silhouette_scores, marker='o')</span></span>
-<span id="cb17-38"><a href="#cb17-38" aria-hidden="true" tabindex="-1"></a><span class="co"># axs[0].set_title('Silhouette Score vs Xi')</span></span>
-<span id="cb17-39"><a href="#cb17-39" aria-hidden="true" tabindex="-1"></a><span class="co"># axs[0].set_xlabel('Xi')</span></span>
-<span id="cb17-40"><a href="#cb17-40" aria-hidden="true" tabindex="-1"></a><span class="co"># axs[0].set_ylabel('Silhouette Score')</span></span>
-<span id="cb17-41"><a href="#cb17-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-42"><a href="#cb17-42" aria-hidden="true" tabindex="-1"></a><span class="co"># # Davies-Bouldin Score</span></span>
-<span id="cb17-43"><a href="#cb17-43" aria-hidden="true" tabindex="-1"></a><span class="co"># axs[1].plot(xi_values, db_scores, marker='o')</span></span>
-<span id="cb17-44"><a href="#cb17-44" aria-hidden="true" tabindex="-1"></a><span class="co"># axs[1].set_title('Davies-Bouldin Score vs Xi')</span></span>
-<span id="cb17-45"><a href="#cb17-45" aria-hidden="true" tabindex="-1"></a><span class="co"># axs[1].set_xlabel('Xi')</span></span>
-<span id="cb17-46"><a href="#cb17-46" aria-hidden="true" tabindex="-1"></a><span class="co"># axs[1].set_ylabel('Davies-Bouldin Score')</span></span>
-<span id="cb17-47"><a href="#cb17-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-48"><a href="#cb17-48" aria-hidden="true" tabindex="-1"></a><span class="co"># # Calinski-Harabasz Index</span></span>
-<span id="cb17-49"><a href="#cb17-49" aria-hidden="true" tabindex="-1"></a><span class="co"># axs[2].plot(xi_values, ch_scores, marker='o')</span></span>
-<span id="cb17-50"><a href="#cb17-50" aria-hidden="true" tabindex="-1"></a><span class="co"># axs[2].set_title('Calinski-Harabasz Index vs Xi')</span></span>
-<span id="cb17-51"><a href="#cb17-51" aria-hidden="true" tabindex="-1"></a><span class="co"># axs[2].set_xlabel('Xi')</span></span>
-<span id="cb17-52"><a href="#cb17-52" aria-hidden="true" tabindex="-1"></a><span class="co"># axs[2].set_ylabel('Calinski-Harabasz Index')</span></span>
-<span id="cb17-53"><a href="#cb17-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-54"><a href="#cb17-54" aria-hidden="true" tabindex="-1"></a><span class="co"># # Adjusted Rand Index</span></span>
-<span id="cb17-55"><a href="#cb17-55" aria-hidden="true" tabindex="-1"></a><span class="co"># axs[3].plot(xi_values, ar_scores, marker='o')</span></span>
-<span id="cb17-56"><a href="#cb17-56" aria-hidden="true" tabindex="-1"></a><span class="co"># axs[3].set_title('Adjusted Rand Index vs Xi')</span></span>
-<span id="cb17-57"><a href="#cb17-57" aria-hidden="true" tabindex="-1"></a><span class="co"># axs[3].set_xlabel('Xi')</span></span>
-<span id="cb17-58"><a href="#cb17-58" aria-hidden="true" tabindex="-1"></a><span class="co"># axs[3].set_ylabel('Adjusted Rand Score')</span></span>
-<span id="cb17-59"><a href="#cb17-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-60"><a href="#cb17-60" aria-hidden="true" tabindex="-1"></a><span class="co"># # Mutual Information</span></span>
-<span id="cb17-61"><a href="#cb17-61" aria-hidden="true" tabindex="-1"></a><span class="co"># axs[4].plot(xi_values, mi_scores, marker='o')</span></span>
-<span id="cb17-62"><a href="#cb17-62" aria-hidden="true" tabindex="-1"></a><span class="co"># axs[4].set_title('Mutual Information vs Xi')</span></span>
-<span id="cb17-63"><a href="#cb17-63" aria-hidden="true" tabindex="-1"></a><span class="co"># axs[4].set_xlabel('Xi')</span></span>
-<span id="cb17-64"><a href="#cb17-64" aria-hidden="true" tabindex="-1"></a><span class="co"># axs[4].set_ylabel('Mutual Information Score')</span></span>
-<span id="cb17-65"><a href="#cb17-65" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-66"><a href="#cb17-66" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.tight_layout()</span></span>
-<span id="cb17-67"><a href="#cb17-67" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.show()</span></span>
-<span id="cb17-68"><a href="#cb17-68" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-69"><a href="#cb17-69" aria-hidden="true" tabindex="-1"></a><span class="co"># Normalize scores</span></span>
-<span id="cb17-70"><a href="#cb17-70" aria-hidden="true" tabindex="-1"></a><span class="co"># Invert Davies-Bouldin scores since lower is better</span></span>
-<span id="cb17-71"><a href="#cb17-71" aria-hidden="true" tabindex="-1"></a>db_scores <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> np.array(db_scores)</span>
-<span id="cb17-72"><a href="#cb17-72" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-73"><a href="#cb17-73" aria-hidden="true" tabindex="-1"></a><span class="co"># Normalize all scores to be between 0 and 1</span></span>
-<span id="cb17-74"><a href="#cb17-74" aria-hidden="true" tabindex="-1"></a>silhouette_norm <span class="op">=</span> (silhouette_scores <span class="op">-</span> np.<span class="bu">min</span>(silhouette_scores)) <span class="op">/</span> (np.<span class="bu">max</span>(silhouette_scores) <span class="op">-</span> np.<span class="bu">min</span>(silhouette_scores))</span>
-<span id="cb17-75"><a href="#cb17-75" aria-hidden="true" tabindex="-1"></a>db_norm <span class="op">=</span> (db_scores <span class="op">-</span> np.<span class="bu">min</span>(db_scores)) <span class="op">/</span> (np.<span class="bu">max</span>(db_scores) <span class="op">-</span> np.<span class="bu">min</span>(db_scores))</span>
-<span id="cb17-76"><a href="#cb17-76" aria-hidden="true" tabindex="-1"></a>ch_norm <span class="op">=</span> (ch_scores <span class="op">-</span> np.<span class="bu">min</span>(ch_scores)) <span class="op">/</span> (np.<span class="bu">max</span>(ch_scores) <span class="op">-</span> np.<span class="bu">min</span>(ch_scores))</span>
-<span id="cb17-77"><a href="#cb17-77" aria-hidden="true" tabindex="-1"></a>ar_norm <span class="op">=</span> (ar_scores <span class="op">-</span> np.<span class="bu">min</span>(ar_scores)) <span class="op">/</span> (np.<span class="bu">max</span>(ar_scores) <span class="op">-</span> np.<span class="bu">min</span>(ar_scores))</span>
-<span id="cb17-78"><a href="#cb17-78" aria-hidden="true" tabindex="-1"></a>mi_norm <span class="op">=</span> (mi_scores <span class="op">-</span> np.<span class="bu">min</span>(mi_scores)) <span class="op">/</span> (np.<span class="bu">max</span>(mi_scores) <span class="op">-</span> np.<span class="bu">min</span>(mi_scores))</span>
-<span id="cb17-79"><a href="#cb17-79" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-80"><a href="#cb17-80" aria-hidden="true" tabindex="-1"></a><span class="co"># Assume equal weighting for simplicity, sum normalized scores</span></span>
-<span id="cb17-81"><a href="#cb17-81" aria-hidden="true" tabindex="-1"></a>weighted_scores <span class="op">=</span> silhouette_norm <span class="op">+</span> db_norm <span class="op">+</span> ch_norm <span class="op">+</span> ar_norm <span class="op">+</span> mi_norm</span>
-<span id="cb17-82"><a href="#cb17-82" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-83"><a href="#cb17-83" aria-hidden="true" tabindex="-1"></a><span class="co"># Find the Xi with the highest weighted score</span></span>
-<span id="cb17-84"><a href="#cb17-84" aria-hidden="true" tabindex="-1"></a>optimal_xi_index <span class="op">=</span> np.argmax(weighted_scores)</span>
-<span id="cb17-85"><a href="#cb17-85" aria-hidden="true" tabindex="-1"></a>optimal_xi <span class="op">=</span> xi_values[optimal_xi_index]</span>
-<span id="cb17-86"><a href="#cb17-86" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-87"><a href="#cb17-87" aria-hidden="true" tabindex="-1"></a><span class="co"># # Plot each metric</span></span>
-<span id="cb17-88"><a href="#cb17-88" aria-hidden="true" tabindex="-1"></a><span class="co"># fig, ax = plt.subplots(5, 1, figsize=(10, 20))</span></span>
-<span id="cb17-89"><a href="#cb17-89" aria-hidden="true" tabindex="-1"></a><span class="co"># ax[0].plot(xi_values, silhouette_norm, label='Silhouette Score')</span></span>
-<span id="cb17-90"><a href="#cb17-90" aria-hidden="true" tabindex="-1"></a><span class="co"># ax[1].plot(xi_values, db_norm, label='Davies-Bouldin Index')</span></span>
-<span id="cb17-91"><a href="#cb17-91" aria-hidden="true" tabindex="-1"></a><span class="co"># ax[2].plot(xi_values, ch_norm, label='Calinski-Harabasz Score')</span></span>
-<span id="cb17-92"><a href="#cb17-92" aria-hidden="true" tabindex="-1"></a><span class="co"># ax[3].plot(xi_values, ar_norm, label='Adjusted Rand Index')</span></span>
-<span id="cb17-93"><a href="#cb17-93" aria-hidden="true" tabindex="-1"></a><span class="co"># ax[4].plot(xi_values, mi_norm, label='Adjusted Mutual Information')</span></span>
-<span id="cb17-94"><a href="#cb17-94" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-95"><a href="#cb17-95" aria-hidden="true" tabindex="-1"></a><span class="co"># for a in ax:</span></span>
-<span id="cb17-96"><a href="#cb17-96" aria-hidden="true" tabindex="-1"></a><span class="co">#     a.set_xlabel('Xi Value')</span></span>
-<span id="cb17-97"><a href="#cb17-97" aria-hidden="true" tabindex="-1"></a><span class="co">#     a.set_ylabel('Normalized Score')</span></span>
-<span id="cb17-98"><a href="#cb17-98" aria-hidden="true" tabindex="-1"></a><span class="co">#     a.legend()</span></span>
-<span id="cb17-99"><a href="#cb17-99" aria-hidden="true" tabindex="-1"></a><span class="co">#     a.grid(True)</span></span>
-<span id="cb17-100"><a href="#cb17-100" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-101"><a href="#cb17-101" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.tight_layout()</span></span>
-<span id="cb17-102"><a href="#cb17-102" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.show()</span></span>
-<span id="cb17-103"><a href="#cb17-103" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-104"><a href="#cb17-104" aria-hidden="true" tabindex="-1"></a><span class="co"># Normalize and invert scores where necessary</span></span>
-<span id="cb17-105"><a href="#cb17-105" aria-hidden="true" tabindex="-1"></a>silhouette_norm <span class="op">=</span> (silhouette_scores <span class="op">-</span> np.<span class="bu">min</span>(silhouette_scores)) <span class="op">/</span> (np.<span class="bu">max</span>(silhouette_scores) <span class="op">-</span> np.<span class="bu">min</span>(silhouette_scores))</span>
-<span id="cb17-106"><a href="#cb17-106" aria-hidden="true" tabindex="-1"></a>db_norm <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> ((db_scores <span class="op">-</span> np.<span class="bu">min</span>(db_scores)) <span class="op">/</span> (np.<span class="bu">max</span>(db_scores) <span class="op">-</span> np.<span class="bu">min</span>(db_scores)))</span>
-<span id="cb17-107"><a href="#cb17-107" aria-hidden="true" tabindex="-1"></a>ch_norm <span class="op">=</span> (ch_scores <span class="op">-</span> np.<span class="bu">min</span>(ch_scores)) <span class="op">/</span> (np.<span class="bu">max</span>(ch_scores) <span class="op">-</span> np.<span class="bu">min</span>(ch_scores))</span>
-<span id="cb17-108"><a href="#cb17-108" aria-hidden="true" tabindex="-1"></a>ar_norm <span class="op">=</span> (ar_scores <span class="op">-</span> np.<span class="bu">min</span>(ar_scores)) <span class="op">/</span> (np.<span class="bu">max</span>(ar_scores) <span class="op">-</span> np.<span class="bu">min</span>(ar_scores))</span>
-<span id="cb17-109"><a href="#cb17-109" aria-hidden="true" tabindex="-1"></a>mi_norm <span class="op">=</span> (mi_scores <span class="op">-</span> np.<span class="bu">min</span>(mi_scores)) <span class="op">/</span> (np.<span class="bu">max</span>(mi_scores) <span class="op">-</span> np.<span class="bu">min</span>(mi_scores))</span>
-<span id="cb17-110"><a href="#cb17-110" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-111"><a href="#cb17-111" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the average Xi from the max indices</span></span>
-<span id="cb17-112"><a href="#cb17-112" aria-hidden="true" tabindex="-1"></a>optimal_indices <span class="op">=</span> [np.argmax(silhouette_norm), np.argmax(db_norm), np.argmax(ch_norm), np.argmax(ar_norm), np.argmax(mi_norm)]</span>
-<span id="cb17-113"><a href="#cb17-113" aria-hidden="true" tabindex="-1"></a>optimal_xis <span class="op">=</span> xi_values[optimal_indices]</span>
-<span id="cb17-114"><a href="#cb17-114" aria-hidden="true" tabindex="-1"></a>average_xi <span class="op">=</span> np.mean(optimal_xis)</span>
-<span id="cb17-115"><a href="#cb17-115" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-116"><a href="#cb17-116" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Optimal Xi values from each metric:"</span>, optimal_xis)</span>
-<span id="cb17-117"><a href="#cb17-117" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Average Optimal Xi:"</span>, average_xi)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1"></a><span class="co"># Neuroticism:</span></span>
+<span id="cb17-2"><a href="#cb17-2"></a></span>
+<span id="cb17-3"><a href="#cb17-3"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> davies_bouldin_score, calinski_harabasz_score, adjusted_rand_score, adjusted_mutual_info_score</span>
+<span id="cb17-4"><a href="#cb17-4"></a><span class="im">from</span> joblib <span class="im">import</span> Parallel, delayed <span class="co">#I have 16 cores and I will use 16 cores....</span></span>
+<span id="cb17-5"><a href="#cb17-5"></a></span>
+<span id="cb17-6"><a href="#cb17-6"></a><span class="co"># Define the function to compute all metrics</span></span>
+<span id="cb17-7"><a href="#cb17-7"></a><span class="kw">def</span> compute_metrics(xi, data, labels_true):</span>
+<span id="cb17-8"><a href="#cb17-8"></a>    model <span class="op">=</span> OPTICS(min_samples<span class="op">=</span>min_samples, xi<span class="op">=</span>xi, cluster_method<span class="op">=</span><span class="st">'xi'</span>)</span>
+<span id="cb17-9"><a href="#cb17-9"></a>    model.fit(data)</span>
+<span id="cb17-10"><a href="#cb17-10"></a>    labels <span class="op">=</span> model.labels_</span>
+<span id="cb17-11"><a href="#cb17-11"></a>    </span>
+<span id="cb17-12"><a href="#cb17-12"></a>    <span class="co"># Calculate metrics only if valid clustering is formed</span></span>
+<span id="cb17-13"><a href="#cb17-13"></a>    <span class="cf">if</span> <span class="bu">len</span>(<span class="bu">set</span>(labels)) <span class="op">&gt;</span> <span class="dv">1</span> <span class="kw">and</span> np.<span class="bu">any</span>(labels <span class="op">!=</span> <span class="op">-</span><span class="dv">1</span>):</span>
+<span id="cb17-14"><a href="#cb17-14"></a>        sil_score <span class="op">=</span> silhouette_score(data, labels)</span>
+<span id="cb17-15"><a href="#cb17-15"></a>        db_score <span class="op">=</span> davies_bouldin_score(data, labels)</span>
+<span id="cb17-16"><a href="#cb17-16"></a>        ch_score <span class="op">=</span> calinski_harabasz_score(data, labels)</span>
+<span id="cb17-17"><a href="#cb17-17"></a>        ar_score <span class="op">=</span> adjusted_rand_score(labels_true, labels)</span>
+<span id="cb17-18"><a href="#cb17-18"></a>        mi_score <span class="op">=</span> adjusted_mutual_info_score(labels_true, labels)</span>
+<span id="cb17-19"><a href="#cb17-19"></a>    <span class="cf">else</span>:</span>
+<span id="cb17-20"><a href="#cb17-20"></a>        sil_score <span class="op">=</span> db_score <span class="op">=</span> ch_score <span class="op">=</span> ar_score <span class="op">=</span> mi_score <span class="op">=</span> <span class="op">-</span><span class="dv">1</span>  <span class="co"># Penalty for bad or invalid clustering</span></span>
+<span id="cb17-21"><a href="#cb17-21"></a>    </span>
+<span id="cb17-22"><a href="#cb17-22"></a>    <span class="cf">return</span> (sil_score, db_score, ch_score, ar_score, mi_score)</span>
+<span id="cb17-23"><a href="#cb17-23"></a></span>
+<span id="cb17-24"><a href="#cb17-24"></a><span class="co"># Range of Xi values</span></span>
+<span id="cb17-25"><a href="#cb17-25"></a>xi_values <span class="op">=</span> np.linspace(<span class="fl">0.01</span>, <span class="dv">1</span>, <span class="dv">1000</span>)  <span class="co"># Using 20 Xi values for demonstration</span></span>
+<span id="cb17-26"><a href="#cb17-26"></a></span>
+<span id="cb17-27"><a href="#cb17-27"></a><span class="co"># Parallel computation of metrics</span></span>
+<span id="cb17-28"><a href="#cb17-28"></a>results <span class="op">=</span> Parallel(n_jobs<span class="op">=-</span><span class="dv">1</span>)(delayed(compute_metrics)(xi, data, labels) <span class="cf">for</span> xi <span class="kw">in</span> xi_values)</span>
+<span id="cb17-29"><a href="#cb17-29"></a></span>
+<span id="cb17-30"><a href="#cb17-30"></a><span class="co"># Extract the results</span></span>
+<span id="cb17-31"><a href="#cb17-31"></a>silhouette_scores, db_scores, ch_scores, ar_scores, mi_scores <span class="op">=</span> <span class="bu">zip</span>(<span class="op">*</span>results)</span>
+<span id="cb17-32"><a href="#cb17-32"></a></span>
+<span id="cb17-33"><a href="#cb17-33"></a><span class="co"># # Plotting all the metrics</span></span>
+<span id="cb17-34"><a href="#cb17-34"></a><span class="co"># fig, axs = plt.subplots(5, 1, figsize=(10, 25))</span></span>
+<span id="cb17-35"><a href="#cb17-35"></a></span>
+<span id="cb17-36"><a href="#cb17-36"></a><span class="co"># # Silhouette Score</span></span>
+<span id="cb17-37"><a href="#cb17-37"></a><span class="co"># axs[0].plot(xi_values, silhouette_scores, marker='o')</span></span>
+<span id="cb17-38"><a href="#cb17-38"></a><span class="co"># axs[0].set_title('Silhouette Score vs Xi')</span></span>
+<span id="cb17-39"><a href="#cb17-39"></a><span class="co"># axs[0].set_xlabel('Xi')</span></span>
+<span id="cb17-40"><a href="#cb17-40"></a><span class="co"># axs[0].set_ylabel('Silhouette Score')</span></span>
+<span id="cb17-41"><a href="#cb17-41"></a></span>
+<span id="cb17-42"><a href="#cb17-42"></a><span class="co"># # Davies-Bouldin Score</span></span>
+<span id="cb17-43"><a href="#cb17-43"></a><span class="co"># axs[1].plot(xi_values, db_scores, marker='o')</span></span>
+<span id="cb17-44"><a href="#cb17-44"></a><span class="co"># axs[1].set_title('Davies-Bouldin Score vs Xi')</span></span>
+<span id="cb17-45"><a href="#cb17-45"></a><span class="co"># axs[1].set_xlabel('Xi')</span></span>
+<span id="cb17-46"><a href="#cb17-46"></a><span class="co"># axs[1].set_ylabel('Davies-Bouldin Score')</span></span>
+<span id="cb17-47"><a href="#cb17-47"></a></span>
+<span id="cb17-48"><a href="#cb17-48"></a><span class="co"># # Calinski-Harabasz Index</span></span>
+<span id="cb17-49"><a href="#cb17-49"></a><span class="co"># axs[2].plot(xi_values, ch_scores, marker='o')</span></span>
+<span id="cb17-50"><a href="#cb17-50"></a><span class="co"># axs[2].set_title('Calinski-Harabasz Index vs Xi')</span></span>
+<span id="cb17-51"><a href="#cb17-51"></a><span class="co"># axs[2].set_xlabel('Xi')</span></span>
+<span id="cb17-52"><a href="#cb17-52"></a><span class="co"># axs[2].set_ylabel('Calinski-Harabasz Index')</span></span>
+<span id="cb17-53"><a href="#cb17-53"></a></span>
+<span id="cb17-54"><a href="#cb17-54"></a><span class="co"># # Adjusted Rand Index</span></span>
+<span id="cb17-55"><a href="#cb17-55"></a><span class="co"># axs[3].plot(xi_values, ar_scores, marker='o')</span></span>
+<span id="cb17-56"><a href="#cb17-56"></a><span class="co"># axs[3].set_title('Adjusted Rand Index vs Xi')</span></span>
+<span id="cb17-57"><a href="#cb17-57"></a><span class="co"># axs[3].set_xlabel('Xi')</span></span>
+<span id="cb17-58"><a href="#cb17-58"></a><span class="co"># axs[3].set_ylabel('Adjusted Rand Score')</span></span>
+<span id="cb17-59"><a href="#cb17-59"></a></span>
+<span id="cb17-60"><a href="#cb17-60"></a><span class="co"># # Mutual Information</span></span>
+<span id="cb17-61"><a href="#cb17-61"></a><span class="co"># axs[4].plot(xi_values, mi_scores, marker='o')</span></span>
+<span id="cb17-62"><a href="#cb17-62"></a><span class="co"># axs[4].set_title('Mutual Information vs Xi')</span></span>
+<span id="cb17-63"><a href="#cb17-63"></a><span class="co"># axs[4].set_xlabel('Xi')</span></span>
+<span id="cb17-64"><a href="#cb17-64"></a><span class="co"># axs[4].set_ylabel('Mutual Information Score')</span></span>
+<span id="cb17-65"><a href="#cb17-65"></a></span>
+<span id="cb17-66"><a href="#cb17-66"></a><span class="co"># plt.tight_layout()</span></span>
+<span id="cb17-67"><a href="#cb17-67"></a><span class="co"># plt.show()</span></span>
+<span id="cb17-68"><a href="#cb17-68"></a></span>
+<span id="cb17-69"><a href="#cb17-69"></a><span class="co"># Normalize scores</span></span>
+<span id="cb17-70"><a href="#cb17-70"></a><span class="co"># Invert Davies-Bouldin scores since lower is better</span></span>
+<span id="cb17-71"><a href="#cb17-71"></a>db_scores <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> np.array(db_scores)</span>
+<span id="cb17-72"><a href="#cb17-72"></a></span>
+<span id="cb17-73"><a href="#cb17-73"></a><span class="co"># Normalize all scores to be between 0 and 1</span></span>
+<span id="cb17-74"><a href="#cb17-74"></a>silhouette_norm <span class="op">=</span> (silhouette_scores <span class="op">-</span> np.<span class="bu">min</span>(silhouette_scores)) <span class="op">/</span> (np.<span class="bu">max</span>(silhouette_scores) <span class="op">-</span> np.<span class="bu">min</span>(silhouette_scores))</span>
+<span id="cb17-75"><a href="#cb17-75"></a>db_norm <span class="op">=</span> (db_scores <span class="op">-</span> np.<span class="bu">min</span>(db_scores)) <span class="op">/</span> (np.<span class="bu">max</span>(db_scores) <span class="op">-</span> np.<span class="bu">min</span>(db_scores))</span>
+<span id="cb17-76"><a href="#cb17-76"></a>ch_norm <span class="op">=</span> (ch_scores <span class="op">-</span> np.<span class="bu">min</span>(ch_scores)) <span class="op">/</span> (np.<span class="bu">max</span>(ch_scores) <span class="op">-</span> np.<span class="bu">min</span>(ch_scores))</span>
+<span id="cb17-77"><a href="#cb17-77"></a>ar_norm <span class="op">=</span> (ar_scores <span class="op">-</span> np.<span class="bu">min</span>(ar_scores)) <span class="op">/</span> (np.<span class="bu">max</span>(ar_scores) <span class="op">-</span> np.<span class="bu">min</span>(ar_scores))</span>
+<span id="cb17-78"><a href="#cb17-78"></a>mi_norm <span class="op">=</span> (mi_scores <span class="op">-</span> np.<span class="bu">min</span>(mi_scores)) <span class="op">/</span> (np.<span class="bu">max</span>(mi_scores) <span class="op">-</span> np.<span class="bu">min</span>(mi_scores))</span>
+<span id="cb17-79"><a href="#cb17-79"></a></span>
+<span id="cb17-80"><a href="#cb17-80"></a><span class="co"># Assume equal weighting for simplicity, sum normalized scores</span></span>
+<span id="cb17-81"><a href="#cb17-81"></a>weighted_scores <span class="op">=</span> silhouette_norm <span class="op">+</span> db_norm <span class="op">+</span> ch_norm <span class="op">+</span> ar_norm <span class="op">+</span> mi_norm</span>
+<span id="cb17-82"><a href="#cb17-82"></a></span>
+<span id="cb17-83"><a href="#cb17-83"></a><span class="co"># Find the Xi with the highest weighted score</span></span>
+<span id="cb17-84"><a href="#cb17-84"></a>optimal_xi_index <span class="op">=</span> np.argmax(weighted_scores)</span>
+<span id="cb17-85"><a href="#cb17-85"></a>optimal_xi <span class="op">=</span> xi_values[optimal_xi_index]</span>
+<span id="cb17-86"><a href="#cb17-86"></a></span>
+<span id="cb17-87"><a href="#cb17-87"></a><span class="co"># # Plot each metric</span></span>
+<span id="cb17-88"><a href="#cb17-88"></a><span class="co"># fig, ax = plt.subplots(5, 1, figsize=(10, 20))</span></span>
+<span id="cb17-89"><a href="#cb17-89"></a><span class="co"># ax[0].plot(xi_values, silhouette_norm, label='Silhouette Score')</span></span>
+<span id="cb17-90"><a href="#cb17-90"></a><span class="co"># ax[1].plot(xi_values, db_norm, label='Davies-Bouldin Index')</span></span>
+<span id="cb17-91"><a href="#cb17-91"></a><span class="co"># ax[2].plot(xi_values, ch_norm, label='Calinski-Harabasz Score')</span></span>
+<span id="cb17-92"><a href="#cb17-92"></a><span class="co"># ax[3].plot(xi_values, ar_norm, label='Adjusted Rand Index')</span></span>
+<span id="cb17-93"><a href="#cb17-93"></a><span class="co"># ax[4].plot(xi_values, mi_norm, label='Adjusted Mutual Information')</span></span>
+<span id="cb17-94"><a href="#cb17-94"></a></span>
+<span id="cb17-95"><a href="#cb17-95"></a><span class="co"># for a in ax:</span></span>
+<span id="cb17-96"><a href="#cb17-96"></a><span class="co">#     a.set_xlabel('Xi Value')</span></span>
+<span id="cb17-97"><a href="#cb17-97"></a><span class="co">#     a.set_ylabel('Normalized Score')</span></span>
+<span id="cb17-98"><a href="#cb17-98"></a><span class="co">#     a.legend()</span></span>
+<span id="cb17-99"><a href="#cb17-99"></a><span class="co">#     a.grid(True)</span></span>
+<span id="cb17-100"><a href="#cb17-100"></a></span>
+<span id="cb17-101"><a href="#cb17-101"></a><span class="co"># plt.tight_layout()</span></span>
+<span id="cb17-102"><a href="#cb17-102"></a><span class="co"># plt.show()</span></span>
+<span id="cb17-103"><a href="#cb17-103"></a></span>
+<span id="cb17-104"><a href="#cb17-104"></a><span class="co"># Normalize and invert scores where necessary</span></span>
+<span id="cb17-105"><a href="#cb17-105"></a>silhouette_norm <span class="op">=</span> (silhouette_scores <span class="op">-</span> np.<span class="bu">min</span>(silhouette_scores)) <span class="op">/</span> (np.<span class="bu">max</span>(silhouette_scores) <span class="op">-</span> np.<span class="bu">min</span>(silhouette_scores))</span>
+<span id="cb17-106"><a href="#cb17-106"></a>db_norm <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> ((db_scores <span class="op">-</span> np.<span class="bu">min</span>(db_scores)) <span class="op">/</span> (np.<span class="bu">max</span>(db_scores) <span class="op">-</span> np.<span class="bu">min</span>(db_scores)))</span>
+<span id="cb17-107"><a href="#cb17-107"></a>ch_norm <span class="op">=</span> (ch_scores <span class="op">-</span> np.<span class="bu">min</span>(ch_scores)) <span class="op">/</span> (np.<span class="bu">max</span>(ch_scores) <span class="op">-</span> np.<span class="bu">min</span>(ch_scores))</span>
+<span id="cb17-108"><a href="#cb17-108"></a>ar_norm <span class="op">=</span> (ar_scores <span class="op">-</span> np.<span class="bu">min</span>(ar_scores)) <span class="op">/</span> (np.<span class="bu">max</span>(ar_scores) <span class="op">-</span> np.<span class="bu">min</span>(ar_scores))</span>
+<span id="cb17-109"><a href="#cb17-109"></a>mi_norm <span class="op">=</span> (mi_scores <span class="op">-</span> np.<span class="bu">min</span>(mi_scores)) <span class="op">/</span> (np.<span class="bu">max</span>(mi_scores) <span class="op">-</span> np.<span class="bu">min</span>(mi_scores))</span>
+<span id="cb17-110"><a href="#cb17-110"></a></span>
+<span id="cb17-111"><a href="#cb17-111"></a><span class="co"># Calculate the average Xi from the max indices</span></span>
+<span id="cb17-112"><a href="#cb17-112"></a>optimal_indices <span class="op">=</span> [np.argmax(silhouette_norm), np.argmax(db_norm), np.argmax(ch_norm), np.argmax(ar_norm), np.argmax(mi_norm)]</span>
+<span id="cb17-113"><a href="#cb17-113"></a>optimal_xis <span class="op">=</span> xi_values[optimal_indices]</span>
+<span id="cb17-114"><a href="#cb17-114"></a>average_xi <span class="op">=</span> np.mean(optimal_xis)</span>
+<span id="cb17-115"><a href="#cb17-115"></a></span>
+<span id="cb17-116"><a href="#cb17-116"></a><span class="bu">print</span>(<span class="st">"Optimal Xi values from each metric:"</span>, optimal_xis)</span>
+<span id="cb17-117"><a href="#cb17-117"></a><span class="bu">print</span>(<span class="st">"Average Optimal Xi:"</span>, average_xi)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Optimal Xi values from each metric: [0.17252252 0.26666667 0.04963964 0.17252252 0.17252252]
 Average Optimal Xi: 0.1667747747747748</code></pre>
@@ -1041,13 +1041,13 @@ Average Optimal Xi: 0.1667747747747748</code></pre>
 
       var elems = document.querySelectorAll('script[type="IN/Share"]');
 
-        for (var i = 0; i < elems.length; i++) {
+      for (var i = 0; i < elems.length; i++) {
 
-            elems[i].setAttribute('data-url', window.location.href);
+        elems[i].setAttribute('data-url', window.location.href);
 
-        }
+      }
 
-
+  
 
       // Set dynamic URLs for social sharing
 
@@ -1055,15 +1055,15 @@ Average Optimal Xi: 0.1667747747747748</code></pre>
 
       const currentTitle = document.title; // Use the current document title as the email subject
 
-      //Facebook
+      // Facebook
 
       document.querySelector('.fb-share-button').setAttribute('data-href', currentUrl);
 
-      //LinkedIn
+      // LinkedIn
 
       document.querySelectorAll('script[type="IN/Share"]')[0].setAttribute('data-url', currentUrl);
 
-      //Twitter
+      // Twitter
 
       document.querySelector('.twitter-share-button').setAttribute('href', 'https://twitter.com/share?url=' + encodeURIComponent(currentUrl) + '&hashtags=rstats');
 
@@ -1077,91 +1077,101 @@ Average Optimal Xi: 0.1667747747747748</code></pre>
 
     });
 
-  </script>
+  
 
-  <!-- This script below to put a latest posts list after the comment system was such a pain in the ass. -->
+    // This script below to put a latest posts list after the comment system was such a pain in the ass.
 
-  <script>
+    document.addEventListener('DOMContentLoaded', function() {
 
-  document.addEventListener('DOMContentLoaded', function() {
+      // Create the latest posts container
 
-  // Create the latest posts container
+      const latestPostsContainer = document.createElement('div');
 
-  const latestPostsContainer = document.createElement('div');
+      latestPostsContainer.className = 'latest-posts';
 
-  latestPostsContainer.className = 'latest-posts';
+      latestPostsContainer.innerHTML = `
 
-  latestPostsContainer.innerHTML = `
+        <h3>Latest Posts</h3>
 
-    <h3>Latest Posts</h3>
+        <ul id="latest-posts-list">
 
-    <ul id="latest-posts-list">
+          <!-- Latest posts will be inserted here -->
 
-      <!-- Latest posts will be inserted here -->
+        </ul>
 
-    </ul>
+      `;
 
-  `;
+  
 
+      // Find the footer element
 
+      const footer = document.querySelector('footer.footer');
 
-  // Find the footer element
+      // Insert the latest posts container before the footer, easier than after utterances.
 
-  const footer = document.querySelector('footer.footer');
+      footer.parentNode.insertBefore(latestPostsContainer, footer);
 
-  // Insert the latest posts container before footer, easier than after utterances.
+  
 
-  footer.parentNode.insertBefore(latestPostsContainer, footer);
+      // Fetch latest posts from the archive page
 
+      fetch('https://jesse-anderson.github.io/Blog/_site/archive.html')
 
+        .then(response => response.text())
 
-  // Fetch latest posts from the archive page
+        .then(data => {
 
-  fetch('https://jesse-anderson.github.io/Blog/_site/archive.html')
+          const parser = new DOMParser();
 
-    .then(response => response.text())
+          const doc = parser.parseFromString(data, 'text/html');
 
-    .then(data => {
+          const posts = doc.querySelectorAll('.quarto-post');
 
-      const parser = new DOMParser();
+          const latestPostsList = document.getElementById('latest-posts-list');
 
-      const doc = parser.parseFromString(data, 'text/html');
+          let count = 0;
 
-      const posts = doc.querySelectorAll('.quarto-post');
+  
 
-      const latestPostsList = document.getElementById('latest-posts-list');
+          // Extract base URL
 
-      let count = 0;
+          const baseUrl = 'https://jesse-anderson.github.io/Blog/_site/';
 
-      posts.forEach(post => {
+  
 
-        if (count < 4) {
+          posts.forEach(post => {
 
-          const title = post.querySelector('.listing-title a').textContent;
+            if (count < 4) {
 
-          const url = post.querySelector('.listing-title a').getAttribute('href');
+              const title = post.querySelector('.listing-title a').textContent;
 
-          const listItem = document.createElement('li');
+              let url = post.querySelector('.listing-title a').getAttribute('href');
 
-          listItem.innerHTML = `<a href="${url}">${title}</a>`;
+              // Fix the URL by removing the leading ./ and appending the base URL
 
-          latestPostsList.appendChild(listItem);
+              url = url.replace(/^\.\//, baseUrl);
 
-          count++;
+              const listItem = document.createElement('li');
 
-        }
+              listItem.innerHTML = `<a href="${url}">${title}</a>`;
 
-      });
+              latestPostsList.appendChild(listItem);
+
+              count++;
+
+            }
+
+          });
+
+        });
 
     });
 
-});
-
-
-
-
-
   </script>
+
+  
+
+  
 
 
 
@@ -1629,7 +1639,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","loop":false,"descPosition":"bottom","openEffect":"zoom","selector":".lightbox"});
+<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","descPosition":"bottom","selector":".lightbox","closeEffect":"zoom","loop":false});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

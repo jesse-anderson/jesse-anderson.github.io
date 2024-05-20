@@ -80,67 +80,72 @@
       const facebookSDKScript = document.getElementById('facebook-jssdk');
       facebookSDKScript.setAttribute('nonce', nonce);
       var elems = document.querySelectorAll('script[type="IN/Share"]');
-        for (var i = 0; i < elems.length; i++) {
-            elems[i].setAttribute('data-url', window.location.href);
-        }
-
+      for (var i = 0; i < elems.length; i++) {
+        elems[i].setAttribute('data-url', window.location.href);
+      }
+  
       // Set dynamic URLs for social sharing
       const currentUrl = window.location.href;
       const currentTitle = document.title; // Use the current document title as the email subject
-      //Facebook
+      // Facebook
       document.querySelector('.fb-share-button').setAttribute('data-href', currentUrl);
-      //LinkedIn
+      // LinkedIn
       document.querySelectorAll('script[type="IN/Share"]')[0].setAttribute('data-url', currentUrl);
-      //Twitter
+      // Twitter
       document.querySelector('.twitter-share-button').setAttribute('href', 'https://twitter.com/share?url=' + encodeURIComponent(currentUrl) + '&hashtags=rstats');
       // Email
       document.querySelector('.email-share-button').setAttribute('href', `mailto:?subject=${encodeURIComponent(currentTitle)}&body=Check out this link: ${encodeURIComponent(currentUrl)}`);
       // Dynamically set the current year in the copyright footer
       document.getElementById('copyright-year').textContent = new Date().getFullYear();
     });
-  </script>
-  <!-- This script below to put a latest posts list after the comment system was such a pain in the ass. -->
-  <script>
-  document.addEventListener('DOMContentLoaded', function() {
-  // Create the latest posts container
-  const latestPostsContainer = document.createElement('div');
-  latestPostsContainer.className = 'latest-posts';
-  latestPostsContainer.innerHTML = `
-    <h3>Latest Posts</h3>
-    <ul id="latest-posts-list">
-      <!-- Latest posts will be inserted here -->
-    </ul>
-  `;
-
-  // Find the footer element
-  const footer = document.querySelector('footer.footer');
-  // Insert the latest posts container before footer, easier than after utterances.
-  footer.parentNode.insertBefore(latestPostsContainer, footer);
-
-  // Fetch latest posts from the archive page
-  fetch('https://jesse-anderson.github.io/Blog/_site/archive.html')
-    .then(response => response.text())
-    .then(data => {
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(data, 'text/html');
-      const posts = doc.querySelectorAll('.quarto-post');
-      const latestPostsList = document.getElementById('latest-posts-list');
-      let count = 0;
-      posts.forEach(post => {
-        if (count < 4) {
-          const title = post.querySelector('.listing-title a').textContent;
-          const url = post.querySelector('.listing-title a').getAttribute('href');
-          const listItem = document.createElement('li');
-          listItem.innerHTML = `<a href="${url}">${title}</a>`;
-          latestPostsList.appendChild(listItem);
-          count++;
-        }
-      });
+  
+    // This script below to put a latest posts list after the comment system was such a pain in the ass.
+    document.addEventListener('DOMContentLoaded', function() {
+      // Create the latest posts container
+      const latestPostsContainer = document.createElement('div');
+      latestPostsContainer.className = 'latest-posts';
+      latestPostsContainer.innerHTML = `
+        <h3>Latest Posts</h3>
+        <ul id="latest-posts-list">
+          <!-- Latest posts will be inserted here -->
+        </ul>
+      `;
+  
+      // Find the footer element
+      const footer = document.querySelector('footer.footer');
+      // Insert the latest posts container before the footer, easier than after utterances.
+      footer.parentNode.insertBefore(latestPostsContainer, footer);
+  
+      // Fetch latest posts from the archive page
+      fetch('https://jesse-anderson.github.io/Blog/_site/archive.html')
+        .then(response => response.text())
+        .then(data => {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(data, 'text/html');
+          const posts = doc.querySelectorAll('.quarto-post');
+          const latestPostsList = document.getElementById('latest-posts-list');
+          let count = 0;
+  
+          // Extract base URL
+          const baseUrl = 'https://jesse-anderson.github.io/Blog/_site/';
+  
+          posts.forEach(post => {
+            if (count < 4) {
+              const title = post.querySelector('.listing-title a').textContent;
+              let url = post.querySelector('.listing-title a').getAttribute('href');
+              // Fix the URL by removing the leading ./ and appending the base URL
+              url = url.replace(/^\.\//, baseUrl);
+              const listItem = document.createElement('li');
+              listItem.innerHTML = `<a href="${url}">${title}</a>`;
+              latestPostsList.appendChild(listItem);
+              count++;
+            }
+          });
+        });
     });
-});
-
-
   </script>
+  
+  
 
   <style>
       #share-buttons {

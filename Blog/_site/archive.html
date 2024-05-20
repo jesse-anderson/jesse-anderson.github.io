@@ -80,9 +80,9 @@ ul.task-list li input[type="checkbox"] {
     }
 
     const options = {
-      valueNames: ['listing-date','listing-title',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
+      valueNames: ['listing-image','listing-date','listing-title',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-title-sort'] }],
       
-      searchColumns: ["listing-date","listing-title","listing-author","listing-image","listing-description"],
+      searchColumns: ["listing-date","listing-title","listing-author"],
     };
 
     window['quarto-listings'] = window['quarto-listings'] || {};
@@ -240,128 +240,122 @@ window.Quarto = {
 
 
 
-<div class="quarto-listing quarto-listing-container-default" id="listing-listing">
-<div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-categories="Raspberry Pi,IoT" data-listing-date-sort="1716008400000" data-listing-file-modified-sort="1716123414099" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="39" data-listing-word-count-sort="7724">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/Pi-Sensor-Part-2/index.html" class="no-external">Raspberry Pi Sensor Server Project Part 2</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./posts/Pi-Sensor-Part-2/index.html" class="no-external"></a>
+<div class="quarto-listing quarto-listing-container-table" id="listing-listing">
+<div class="listing-actions-group">
+   <div class="input-group input-group-sm quarto-listing-sort">
+     <span class="input-group-text"><i class="bi bi-sort-down"></i></span>
+     <select id="listing-listing-sort" class="form-select" aria-label="Order By" onchange="window['quarto-listings']['listing-listing'].sort(this.options[this.selectedIndex].value, { order: this.options[this.selectedIndex].getAttribute('data-direction')})">
+       <option value="" disabled="" selected="" hidden="">Order By</option>
+       <option value="index" data-direction="asc">Default</option>
+         <option value="listing-date-sort" data-direction="asc">
+          Date - Oldest
+        </option>
+         <option value="listing-date-sort" data-direction="desc">
+          Date - Newest
+        </option>
+         <option value="listing-title-sort" data-direction="asc">
+          Title
+        </option>
+     </select>
+  </div>
+    <div class="input-group input-group-sm quarto-listing-filter">
+      <span class="input-group-text"><i class="bi bi-search"></i></span>
+      <input type="text" class="search form-control" placeholder="Filter">
+    </div>
 </div>
-</div>
-<div class="metadata">
-<a href="./posts/Pi-Sensor-Part-2/index.html" class="no-external">
-<div class="listing-date">
-May 18, 2024
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="1" data-categories="Raspberry Pi,IoT" data-listing-date-sort="1715835600000" data-listing-file-modified-sort="1716033674649" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="148" data-listing-word-count-sort="29442">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/Pi-Sensor-Proj-May-2024/index.html" class="no-external">Raspberry Pi Sensor Server Project</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./posts/Pi-Sensor-Proj-May-2024/index.html" class="no-external"></a>
-</div>
-</div>
-<div class="metadata">
-<a href="./posts/Pi-Sensor-Proj-May-2024/index.html" class="no-external">
-<div class="listing-date">
-May 16, 2024
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="2" data-categories="ML,Clustering,OPTICS" data-listing-date-sort="1715490000000" data-listing-file-modified-sort="1715811343245" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="23" data-listing-word-count-sort="4408">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/OPTICSinPython/OPTICS.html" class="no-external">OPTICS in Python</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./posts/OPTICSinPython/OPTICS.html" class="no-external"></a>
-</div>
-</div>
-<div class="metadata">
-<a href="./posts/OPTICSinPython/OPTICS.html" class="no-external">
-<div class="listing-date">
-May 12, 2024
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="3" data-categories="ML,Generative AI" data-listing-date-sort="1715490000000" data-listing-file-modified-sort="1715540344549" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="10" data-listing-word-count-sort="1962">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/VAE_GAN/VAEGAN.html" class="no-external">Generative Adventures: Exploring the Frontiers with VAEs, GANs, and VAE-GANs</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./posts/VAE_GAN/VAEGAN.html" class="no-external"></a>
-</div>
-</div>
-<div class="metadata">
-<a href="./posts/VAE_GAN/VAEGAN.html" class="no-external">
-<div class="listing-date">
-May 12, 2024
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="4" data-categories="ML,Clustering,OPTICS" data-listing-date-sort="1715403600000" data-listing-file-modified-sort="1715471228792" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="13" data-listing-word-count-sort="2405">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/OPTICSWriteup/index.html" class="no-external">Intro to OPTICS</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./posts/OPTICSWriteup/index.html" class="no-external"></a>
-</div>
-</div>
-<div class="metadata">
-<a href="./posts/OPTICSWriteup/index.html" class="no-external">
-<div class="listing-date">
-May 11, 2024
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="5" data-categories="ML,Clustering,DBSCAN" data-listing-date-sort="1713502800000" data-listing-file-modified-sort="1715494828212" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1036">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/DBSCAN/index.html" class="no-external">DBSCAN Intro</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./posts/DBSCAN/index.html" class="no-external"></a>
-</div>
-</div>
-<div class="metadata">
-<a href="./posts/DBSCAN/index.html" class="no-external">
-<div class="listing-date">
-Apr 19, 2024
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="6" data-categories="news" data-listing-date-sort="1713243600000" data-listing-file-modified-sort="1713635038573" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="5" data-listing-word-count-sort="903">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/welcome/index.html" class="no-external">Welcome To My Blog</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./posts/welcome/index.html" class="no-external"></a>
-</div>
-</div>
-<div class="metadata">
-<a href="./posts/welcome/index.html" class="no-external">
-<div class="listing-date">
-Apr 16, 2024
-</div>
-</a>
-</div>
-</div>
-</div>
+<table class="quarto-listing-table table">
+<thead>
+<tr>
+<th>
+</th>
+<th>
+<a class="sort" data-sort="listing-date-sort" onclick="if (this.classList.contains('sort-asc')) { this.classList.add('sort-desc'); this.classList.remove('sort-asc') } else { this.classList.add('sort-asc'); this.classList.remove('sort-desc')} return false;">Date</a>
+</th>
+<th>
+<a class="sort" data-sort="listing-title-sort" onclick="if (this.classList.contains('sort-asc')) { this.classList.add('sort-desc'); this.classList.remove('sort-asc') } else { this.classList.add('sort-asc'); this.classList.remove('sort-desc')} return false;">Title</a>
+</th>
+</tr>
+</thead>
+<tbody class="list">
+<tr data-index="0" data-categories="Raspberry Pi,IoT" data-listing-date-sort="1716008400000" data-listing-file-modified-sort="1716177101937" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="37" data-listing-word-count-sort="7306" data-listing-title-sort="Raspberry Pi Sensor Server Project Part 2" data-listing-filename-sort="index.qmd">
+<td>
+<span class="listing-image"><img src="./posts/Pi-Sensor-Part-2/DynamicPlot.png" style="height: 40px;"></span>
+</td>
+<td>
+<span class="listing-date">May 18, 2024</span>
+</td>
+<td>
+<a href="./posts/Pi-Sensor-Part-2/index.html" class="title listing-title">Raspberry Pi Sensor Server Project Part 2</a>
+</td>
+</tr>
+<tr data-index="1" data-categories="Raspberry Pi,IoT" data-listing-date-sort="1715835600000" data-listing-file-modified-sort="1716033674649" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="148" data-listing-word-count-sort="29442" data-listing-title-sort="Raspberry Pi Sensor Server Project" data-listing-filename-sort="index.qmd">
+<td>
+<span class="listing-image"><img src="./posts/Pi-Sensor-Proj-May-2024/Pi Sensor Flow Complete.png" style="height: 40px;"></span>
+</td>
+<td>
+<span class="listing-date">May 16, 2024</span>
+</td>
+<td>
+<a href="./posts/Pi-Sensor-Proj-May-2024/index.html" class="title listing-title">Raspberry Pi Sensor Server Project</a>
+</td>
+</tr>
+<tr data-index="2" data-categories="ML,Clustering,OPTICS" data-listing-date-sort="1715490000000" data-listing-file-modified-sort="1715811343245" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="23" data-listing-word-count-sort="4408" data-listing-title-sort="OPTICS in Python" data-listing-filename-sort="OPTICS.qmd">
+<td>
+<span class="listing-image"><img src="./posts/OPTICSinPython/ElbowPlot.png" style="height: 40px;"></span>
+</td>
+<td>
+<span class="listing-date">May 12, 2024</span>
+</td>
+<td>
+<a href="./posts/OPTICSinPython/OPTICS.html" class="title listing-title">OPTICS in Python</a>
+</td>
+</tr>
+<tr data-index="3" data-categories="ML,Generative AI" data-listing-date-sort="1715490000000" data-listing-file-modified-sort="1715540344549" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="10" data-listing-word-count-sort="1962" data-listing-title-sort="Generative Adventures: Exploring the Frontiers with VAEs, GANs, and VAE-GANs" data-listing-filename-sort="VAEGAN.qmd">
+<td>
+<span class="listing-image"><img src="./posts/VAE_GAN/VAEDifferentDigits.png" style="height: 40px;"></span>
+</td>
+<td>
+<span class="listing-date">May 12, 2024</span>
+</td>
+<td>
+<a href="./posts/VAE_GAN/VAEGAN.html" class="title listing-title">Generative Adventures: Exploring the Frontiers with VAEs, GANs, and VAE-GANs</a>
+</td>
+</tr>
+<tr data-index="4" data-categories="ML,Clustering,OPTICS" data-listing-date-sort="1715403600000" data-listing-file-modified-sort="1715471228792" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="13" data-listing-word-count-sort="2405" data-listing-title-sort="Intro to OPTICS" data-listing-filename-sort="index.qmd">
+<td>
+<span class="listing-image"><img src="./posts/OPTICSWriteup/ClusterOrdering.png" style="height: 40px;"></span>
+</td>
+<td>
+<span class="listing-date">May 11, 2024</span>
+</td>
+<td>
+<a href="./posts/OPTICSWriteup/index.html" class="title listing-title">Intro to OPTICS</a>
+</td>
+</tr>
+<tr data-index="5" data-categories="ML,Clustering,DBSCAN" data-listing-date-sort="1713502800000" data-listing-file-modified-sort="1715494828212" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1036" data-listing-title-sort="DBSCAN Intro" data-listing-filename-sort="index.qmd">
+<td>
+<span class="listing-image"><img src="./posts/DBSCAN/image.jpg" style="height: 40px;"></span>
+</td>
+<td>
+<span class="listing-date">Apr 19, 2024</span>
+</td>
+<td>
+<a href="./posts/DBSCAN/index.html" class="title listing-title">DBSCAN Intro</a>
+</td>
+</tr>
+<tr data-index="6" data-categories="news" data-listing-date-sort="1713243600000" data-listing-file-modified-sort="1713635038573" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="5" data-listing-word-count-sort="903" data-listing-title-sort="Welcome To My Blog" data-listing-filename-sort="index.qmd">
+<td>
+<span class="listing-image"><img src="./posts/welcome/image.jpg" style="height: 40px;"></span>
+</td>
+<td>
+<span class="listing-date">Apr 16, 2024</span>
+</td>
+<td>
+<a href="./posts/welcome/index.html" class="title listing-title">Welcome To My Blog</a>
+</td>
+</tr>
+</tbody>
+</table>
 <div class="listing-no-matching d-none">
 No matching items
 </div>

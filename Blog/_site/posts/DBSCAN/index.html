@@ -419,13 +419,13 @@ cookieconsent.run({
 
       var elems = document.querySelectorAll('script[type="IN/Share"]');
 
-        for (var i = 0; i < elems.length; i++) {
+      for (var i = 0; i < elems.length; i++) {
 
-            elems[i].setAttribute('data-url', window.location.href);
+        elems[i].setAttribute('data-url', window.location.href);
 
-        }
+      }
 
-
+  
 
       // Set dynamic URLs for social sharing
 
@@ -433,15 +433,15 @@ cookieconsent.run({
 
       const currentTitle = document.title; // Use the current document title as the email subject
 
-      //Facebook
+      // Facebook
 
       document.querySelector('.fb-share-button').setAttribute('data-href', currentUrl);
 
-      //LinkedIn
+      // LinkedIn
 
       document.querySelectorAll('script[type="IN/Share"]')[0].setAttribute('data-url', currentUrl);
 
-      //Twitter
+      // Twitter
 
       document.querySelector('.twitter-share-button').setAttribute('href', 'https://twitter.com/share?url=' + encodeURIComponent(currentUrl) + '&hashtags=rstats');
 
@@ -455,91 +455,101 @@ cookieconsent.run({
 
     });
 
-  </script>
+  
 
-  <!-- This script below to put a latest posts list after the comment system was such a pain in the ass. -->
+    // This script below to put a latest posts list after the comment system was such a pain in the ass.
 
-  <script>
+    document.addEventListener('DOMContentLoaded', function() {
 
-  document.addEventListener('DOMContentLoaded', function() {
+      // Create the latest posts container
 
-  // Create the latest posts container
+      const latestPostsContainer = document.createElement('div');
 
-  const latestPostsContainer = document.createElement('div');
+      latestPostsContainer.className = 'latest-posts';
 
-  latestPostsContainer.className = 'latest-posts';
+      latestPostsContainer.innerHTML = `
 
-  latestPostsContainer.innerHTML = `
+        <h3>Latest Posts</h3>
 
-    <h3>Latest Posts</h3>
+        <ul id="latest-posts-list">
 
-    <ul id="latest-posts-list">
+          <!-- Latest posts will be inserted here -->
 
-      <!-- Latest posts will be inserted here -->
+        </ul>
 
-    </ul>
+      `;
 
-  `;
+  
 
+      // Find the footer element
 
+      const footer = document.querySelector('footer.footer');
 
-  // Find the footer element
+      // Insert the latest posts container before the footer, easier than after utterances.
 
-  const footer = document.querySelector('footer.footer');
+      footer.parentNode.insertBefore(latestPostsContainer, footer);
 
-  // Insert the latest posts container before footer, easier than after utterances.
+  
 
-  footer.parentNode.insertBefore(latestPostsContainer, footer);
+      // Fetch latest posts from the archive page
 
+      fetch('https://jesse-anderson.github.io/Blog/_site/archive.html')
 
+        .then(response => response.text())
 
-  // Fetch latest posts from the archive page
+        .then(data => {
 
-  fetch('https://jesse-anderson.github.io/Blog/_site/archive.html')
+          const parser = new DOMParser();
 
-    .then(response => response.text())
+          const doc = parser.parseFromString(data, 'text/html');
 
-    .then(data => {
+          const posts = doc.querySelectorAll('.quarto-post');
 
-      const parser = new DOMParser();
+          const latestPostsList = document.getElementById('latest-posts-list');
 
-      const doc = parser.parseFromString(data, 'text/html');
+          let count = 0;
 
-      const posts = doc.querySelectorAll('.quarto-post');
+  
 
-      const latestPostsList = document.getElementById('latest-posts-list');
+          // Extract base URL
 
-      let count = 0;
+          const baseUrl = 'https://jesse-anderson.github.io/Blog/_site/';
 
-      posts.forEach(post => {
+  
 
-        if (count < 4) {
+          posts.forEach(post => {
 
-          const title = post.querySelector('.listing-title a').textContent;
+            if (count < 4) {
 
-          const url = post.querySelector('.listing-title a').getAttribute('href');
+              const title = post.querySelector('.listing-title a').textContent;
 
-          const listItem = document.createElement('li');
+              let url = post.querySelector('.listing-title a').getAttribute('href');
 
-          listItem.innerHTML = `<a href="${url}">${title}</a>`;
+              // Fix the URL by removing the leading ./ and appending the base URL
 
-          latestPostsList.appendChild(listItem);
+              url = url.replace(/^\.\//, baseUrl);
 
-          count++;
+              const listItem = document.createElement('li');
 
-        }
+              listItem.innerHTML = `<a href="${url}">${title}</a>`;
 
-      });
+              latestPostsList.appendChild(listItem);
+
+              count++;
+
+            }
+
+          });
+
+        });
 
     });
 
-});
-
-
-
-
-
   </script>
+
+  
+
+  
 
 
 
@@ -1007,7 +1017,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"loop":false,"closeEffect":"zoom","openEffect":"zoom","selector":".lightbox","descPosition":"bottom"});
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","descPosition":"bottom","closeEffect":"zoom","openEffect":"zoom","loop":false});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;
