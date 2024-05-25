@@ -199,7 +199,6 @@ cookieconsent.run({
                                 <div class="quarto-categories">
                 <div class="quarto-category">ESP32</div>
                 <div class="quarto-category">IoT</div>
-                <div class="quarto-category">OPTICS</div>
               </div>
                   </div>
   </div>
@@ -406,254 +405,254 @@ Code
 <span id="cb5-55"><a href="#cb5-55"></a>SEND_TO_MONGODB <span class="op">=</span> <span class="va">True</span></span>
 <span id="cb5-56"><a href="#cb5-56"></a></span>
 <span id="cb5-57"><a href="#cb5-57"></a><span class="kw">def</span> connect_wifi(ssid, password):</span>
-<span id="cb5-58"><a href="#cb5-58"></a><span class="co">"""Connect to Wifi using the ESP32 board"""</span></span>
-<span id="cb5-59"><a href="#cb5-59"></a>    wlan <span class="op">=</span> network.WLAN(network.STA_IF)</span>
-<span id="cb5-60"><a href="#cb5-60"></a>    wlan.active(<span class="va">True</span>)</span>
-<span id="cb5-61"><a href="#cb5-61"></a>    wlan.<span class="ex">connect</span>(ssid, password)</span>
-<span id="cb5-62"><a href="#cb5-62"></a>    <span class="cf">while</span> <span class="kw">not</span> wlan.isconnected():</span>
-<span id="cb5-63"><a href="#cb5-63"></a>        time_module.sleep(<span class="dv">1</span>)</span>
-<span id="cb5-64"><a href="#cb5-64"></a>        <span class="bu">print</span>(<span class="st">"Connecting to WiFi..."</span>)</span>
-<span id="cb5-65"><a href="#cb5-65"></a>    <span class="bu">print</span>(<span class="st">"Connected to WiFi"</span>)</span>
-<span id="cb5-66"><a href="#cb5-66"></a>    <span class="bu">print</span>(wlan.ifconfig())</span>
-<span id="cb5-67"><a href="#cb5-67"></a></span>
-<span id="cb5-68"><a href="#cb5-68"></a><span class="co"># Function to disable sensors</span></span>
-<span id="cb5-69"><a href="#cb5-69"></a><span class="kw">def</span> disable_sensors():</span>
-<span id="cb5-70"><a href="#cb5-70"></a><span class="co">"""Disable sensors by setting power pin low."""</span></span>
-<span id="cb5-71"><a href="#cb5-71"></a>    sensor_power_pin.value(<span class="dv">0</span>)  <span class="co"># Turn off sensor by setting the power pin low</span></span>
-<span id="cb5-72"><a href="#cb5-72"></a></span>
-<span id="cb5-73"><a href="#cb5-73"></a><span class="co"># Function to enable sensors</span></span>
-<span id="cb5-74"><a href="#cb5-74"></a><span class="kw">def</span> enable_sensors():</span>
-<span id="cb5-75"><a href="#cb5-75"></a> <span class="co">"""Enable sensors by setting power pin high and waiting for stabilization."""</span></span>
-<span id="cb5-76"><a href="#cb5-76"></a>    sensor_power_pin.value(<span class="dv">1</span>)</span>
-<span id="cb5-77"><a href="#cb5-77"></a>    sensor_power_pin.value(<span class="dv">1</span>)  <span class="co"># Turn on sensor by setting the power pin high</span></span>
-<span id="cb5-78"><a href="#cb5-78"></a>    time_module.sleep(<span class="dv">4</span>)  <span class="co"># Wait for the sensor to stabilize    </span></span>
-<span id="cb5-79"><a href="#cb5-79"></a></span>
-<span id="cb5-80"><a href="#cb5-80"></a><span class="co"># Function to get system status</span></span>
-<span id="cb5-81"><a href="#cb5-81"></a><span class="kw">def</span> get_system_status(firstRun):</span>
-<span id="cb5-82"><a href="#cb5-82"></a><span class="co">"""Get system status including memory usage and CPU frequency."""</span></span>
-<span id="cb5-83"><a href="#cb5-83"></a>    free_heap <span class="op">=</span> gc.mem_free()</span>
-<span id="cb5-84"><a href="#cb5-84"></a>    total_heap <span class="op">=</span> gc.mem_alloc() <span class="op">+</span> free_heap</span>
-<span id="cb5-85"><a href="#cb5-85"></a>    free_heap_percent <span class="op">=</span> (free_heap <span class="op">/</span> total_heap) <span class="op">*</span> <span class="dv">100</span></span>
-<span id="cb5-86"><a href="#cb5-86"></a>    <span class="cf">if</span> firstRun <span class="op">==</span> <span class="va">True</span>:</span>
-<span id="cb5-87"><a href="#cb5-87"></a>        <span class="bu">print</span>(<span class="ss">f"Total heap memory: </span><span class="sc">{</span>total_heap<span class="sc">}</span><span class="ss"> bytes"</span>)</span>
-<span id="cb5-88"><a href="#cb5-88"></a>        <span class="co"># Additional information about the system</span></span>
-<span id="cb5-89"><a href="#cb5-89"></a>        <span class="bu">print</span>(<span class="ss">f"Frequency: </span><span class="sc">{</span>freq()<span class="sc">}</span><span class="ss"> Hz"</span>)</span>
-<span id="cb5-90"><a href="#cb5-90"></a>    <span class="bu">print</span>(<span class="ss">f"Free heap memory: </span><span class="sc">{</span>free_heap<span class="sc">}</span><span class="ss"> bytes (</span><span class="sc">{</span>free_heap_percent<span class="sc">:.2f}</span><span class="ss">%)"</span>)</span>
-<span id="cb5-91"><a href="#cb5-91"></a>    </span>
-<span id="cb5-92"><a href="#cb5-92"></a><span class="kw">def</span> get_time_chicago():</span>
-<span id="cb5-93"><a href="#cb5-93"></a><span class="co">"""Get current time in Chicago, accounting for DST."""</span></span>
-<span id="cb5-94"><a href="#cb5-94"></a>    max_retries <span class="op">=</span> <span class="dv">100</span></span>
-<span id="cb5-95"><a href="#cb5-95"></a>    <span class="cf">for</span> attempt <span class="kw">in</span> <span class="bu">range</span>(max_retries):</span>
-<span id="cb5-96"><a href="#cb5-96"></a>        <span class="cf">try</span>:</span>
-<span id="cb5-97"><a href="#cb5-97"></a>            ntptime.settime()</span>
-<span id="cb5-98"><a href="#cb5-98"></a>            current_time <span class="op">=</span> utime.localtime()</span>
-<span id="cb5-99"><a href="#cb5-99"></a>            <span class="cf">break</span></span>
-<span id="cb5-100"><a href="#cb5-100"></a>        <span class="cf">except</span> <span class="pp">OSError</span> <span class="im">as</span> e:</span>
-<span id="cb5-101"><a href="#cb5-101"></a>            <span class="bu">print</span>(<span class="ss">f"Failed to get NTP time, attempt </span><span class="sc">{</span>attempt <span class="op">+</span> <span class="dv">1</span><span class="sc">}</span><span class="ss"> of </span><span class="sc">{</span>max_retries<span class="sc">}</span><span class="ss">. Error: </span><span class="sc">{</span>e<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb5-102"><a href="#cb5-102"></a>            time_module.sleep(<span class="dv">1</span>)</span>
-<span id="cb5-103"><a href="#cb5-103"></a>    <span class="cf">else</span>:</span>
-<span id="cb5-104"><a href="#cb5-104"></a>        <span class="bu">print</span>(<span class="st">"Could not get NTP time, proceeding without time synchronization."</span>)</span>
-<span id="cb5-105"><a href="#cb5-105"></a>        <span class="cf">return</span> utime.localtime()</span>
-<span id="cb5-106"><a href="#cb5-106"></a></span>
-<span id="cb5-107"><a href="#cb5-107"></a>    <span class="co"># Determine if it is daylight saving time (DST)</span></span>
-<span id="cb5-108"><a href="#cb5-108"></a>    month <span class="op">=</span> current_time[<span class="dv">1</span>]</span>
-<span id="cb5-109"><a href="#cb5-109"></a>    day <span class="op">=</span> current_time[<span class="dv">2</span>]</span>
-<span id="cb5-110"><a href="#cb5-110"></a>    hour <span class="op">=</span> current_time[<span class="dv">3</span>]</span>
-<span id="cb5-111"><a href="#cb5-111"></a>    <span class="cf">if</span> (month <span class="op">&gt;</span> <span class="dv">3</span> <span class="kw">and</span> month <span class="op">&lt;</span> <span class="dv">11</span>) <span class="kw">or</span> (month <span class="op">==</span> <span class="dv">3</span> <span class="kw">and</span> day <span class="op">&gt;=</span> <span class="dv">8</span> <span class="kw">and</span> hour <span class="op">&gt;=</span> <span class="dv">2</span>) <span class="kw">or</span> (month <span class="op">==</span> <span class="dv">11</span> <span class="kw">and</span> day <span class="op">&lt;</span> <span class="dv">1</span> <span class="kw">and</span> hour <span class="op">&lt;</span> <span class="dv">2</span>):</span>
-<span id="cb5-112"><a href="#cb5-112"></a>        is_dst <span class="op">=</span> <span class="va">True</span></span>
-<span id="cb5-113"><a href="#cb5-113"></a>    <span class="cf">else</span>:</span>
-<span id="cb5-114"><a href="#cb5-114"></a>        is_dst <span class="op">=</span> <span class="va">False</span></span>
-<span id="cb5-115"><a href="#cb5-115"></a>    </span>
-<span id="cb5-116"><a href="#cb5-116"></a>    offset <span class="op">=</span> <span class="op">-</span><span class="dv">6</span> <span class="op">*</span> <span class="dv">3600</span> <span class="cf">if</span> <span class="kw">not</span> is_dst <span class="cf">else</span> <span class="op">-</span><span class="dv">5</span> <span class="op">*</span> <span class="dv">3600</span></span>
-<span id="cb5-117"><a href="#cb5-117"></a>    local_time <span class="op">=</span> utime.mktime(current_time) <span class="op">+</span> offset</span>
-<span id="cb5-118"><a href="#cb5-118"></a>    <span class="cf">return</span> utime.localtime(local_time)</span>
-<span id="cb5-119"><a href="#cb5-119"></a></span>
-<span id="cb5-120"><a href="#cb5-120"></a><span class="kw">def</span> read_sensor():</span>
-<span id="cb5-121"><a href="#cb5-121"></a><span class="co">"""Read temperature and humidity from the sensor. Add sensors here as needed."""</span></span>
-<span id="cb5-122"><a href="#cb5-122"></a>    <span class="cf">try</span>:</span>
-<span id="cb5-123"><a href="#cb5-123"></a>        sensor <span class="op">=</span> dht.DHT11(sensor_data_pin)</span>
-<span id="cb5-124"><a href="#cb5-124"></a>        sensor.measure()</span>
-<span id="cb5-125"><a href="#cb5-125"></a>        temp <span class="op">=</span> sensor.temperature()</span>
-<span id="cb5-126"><a href="#cb5-126"></a>        hum <span class="op">=</span> sensor.humidity()</span>
-<span id="cb5-127"><a href="#cb5-127"></a>        <span class="cf">return</span> temp, hum</span>
-<span id="cb5-128"><a href="#cb5-128"></a>    <span class="cf">except</span> <span class="pp">OSError</span> <span class="im">as</span> e:</span>
-<span id="cb5-129"><a href="#cb5-129"></a>        <span class="bu">print</span>(<span class="st">"Failed to read sensor."</span>)</span>
-<span id="cb5-130"><a href="#cb5-130"></a>        <span class="cf">return</span> <span class="va">None</span>, <span class="va">None</span></span>
-<span id="cb5-131"><a href="#cb5-131"></a></span>
-<span id="cb5-132"><a href="#cb5-132"></a><span class="im">import</span> usocket <span class="im">as</span> socket</span>
-<span id="cb5-133"><a href="#cb5-133"></a><span class="im">import</span> ssl</span>
-<span id="cb5-134"><a href="#cb5-134"></a><span class="kw">def</span> send_data_to_google_sheets(temp_c, temp_f, humidity, time_str, date_str):</span>
-<span id="cb5-135"><a href="#cb5-135"></a><span class="co">"""Send data to Google Sheets."""</span></span>
-<span id="cb5-136"><a href="#cb5-136"></a><span class="co">#     print(time_module.time())</span></span>
-<span id="cb5-137"><a href="#cb5-137"></a>    url <span class="op">=</span> GOOGLE_URL  <span class="co"># Define your Google URL here</span></span>
-<span id="cb5-138"><a href="#cb5-138"></a>    headers <span class="op">=</span> {</span>
-<span id="cb5-139"><a href="#cb5-139"></a>        <span class="st">'Content-Type'</span>: <span class="st">'application/x-www-form-urlencoded'</span></span>
-<span id="cb5-140"><a href="#cb5-140"></a>    }</span>
-<span id="cb5-141"><a href="#cb5-141"></a>    data <span class="op">=</span> {</span>
-<span id="cb5-142"><a href="#cb5-142"></a>        <span class="st">'Date'</span>: date_str,</span>
-<span id="cb5-143"><a href="#cb5-143"></a>        <span class="st">'Time'</span>: time_str,</span>
-<span id="cb5-144"><a href="#cb5-144"></a>        <span class="st">'Humidity %'</span>: humidity,</span>
-<span id="cb5-145"><a href="#cb5-145"></a>        <span class="st">'Temp F'</span>: temp_f,</span>
-<span id="cb5-146"><a href="#cb5-146"></a>        <span class="st">'Temp C'</span>: temp_c</span>
-<span id="cb5-147"><a href="#cb5-147"></a>    }</span>
-<span id="cb5-148"><a href="#cb5-148"></a><span class="co">#     print(time_module.time())</span></span>
-<span id="cb5-149"><a href="#cb5-149"></a>    <span class="co"># Construct the URL-encoded string manually</span></span>
-<span id="cb5-150"><a href="#cb5-150"></a>    encoded_data <span class="op">=</span> (</span>
-<span id="cb5-151"><a href="#cb5-151"></a>        <span class="st">"Date="</span> <span class="op">+</span> date_str <span class="op">+</span></span>
-<span id="cb5-152"><a href="#cb5-152"></a>        <span class="st">"&amp;Time="</span> <span class="op">+</span> time_str <span class="op">+</span></span>
-<span id="cb5-153"><a href="#cb5-153"></a>        <span class="st">"&amp;Humidity %="</span> <span class="op">+</span> <span class="bu">str</span>(humidity) <span class="op">+</span></span>
-<span id="cb5-154"><a href="#cb5-154"></a>        <span class="st">"&amp;Temp F="</span> <span class="op">+</span> <span class="bu">str</span>(temp_f) <span class="op">+</span></span>
-<span id="cb5-155"><a href="#cb5-155"></a>        <span class="st">"&amp;Temp C="</span> <span class="op">+</span> <span class="bu">str</span>(temp_c)</span>
-<span id="cb5-156"><a href="#cb5-156"></a>     ) </span>
-<span id="cb5-157"><a href="#cb5-157"></a>    <span class="cf">try</span>:</span>
-<span id="cb5-158"><a href="#cb5-158"></a>        <span class="co"># Extract host and path from URL</span></span>
-<span id="cb5-159"><a href="#cb5-159"></a>        _, _, host, path <span class="op">=</span> url.split(<span class="st">'/'</span>, <span class="dv">3</span>)</span>
-<span id="cb5-160"><a href="#cb5-160"></a>        </span>
-<span id="cb5-161"><a href="#cb5-161"></a>        <span class="co"># Set up a socket connection</span></span>
-<span id="cb5-162"><a href="#cb5-162"></a>        addr <span class="op">=</span> socket.getaddrinfo(host, <span class="dv">443</span>)[<span class="dv">0</span>][<span class="op">-</span><span class="dv">1</span>]</span>
-<span id="cb5-163"><a href="#cb5-163"></a>        s <span class="op">=</span> socket.socket()</span>
-<span id="cb5-164"><a href="#cb5-164"></a>        s.<span class="ex">connect</span>(addr)</span>
-<span id="cb5-165"><a href="#cb5-165"></a>        s <span class="op">=</span> ssl.wrap_socket(s)</span>
-<span id="cb5-166"><a href="#cb5-166"></a>        </span>
-<span id="cb5-167"><a href="#cb5-167"></a>        <span class="co"># Create the HTTP request manually</span></span>
-<span id="cb5-168"><a href="#cb5-168"></a>        request <span class="op">=</span> <span class="ss">f"POST /</span><span class="sc">{</span>path<span class="sc">}</span><span class="ss"> HTTP/1.1</span><span class="ch">\r\n</span><span class="ss">Host: </span><span class="sc">{</span>host<span class="sc">}</span><span class="ch">\r\n</span><span class="ss">"</span></span>
-<span id="cb5-169"><a href="#cb5-169"></a>        request <span class="op">+=</span> <span class="st">"Content-Type: application/x-www-form-urlencoded</span><span class="ch">\r\n</span><span class="st">"</span></span>
-<span id="cb5-170"><a href="#cb5-170"></a>        request <span class="op">+=</span> <span class="ss">f"Content-Length: </span><span class="sc">{</span><span class="bu">len</span>(encoded_data)<span class="sc">}</span><span class="ch">\r\n\r\n</span><span class="ss">"</span></span>
-<span id="cb5-171"><a href="#cb5-171"></a>        request <span class="op">+=</span> encoded_data</span>
-<span id="cb5-172"><a href="#cb5-172"></a></span>
-<span id="cb5-173"><a href="#cb5-173"></a>        <span class="co"># Send the request</span></span>
-<span id="cb5-174"><a href="#cb5-174"></a>        s.write(request)</span>
-<span id="cb5-175"><a href="#cb5-175"></a>        </span>
-<span id="cb5-176"><a href="#cb5-176"></a><span class="co">#         # Read the response</span></span>
-<span id="cb5-177"><a href="#cb5-177"></a><span class="co">#         response = s.read(1024)  # Read up to 2048 bytes from the response, THIS TAKES A WHILE, SET TO WHATEVER. 128-1024</span></span>
-<span id="cb5-178"><a href="#cb5-178"></a><span class="co">#         print('Data sent to Google Sheets:', response)  </span></span>
-<span id="cb5-179"><a href="#cb5-179"></a>        <span class="co"># Close the socket</span></span>
-<span id="cb5-180"><a href="#cb5-180"></a>        s.close()</span>
-<span id="cb5-181"><a href="#cb5-181"></a>        <span class="bu">print</span>(<span class="st">'Data sent to Google Sheets!'</span>)</span>
-<span id="cb5-182"><a href="#cb5-182"></a><span class="co">#         print(time_module.time())</span></span>
-<span id="cb5-183"><a href="#cb5-183"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
-<span id="cb5-184"><a href="#cb5-184"></a>        <span class="bu">print</span>(<span class="st">'Failed to send data to Google Sheets:'</span>, e)</span>
-<span id="cb5-185"><a href="#cb5-185"></a></span>
-<span id="cb5-186"><a href="#cb5-186"></a><span class="co"># # Function to send data to Google Sheets, old method, took forever because response was large.</span></span>
-<span id="cb5-187"><a href="#cb5-187"></a><span class="co"># def send_data_to_google_sheets(temp_c, temp_f, humidity,time_str,date_str):</span></span>
-<span id="cb5-188"><a href="#cb5-188"></a><span class="co">#     print(time_module.time())</span></span>
-<span id="cb5-189"><a href="#cb5-189"></a><span class="co">#     url = GOOGLE_URL</span></span>
-<span id="cb5-190"><a href="#cb5-190"></a><span class="co">#     headers = {</span></span>
-<span id="cb5-191"><a href="#cb5-191"></a><span class="co">#         'Content-Type': 'application/x-www-form-urlencoded'</span></span>
-<span id="cb5-192"><a href="#cb5-192"></a><span class="co">#     }</span></span>
-<span id="cb5-193"><a href="#cb5-193"></a><span class="co">#     # Construct the URL-encoded string manually</span></span>
-<span id="cb5-194"><a href="#cb5-194"></a><span class="co">#     print(time_module.time())</span></span>
-<span id="cb5-195"><a href="#cb5-195"></a><span class="co">#     encoded_data = (</span></span>
-<span id="cb5-196"><a href="#cb5-196"></a><span class="co">#         "Date=" + date_str +</span></span>
-<span id="cb5-197"><a href="#cb5-197"></a><span class="co">#         "&amp;Time=" + time_str +</span></span>
-<span id="cb5-198"><a href="#cb5-198"></a><span class="co">#         "&amp;Humidity %=" + str(humidity) +</span></span>
-<span id="cb5-199"><a href="#cb5-199"></a><span class="co">#         "&amp;Temp F=" + str(temp_f) +</span></span>
-<span id="cb5-200"><a href="#cb5-200"></a><span class="co">#         "&amp;Temp C=" + str(temp_c)</span></span>
-<span id="cb5-201"><a href="#cb5-201"></a><span class="co">#     )</span></span>
-<span id="cb5-202"><a href="#cb5-202"></a><span class="co">#     print(time_module.time())</span></span>
-<span id="cb5-203"><a href="#cb5-203"></a><span class="co">#     print("request")</span></span>
-<span id="cb5-204"><a href="#cb5-204"></a><span class="co">#     try:</span></span>
-<span id="cb5-205"><a href="#cb5-205"></a><span class="co">#         # Get initial free memory</span></span>
-<span id="cb5-206"><a href="#cb5-206"></a><span class="co">#         # Run garbage collection to get a clean slate</span></span>
-<span id="cb5-207"><a href="#cb5-207"></a><span class="co">#         gc.collect()</span></span>
-<span id="cb5-208"><a href="#cb5-208"></a><span class="co">#         initial_free = gc.mem_free()</span></span>
-<span id="cb5-209"><a href="#cb5-209"></a><span class="co">#         response = requests.post(url, data=encoded_data, headers=headers) #DRAGS... Also</span></span>
-<span id="cb5-210"><a href="#cb5-210"></a><span class="co">#         # Run garbage collection again</span></span>
-<span id="cb5-211"><a href="#cb5-211"></a><span class="co">#         gc.collect()</span></span>
-<span id="cb5-212"><a href="#cb5-212"></a><span class="co">#         # Get final free memory</span></span>
-<span id="cb5-213"><a href="#cb5-213"></a><span class="co">#         final_free = gc.mem_free()</span></span>
-<span id="cb5-214"><a href="#cb5-214"></a><span class="co"># </span></span>
-<span id="cb5-215"><a href="#cb5-215"></a><span class="co">#         # Calculate memory used by the variable</span></span>
-<span id="cb5-216"><a href="#cb5-216"></a><span class="co">#         memory_used = initial_free - final_free</span></span>
-<span id="cb5-217"><a href="#cb5-217"></a><span class="co">#         print('Data sent to Google Sheets:')</span></span>
-<span id="cb5-218"><a href="#cb5-218"></a><span class="co">#         print(time_module.time())</span></span>
-<span id="cb5-219"><a href="#cb5-219"></a><span class="co">#         print('Size of response: ', memory_used, 'bytes') # Size of response:  46352 bytes. Crazy.... That's like ~4635 date strings.</span></span>
-<span id="cb5-220"><a href="#cb5-220"></a><span class="co">#     except Exception as e:</span></span>
-<span id="cb5-221"><a href="#cb5-221"></a><span class="co">#         print('Failed to send data to Google Sheets:', e)</span></span>
-<span id="cb5-222"><a href="#cb5-222"></a></span>
-<span id="cb5-223"><a href="#cb5-223"></a><span class="kw">def</span> send_data_to_thingspeak():</span>
-<span id="cb5-224"><a href="#cb5-224"></a>    <span class="co">"""Send data to ThingSpeak."""</span></span>
-<span id="cb5-225"><a href="#cb5-225"></a>    <span class="cf">if</span> SEND_TO_THINGSPEAK <span class="kw">and</span> thingspeak_buffer:</span>
-<span id="cb5-226"><a href="#cb5-226"></a>        <span class="cf">if</span> <span class="bu">len</span>(thingspeak_buffer) <span class="op">&gt;</span> <span class="dv">1</span>:</span>
-<span id="cb5-227"><a href="#cb5-227"></a>            <span class="co"># Bulk update</span></span>
-<span id="cb5-228"><a href="#cb5-228"></a>            payload <span class="op">=</span> {</span>
-<span id="cb5-229"><a href="#cb5-229"></a>                    <span class="st">'write_api_key'</span>: THINGSPEAK_API_KEY,</span>
-<span id="cb5-230"><a href="#cb5-230"></a>                    <span class="st">'updates'</span>: []</span>
-<span id="cb5-231"><a href="#cb5-231"></a>                }</span>
-<span id="cb5-232"><a href="#cb5-232"></a>            <span class="cf">for</span> data <span class="kw">in</span> thingspeak_buffer:</span>
-<span id="cb5-233"><a href="#cb5-233"></a>                update <span class="op">=</span> {</span>
-<span id="cb5-234"><a href="#cb5-234"></a>                    <span class="st">'created_at'</span>: <span class="ss">f"</span><span class="sc">{</span>data[<span class="st">'date'</span>]<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>data[<span class="st">'time'</span>]<span class="sc">}</span><span class="ss"> -0500"</span>,</span>
-<span id="cb5-235"><a href="#cb5-235"></a>                    <span class="st">'field1'</span>: data[<span class="st">'temperature_C'</span>],</span>
-<span id="cb5-236"><a href="#cb5-236"></a>                    <span class="st">'field2'</span>: data[<span class="st">'temperature_F'</span>],</span>
-<span id="cb5-237"><a href="#cb5-237"></a>                    <span class="st">'field3'</span>: data[<span class="st">'humidityPercent'</span>],</span>
-<span id="cb5-238"><a href="#cb5-238"></a>                    <span class="st">'field4'</span>: data[<span class="st">'time'</span>],</span>
-<span id="cb5-239"><a href="#cb5-239"></a>                    <span class="st">'field5'</span>: data[<span class="st">'date'</span>]</span>
-<span id="cb5-240"><a href="#cb5-240"></a>                }</span>
-<span id="cb5-241"><a href="#cb5-241"></a>                payload[<span class="st">'updates'</span>].append(update)</span>
-<span id="cb5-242"><a href="#cb5-242"></a></span>
-<span id="cb5-243"><a href="#cb5-243"></a>            <span class="cf">try</span>:</span>
-<span id="cb5-244"><a href="#cb5-244"></a>                <span class="co"># Send the bulk update request to ThingSpeak</span></span>
-<span id="cb5-245"><a href="#cb5-245"></a>                headers <span class="op">=</span> {<span class="st">'Content-Type'</span>: <span class="st">'application/json'</span>}</span>
-<span id="cb5-246"><a href="#cb5-246"></a>                <span class="co">#print(len(thingspeak_buffer))</span></span>
-<span id="cb5-247"><a href="#cb5-247"></a>                <span class="co">#print(headers)</span></span>
-<span id="cb5-248"><a href="#cb5-248"></a>                <span class="co">#print(json.dumps(payload))</span></span>
-<span id="cb5-249"><a href="#cb5-249"></a>                <span class="co"># Convert the data payload to JSON format</span></span>
-<span id="cb5-250"><a href="#cb5-250"></a>                json_data <span class="op">=</span> json.dumps(payload)</span>
-<span id="cb5-251"><a href="#cb5-251"></a>                response <span class="op">=</span> requests.post(THINGSPEAK_BULK_UPDATE_URL,headers<span class="op">=</span>headers,data<span class="op">=</span>json_data)</span>
-<span id="cb5-252"><a href="#cb5-252"></a>                <span class="cf">if</span> response.status_code <span class="op">==</span> <span class="dv">202</span>:</span>
-<span id="cb5-253"><a href="#cb5-253"></a>                    <span class="bu">print</span>(<span class="st">'Data posted to ThingSpeak (bulk update):'</span>, response.text)</span>
-<span id="cb5-254"><a href="#cb5-254"></a>                    thingspeak_buffer.clear()  <span class="co"># Clear the buffer after successful update</span></span>
-<span id="cb5-255"><a href="#cb5-255"></a>                <span class="cf">else</span>:</span>
-<span id="cb5-256"><a href="#cb5-256"></a>                    <span class="bu">print</span>(<span class="ss">f'Failed to send data to ThingSpeak (bulk update): </span><span class="sc">{</span>response<span class="sc">.</span>status_code<span class="sc">}</span><span class="ss">, </span><span class="sc">{</span>response<span class="sc">.</span>text<span class="sc">}</span><span class="ss">'</span>)</span>
-<span id="cb5-257"><a href="#cb5-257"></a>            <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
-<span id="cb5-258"><a href="#cb5-258"></a>                <span class="bu">print</span>(<span class="st">'Failed to send data to ThingSpeak (bulk update):'</span>, e)</span>
-<span id="cb5-259"><a href="#cb5-259"></a>        <span class="cf">else</span>:</span>
-<span id="cb5-260"><a href="#cb5-260"></a>            data <span class="op">=</span> thingspeak_buffer.pop(<span class="dv">0</span>)  <span class="co"># Get the first item in the buffer</span></span>
-<span id="cb5-261"><a href="#cb5-261"></a>            <span class="bu">print</span>(data)</span>
-<span id="cb5-262"><a href="#cb5-262"></a>            payload <span class="op">=</span> {</span>
-<span id="cb5-263"><a href="#cb5-263"></a>            <span class="st">'api_key'</span>: THINGSPEAK_API_KEY,</span>
-<span id="cb5-264"><a href="#cb5-264"></a>            <span class="st">'field1'</span>: data[<span class="st">'temperature_C'</span>],</span>
-<span id="cb5-265"><a href="#cb5-265"></a>            <span class="st">'field2'</span>: data[<span class="st">'temperature_F'</span>],</span>
-<span id="cb5-266"><a href="#cb5-266"></a>            <span class="st">'field3'</span>: data[<span class="st">'humidityPercent'</span>],</span>
-<span id="cb5-267"><a href="#cb5-267"></a>            <span class="st">'field4'</span>: data[<span class="st">'time'</span>],</span>
-<span id="cb5-268"><a href="#cb5-268"></a>            <span class="st">'field5'</span>: data[<span class="st">'date'</span>]</span>
-<span id="cb5-269"><a href="#cb5-269"></a>        }</span>
-<span id="cb5-270"><a href="#cb5-270"></a>            <span class="cf">try</span>:</span>
-<span id="cb5-271"><a href="#cb5-271"></a>                response <span class="op">=</span> requests.post(THINGSPEAK_URL, json<span class="op">=</span>payload)</span>
-<span id="cb5-272"><a href="#cb5-272"></a>                <span class="bu">print</span>(<span class="st">'Data posted to ThingSpeak'</span>, response.text)</span>
-<span id="cb5-273"><a href="#cb5-273"></a>                <span class="bu">print</span>(payload)</span>
-<span id="cb5-274"><a href="#cb5-274"></a>                thingspeak_buffer.clear()  <span class="co"># Clear the buffer after successful update</span></span>
-<span id="cb5-275"><a href="#cb5-275"></a>            <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
-<span id="cb5-276"><a href="#cb5-276"></a>                <span class="bu">print</span>(<span class="st">'Failed to send data to ThingSpeak:'</span>, e)</span>
-<span id="cb5-277"><a href="#cb5-277"></a>                thingspeak_buffer.clear()</span>
-<span id="cb5-278"><a href="#cb5-278"></a><span class="kw">def</span> send_data_to_mongodb():</span>
-<span id="cb5-279"><a href="#cb5-279"></a><span class="co">"""Send data to MongoDB via Vercel API."""</span></span>
-<span id="cb5-280"><a href="#cb5-280"></a>    url <span class="op">=</span> MONGODB__VERCEL_API_URL</span>
-<span id="cb5-281"><a href="#cb5-281"></a>    headers <span class="op">=</span> {</span>
-<span id="cb5-282"><a href="#cb5-282"></a>        <span class="st">'x-api-key'</span>: VERCEL_API_KEY,</span>
-<span id="cb5-283"><a href="#cb5-283"></a>        <span class="st">'Content-Type'</span>: <span class="st">'application/json'</span></span>
-<span id="cb5-284"><a href="#cb5-284"></a>    }</span>
-<span id="cb5-285"><a href="#cb5-285"></a></span>
-<span id="cb5-286"><a href="#cb5-286"></a>    <span class="cf">try</span>:</span>
-<span id="cb5-287"><a href="#cb5-287"></a>        <span class="co"># Convert the data dictionary to a JSON string</span></span>
-<span id="cb5-288"><a href="#cb5-288"></a>        json_data <span class="op">=</span> json.dumps(data_buffer_mongodb)</span>
-<span id="cb5-289"><a href="#cb5-289"></a>        </span>
-<span id="cb5-290"><a href="#cb5-290"></a>        <span class="co"># Print the request details for debugging</span></span>
-<span id="cb5-291"><a href="#cb5-291"></a><span class="co">#         print("Sending data to:", url)</span></span>
-<span id="cb5-292"><a href="#cb5-292"></a><span class="co">#         print("Headers:", headers)</span></span>
-<span id="cb5-293"><a href="#cb5-293"></a><span class="co">#         print("Payload:", json_data)</span></span>
-<span id="cb5-294"><a href="#cb5-294"></a>        </span>
-<span id="cb5-295"><a href="#cb5-295"></a>        response <span class="op">=</span> requests.post(url, data<span class="op">=</span>json_data, headers<span class="op">=</span>headers)</span>
-<span id="cb5-296"><a href="#cb5-296"></a>        </span>
-<span id="cb5-297"><a href="#cb5-297"></a>        <span class="co"># Print the response details for debugging</span></span>
-<span id="cb5-298"><a href="#cb5-298"></a>        <span class="bu">print</span>(<span class="st">"Status Code:"</span>, response.status_code)</span>
-<span id="cb5-299"><a href="#cb5-299"></a>        <span class="bu">print</span>(<span class="st">"Response Text:"</span>, response.text)</span>
-<span id="cb5-300"><a href="#cb5-300"></a>        data_buffer_mongodb.clear()</span>
-<span id="cb5-301"><a href="#cb5-301"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
-<span id="cb5-302"><a href="#cb5-302"></a>        <span class="bu">print</span>(<span class="st">"Failed to send data to Vercel MongoDB API:"</span>, e)</span>
-<span id="cb5-303"><a href="#cb5-303"></a>        data_buffer_mongodb.clear()</span>
-<span id="cb5-304"><a href="#cb5-304"></a><span class="kw">def</span> send_data_to_vercel():</span>
-<span id="cb5-305"><a href="#cb5-305"></a><span class="co">"""Send data to Vercel API."""</span></span>
+<span id="cb5-58"><a href="#cb5-58"></a>    wlan <span class="op">=</span> network.WLAN(network.STA_IF)</span>
+<span id="cb5-59"><a href="#cb5-59"></a>    wlan.active(<span class="va">True</span>)</span>
+<span id="cb5-60"><a href="#cb5-60"></a>    wlan.<span class="ex">connect</span>(ssid, password)</span>
+<span id="cb5-61"><a href="#cb5-61"></a>    <span class="cf">while</span> <span class="kw">not</span> wlan.isconnected():</span>
+<span id="cb5-62"><a href="#cb5-62"></a>        time_module.sleep(<span class="dv">1</span>)</span>
+<span id="cb5-63"><a href="#cb5-63"></a>        <span class="bu">print</span>(<span class="st">"Connecting to WiFi..."</span>)</span>
+<span id="cb5-64"><a href="#cb5-64"></a>    <span class="bu">print</span>(<span class="st">"Connected to WiFi"</span>)</span>
+<span id="cb5-65"><a href="#cb5-65"></a>    <span class="bu">print</span>(wlan.ifconfig())</span>
+<span id="cb5-66"><a href="#cb5-66"></a></span>
+<span id="cb5-67"><a href="#cb5-67"></a><span class="co"># Function to disable sensors</span></span>
+<span id="cb5-68"><a href="#cb5-68"></a><span class="kw">def</span> disable_sensors():</span>
+<span id="cb5-69"><a href="#cb5-69"></a>    sensor_power_pin.value(<span class="dv">0</span>)  <span class="co"># Turn off sensor by setting the power pin low</span></span>
+<span id="cb5-70"><a href="#cb5-70"></a></span>
+<span id="cb5-71"><a href="#cb5-71"></a><span class="co"># Function to enable sensors</span></span>
+<span id="cb5-72"><a href="#cb5-72"></a><span class="kw">def</span> enable_sensors():</span>
+<span id="cb5-73"><a href="#cb5-73"></a>    sensor_power_pin.value(<span class="dv">1</span>)  <span class="co"># Turn on sensor by setting the power pin high</span></span>
+<span id="cb5-74"><a href="#cb5-74"></a>    time_module.sleep(<span class="dv">2</span>)  <span class="co"># Wait for the sensor to stabilize    </span></span>
+<span id="cb5-75"><a href="#cb5-75"></a><span class="co"># Function to get system status</span></span>
+<span id="cb5-76"><a href="#cb5-76"></a><span class="kw">def</span> get_system_status(firstRun):</span>
+<span id="cb5-77"><a href="#cb5-77"></a>    free_heap <span class="op">=</span> gc.mem_free()</span>
+<span id="cb5-78"><a href="#cb5-78"></a>    total_heap <span class="op">=</span> gc.mem_alloc() <span class="op">+</span> free_heap</span>
+<span id="cb5-79"><a href="#cb5-79"></a>    free_heap_percent <span class="op">=</span> (free_heap <span class="op">/</span> total_heap) <span class="op">*</span> <span class="dv">100</span></span>
+<span id="cb5-80"><a href="#cb5-80"></a>    <span class="cf">if</span> firstRun <span class="op">==</span> <span class="va">True</span>:</span>
+<span id="cb5-81"><a href="#cb5-81"></a>        <span class="bu">print</span>(<span class="ss">f"Total heap memory: </span><span class="sc">{</span>total_heap<span class="sc">}</span><span class="ss"> bytes"</span>)</span>
+<span id="cb5-82"><a href="#cb5-82"></a>        <span class="co"># Additional information about the system</span></span>
+<span id="cb5-83"><a href="#cb5-83"></a>        <span class="bu">print</span>(<span class="ss">f"Frequency: </span><span class="sc">{</span>freq()<span class="sc">}</span><span class="ss"> Hz"</span>)</span>
+<span id="cb5-84"><a href="#cb5-84"></a>    <span class="bu">print</span>(<span class="ss">f"Free heap memory: </span><span class="sc">{</span>free_heap<span class="sc">}</span><span class="ss"> bytes (</span><span class="sc">{</span>free_heap_percent<span class="sc">:.2f}</span><span class="ss">%)"</span>)</span>
+<span id="cb5-85"><a href="#cb5-85"></a>    </span>
+<span id="cb5-86"><a href="#cb5-86"></a><span class="kw">def</span> get_time_chicago():</span>
+<span id="cb5-87"><a href="#cb5-87"></a>    max_retries <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb5-88"><a href="#cb5-88"></a>    <span class="cf">for</span> attempt <span class="kw">in</span> <span class="bu">range</span>(max_retries):</span>
+<span id="cb5-89"><a href="#cb5-89"></a>        <span class="cf">try</span>:</span>
+<span id="cb5-90"><a href="#cb5-90"></a>            ntptime.settime()</span>
+<span id="cb5-91"><a href="#cb5-91"></a>            current_time <span class="op">=</span> utime.localtime()</span>
+<span id="cb5-92"><a href="#cb5-92"></a>            <span class="cf">break</span></span>
+<span id="cb5-93"><a href="#cb5-93"></a>        <span class="cf">except</span> <span class="pp">OSError</span> <span class="im">as</span> e:</span>
+<span id="cb5-94"><a href="#cb5-94"></a>            <span class="bu">print</span>(<span class="ss">f"Failed to get NTP time, attempt </span><span class="sc">{</span>attempt <span class="op">+</span> <span class="dv">1</span><span class="sc">}</span><span class="ss"> of </span><span class="sc">{</span>max_retries<span class="sc">}</span><span class="ss">. Error: </span><span class="sc">{</span>e<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb5-95"><a href="#cb5-95"></a>            time_module.sleep(<span class="dv">1</span>)</span>
+<span id="cb5-96"><a href="#cb5-96"></a>    <span class="cf">else</span>:</span>
+<span id="cb5-97"><a href="#cb5-97"></a>        <span class="bu">print</span>(<span class="st">"Could not get NTP time, proceeding without time synchronization."</span>)</span>
+<span id="cb5-98"><a href="#cb5-98"></a>        <span class="cf">return</span> utime.localtime()</span>
+<span id="cb5-99"><a href="#cb5-99"></a></span>
+<span id="cb5-100"><a href="#cb5-100"></a>    <span class="co"># Determine if it is daylight saving time (DST)</span></span>
+<span id="cb5-101"><a href="#cb5-101"></a>    month <span class="op">=</span> current_time[<span class="dv">1</span>]</span>
+<span id="cb5-102"><a href="#cb5-102"></a>    day <span class="op">=</span> current_time[<span class="dv">2</span>]</span>
+<span id="cb5-103"><a href="#cb5-103"></a>    hour <span class="op">=</span> current_time[<span class="dv">3</span>]</span>
+<span id="cb5-104"><a href="#cb5-104"></a>    <span class="cf">if</span> (month <span class="op">&gt;</span> <span class="dv">3</span> <span class="kw">and</span> month <span class="op">&lt;</span> <span class="dv">11</span>) <span class="kw">or</span> (month <span class="op">==</span> <span class="dv">3</span> <span class="kw">and</span> day <span class="op">&gt;=</span> <span class="dv">8</span> <span class="kw">and</span> hour <span class="op">&gt;=</span> <span class="dv">2</span>) <span class="kw">or</span> (month <span class="op">==</span> <span class="dv">11</span> <span class="kw">and</span> day <span class="op">&lt;</span> <span class="dv">1</span> <span class="kw">and</span> hour <span class="op">&lt;</span> <span class="dv">2</span>):</span>
+<span id="cb5-105"><a href="#cb5-105"></a>        is_dst <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb5-106"><a href="#cb5-106"></a>    <span class="cf">else</span>:</span>
+<span id="cb5-107"><a href="#cb5-107"></a>        is_dst <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb5-108"><a href="#cb5-108"></a>    </span>
+<span id="cb5-109"><a href="#cb5-109"></a>    offset <span class="op">=</span> <span class="op">-</span><span class="dv">6</span> <span class="op">*</span> <span class="dv">3600</span> <span class="cf">if</span> <span class="kw">not</span> is_dst <span class="cf">else</span> <span class="op">-</span><span class="dv">5</span> <span class="op">*</span> <span class="dv">3600</span></span>
+<span id="cb5-110"><a href="#cb5-110"></a>    local_time <span class="op">=</span> utime.mktime(current_time) <span class="op">+</span> offset</span>
+<span id="cb5-111"><a href="#cb5-111"></a>    <span class="cf">return</span> utime.localtime(local_time)</span>
+<span id="cb5-112"><a href="#cb5-112"></a></span>
+<span id="cb5-113"><a href="#cb5-113"></a><span class="kw">def</span> read_sensor():</span>
+<span id="cb5-114"><a href="#cb5-114"></a>    <span class="cf">try</span>:</span>
+<span id="cb5-115"><a href="#cb5-115"></a>        led.off()</span>
+<span id="cb5-116"><a href="#cb5-116"></a>        sensor <span class="op">=</span> dht.DHT11(sensor_data_pin)</span>
+<span id="cb5-117"><a href="#cb5-117"></a>        time_module.sleep(<span class="dv">1</span>) <span class="co">#the DHT11 sensor takes 1 second</span></span>
+<span id="cb5-118"><a href="#cb5-118"></a>        sensor.measure()</span>
+<span id="cb5-119"><a href="#cb5-119"></a>        led.on()</span>
+<span id="cb5-120"><a href="#cb5-120"></a>        temp <span class="op">=</span> sensor.temperature()</span>
+<span id="cb5-121"><a href="#cb5-121"></a>        hum <span class="op">=</span> sensor.humidity()</span>
+<span id="cb5-122"><a href="#cb5-122"></a>        <span class="cf">return</span> temp, hum</span>
+<span id="cb5-123"><a href="#cb5-123"></a>    <span class="cf">except</span> <span class="pp">OSError</span> <span class="im">as</span> e:</span>
+<span id="cb5-124"><a href="#cb5-124"></a>        <span class="bu">print</span>(<span class="st">"Failed to read sensor. Exception: "</span>, e)</span>
+<span id="cb5-125"><a href="#cb5-125"></a>        <span class="cf">return</span> <span class="va">None</span>, <span class="va">None</span></span>
+<span id="cb5-126"><a href="#cb5-126"></a><span class="co"># Read the access token from the file uploaded earlier</span></span>
+<span id="cb5-127"><a href="#cb5-127"></a><span class="kw">def</span> read_access_token():</span>
+<span id="cb5-128"><a href="#cb5-128"></a>    <span class="cf">with</span> <span class="bu">open</span>(<span class="st">'access_token.txt'</span>, <span class="st">'r'</span>) <span class="im">as</span> token_file:</span>
+<span id="cb5-129"><a href="#cb5-129"></a>        <span class="cf">return</span> token_file.read().strip()</span>
+<span id="cb5-130"><a href="#cb5-130"></a></span>
+<span id="cb5-131"><a href="#cb5-131"></a><span class="co"># ACCESS_TOKEN = read_access_token()</span></span>
+<span id="cb5-132"><a href="#cb5-132"></a><span class="co"># print(ACCESS_TOKEN)</span></span>
+<span id="cb5-133"><a href="#cb5-133"></a></span>
+<span id="cb5-134"><a href="#cb5-134"></a><span class="im">import</span> usocket <span class="im">as</span> socket</span>
+<span id="cb5-135"><a href="#cb5-135"></a><span class="im">import</span> ssl</span>
+<span id="cb5-136"><a href="#cb5-136"></a><span class="kw">def</span> send_data_to_google_sheets(temp_c, temp_f, humidity, time_str, date_str):</span>
+<span id="cb5-137"><a href="#cb5-137"></a><span class="co">#     print(time_module.time())</span></span>
+<span id="cb5-138"><a href="#cb5-138"></a>    url <span class="op">=</span> GOOGLE_URL  <span class="co"># Define your Google URL here</span></span>
+<span id="cb5-139"><a href="#cb5-139"></a>    headers <span class="op">=</span> {</span>
+<span id="cb5-140"><a href="#cb5-140"></a>        <span class="st">'Content-Type'</span>: <span class="st">'application/x-www-form-urlencoded'</span></span>
+<span id="cb5-141"><a href="#cb5-141"></a>    }</span>
+<span id="cb5-142"><a href="#cb5-142"></a>    data <span class="op">=</span> {</span>
+<span id="cb5-143"><a href="#cb5-143"></a>        <span class="st">'Date'</span>: date_str,</span>
+<span id="cb5-144"><a href="#cb5-144"></a>        <span class="st">'Time'</span>: time_str,</span>
+<span id="cb5-145"><a href="#cb5-145"></a>        <span class="st">'Humidity %'</span>: humidity,</span>
+<span id="cb5-146"><a href="#cb5-146"></a>        <span class="st">'Temp F'</span>: temp_f,</span>
+<span id="cb5-147"><a href="#cb5-147"></a>        <span class="st">'Temp C'</span>: temp_c</span>
+<span id="cb5-148"><a href="#cb5-148"></a>    }</span>
+<span id="cb5-149"><a href="#cb5-149"></a><span class="co">#     print(time_module.time())</span></span>
+<span id="cb5-150"><a href="#cb5-150"></a>    <span class="co"># Construct the URL-encoded string manually</span></span>
+<span id="cb5-151"><a href="#cb5-151"></a>    encoded_data <span class="op">=</span> (</span>
+<span id="cb5-152"><a href="#cb5-152"></a>        <span class="st">"Date="</span> <span class="op">+</span> date_str <span class="op">+</span></span>
+<span id="cb5-153"><a href="#cb5-153"></a>        <span class="st">"&amp;Time="</span> <span class="op">+</span> time_str <span class="op">+</span></span>
+<span id="cb5-154"><a href="#cb5-154"></a>        <span class="st">"&amp;Humidity %="</span> <span class="op">+</span> <span class="bu">str</span>(humidity) <span class="op">+</span></span>
+<span id="cb5-155"><a href="#cb5-155"></a>        <span class="st">"&amp;Temp F="</span> <span class="op">+</span> <span class="bu">str</span>(temp_f) <span class="op">+</span></span>
+<span id="cb5-156"><a href="#cb5-156"></a>        <span class="st">"&amp;Temp C="</span> <span class="op">+</span> <span class="bu">str</span>(temp_c)</span>
+<span id="cb5-157"><a href="#cb5-157"></a>     ) </span>
+<span id="cb5-158"><a href="#cb5-158"></a>    <span class="cf">try</span>:</span>
+<span id="cb5-159"><a href="#cb5-159"></a>        <span class="co"># Extract host and path from URL</span></span>
+<span id="cb5-160"><a href="#cb5-160"></a>        _, _, host, path <span class="op">=</span> url.split(<span class="st">'/'</span>, <span class="dv">3</span>)</span>
+<span id="cb5-161"><a href="#cb5-161"></a>        </span>
+<span id="cb5-162"><a href="#cb5-162"></a>        <span class="co"># Set up a socket connection</span></span>
+<span id="cb5-163"><a href="#cb5-163"></a>        addr <span class="op">=</span> socket.getaddrinfo(host, <span class="dv">443</span>)[<span class="dv">0</span>][<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb5-164"><a href="#cb5-164"></a>        s <span class="op">=</span> socket.socket()</span>
+<span id="cb5-165"><a href="#cb5-165"></a>        s.<span class="ex">connect</span>(addr)</span>
+<span id="cb5-166"><a href="#cb5-166"></a>        s <span class="op">=</span> ssl.wrap_socket(s)</span>
+<span id="cb5-167"><a href="#cb5-167"></a>        </span>
+<span id="cb5-168"><a href="#cb5-168"></a>        <span class="co"># Create the HTTP request manually</span></span>
+<span id="cb5-169"><a href="#cb5-169"></a>        request <span class="op">=</span> <span class="ss">f"POST /</span><span class="sc">{</span>path<span class="sc">}</span><span class="ss"> HTTP/1.1</span><span class="ch">\r\n</span><span class="ss">Host: </span><span class="sc">{</span>host<span class="sc">}</span><span class="ch">\r\n</span><span class="ss">"</span></span>
+<span id="cb5-170"><a href="#cb5-170"></a>        request <span class="op">+=</span> <span class="st">"Content-Type: application/x-www-form-urlencoded</span><span class="ch">\r\n</span><span class="st">"</span></span>
+<span id="cb5-171"><a href="#cb5-171"></a>        request <span class="op">+=</span> <span class="ss">f"Content-Length: </span><span class="sc">{</span><span class="bu">len</span>(encoded_data)<span class="sc">}</span><span class="ch">\r\n\r\n</span><span class="ss">"</span></span>
+<span id="cb5-172"><a href="#cb5-172"></a>        request <span class="op">+=</span> encoded_data</span>
+<span id="cb5-173"><a href="#cb5-173"></a></span>
+<span id="cb5-174"><a href="#cb5-174"></a>        <span class="co"># Send the request</span></span>
+<span id="cb5-175"><a href="#cb5-175"></a>        s.write(request)</span>
+<span id="cb5-176"><a href="#cb5-176"></a>        </span>
+<span id="cb5-177"><a href="#cb5-177"></a><span class="co">#         # Read the response</span></span>
+<span id="cb5-178"><a href="#cb5-178"></a><span class="co">#         response = s.read(1024)  # Read up to 2048 bytes from the response, THIS TAKES A WHILE, SET TO WHATEVER. 128-1024</span></span>
+<span id="cb5-179"><a href="#cb5-179"></a><span class="co">#         print('Data sent to Google Sheets:', response)  </span></span>
+<span id="cb5-180"><a href="#cb5-180"></a>        <span class="co"># Close the socket</span></span>
+<span id="cb5-181"><a href="#cb5-181"></a>        s.close()</span>
+<span id="cb5-182"><a href="#cb5-182"></a>        <span class="bu">print</span>(<span class="st">'Data sent to Google Sheets!'</span>)</span>
+<span id="cb5-183"><a href="#cb5-183"></a><span class="co">#         print(time_module.time())</span></span>
+<span id="cb5-184"><a href="#cb5-184"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb5-185"><a href="#cb5-185"></a>        <span class="bu">print</span>(<span class="st">'Failed to send data to Google Sheets:'</span>, e)</span>
+<span id="cb5-186"><a href="#cb5-186"></a></span>
+<span id="cb5-187"><a href="#cb5-187"></a><span class="co"># # Function to send data to Google Sheets</span></span>
+<span id="cb5-188"><a href="#cb5-188"></a><span class="co"># def send_data_to_google_sheets(temp_c, temp_f, humidity,time_str,date_str):</span></span>
+<span id="cb5-189"><a href="#cb5-189"></a><span class="co">#     print(time_module.time())</span></span>
+<span id="cb5-190"><a href="#cb5-190"></a><span class="co">#     url = GOOGLE_URL</span></span>
+<span id="cb5-191"><a href="#cb5-191"></a><span class="co">#     headers = {</span></span>
+<span id="cb5-192"><a href="#cb5-192"></a><span class="co">#         'Content-Type': 'application/x-www-form-urlencoded'</span></span>
+<span id="cb5-193"><a href="#cb5-193"></a><span class="co">#     }</span></span>
+<span id="cb5-194"><a href="#cb5-194"></a><span class="co">#     # Construct the URL-encoded string manually</span></span>
+<span id="cb5-195"><a href="#cb5-195"></a><span class="co">#     print(time_module.time())</span></span>
+<span id="cb5-196"><a href="#cb5-196"></a><span class="co">#     encoded_data = (</span></span>
+<span id="cb5-197"><a href="#cb5-197"></a><span class="co">#         "Date=" + date_str +</span></span>
+<span id="cb5-198"><a href="#cb5-198"></a><span class="co">#         "&amp;Time=" + time_str +</span></span>
+<span id="cb5-199"><a href="#cb5-199"></a><span class="co">#         "&amp;Humidity %=" + str(humidity) +</span></span>
+<span id="cb5-200"><a href="#cb5-200"></a><span class="co">#         "&amp;Temp F=" + str(temp_f) +</span></span>
+<span id="cb5-201"><a href="#cb5-201"></a><span class="co">#         "&amp;Temp C=" + str(temp_c)</span></span>
+<span id="cb5-202"><a href="#cb5-202"></a><span class="co">#     )</span></span>
+<span id="cb5-203"><a href="#cb5-203"></a><span class="co">#     print(encoded_data)</span></span>
+<span id="cb5-204"><a href="#cb5-204"></a><span class="co">#     print(time_module.time())</span></span>
+<span id="cb5-205"><a href="#cb5-205"></a><span class="co">#     print("request")</span></span>
+<span id="cb5-206"><a href="#cb5-206"></a><span class="co">#     try:</span></span>
+<span id="cb5-207"><a href="#cb5-207"></a><span class="co">#         # Get initial free memory</span></span>
+<span id="cb5-208"><a href="#cb5-208"></a><span class="co">#         # Run garbage collection to get a clean slate</span></span>
+<span id="cb5-209"><a href="#cb5-209"></a><span class="co">#         gc.collect()</span></span>
+<span id="cb5-210"><a href="#cb5-210"></a><span class="co">#         initial_free = gc.mem_free()</span></span>
+<span id="cb5-211"><a href="#cb5-211"></a><span class="co">#         response = requests.post(url, data=encoded_data, headers=headers) #DRAGS... Also</span></span>
+<span id="cb5-212"><a href="#cb5-212"></a><span class="co">#         # Run garbage collection again</span></span>
+<span id="cb5-213"><a href="#cb5-213"></a><span class="co">#         gc.collect()</span></span>
+<span id="cb5-214"><a href="#cb5-214"></a><span class="co">#         # Get final free memory</span></span>
+<span id="cb5-215"><a href="#cb5-215"></a><span class="co">#         final_free = gc.mem_free()</span></span>
+<span id="cb5-216"><a href="#cb5-216"></a><span class="co"># </span></span>
+<span id="cb5-217"><a href="#cb5-217"></a><span class="co">#         # Calculate memory used by the variable</span></span>
+<span id="cb5-218"><a href="#cb5-218"></a><span class="co">#         memory_used = initial_free - final_free</span></span>
+<span id="cb5-219"><a href="#cb5-219"></a><span class="co">#         print('Data sent to Google Sheets:')</span></span>
+<span id="cb5-220"><a href="#cb5-220"></a><span class="co">#         print(time_module.time())</span></span>
+<span id="cb5-221"><a href="#cb5-221"></a><span class="co">#         print('Size of response: ', memory_used, 'bytes') # Size of response:  46352 bytes. Crazy.... That's like ~4635 date strings.</span></span>
+<span id="cb5-222"><a href="#cb5-222"></a><span class="co">#     except Exception as e:</span></span>
+<span id="cb5-223"><a href="#cb5-223"></a><span class="co">#         print('Failed to send data to Google Sheets:', e)</span></span>
+<span id="cb5-224"><a href="#cb5-224"></a></span>
+<span id="cb5-225"><a href="#cb5-225"></a><span class="kw">def</span> send_data_to_thingspeak():</span>
+<span id="cb5-226"><a href="#cb5-226"></a>    <span class="co">"""Send data to ThingSpeak."""</span></span>
+<span id="cb5-227"><a href="#cb5-227"></a>    <span class="cf">if</span> SEND_TO_THINGSPEAK <span class="kw">and</span> thingspeak_buffer:</span>
+<span id="cb5-228"><a href="#cb5-228"></a>        <span class="cf">if</span> <span class="bu">len</span>(thingspeak_buffer) <span class="op">&gt;</span> <span class="dv">1</span>:</span>
+<span id="cb5-229"><a href="#cb5-229"></a>            <span class="co"># Bulk update</span></span>
+<span id="cb5-230"><a href="#cb5-230"></a>            payload <span class="op">=</span> {</span>
+<span id="cb5-231"><a href="#cb5-231"></a>                    <span class="st">'write_api_key'</span>: THINGSPEAK_API_KEY,</span>
+<span id="cb5-232"><a href="#cb5-232"></a>                    <span class="st">'updates'</span>: []</span>
+<span id="cb5-233"><a href="#cb5-233"></a>                }</span>
+<span id="cb5-234"><a href="#cb5-234"></a>            <span class="cf">for</span> data <span class="kw">in</span> thingspeak_buffer:</span>
+<span id="cb5-235"><a href="#cb5-235"></a>                update <span class="op">=</span> {</span>
+<span id="cb5-236"><a href="#cb5-236"></a>                    <span class="st">'created_at'</span>: <span class="ss">f"</span><span class="sc">{</span>data[<span class="st">'date'</span>]<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>data[<span class="st">'time'</span>]<span class="sc">}</span><span class="ss"> -0500"</span>,</span>
+<span id="cb5-237"><a href="#cb5-237"></a>                    <span class="st">'field1'</span>: data[<span class="st">'temperature_C'</span>],</span>
+<span id="cb5-238"><a href="#cb5-238"></a>                    <span class="st">'field2'</span>: data[<span class="st">'temperature_F'</span>],</span>
+<span id="cb5-239"><a href="#cb5-239"></a>                    <span class="st">'field3'</span>: data[<span class="st">'humidityPercent'</span>],</span>
+<span id="cb5-240"><a href="#cb5-240"></a>                    <span class="st">'field4'</span>: data[<span class="st">'time'</span>],</span>
+<span id="cb5-241"><a href="#cb5-241"></a>                    <span class="st">'field5'</span>: data[<span class="st">'date'</span>]</span>
+<span id="cb5-242"><a href="#cb5-242"></a>                }</span>
+<span id="cb5-243"><a href="#cb5-243"></a>                payload[<span class="st">'updates'</span>].append(update)</span>
+<span id="cb5-244"><a href="#cb5-244"></a></span>
+<span id="cb5-245"><a href="#cb5-245"></a>            <span class="cf">try</span>:</span>
+<span id="cb5-246"><a href="#cb5-246"></a>                <span class="co"># Send the bulk update request to ThingSpeak</span></span>
+<span id="cb5-247"><a href="#cb5-247"></a>                headers <span class="op">=</span> {<span class="st">'Content-Type'</span>: <span class="st">'application/json'</span>}</span>
+<span id="cb5-248"><a href="#cb5-248"></a>                <span class="co">#print(len(thingspeak_buffer))</span></span>
+<span id="cb5-249"><a href="#cb5-249"></a>                <span class="co">#print(headers)</span></span>
+<span id="cb5-250"><a href="#cb5-250"></a>                <span class="co">#print(json.dumps(payload))</span></span>
+<span id="cb5-251"><a href="#cb5-251"></a>                <span class="co"># Convert the data payload to JSON format</span></span>
+<span id="cb5-252"><a href="#cb5-252"></a>                json_data <span class="op">=</span> json.dumps(payload)</span>
+<span id="cb5-253"><a href="#cb5-253"></a>                response <span class="op">=</span> requests.post(THINGSPEAK_BULK_UPDATE_URL,headers<span class="op">=</span>headers,data<span class="op">=</span>json_data)</span>
+<span id="cb5-254"><a href="#cb5-254"></a>                <span class="cf">if</span> response.status_code <span class="op">==</span> <span class="dv">202</span>:</span>
+<span id="cb5-255"><a href="#cb5-255"></a>                    <span class="bu">print</span>(<span class="st">'Data posted to ThingSpeak (bulk update):'</span>, response.text)</span>
+<span id="cb5-256"><a href="#cb5-256"></a>                    thingspeak_buffer.clear()  <span class="co"># Clear the buffer after successful update</span></span>
+<span id="cb5-257"><a href="#cb5-257"></a>                <span class="cf">else</span>:</span>
+<span id="cb5-258"><a href="#cb5-258"></a>                    <span class="bu">print</span>(<span class="ss">f'Failed to send data to ThingSpeak (bulk update): </span><span class="sc">{</span>response<span class="sc">.</span>status_code<span class="sc">}</span><span class="ss">, </span><span class="sc">{</span>response<span class="sc">.</span>text<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb5-259"><a href="#cb5-259"></a>            <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb5-260"><a href="#cb5-260"></a>                <span class="bu">print</span>(<span class="st">'Failed to send data to ThingSpeak (bulk update):'</span>, e)</span>
+<span id="cb5-261"><a href="#cb5-261"></a>        <span class="cf">else</span>:</span>
+<span id="cb5-262"><a href="#cb5-262"></a>            data <span class="op">=</span> thingspeak_buffer.pop(<span class="dv">0</span>)  <span class="co"># Get the first item in the buffer</span></span>
+<span id="cb5-263"><a href="#cb5-263"></a>            <span class="bu">print</span>(data)</span>
+<span id="cb5-264"><a href="#cb5-264"></a>            payload <span class="op">=</span> {</span>
+<span id="cb5-265"><a href="#cb5-265"></a>            <span class="st">'api_key'</span>: THINGSPEAK_API_KEY,</span>
+<span id="cb5-266"><a href="#cb5-266"></a>            <span class="st">'field1'</span>: data[<span class="st">'temperature_C'</span>],</span>
+<span id="cb5-267"><a href="#cb5-267"></a>            <span class="st">'field2'</span>: data[<span class="st">'temperature_F'</span>],</span>
+<span id="cb5-268"><a href="#cb5-268"></a>            <span class="st">'field3'</span>: data[<span class="st">'humidityPercent'</span>],</span>
+<span id="cb5-269"><a href="#cb5-269"></a>            <span class="st">'field4'</span>: data[<span class="st">'time'</span>],</span>
+<span id="cb5-270"><a href="#cb5-270"></a>            <span class="st">'field5'</span>: data[<span class="st">'date'</span>]</span>
+<span id="cb5-271"><a href="#cb5-271"></a>        }</span>
+<span id="cb5-272"><a href="#cb5-272"></a>            <span class="cf">try</span>:</span>
+<span id="cb5-273"><a href="#cb5-273"></a>                response <span class="op">=</span> requests.post(THINGSPEAK_URL, json<span class="op">=</span>payload)</span>
+<span id="cb5-274"><a href="#cb5-274"></a>                <span class="bu">print</span>(<span class="st">'Data posted to ThingSpeak'</span>, response.text)</span>
+<span id="cb5-275"><a href="#cb5-275"></a>                <span class="bu">print</span>(payload)</span>
+<span id="cb5-276"><a href="#cb5-276"></a>                thingspeak_buffer.clear()  <span class="co"># Clear the buffer after successful update</span></span>
+<span id="cb5-277"><a href="#cb5-277"></a>            <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb5-278"><a href="#cb5-278"></a>                <span class="bu">print</span>(<span class="st">'Failed to send data to ThingSpeak:'</span>, e)</span>
+<span id="cb5-279"><a href="#cb5-279"></a>                thingspeak_buffer.clear()</span>
+<span id="cb5-280"><a href="#cb5-280"></a><span class="kw">def</span> send_data_to_mongodb():</span>
+<span id="cb5-281"><a href="#cb5-281"></a>    url <span class="op">=</span> MONGODB__VERCEL_API_URL</span>
+<span id="cb5-282"><a href="#cb5-282"></a>    headers <span class="op">=</span> {</span>
+<span id="cb5-283"><a href="#cb5-283"></a>        <span class="st">'x-api-key'</span>: VERCEL_API_KEY,</span>
+<span id="cb5-284"><a href="#cb5-284"></a>        <span class="st">'Content-Type'</span>: <span class="st">'application/json'</span></span>
+<span id="cb5-285"><a href="#cb5-285"></a>    }</span>
+<span id="cb5-286"><a href="#cb5-286"></a></span>
+<span id="cb5-287"><a href="#cb5-287"></a>    <span class="cf">try</span>:</span>
+<span id="cb5-288"><a href="#cb5-288"></a>        <span class="co"># Convert the data dictionary to a JSON string</span></span>
+<span id="cb5-289"><a href="#cb5-289"></a>        json_data <span class="op">=</span> json.dumps(data_buffer_mongodb)</span>
+<span id="cb5-290"><a href="#cb5-290"></a>        </span>
+<span id="cb5-291"><a href="#cb5-291"></a>        <span class="co"># Print the request details for debugging</span></span>
+<span id="cb5-292"><a href="#cb5-292"></a><span class="co">#         print("Sending data to:", url)</span></span>
+<span id="cb5-293"><a href="#cb5-293"></a><span class="co">#         print("Headers:", headers)</span></span>
+<span id="cb5-294"><a href="#cb5-294"></a><span class="co">#         print("Payload:", json_data)</span></span>
+<span id="cb5-295"><a href="#cb5-295"></a>        </span>
+<span id="cb5-296"><a href="#cb5-296"></a>        response <span class="op">=</span> requests.post(url, data<span class="op">=</span>json_data, headers<span class="op">=</span>headers)</span>
+<span id="cb5-297"><a href="#cb5-297"></a>        </span>
+<span id="cb5-298"><a href="#cb5-298"></a>        <span class="co"># Print the response details for debugging</span></span>
+<span id="cb5-299"><a href="#cb5-299"></a>        <span class="bu">print</span>(<span class="st">"Status Code:"</span>, response.status_code)</span>
+<span id="cb5-300"><a href="#cb5-300"></a>        <span class="bu">print</span>(<span class="st">"Response Text:"</span>, response.text)</span>
+<span id="cb5-301"><a href="#cb5-301"></a>        data_buffer_mongodb.clear()</span>
+<span id="cb5-302"><a href="#cb5-302"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb5-303"><a href="#cb5-303"></a>        <span class="bu">print</span>(<span class="st">"Failed to send data to Vercel MongoDB API:"</span>, e)</span>
+<span id="cb5-304"><a href="#cb5-304"></a>        data_buffer_mongodb.clear()</span>
+<span id="cb5-305"><a href="#cb5-305"></a><span class="kw">def</span> send_data_to_vercel():</span>
 <span id="cb5-306"><a href="#cb5-306"></a>    url <span class="op">=</span> VERCEL_API_URL</span>
 <span id="cb5-307"><a href="#cb5-307"></a>    headers <span class="op">=</span> {</span>
 <span id="cb5-308"><a href="#cb5-308"></a>        <span class="st">'x-api-key'</span>: VERCEL_API_KEY,</span>
@@ -736,25 +735,25 @@ Code
 <span id="cb5-385"><a href="#cb5-385"></a>                    <span class="st">'temperatureCelsius'</span>: temp,</span>
 <span id="cb5-386"><a href="#cb5-386"></a>                })</span>
 <span id="cb5-387"><a href="#cb5-387"></a>                <span class="bu">print</span>(<span class="st">"ThingSpeak Buffer:"</span>,<span class="bu">len</span>(thingspeak_buffer),<span class="st">"|Vercel Buffer:"</span>,<span class="bu">len</span>(data_buffer_vercel),<span class="st">"|MongoDB Buffer:"</span>,<span class="bu">len</span>(data_buffer_mongodb))</span>
-<span id="cb5-388"><a href="#cb5-388"></a>                <span class="co"># Send data to Google Sheets every 5 seconds </span></span>
+<span id="cb5-388"><a href="#cb5-388"></a>                 <span class="co"># Check if it's time to send data to Google Sheets </span></span>
 <span id="cb5-389"><a href="#cb5-389"></a>                <span class="cf">if</span> time_module.time() <span class="op">-</span> last_google_sheets_update <span class="op">&gt;=</span> <span class="dv">5</span>:</span>
 <span id="cb5-390"><a href="#cb5-390"></a>                    </span>
 <span id="cb5-391"><a href="#cb5-391"></a>                    send_data_to_google_sheets(temp_c, temp_f, humidity, time_str, date_str)</span>
 <span id="cb5-392"><a href="#cb5-392"></a>                    last_google_sheets_update <span class="op">=</span> time_module.time()</span>
 <span id="cb5-393"><a href="#cb5-393"></a></span>
-<span id="cb5-394"><a href="#cb5-394"></a>                <span class="co"># Send data to ThingSpeak every 15 seconds</span></span>
+<span id="cb5-394"><a href="#cb5-394"></a>                <span class="co"># Check if it's time to send data to ThingSpeak</span></span>
 <span id="cb5-395"><a href="#cb5-395"></a>                <span class="cf">if</span> time_module.time() <span class="op">-</span> last_thingspeak_update <span class="op">&gt;=</span> <span class="dv">15</span>:</span>
 <span id="cb5-396"><a href="#cb5-396"></a>                    send_data_to_thingspeak()</span>
 <span id="cb5-397"><a href="#cb5-397"></a>                    last_thingspeak_update <span class="op">=</span> time_module.time()</span>
 <span id="cb5-398"><a href="#cb5-398"></a></span>
-<span id="cb5-399"><a href="#cb5-399"></a>    <span class="co">#             # Send data to Vercel every hour</span></span>
+<span id="cb5-399"><a href="#cb5-399"></a>    <span class="co">#             # Check if it's time to send data to Vercel</span></span>
 <span id="cb5-400"><a href="#cb5-400"></a>    <span class="co">#Vercel DB no good for this low level stuff. Overflow error and out of memory.</span></span>
 <span id="cb5-401"><a href="#cb5-401"></a>    <span class="co">#No append operation as a result.</span></span>
 <span id="cb5-402"><a href="#cb5-402"></a>                <span class="cf">if</span> time_module.time() <span class="op">-</span> last_vercel_update <span class="op">&gt;=</span> <span class="dv">3600</span>:</span>
 <span id="cb5-403"><a href="#cb5-403"></a>                    send_data_to_vercel()</span>
 <span id="cb5-404"><a href="#cb5-404"></a>                    last_vercel_update <span class="op">=</span> time_module.time()</span>
 <span id="cb5-405"><a href="#cb5-405"></a></span>
-<span id="cb5-406"><a href="#cb5-406"></a>                <span class="co"># Send data to MongoDB every 15 seconds</span></span>
+<span id="cb5-406"><a href="#cb5-406"></a>                <span class="co"># Check if it's time to send data to MongoDB</span></span>
 <span id="cb5-407"><a href="#cb5-407"></a>                <span class="cf">if</span> time_module.time() <span class="op">-</span> last_mongodb_update <span class="op">&gt;=</span> <span class="dv">15</span>:</span>
 <span id="cb5-408"><a href="#cb5-408"></a>                    send_data_to_mongodb()</span>
 <span id="cb5-409"><a href="#cb5-409"></a>                    last_mongodb_update <span class="op">=</span> time_module.time()</span>
@@ -1123,7 +1122,7 @@ Code Summary
 </section>
 <section id="flashing-the-program" class="level3">
 <h3 class="anchored">Flashing the Program</h3>
-<p>Next we put the ESP32 into download mode by holding boot and pressing reset and then saving the Thonny file to the ESP32. After this test that your program is running by unplugging and plugging the ESP32 back in and listening to the COM4 port on Putty or observing the LED. From here you should be able to move the board wherever you want within your home or even hand solder the connection points with something like this:</p>
+<p>Next we put the ESP32 into download mode by holding boot and pressing reset and then saving the Thonny file to the ESP32 as main.py. After this test that your program is running by unplugging and plugging the ESP32 back in and listening to the COM4 port on Putty or observing the LED. Once you’ve verified this go back into Thonny and select File-&gt;Open-&gt;MicroPython device-&gt;boot.py. Simply type import main as a new line and the program should boot every time you are connected to power. Note that this is a nuclear option and generally main.py should run on power up. From here you should be able to move the board wherever you want within your home or even hand solder the connection points with something like this:</p>
 <p><a href="https://www.amazon.com/Adafruit-Accessories-Perma-Proto-Full-Breadboard/dp/B00SK8KAMM" class="uri">https://www.amazon.com/Adafruit-Accessories-Perma-Proto-Full-Breadboard/dp/B00SK8KAMM</a></p>
 <p>Use good wire and solder!</p>
 <p>A general diagram of the flow for the ESP32 is below:</p>
@@ -1162,189 +1161,193 @@ Code
 <span id="cb11-27"><a href="#cb11-27"></a>    <span class="kw">var</span> action <span class="op">=</span> e<span class="op">.</span><span class="at">parameter</span><span class="op">.</span><span class="at">action</span><span class="op">;</span></span>
 <span id="cb11-28"><a href="#cb11-28"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">"handleResponse called with action: "</span> <span class="op">+</span> e<span class="op">.</span><span class="at">parameter</span>)<span class="op">;</span></span>
 <span id="cb11-29"><a href="#cb11-29"></a></span>
-<span id="cb11-30"><a href="#cb11-30"></a>    <span class="cf">if</span> (e<span class="op">.</span><span class="at">parameter</span><span class="op">.</span><span class="at">action</span> <span class="op">&amp;&amp;</span> e<span class="op">.</span><span class="at">parameter</span><span class="op">.</span><span class="at">action</span> <span class="op">===</span> <span class="st">'getLastRow'</span>) {</span>
-<span id="cb11-31"><a href="#cb11-31"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">"Calling getLastRowData function"</span>)<span class="op">;</span></span>
-<span id="cb11-32"><a href="#cb11-32"></a>    <span class="cf">return</span> <span class="fu">getLastRowData</span>()<span class="op">;</span></span>
-<span id="cb11-33"><a href="#cb11-33"></a>  } <span class="cf">else</span> <span class="cf">if</span> (e<span class="op">.</span><span class="at">parameter</span><span class="op">.</span><span class="at">action</span> <span class="op">&amp;&amp;</span> e<span class="op">.</span><span class="at">parameter</span><span class="op">.</span><span class="at">action</span> <span class="op">===</span> <span class="st">'getLast6000Rows'</span>) {</span>
-<span id="cb11-34"><a href="#cb11-34"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">"Calling getLast6000Rows function"</span>)<span class="op">;</span></span>
-<span id="cb11-35"><a href="#cb11-35"></a>    <span class="cf">return</span> <span class="fu">getLast6000Rows</span>()<span class="op">;</span></span>
-<span id="cb11-36"><a href="#cb11-36"></a>  } <span class="cf">else</span> {</span>
-<span id="cb11-37"><a href="#cb11-37"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">"Invalid action or no action specified"</span>)<span class="op">;</span></span>
-<span id="cb11-38"><a href="#cb11-38"></a>    <span class="cf">return</span> ContentService<span class="op">.</span><span class="fu">createTextOutput</span>(<span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>({ <span class="dt">error</span><span class="op">:</span> <span class="st">"Invalid action or no action specified"</span> }))<span class="op">.</span><span class="fu">setMimeType</span>(ContentService<span class="op">.</span><span class="at">MimeType</span><span class="op">.</span><span class="at">JSON</span>)<span class="op">;</span></span>
-<span id="cb11-39"><a href="#cb11-39"></a>  }</span>
-<span id="cb11-40"><a href="#cb11-40"></a>}</span>
-<span id="cb11-41"><a href="#cb11-41"></a></span>
-<span id="cb11-42"><a href="#cb11-42"></a><span class="kw">function</span> <span class="fu">handleDataSubmission</span>(e) {</span>
-<span id="cb11-43"><a href="#cb11-43"></a>  Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">"handleDataSubmission called with parameters: "</span> <span class="op">+</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>(e<span class="op">.</span><span class="at">parameter</span>))<span class="op">;</span></span>
-<span id="cb11-44"><a href="#cb11-44"></a>  </span>
-<span id="cb11-45"><a href="#cb11-45"></a>  <span class="kw">var</span> lock <span class="op">=</span> LockService<span class="op">.</span><span class="fu">getPublicLock</span>()<span class="op">;</span></span>
-<span id="cb11-46"><a href="#cb11-46"></a>  lock<span class="op">.</span><span class="fu">waitLock</span>(<span class="dv">500</span>)<span class="op">;</span>  <span class="co">// wait 0.5 seconds before conceding defeat. Try 30 with more complicated </span></span>
-<span id="cb11-47"><a href="#cb11-47"></a>  <span class="co">//We are essentially trying to prevent a race condition in which we have concurrent writes to the same spreadsheet. For this simple 1 python post to 1 spreadsheet this is essentially a non issue. Set to higher values if developing more complex nonsense.</span></span>
-<span id="cb11-48"><a href="#cb11-48"></a>  <span class="cf">try</span> {</span>
-<span id="cb11-49"><a href="#cb11-49"></a>    <span class="kw">var</span> docId <span class="op">=</span> SCRIPT_PROP<span class="op">.</span><span class="fu">getProperty</span>(<span class="st">"key"</span>)<span class="op">;</span></span>
-<span id="cb11-50"><a href="#cb11-50"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">"Using document ID: "</span> <span class="op">+</span> docId)<span class="op">;</span></span>
-<span id="cb11-51"><a href="#cb11-51"></a>    <span class="kw">var</span> doc <span class="op">=</span> SpreadsheetApp<span class="op">.</span><span class="fu">openById</span>(docId)<span class="op">;</span></span>
-<span id="cb11-52"><a href="#cb11-52"></a>    <span class="kw">var</span> sheet <span class="op">=</span> doc<span class="op">.</span><span class="fu">getSheetByName</span>(SHEET_NAME)<span class="op">;</span></span>
-<span id="cb11-53"><a href="#cb11-53"></a></span>
-<span id="cb11-54"><a href="#cb11-54"></a>    <span class="kw">var</span> headRow <span class="op">=</span> e<span class="op">.</span><span class="at">parameter</span><span class="op">.</span><span class="at">header_row</span> <span class="op">||</span> <span class="dv">1</span><span class="op">;</span></span>
-<span id="cb11-55"><a href="#cb11-55"></a>    <span class="kw">var</span> headers <span class="op">=</span> sheet<span class="op">.</span><span class="fu">getRange</span>(<span class="dv">1</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> sheet<span class="op">.</span><span class="fu">getLastColumn</span>())<span class="op">.</span><span class="fu">getValues</span>()[<span class="dv">0</span>]<span class="op">;</span></span>
-<span id="cb11-56"><a href="#cb11-56"></a>    <span class="kw">var</span> nextRow <span class="op">=</span> sheet<span class="op">.</span><span class="fu">getLastRow</span>() <span class="op">+</span> <span class="dv">1</span><span class="op">;</span> <span class="co">// get next row</span></span>
-<span id="cb11-57"><a href="#cb11-57"></a>    <span class="kw">var</span> row <span class="op">=</span> []<span class="op">;</span></span>
-<span id="cb11-58"><a href="#cb11-58"></a>    </span>
-<span id="cb11-59"><a href="#cb11-59"></a>    <span class="cf">for</span> (<span class="kw">var</span> i <span class="kw">in</span> headers) {</span>
-<span id="cb11-60"><a href="#cb11-60"></a>      <span class="cf">if</span> (headers[i] <span class="op">==</span> <span class="st">"Timestamp"</span>) {</span>
-<span id="cb11-61"><a href="#cb11-61"></a>        row<span class="op">.</span><span class="fu">push</span>(<span class="kw">new</span> <span class="bu">Date</span>())<span class="op">;</span></span>
-<span id="cb11-62"><a href="#cb11-62"></a>      } <span class="cf">else</span> {</span>
-<span id="cb11-63"><a href="#cb11-63"></a>        row<span class="op">.</span><span class="fu">push</span>(e<span class="op">.</span><span class="at">parameter</span>[headers[i]])<span class="op">;</span></span>
-<span id="cb11-64"><a href="#cb11-64"></a>      }</span>
-<span id="cb11-65"><a href="#cb11-65"></a>    }</span>
-<span id="cb11-66"><a href="#cb11-66"></a>    </span>
-<span id="cb11-67"><a href="#cb11-67"></a>    sheet<span class="op">.</span><span class="fu">getRange</span>(nextRow<span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> row<span class="op">.</span><span class="at">length</span>)<span class="op">.</span><span class="fu">setValues</span>([row])<span class="op">;</span></span>
-<span id="cb11-68"><a href="#cb11-68"></a>    </span>
-<span id="cb11-69"><a href="#cb11-69"></a>    <span class="kw">var</span> output <span class="op">=</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>({<span class="st">"result"</span><span class="op">:</span> <span class="st">"success"</span><span class="op">,</span> <span class="st">"row"</span><span class="op">:</span> nextRow})<span class="op">;</span></span>
-<span id="cb11-70"><a href="#cb11-70"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">"Data written to row: "</span> <span class="op">+</span> nextRow)<span class="op">;</span></span>
-<span id="cb11-71"><a href="#cb11-71"></a>    </span>
-<span id="cb11-72"><a href="#cb11-72"></a>    <span class="cf">if</span> (e<span class="op">.</span><span class="at">parameter</span><span class="op">.</span><span class="at">callback</span>) {</span>
-<span id="cb11-73"><a href="#cb11-73"></a>      <span class="cf">return</span> ContentService<span class="op">.</span><span class="fu">createTextOutput</span>(e<span class="op">.</span><span class="at">parameter</span><span class="op">.</span><span class="at">callback</span> <span class="op">+</span> <span class="st">"("</span> <span class="op">+</span> output <span class="op">+</span> <span class="st">");"</span>)</span>
-<span id="cb11-74"><a href="#cb11-74"></a>                           <span class="op">.</span><span class="fu">setMimeType</span>(ContentService<span class="op">.</span><span class="at">MimeType</span><span class="op">.</span><span class="at">JAVASCRIPT</span>)<span class="op">;</span></span>
-<span id="cb11-75"><a href="#cb11-75"></a>    } <span class="cf">else</span> {</span>
-<span id="cb11-76"><a href="#cb11-76"></a>      <span class="cf">return</span> ContentService<span class="op">.</span><span class="fu">createTextOutput</span>(output)</span>
-<span id="cb11-77"><a href="#cb11-77"></a>                           <span class="op">.</span><span class="fu">setMimeType</span>(ContentService<span class="op">.</span><span class="at">MimeType</span><span class="op">.</span><span class="at">JSON</span>)<span class="op">;</span></span>
-<span id="cb11-78"><a href="#cb11-78"></a>    }</span>
-<span id="cb11-79"><a href="#cb11-79"></a>  } <span class="cf">catch</span> (error) {</span>
-<span id="cb11-80"><a href="#cb11-80"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">"Error: "</span> <span class="op">+</span> error<span class="op">.</span><span class="fu">toString</span>())<span class="op">;</span></span>
-<span id="cb11-81"><a href="#cb11-81"></a>    <span class="kw">var</span> output <span class="op">=</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>({<span class="st">"result"</span><span class="op">:</span> <span class="st">"error"</span><span class="op">,</span> <span class="st">"error"</span><span class="op">:</span> error<span class="op">.</span><span class="fu">toString</span>()})<span class="op">;</span></span>
-<span id="cb11-82"><a href="#cb11-82"></a>    <span class="cf">if</span> (e<span class="op">.</span><span class="at">parameter</span><span class="op">.</span><span class="at">callback</span>) {</span>
-<span id="cb11-83"><a href="#cb11-83"></a>      <span class="cf">return</span> ContentService<span class="op">.</span><span class="fu">createTextOutput</span>(e<span class="op">.</span><span class="at">parameter</span><span class="op">.</span><span class="at">callback</span> <span class="op">+</span> <span class="st">"("</span> <span class="op">+</span> output <span class="op">+</span> <span class="st">");"</span>)</span>
-<span id="cb11-84"><a href="#cb11-84"></a>                           <span class="op">.</span><span class="fu">setMimeType</span>(ContentService<span class="op">.</span><span class="at">MimeType</span><span class="op">.</span><span class="at">JAVASCRIPT</span>)<span class="op">;</span></span>
-<span id="cb11-85"><a href="#cb11-85"></a>    } <span class="cf">else</span> {</span>
-<span id="cb11-86"><a href="#cb11-86"></a>      <span class="cf">return</span> ContentService<span class="op">.</span><span class="fu">createTextOutput</span>(output)</span>
-<span id="cb11-87"><a href="#cb11-87"></a>                           <span class="op">.</span><span class="fu">setMimeType</span>(ContentService<span class="op">.</span><span class="at">MimeType</span><span class="op">.</span><span class="at">JSON</span>)<span class="op">;</span></span>
-<span id="cb11-88"><a href="#cb11-88"></a>    }</span>
-<span id="cb11-89"><a href="#cb11-89"></a>  } <span class="cf">finally</span> {</span>
-<span id="cb11-90"><a href="#cb11-90"></a>    lock<span class="op">.</span><span class="fu">releaseLock</span>()<span class="op">;</span></span>
-<span id="cb11-91"><a href="#cb11-91"></a>  }</span>
-<span id="cb11-92"><a href="#cb11-92"></a>}</span>
-<span id="cb11-93"><a href="#cb11-93"></a></span>
-<span id="cb11-94"><a href="#cb11-94"></a><span class="kw">function</span> <span class="fu">setup</span>() {</span>
-<span id="cb11-95"><a href="#cb11-95"></a>  <span class="kw">var</span> doc <span class="op">=</span> SpreadsheetApp<span class="op">.</span><span class="fu">getActiveSpreadsheet</span>()<span class="op">;</span></span>
-<span id="cb11-96"><a href="#cb11-96"></a>  SCRIPT_PROP<span class="op">.</span><span class="fu">setProperty</span>(<span class="st">"key"</span><span class="op">,</span> doc<span class="op">.</span><span class="fu">getId</span>())<span class="op">;</span></span>
-<span id="cb11-97"><a href="#cb11-97"></a>  Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">"Script property 'key' set to: "</span> <span class="op">+</span> doc<span class="op">.</span><span class="fu">getId</span>())<span class="op">;</span></span>
-<span id="cb11-98"><a href="#cb11-98"></a>}</span>
-<span id="cb11-99"><a href="#cb11-99"></a></span>
-<span id="cb11-100"><a href="#cb11-100"></a><span class="kw">function</span> <span class="fu">getLastRowData</span>() {</span>
-<span id="cb11-101"><a href="#cb11-101"></a>  <span class="cf">try</span> {</span>
-<span id="cb11-102"><a href="#cb11-102"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">"getLastRowData function called"</span>)<span class="op">;</span></span>
-<span id="cb11-103"><a href="#cb11-103"></a>    <span class="co">// Open the spreadsheet by ID and get the specified sheet</span></span>
-<span id="cb11-104"><a href="#cb11-104"></a>    <span class="kw">var</span> sheet <span class="op">=</span> SpreadsheetApp<span class="op">.</span><span class="fu">openById</span>(SCRIPT_PROP<span class="op">.</span><span class="fu">getProperty</span>(<span class="st">"key"</span>))<span class="op">.</span><span class="fu">getSheetByName</span>(SHEET_NAME)<span class="op">;</span></span>
-<span id="cb11-105"><a href="#cb11-105"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Sheet accessed successfully'</span>)<span class="op">;</span></span>
-<span id="cb11-106"><a href="#cb11-106"></a>    </span>
-<span id="cb11-107"><a href="#cb11-107"></a>    <span class="co">// Get the last row number</span></span>
-<span id="cb11-108"><a href="#cb11-108"></a>    <span class="kw">var</span> lastRow <span class="op">=</span> sheet<span class="op">.</span><span class="fu">getLastRow</span>()<span class="op">;</span></span>
-<span id="cb11-109"><a href="#cb11-109"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Last row number: '</span> <span class="op">+</span> lastRow)<span class="op">;</span></span>
+<span id="cb11-30"><a href="#cb11-30"></a>    <span class="cf">if</span> (action <span class="op">===</span> <span class="st">'getLastRow'</span>) {</span>
+<span id="cb11-31"><a href="#cb11-31"></a>        Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">"Calling getLastRowData function"</span>)<span class="op">;</span></span>
+<span id="cb11-32"><a href="#cb11-32"></a>        <span class="cf">return</span> <span class="fu">getLastRowData</span>()<span class="op">;</span></span>
+<span id="cb11-33"><a href="#cb11-33"></a>    } <span class="cf">else</span> <span class="cf">if</span> (action <span class="op">===</span> <span class="st">'getLast6000Rows'</span>) {</span>
+<span id="cb11-34"><a href="#cb11-34"></a>        Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">"Calling getLast6000Rows function"</span>)<span class="op">;</span></span>
+<span id="cb11-35"><a href="#cb11-35"></a>        <span class="cf">return</span> <span class="fu">getLast6000Rows</span>()<span class="op">;</span></span>
+<span id="cb11-36"><a href="#cb11-36"></a>    } <span class="cf">else</span> {</span>
+<span id="cb11-37"><a href="#cb11-37"></a>        <span class="cf">try</span> {</span>
+<span id="cb11-38"><a href="#cb11-38"></a>            <span class="cf">return</span> <span class="fu">handleDataSubmission</span>(e)<span class="op">;</span></span>
+<span id="cb11-39"><a href="#cb11-39"></a>        } <span class="cf">catch</span> (error) {</span>
+<span id="cb11-40"><a href="#cb11-40"></a>            Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">"Error in handleDataSubmission: "</span> <span class="op">+</span> error<span class="op">.</span><span class="at">message</span>)<span class="op">;</span></span>
+<span id="cb11-41"><a href="#cb11-41"></a>            <span class="cf">return</span> ContentService<span class="op">.</span><span class="fu">createTextOutput</span>(<span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>({ <span class="dt">error</span><span class="op">:</span> <span class="st">"Invalid action or no action specified"</span> }))<span class="op">.</span><span class="fu">setMimeType</span>(ContentService<span class="op">.</span><span class="at">MimeType</span><span class="op">.</span><span class="at">JSON</span>)<span class="op">;</span></span>
+<span id="cb11-42"><a href="#cb11-42"></a>        }</span>
+<span id="cb11-43"><a href="#cb11-43"></a>    }</span>
+<span id="cb11-44"><a href="#cb11-44"></a>}</span>
+<span id="cb11-45"><a href="#cb11-45"></a></span>
+<span id="cb11-46"><a href="#cb11-46"></a><span class="kw">function</span> <span class="fu">handleDataSubmission</span>(e) {</span>
+<span id="cb11-47"><a href="#cb11-47"></a>  Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">"handleDataSubmission called with parameters: "</span> <span class="op">+</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>(e<span class="op">.</span><span class="at">parameter</span>))<span class="op">;</span></span>
+<span id="cb11-48"><a href="#cb11-48"></a>  </span>
+<span id="cb11-49"><a href="#cb11-49"></a>  <span class="kw">var</span> lock <span class="op">=</span> LockService<span class="op">.</span><span class="fu">getPublicLock</span>()<span class="op">;</span></span>
+<span id="cb11-50"><a href="#cb11-50"></a>  lock<span class="op">.</span><span class="fu">waitLock</span>(<span class="dv">500</span>)<span class="op">;</span>  <span class="co">// wait 0.5 seconds before conceding defeat. Try 30 with more complicated </span></span>
+<span id="cb11-51"><a href="#cb11-51"></a>  <span class="co">//We are essentially trying to prevent a race condition in which we have concurrent writes to the same spreadsheet. For this simple 1 python post to 1 spreadsheet this is essentially a non issue. Set to higher values if developing more complex nonsense.</span></span>
+<span id="cb11-52"><a href="#cb11-52"></a>  <span class="cf">try</span> {</span>
+<span id="cb11-53"><a href="#cb11-53"></a>    <span class="kw">var</span> docId <span class="op">=</span> SCRIPT_PROP<span class="op">.</span><span class="fu">getProperty</span>(<span class="st">"key"</span>)<span class="op">;</span></span>
+<span id="cb11-54"><a href="#cb11-54"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">"Using document ID: "</span> <span class="op">+</span> docId)<span class="op">;</span></span>
+<span id="cb11-55"><a href="#cb11-55"></a>    <span class="kw">var</span> doc <span class="op">=</span> SpreadsheetApp<span class="op">.</span><span class="fu">openById</span>(docId)<span class="op">;</span></span>
+<span id="cb11-56"><a href="#cb11-56"></a>    <span class="kw">var</span> sheet <span class="op">=</span> doc<span class="op">.</span><span class="fu">getSheetByName</span>(SHEET_NAME)<span class="op">;</span></span>
+<span id="cb11-57"><a href="#cb11-57"></a></span>
+<span id="cb11-58"><a href="#cb11-58"></a>    <span class="kw">var</span> headRow <span class="op">=</span> e<span class="op">.</span><span class="at">parameter</span><span class="op">.</span><span class="at">header_row</span> <span class="op">||</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb11-59"><a href="#cb11-59"></a>    <span class="kw">var</span> headers <span class="op">=</span> sheet<span class="op">.</span><span class="fu">getRange</span>(<span class="dv">1</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> sheet<span class="op">.</span><span class="fu">getLastColumn</span>())<span class="op">.</span><span class="fu">getValues</span>()[<span class="dv">0</span>]<span class="op">;</span></span>
+<span id="cb11-60"><a href="#cb11-60"></a>    <span class="kw">var</span> nextRow <span class="op">=</span> sheet<span class="op">.</span><span class="fu">getLastRow</span>() <span class="op">+</span> <span class="dv">1</span><span class="op">;</span> <span class="co">// get next row</span></span>
+<span id="cb11-61"><a href="#cb11-61"></a>    <span class="kw">var</span> row <span class="op">=</span> []<span class="op">;</span></span>
+<span id="cb11-62"><a href="#cb11-62"></a>    </span>
+<span id="cb11-63"><a href="#cb11-63"></a>    <span class="cf">for</span> (<span class="kw">var</span> i <span class="kw">in</span> headers) {</span>
+<span id="cb11-64"><a href="#cb11-64"></a>      <span class="cf">if</span> (headers[i] <span class="op">==</span> <span class="st">"Timestamp"</span>) {</span>
+<span id="cb11-65"><a href="#cb11-65"></a>        row<span class="op">.</span><span class="fu">push</span>(<span class="kw">new</span> <span class="bu">Date</span>())<span class="op">;</span></span>
+<span id="cb11-66"><a href="#cb11-66"></a>      } <span class="cf">else</span> {</span>
+<span id="cb11-67"><a href="#cb11-67"></a>        row<span class="op">.</span><span class="fu">push</span>(e<span class="op">.</span><span class="at">parameter</span>[headers[i]])<span class="op">;</span></span>
+<span id="cb11-68"><a href="#cb11-68"></a>      }</span>
+<span id="cb11-69"><a href="#cb11-69"></a>    }</span>
+<span id="cb11-70"><a href="#cb11-70"></a>    </span>
+<span id="cb11-71"><a href="#cb11-71"></a>    sheet<span class="op">.</span><span class="fu">getRange</span>(nextRow<span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> row<span class="op">.</span><span class="at">length</span>)<span class="op">.</span><span class="fu">setValues</span>([row])<span class="op">;</span></span>
+<span id="cb11-72"><a href="#cb11-72"></a>    </span>
+<span id="cb11-73"><a href="#cb11-73"></a>    <span class="kw">var</span> output <span class="op">=</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>({<span class="st">"result"</span><span class="op">:</span> <span class="st">"success"</span><span class="op">,</span> <span class="st">"row"</span><span class="op">:</span> nextRow})<span class="op">;</span></span>
+<span id="cb11-74"><a href="#cb11-74"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">"Data written to row: "</span> <span class="op">+</span> nextRow)<span class="op">;</span></span>
+<span id="cb11-75"><a href="#cb11-75"></a>    </span>
+<span id="cb11-76"><a href="#cb11-76"></a>    <span class="cf">if</span> (e<span class="op">.</span><span class="at">parameter</span><span class="op">.</span><span class="at">callback</span>) {</span>
+<span id="cb11-77"><a href="#cb11-77"></a>      <span class="cf">return</span> ContentService<span class="op">.</span><span class="fu">createTextOutput</span>(e<span class="op">.</span><span class="at">parameter</span><span class="op">.</span><span class="at">callback</span> <span class="op">+</span> <span class="st">"("</span> <span class="op">+</span> output <span class="op">+</span> <span class="st">");"</span>)</span>
+<span id="cb11-78"><a href="#cb11-78"></a>                           <span class="op">.</span><span class="fu">setMimeType</span>(ContentService<span class="op">.</span><span class="at">MimeType</span><span class="op">.</span><span class="at">JAVASCRIPT</span>)<span class="op">;</span></span>
+<span id="cb11-79"><a href="#cb11-79"></a>    } <span class="cf">else</span> {</span>
+<span id="cb11-80"><a href="#cb11-80"></a>      <span class="cf">return</span> ContentService<span class="op">.</span><span class="fu">createTextOutput</span>(output)</span>
+<span id="cb11-81"><a href="#cb11-81"></a>                           <span class="op">.</span><span class="fu">setMimeType</span>(ContentService<span class="op">.</span><span class="at">MimeType</span><span class="op">.</span><span class="at">JSON</span>)<span class="op">;</span></span>
+<span id="cb11-82"><a href="#cb11-82"></a>    }</span>
+<span id="cb11-83"><a href="#cb11-83"></a>  } <span class="cf">catch</span> (error) {</span>
+<span id="cb11-84"><a href="#cb11-84"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">"Error: "</span> <span class="op">+</span> error<span class="op">.</span><span class="fu">toString</span>())<span class="op">;</span></span>
+<span id="cb11-85"><a href="#cb11-85"></a>    <span class="kw">var</span> output <span class="op">=</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>({<span class="st">"result"</span><span class="op">:</span> <span class="st">"error"</span><span class="op">,</span> <span class="st">"error"</span><span class="op">:</span> error<span class="op">.</span><span class="fu">toString</span>()})<span class="op">;</span></span>
+<span id="cb11-86"><a href="#cb11-86"></a>    <span class="cf">if</span> (e<span class="op">.</span><span class="at">parameter</span><span class="op">.</span><span class="at">callback</span>) {</span>
+<span id="cb11-87"><a href="#cb11-87"></a>      <span class="cf">return</span> ContentService<span class="op">.</span><span class="fu">createTextOutput</span>(e<span class="op">.</span><span class="at">parameter</span><span class="op">.</span><span class="at">callback</span> <span class="op">+</span> <span class="st">"("</span> <span class="op">+</span> output <span class="op">+</span> <span class="st">");"</span>)</span>
+<span id="cb11-88"><a href="#cb11-88"></a>                           <span class="op">.</span><span class="fu">setMimeType</span>(ContentService<span class="op">.</span><span class="at">MimeType</span><span class="op">.</span><span class="at">JAVASCRIPT</span>)<span class="op">;</span></span>
+<span id="cb11-89"><a href="#cb11-89"></a>    } <span class="cf">else</span> {</span>
+<span id="cb11-90"><a href="#cb11-90"></a>      <span class="cf">return</span> ContentService<span class="op">.</span><span class="fu">createTextOutput</span>(output)</span>
+<span id="cb11-91"><a href="#cb11-91"></a>                           <span class="op">.</span><span class="fu">setMimeType</span>(ContentService<span class="op">.</span><span class="at">MimeType</span><span class="op">.</span><span class="at">JSON</span>)<span class="op">;</span></span>
+<span id="cb11-92"><a href="#cb11-92"></a>    }</span>
+<span id="cb11-93"><a href="#cb11-93"></a>  } <span class="cf">finally</span> {</span>
+<span id="cb11-94"><a href="#cb11-94"></a>    lock<span class="op">.</span><span class="fu">releaseLock</span>()<span class="op">;</span></span>
+<span id="cb11-95"><a href="#cb11-95"></a>  }</span>
+<span id="cb11-96"><a href="#cb11-96"></a>}</span>
+<span id="cb11-97"><a href="#cb11-97"></a></span>
+<span id="cb11-98"><a href="#cb11-98"></a><span class="kw">function</span> <span class="fu">setup</span>() {</span>
+<span id="cb11-99"><a href="#cb11-99"></a>  <span class="kw">var</span> doc <span class="op">=</span> SpreadsheetApp<span class="op">.</span><span class="fu">getActiveSpreadsheet</span>()<span class="op">;</span></span>
+<span id="cb11-100"><a href="#cb11-100"></a>  SCRIPT_PROP<span class="op">.</span><span class="fu">setProperty</span>(<span class="st">"key"</span><span class="op">,</span> doc<span class="op">.</span><span class="fu">getId</span>())<span class="op">;</span></span>
+<span id="cb11-101"><a href="#cb11-101"></a>  Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">"Script property 'key' set to: "</span> <span class="op">+</span> doc<span class="op">.</span><span class="fu">getId</span>())<span class="op">;</span></span>
+<span id="cb11-102"><a href="#cb11-102"></a>}</span>
+<span id="cb11-103"><a href="#cb11-103"></a></span>
+<span id="cb11-104"><a href="#cb11-104"></a><span class="kw">function</span> <span class="fu">getLastRowData</span>() {</span>
+<span id="cb11-105"><a href="#cb11-105"></a>  <span class="cf">try</span> {</span>
+<span id="cb11-106"><a href="#cb11-106"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">"getLastRowData function called"</span>)<span class="op">;</span></span>
+<span id="cb11-107"><a href="#cb11-107"></a>    <span class="co">// Open the spreadsheet by ID and get the specified sheet</span></span>
+<span id="cb11-108"><a href="#cb11-108"></a>    <span class="kw">var</span> sheet <span class="op">=</span> SpreadsheetApp<span class="op">.</span><span class="fu">openById</span>(SCRIPT_PROP<span class="op">.</span><span class="fu">getProperty</span>(<span class="st">"key"</span>))<span class="op">.</span><span class="fu">getSheetByName</span>(SHEET_NAME)<span class="op">;</span></span>
+<span id="cb11-109"><a href="#cb11-109"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Sheet accessed successfully'</span>)<span class="op">;</span></span>
 <span id="cb11-110"><a href="#cb11-110"></a>    </span>
-<span id="cb11-111"><a href="#cb11-111"></a>    <span class="co">// Get the values of the last row</span></span>
-<span id="cb11-112"><a href="#cb11-112"></a>    <span class="kw">var</span> lastRowData <span class="op">=</span> sheet<span class="op">.</span><span class="fu">getRange</span>(lastRow<span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> sheet<span class="op">.</span><span class="fu">getLastColumn</span>())<span class="op">.</span><span class="fu">getValues</span>()[<span class="dv">0</span>]<span class="op">;</span></span>
-<span id="cb11-113"><a href="#cb11-113"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Last row data: '</span> <span class="op">+</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>(lastRowData))<span class="op">;</span></span>
+<span id="cb11-111"><a href="#cb11-111"></a>    <span class="co">// Get the last row number</span></span>
+<span id="cb11-112"><a href="#cb11-112"></a>    <span class="kw">var</span> lastRow <span class="op">=</span> sheet<span class="op">.</span><span class="fu">getLastRow</span>()<span class="op">;</span></span>
+<span id="cb11-113"><a href="#cb11-113"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Last row number: '</span> <span class="op">+</span> lastRow)<span class="op">;</span></span>
 <span id="cb11-114"><a href="#cb11-114"></a>    </span>
-<span id="cb11-115"><a href="#cb11-115"></a>    <span class="co">// Get the headers from the first row</span></span>
-<span id="cb11-116"><a href="#cb11-116"></a>    <span class="kw">var</span> headers <span class="op">=</span> sheet<span class="op">.</span><span class="fu">getRange</span>(<span class="dv">1</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> sheet<span class="op">.</span><span class="fu">getLastColumn</span>())<span class="op">.</span><span class="fu">getValues</span>()[<span class="dv">0</span>]<span class="op">;</span></span>
-<span id="cb11-117"><a href="#cb11-117"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Headers: '</span> <span class="op">+</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>(headers))<span class="op">;</span></span>
+<span id="cb11-115"><a href="#cb11-115"></a>    <span class="co">// Get the values of the last row</span></span>
+<span id="cb11-116"><a href="#cb11-116"></a>    <span class="kw">var</span> lastRowData <span class="op">=</span> sheet<span class="op">.</span><span class="fu">getRange</span>(lastRow<span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> sheet<span class="op">.</span><span class="fu">getLastColumn</span>())<span class="op">.</span><span class="fu">getValues</span>()[<span class="dv">0</span>]<span class="op">;</span></span>
+<span id="cb11-117"><a href="#cb11-117"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Last row data: '</span> <span class="op">+</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>(lastRowData))<span class="op">;</span></span>
 <span id="cb11-118"><a href="#cb11-118"></a>    </span>
-<span id="cb11-119"><a href="#cb11-119"></a>    <span class="co">// Create an object to store the last row data</span></span>
-<span id="cb11-120"><a href="#cb11-120"></a>    <span class="kw">var</span> result <span class="op">=</span> {}<span class="op">;</span></span>
-<span id="cb11-121"><a href="#cb11-121"></a>    </span>
-<span id="cb11-122"><a href="#cb11-122"></a>    <span class="co">// Populate the result object with the headers as keys and last row data as values</span></span>
-<span id="cb11-123"><a href="#cb11-123"></a>    headers<span class="op">.</span><span class="fu">forEach</span>(<span class="kw">function</span>(header<span class="op">,</span> index) {</span>
-<span id="cb11-124"><a href="#cb11-124"></a>      <span class="cf">if</span> (header <span class="op">===</span> <span class="st">'Date'</span>) {</span>
-<span id="cb11-125"><a href="#cb11-125"></a>        result[header] <span class="op">=</span> <span class="fu">formatDate</span>(lastRowData[index]<span class="op">,</span> <span class="st">"America/Chicago"</span>)<span class="op">;</span></span>
-<span id="cb11-126"><a href="#cb11-126"></a>      } <span class="cf">else</span> <span class="cf">if</span> (header <span class="op">===</span> <span class="st">'Time'</span>) {</span>
-<span id="cb11-127"><a href="#cb11-127"></a>        result[header] <span class="op">=</span> <span class="fu">formatTime</span>(lastRowData[index]<span class="op">,</span> <span class="st">"America/Chicago"</span>)<span class="op">;</span></span>
-<span id="cb11-128"><a href="#cb11-128"></a>      } <span class="cf">else</span> {</span>
-<span id="cb11-129"><a href="#cb11-129"></a>        result[header] <span class="op">=</span> lastRowData[index]<span class="op">;</span></span>
-<span id="cb11-130"><a href="#cb11-130"></a>      }</span>
-<span id="cb11-131"><a href="#cb11-131"></a>    })<span class="op">;</span></span>
-<span id="cb11-132"><a href="#cb11-132"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Result object: '</span> <span class="op">+</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>(result))<span class="op">;</span></span>
-<span id="cb11-133"><a href="#cb11-133"></a>    </span>
-<span id="cb11-134"><a href="#cb11-134"></a>    <span class="co">// Convert the result object to JSON</span></span>
-<span id="cb11-135"><a href="#cb11-135"></a>    <span class="kw">var</span> json <span class="op">=</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>(result)<span class="op">;</span></span>
-<span id="cb11-136"><a href="#cb11-136"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'JSON output: '</span> <span class="op">+</span> json)<span class="op">;</span></span>
+<span id="cb11-119"><a href="#cb11-119"></a>    <span class="co">// Get the headers from the first row</span></span>
+<span id="cb11-120"><a href="#cb11-120"></a>    <span class="kw">var</span> headers <span class="op">=</span> sheet<span class="op">.</span><span class="fu">getRange</span>(<span class="dv">1</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> sheet<span class="op">.</span><span class="fu">getLastColumn</span>())<span class="op">.</span><span class="fu">getValues</span>()[<span class="dv">0</span>]<span class="op">;</span></span>
+<span id="cb11-121"><a href="#cb11-121"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Headers: '</span> <span class="op">+</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>(headers))<span class="op">;</span></span>
+<span id="cb11-122"><a href="#cb11-122"></a>    </span>
+<span id="cb11-123"><a href="#cb11-123"></a>    <span class="co">// Create an object to store the last row data</span></span>
+<span id="cb11-124"><a href="#cb11-124"></a>    <span class="kw">var</span> result <span class="op">=</span> {}<span class="op">;</span></span>
+<span id="cb11-125"><a href="#cb11-125"></a>    </span>
+<span id="cb11-126"><a href="#cb11-126"></a>    <span class="co">// Populate the result object with the headers as keys and last row data as values</span></span>
+<span id="cb11-127"><a href="#cb11-127"></a>    headers<span class="op">.</span><span class="fu">forEach</span>(<span class="kw">function</span>(header<span class="op">,</span> index) {</span>
+<span id="cb11-128"><a href="#cb11-128"></a>      <span class="cf">if</span> (header <span class="op">===</span> <span class="st">'Date'</span>) {</span>
+<span id="cb11-129"><a href="#cb11-129"></a>        result[header] <span class="op">=</span> <span class="fu">formatDate</span>(lastRowData[index]<span class="op">,</span> <span class="st">"America/Chicago"</span>)<span class="op">;</span></span>
+<span id="cb11-130"><a href="#cb11-130"></a>      } <span class="cf">else</span> <span class="cf">if</span> (header <span class="op">===</span> <span class="st">'Time'</span>) {</span>
+<span id="cb11-131"><a href="#cb11-131"></a>        result[header] <span class="op">=</span> <span class="fu">formatTime</span>(lastRowData[index]<span class="op">,</span> <span class="st">"America/Chicago"</span>)<span class="op">;</span></span>
+<span id="cb11-132"><a href="#cb11-132"></a>      } <span class="cf">else</span> {</span>
+<span id="cb11-133"><a href="#cb11-133"></a>        result[header] <span class="op">=</span> lastRowData[index]<span class="op">;</span></span>
+<span id="cb11-134"><a href="#cb11-134"></a>      }</span>
+<span id="cb11-135"><a href="#cb11-135"></a>    })<span class="op">;</span></span>
+<span id="cb11-136"><a href="#cb11-136"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Result object: '</span> <span class="op">+</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>(result))<span class="op">;</span></span>
 <span id="cb11-137"><a href="#cb11-137"></a>    </span>
-<span id="cb11-138"><a href="#cb11-138"></a>    <span class="co">// Ensure ContentService is defined and working</span></span>
-<span id="cb11-139"><a href="#cb11-139"></a>    <span class="cf">if</span> (<span class="kw">typeof</span> ContentService <span class="op">===</span> <span class="st">'undefined'</span>) {</span>
-<span id="cb11-140"><a href="#cb11-140"></a>      <span class="cf">throw</span> <span class="kw">new</span> <span class="bu">Error</span>(<span class="st">'ContentService is not defined.'</span>)<span class="op">;</span></span>
-<span id="cb11-141"><a href="#cb11-141"></a>    }</span>
-<span id="cb11-142"><a href="#cb11-142"></a></span>
-<span id="cb11-143"><a href="#cb11-143"></a>    <span class="co">// Return the JSON output</span></span>
-<span id="cb11-144"><a href="#cb11-144"></a>    <span class="kw">var</span> output <span class="op">=</span> ContentService<span class="op">.</span><span class="fu">createTextOutput</span>(json)<span class="op">.</span><span class="fu">setMimeType</span>(ContentService<span class="op">.</span><span class="at">MimeType</span><span class="op">.</span><span class="at">JSON</span>)<span class="op">;</span></span>
-<span id="cb11-145"><a href="#cb11-145"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Output object created successfully.'</span>)<span class="op">;</span></span>
-<span id="cb11-146"><a href="#cb11-146"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Output object: '</span> <span class="op">+</span> output<span class="op">.</span><span class="fu">getContent</span>())<span class="op">;</span></span>
-<span id="cb11-147"><a href="#cb11-147"></a>    <span class="cf">return</span> output<span class="op">;</span></span>
-<span id="cb11-148"><a href="#cb11-148"></a>  } <span class="cf">catch</span> (error) {</span>
-<span id="cb11-149"><a href="#cb11-149"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Error: '</span> <span class="op">+</span> error<span class="op">.</span><span class="at">message</span>)<span class="op">;</span></span>
-<span id="cb11-150"><a href="#cb11-150"></a>    <span class="cf">return</span> ContentService<span class="op">.</span><span class="fu">createTextOutput</span>(<span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>({ <span class="dt">error</span><span class="op">:</span> error<span class="op">.</span><span class="at">message</span> }))<span class="op">.</span><span class="fu">setMimeType</span>(ContentService<span class="op">.</span><span class="at">MimeType</span><span class="op">.</span><span class="at">JSON</span>)<span class="op">;</span></span>
-<span id="cb11-151"><a href="#cb11-151"></a>  }</span>
-<span id="cb11-152"><a href="#cb11-152"></a>}</span>
-<span id="cb11-153"><a href="#cb11-153"></a></span>
-<span id="cb11-154"><a href="#cb11-154"></a><span class="kw">function</span> <span class="fu">formatDate</span>(dateString<span class="op">,</span> timeZone) {</span>
-<span id="cb11-155"><a href="#cb11-155"></a>  <span class="kw">var</span> date <span class="op">=</span> <span class="kw">new</span> <span class="bu">Date</span>(dateString)<span class="op">;</span></span>
-<span id="cb11-156"><a href="#cb11-156"></a>  <span class="cf">return</span> Utilities<span class="op">.</span><span class="fu">formatDate</span>(date<span class="op">,</span> timeZone<span class="op">,</span> <span class="st">"yyyy-MM-dd"</span>)<span class="op">;</span></span>
-<span id="cb11-157"><a href="#cb11-157"></a>}</span>
-<span id="cb11-158"><a href="#cb11-158"></a></span>
-<span id="cb11-159"><a href="#cb11-159"></a><span class="kw">function</span> <span class="fu">formatTime</span>(timeString<span class="op">,</span> timeZone) {</span>
-<span id="cb11-160"><a href="#cb11-160"></a>  <span class="kw">var</span> date <span class="op">=</span> <span class="kw">new</span> <span class="bu">Date</span>(timeString)<span class="op">;</span></span>
-<span id="cb11-161"><a href="#cb11-161"></a>  <span class="cf">return</span> Utilities<span class="op">.</span><span class="fu">formatDate</span>(date<span class="op">,</span> timeZone<span class="op">,</span> <span class="st">"hh:mm:ss a"</span>)<span class="op">;</span></span>
-<span id="cb11-162"><a href="#cb11-162"></a>}</span>
-<span id="cb11-163"><a href="#cb11-163"></a></span>
-<span id="cb11-164"><a href="#cb11-164"></a><span class="kw">function</span> <span class="fu">getLast6000Rows</span>() {</span>
-<span id="cb11-165"><a href="#cb11-165"></a>  <span class="cf">try</span> {</span>
-<span id="cb11-166"><a href="#cb11-166"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">"getLast6000Rows function called"</span>)<span class="op">;</span></span>
-<span id="cb11-167"><a href="#cb11-167"></a>    <span class="kw">var</span> sheet <span class="op">=</span> SpreadsheetApp<span class="op">.</span><span class="fu">openById</span>(SCRIPT_PROP<span class="op">.</span><span class="fu">getProperty</span>(<span class="st">"key"</span>))<span class="op">.</span><span class="fu">getSheetByName</span>(SHEET_NAME)<span class="op">;</span></span>
-<span id="cb11-168"><a href="#cb11-168"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Sheet accessed successfully'</span>)<span class="op">;</span></span>
-<span id="cb11-169"><a href="#cb11-169"></a>    </span>
-<span id="cb11-170"><a href="#cb11-170"></a>    <span class="kw">var</span> lastRow <span class="op">=</span> sheet<span class="op">.</span><span class="fu">getLastRow</span>()<span class="op">;</span></span>
-<span id="cb11-171"><a href="#cb11-171"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Last row number: '</span> <span class="op">+</span> lastRow)<span class="op">;</span></span>
-<span id="cb11-172"><a href="#cb11-172"></a></span>
-<span id="cb11-173"><a href="#cb11-173"></a>    <span class="kw">var</span> startRow <span class="op">=</span> lastRow <span class="op">&gt;</span> <span class="dv">6000</span> <span class="op">?</span> lastRow <span class="op">-</span> <span class="dv">5999</span> <span class="op">:</span> <span class="dv">1</span><span class="op">;</span> <span class="co">// Adjust the start row if there are fewer than 6000 rows</span></span>
-<span id="cb11-174"><a href="#cb11-174"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Start row number: '</span> <span class="op">+</span> startRow)<span class="op">;</span></span>
-<span id="cb11-175"><a href="#cb11-175"></a>    </span>
-<span id="cb11-176"><a href="#cb11-176"></a>    <span class="kw">var</span> numRows <span class="op">=</span> lastRow <span class="op">-</span> startRow <span class="op">+</span> <span class="dv">1</span><span class="op">;</span></span>
-<span id="cb11-177"><a href="#cb11-177"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Number of rows to fetch: '</span> <span class="op">+</span> numRows)<span class="op">;</span></span>
-<span id="cb11-178"><a href="#cb11-178"></a></span>
-<span id="cb11-179"><a href="#cb11-179"></a>    <span class="kw">var</span> dataRange <span class="op">=</span> sheet<span class="op">.</span><span class="fu">getRange</span>(startRow<span class="op">,</span> <span class="dv">1</span><span class="op">,</span> numRows<span class="op">,</span> sheet<span class="op">.</span><span class="fu">getLastColumn</span>())<span class="op">;</span></span>
-<span id="cb11-180"><a href="#cb11-180"></a>    <span class="kw">var</span> data <span class="op">=</span> dataRange<span class="op">.</span><span class="fu">getValues</span>()<span class="op">;</span></span>
-<span id="cb11-181"><a href="#cb11-181"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Fetched data: '</span> <span class="op">+</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>(data))<span class="op">;</span></span>
+<span id="cb11-138"><a href="#cb11-138"></a>    <span class="co">// Convert the result object to JSON</span></span>
+<span id="cb11-139"><a href="#cb11-139"></a>    <span class="kw">var</span> json <span class="op">=</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>(result)<span class="op">;</span></span>
+<span id="cb11-140"><a href="#cb11-140"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'JSON output: '</span> <span class="op">+</span> json)<span class="op">;</span></span>
+<span id="cb11-141"><a href="#cb11-141"></a>    </span>
+<span id="cb11-142"><a href="#cb11-142"></a>    <span class="co">// Ensure ContentService is defined and working</span></span>
+<span id="cb11-143"><a href="#cb11-143"></a>    <span class="cf">if</span> (<span class="kw">typeof</span> ContentService <span class="op">===</span> <span class="st">'undefined'</span>) {</span>
+<span id="cb11-144"><a href="#cb11-144"></a>      <span class="cf">throw</span> <span class="kw">new</span> <span class="bu">Error</span>(<span class="st">'ContentService is not defined.'</span>)<span class="op">;</span></span>
+<span id="cb11-145"><a href="#cb11-145"></a>    }</span>
+<span id="cb11-146"><a href="#cb11-146"></a></span>
+<span id="cb11-147"><a href="#cb11-147"></a>    <span class="co">// Return the JSON output</span></span>
+<span id="cb11-148"><a href="#cb11-148"></a>    <span class="kw">var</span> output <span class="op">=</span> ContentService<span class="op">.</span><span class="fu">createTextOutput</span>(json)<span class="op">.</span><span class="fu">setMimeType</span>(ContentService<span class="op">.</span><span class="at">MimeType</span><span class="op">.</span><span class="at">JSON</span>)<span class="op">;</span></span>
+<span id="cb11-149"><a href="#cb11-149"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Output object created successfully.'</span>)<span class="op">;</span></span>
+<span id="cb11-150"><a href="#cb11-150"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Output object: '</span> <span class="op">+</span> output<span class="op">.</span><span class="fu">getContent</span>())<span class="op">;</span></span>
+<span id="cb11-151"><a href="#cb11-151"></a>    <span class="cf">return</span> output<span class="op">;</span></span>
+<span id="cb11-152"><a href="#cb11-152"></a>  } <span class="cf">catch</span> (error) {</span>
+<span id="cb11-153"><a href="#cb11-153"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Error: '</span> <span class="op">+</span> error<span class="op">.</span><span class="at">message</span>)<span class="op">;</span></span>
+<span id="cb11-154"><a href="#cb11-154"></a>    <span class="cf">return</span> ContentService<span class="op">.</span><span class="fu">createTextOutput</span>(<span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>({ <span class="dt">error</span><span class="op">:</span> error<span class="op">.</span><span class="at">message</span> }))<span class="op">.</span><span class="fu">setMimeType</span>(ContentService<span class="op">.</span><span class="at">MimeType</span><span class="op">.</span><span class="at">JSON</span>)<span class="op">;</span></span>
+<span id="cb11-155"><a href="#cb11-155"></a>  }</span>
+<span id="cb11-156"><a href="#cb11-156"></a>}</span>
+<span id="cb11-157"><a href="#cb11-157"></a></span>
+<span id="cb11-158"><a href="#cb11-158"></a><span class="kw">function</span> <span class="fu">formatDate</span>(dateString<span class="op">,</span> timeZone) {</span>
+<span id="cb11-159"><a href="#cb11-159"></a>  <span class="kw">var</span> date <span class="op">=</span> <span class="kw">new</span> <span class="bu">Date</span>(dateString)<span class="op">;</span></span>
+<span id="cb11-160"><a href="#cb11-160"></a>  <span class="cf">return</span> Utilities<span class="op">.</span><span class="fu">formatDate</span>(date<span class="op">,</span> timeZone<span class="op">,</span> <span class="st">"yyyy-MM-dd"</span>)<span class="op">;</span></span>
+<span id="cb11-161"><a href="#cb11-161"></a>}</span>
+<span id="cb11-162"><a href="#cb11-162"></a></span>
+<span id="cb11-163"><a href="#cb11-163"></a><span class="kw">function</span> <span class="fu">formatTime</span>(timeString<span class="op">,</span> timeZone) {</span>
+<span id="cb11-164"><a href="#cb11-164"></a>  <span class="kw">var</span> date <span class="op">=</span> <span class="kw">new</span> <span class="bu">Date</span>(timeString)<span class="op">;</span></span>
+<span id="cb11-165"><a href="#cb11-165"></a>  <span class="cf">return</span> Utilities<span class="op">.</span><span class="fu">formatDate</span>(date<span class="op">,</span> timeZone<span class="op">,</span> <span class="st">"hh:mm:ss a"</span>)<span class="op">;</span></span>
+<span id="cb11-166"><a href="#cb11-166"></a>}</span>
+<span id="cb11-167"><a href="#cb11-167"></a></span>
+<span id="cb11-168"><a href="#cb11-168"></a><span class="kw">function</span> <span class="fu">getLast6000Rows</span>() {</span>
+<span id="cb11-169"><a href="#cb11-169"></a>  <span class="cf">try</span> {</span>
+<span id="cb11-170"><a href="#cb11-170"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">"getLast6000Rows function called"</span>)<span class="op">;</span></span>
+<span id="cb11-171"><a href="#cb11-171"></a>    <span class="kw">var</span> sheet <span class="op">=</span> SpreadsheetApp<span class="op">.</span><span class="fu">openById</span>(SCRIPT_PROP<span class="op">.</span><span class="fu">getProperty</span>(<span class="st">"key"</span>))<span class="op">.</span><span class="fu">getSheetByName</span>(SHEET_NAME)<span class="op">;</span></span>
+<span id="cb11-172"><a href="#cb11-172"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Sheet accessed successfully'</span>)<span class="op">;</span></span>
+<span id="cb11-173"><a href="#cb11-173"></a>    </span>
+<span id="cb11-174"><a href="#cb11-174"></a>    <span class="kw">var</span> lastRow <span class="op">=</span> sheet<span class="op">.</span><span class="fu">getLastRow</span>()<span class="op">;</span></span>
+<span id="cb11-175"><a href="#cb11-175"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Last row number: '</span> <span class="op">+</span> lastRow)<span class="op">;</span></span>
+<span id="cb11-176"><a href="#cb11-176"></a></span>
+<span id="cb11-177"><a href="#cb11-177"></a>    <span class="kw">var</span> startRow <span class="op">=</span> lastRow <span class="op">&gt;</span> <span class="dv">6000</span> <span class="op">?</span> lastRow <span class="op">-</span> <span class="dv">5999</span> <span class="op">:</span> <span class="dv">1</span><span class="op">;</span> <span class="co">// Adjust the start row if there are fewer than 6000 rows</span></span>
+<span id="cb11-178"><a href="#cb11-178"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Start row number: '</span> <span class="op">+</span> startRow)<span class="op">;</span></span>
+<span id="cb11-179"><a href="#cb11-179"></a>    </span>
+<span id="cb11-180"><a href="#cb11-180"></a>    <span class="kw">var</span> numRows <span class="op">=</span> lastRow <span class="op">-</span> startRow <span class="op">+</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb11-181"><a href="#cb11-181"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Number of rows to fetch: '</span> <span class="op">+</span> numRows)<span class="op">;</span></span>
 <span id="cb11-182"><a href="#cb11-182"></a></span>
-<span id="cb11-183"><a href="#cb11-183"></a>    <span class="kw">var</span> headers <span class="op">=</span> sheet<span class="op">.</span><span class="fu">getRange</span>(<span class="dv">1</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> sheet<span class="op">.</span><span class="fu">getLastColumn</span>())<span class="op">.</span><span class="fu">getValues</span>()[<span class="dv">0</span>]<span class="op">;</span></span>
-<span id="cb11-184"><a href="#cb11-184"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Headers: '</span> <span class="op">+</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>(headers))<span class="op">;</span></span>
-<span id="cb11-185"><a href="#cb11-185"></a></span>
-<span id="cb11-186"><a href="#cb11-186"></a>    <span class="kw">var</span> result <span class="op">=</span> data<span class="op">.</span><span class="fu">map</span>(<span class="kw">function</span>(row) {</span>
-<span id="cb11-187"><a href="#cb11-187"></a>      <span class="kw">var</span> rowObject <span class="op">=</span> {}<span class="op">;</span></span>
-<span id="cb11-188"><a href="#cb11-188"></a>      headers<span class="op">.</span><span class="fu">forEach</span>(<span class="kw">function</span>(header<span class="op">,</span> index) {</span>
-<span id="cb11-189"><a href="#cb11-189"></a>        <span class="cf">if</span> (header <span class="op">===</span> <span class="st">'Date'</span>) {</span>
-<span id="cb11-190"><a href="#cb11-190"></a>          rowObject[header] <span class="op">=</span> <span class="fu">formatDate</span>(row[index]<span class="op">,</span> <span class="st">"America/Chicago"</span>)<span class="op">;</span></span>
-<span id="cb11-191"><a href="#cb11-191"></a>        } <span class="cf">else</span> <span class="cf">if</span> (header <span class="op">===</span> <span class="st">'Time'</span>) {</span>
-<span id="cb11-192"><a href="#cb11-192"></a>          rowObject[header] <span class="op">=</span> <span class="fu">formatTime</span>(row[index]<span class="op">,</span> <span class="st">"America/Chicago"</span>)<span class="op">;</span></span>
-<span id="cb11-193"><a href="#cb11-193"></a>        } <span class="cf">else</span> {</span>
-<span id="cb11-194"><a href="#cb11-194"></a>          rowObject[header] <span class="op">=</span> row[index]<span class="op">;</span></span>
-<span id="cb11-195"><a href="#cb11-195"></a>        }</span>
-<span id="cb11-196"><a href="#cb11-196"></a>      })<span class="op">;</span></span>
-<span id="cb11-197"><a href="#cb11-197"></a>      <span class="cf">return</span> rowObject<span class="op">;</span></span>
-<span id="cb11-198"><a href="#cb11-198"></a>    })<span class="op">;</span></span>
-<span id="cb11-199"><a href="#cb11-199"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Result object: '</span> <span class="op">+</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>(result))<span class="op">;</span></span>
-<span id="cb11-200"><a href="#cb11-200"></a>    </span>
-<span id="cb11-201"><a href="#cb11-201"></a>    <span class="kw">var</span> json <span class="op">=</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>(result)<span class="op">;</span></span>
-<span id="cb11-202"><a href="#cb11-202"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'JSON output: '</span> <span class="op">+</span> json)<span class="op">;</span></span>
-<span id="cb11-203"><a href="#cb11-203"></a></span>
-<span id="cb11-204"><a href="#cb11-204"></a>    <span class="kw">var</span> output <span class="op">=</span> ContentService<span class="op">.</span><span class="fu">createTextOutput</span>(json)<span class="op">.</span><span class="fu">setMimeType</span>(ContentService<span class="op">.</span><span class="at">MimeType</span><span class="op">.</span><span class="at">JSON</span>)<span class="op">;</span></span>
-<span id="cb11-205"><a href="#cb11-205"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Output object created successfully.'</span>)<span class="op">;</span></span>
-<span id="cb11-206"><a href="#cb11-206"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Output object: '</span> <span class="op">+</span> output<span class="op">.</span><span class="fu">getContent</span>())<span class="op">;</span></span>
-<span id="cb11-207"><a href="#cb11-207"></a>    <span class="cf">return</span> output<span class="op">;</span></span>
-<span id="cb11-208"><a href="#cb11-208"></a>  } <span class="cf">catch</span> (error) {</span>
-<span id="cb11-209"><a href="#cb11-209"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Error: '</span> <span class="op">+</span> error<span class="op">.</span><span class="at">message</span>)<span class="op">;</span></span>
-<span id="cb11-210"><a href="#cb11-210"></a>    <span class="cf">return</span> ContentService<span class="op">.</span><span class="fu">createTextOutput</span>(<span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>({ <span class="dt">error</span><span class="op">:</span> error<span class="op">.</span><span class="at">message</span> }))<span class="op">.</span><span class="fu">setMimeType</span>(ContentService<span class="op">.</span><span class="at">MimeType</span><span class="op">.</span><span class="at">JSON</span>)<span class="op">;</span></span>
-<span id="cb11-211"><a href="#cb11-211"></a>  }</span>
-<span id="cb11-212"><a href="#cb11-212"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb11-183"><a href="#cb11-183"></a>    <span class="kw">var</span> dataRange <span class="op">=</span> sheet<span class="op">.</span><span class="fu">getRange</span>(startRow<span class="op">,</span> <span class="dv">1</span><span class="op">,</span> numRows<span class="op">,</span> sheet<span class="op">.</span><span class="fu">getLastColumn</span>())<span class="op">;</span></span>
+<span id="cb11-184"><a href="#cb11-184"></a>    <span class="kw">var</span> data <span class="op">=</span> dataRange<span class="op">.</span><span class="fu">getValues</span>()<span class="op">;</span></span>
+<span id="cb11-185"><a href="#cb11-185"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Fetched data: '</span> <span class="op">+</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>(data))<span class="op">;</span></span>
+<span id="cb11-186"><a href="#cb11-186"></a></span>
+<span id="cb11-187"><a href="#cb11-187"></a>    <span class="kw">var</span> headers <span class="op">=</span> sheet<span class="op">.</span><span class="fu">getRange</span>(<span class="dv">1</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> sheet<span class="op">.</span><span class="fu">getLastColumn</span>())<span class="op">.</span><span class="fu">getValues</span>()[<span class="dv">0</span>]<span class="op">;</span></span>
+<span id="cb11-188"><a href="#cb11-188"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Headers: '</span> <span class="op">+</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>(headers))<span class="op">;</span></span>
+<span id="cb11-189"><a href="#cb11-189"></a></span>
+<span id="cb11-190"><a href="#cb11-190"></a>    <span class="kw">var</span> result <span class="op">=</span> data<span class="op">.</span><span class="fu">map</span>(<span class="kw">function</span>(row) {</span>
+<span id="cb11-191"><a href="#cb11-191"></a>      <span class="kw">var</span> rowObject <span class="op">=</span> {}<span class="op">;</span></span>
+<span id="cb11-192"><a href="#cb11-192"></a>      headers<span class="op">.</span><span class="fu">forEach</span>(<span class="kw">function</span>(header<span class="op">,</span> index) {</span>
+<span id="cb11-193"><a href="#cb11-193"></a>        <span class="cf">if</span> (header <span class="op">===</span> <span class="st">'Date'</span>) {</span>
+<span id="cb11-194"><a href="#cb11-194"></a>          rowObject[header] <span class="op">=</span> <span class="fu">formatDate</span>(row[index]<span class="op">,</span> <span class="st">"America/Chicago"</span>)<span class="op">;</span></span>
+<span id="cb11-195"><a href="#cb11-195"></a>        } <span class="cf">else</span> <span class="cf">if</span> (header <span class="op">===</span> <span class="st">'Time'</span>) {</span>
+<span id="cb11-196"><a href="#cb11-196"></a>          rowObject[header] <span class="op">=</span> <span class="fu">formatTime</span>(row[index]<span class="op">,</span> <span class="st">"America/Chicago"</span>)<span class="op">;</span></span>
+<span id="cb11-197"><a href="#cb11-197"></a>        } <span class="cf">else</span> {</span>
+<span id="cb11-198"><a href="#cb11-198"></a>          rowObject[header] <span class="op">=</span> row[index]<span class="op">;</span></span>
+<span id="cb11-199"><a href="#cb11-199"></a>        }</span>
+<span id="cb11-200"><a href="#cb11-200"></a>      })<span class="op">;</span></span>
+<span id="cb11-201"><a href="#cb11-201"></a>      <span class="cf">return</span> rowObject<span class="op">;</span></span>
+<span id="cb11-202"><a href="#cb11-202"></a>    })<span class="op">;</span></span>
+<span id="cb11-203"><a href="#cb11-203"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Result object: '</span> <span class="op">+</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>(result))<span class="op">;</span></span>
+<span id="cb11-204"><a href="#cb11-204"></a>    </span>
+<span id="cb11-205"><a href="#cb11-205"></a>    <span class="kw">var</span> json <span class="op">=</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>(result)<span class="op">;</span></span>
+<span id="cb11-206"><a href="#cb11-206"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'JSON output: '</span> <span class="op">+</span> json)<span class="op">;</span></span>
+<span id="cb11-207"><a href="#cb11-207"></a></span>
+<span id="cb11-208"><a href="#cb11-208"></a>    <span class="kw">var</span> output <span class="op">=</span> ContentService<span class="op">.</span><span class="fu">createTextOutput</span>(json)<span class="op">.</span><span class="fu">setMimeType</span>(ContentService<span class="op">.</span><span class="at">MimeType</span><span class="op">.</span><span class="at">JSON</span>)<span class="op">;</span></span>
+<span id="cb11-209"><a href="#cb11-209"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Output object created successfully.'</span>)<span class="op">;</span></span>
+<span id="cb11-210"><a href="#cb11-210"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Output object: '</span> <span class="op">+</span> output<span class="op">.</span><span class="fu">getContent</span>())<span class="op">;</span></span>
+<span id="cb11-211"><a href="#cb11-211"></a>    <span class="cf">return</span> output<span class="op">;</span></span>
+<span id="cb11-212"><a href="#cb11-212"></a>  } <span class="cf">catch</span> (error) {</span>
+<span id="cb11-213"><a href="#cb11-213"></a>    Logger<span class="op">.</span><span class="fu">log</span>(<span class="st">'Error: '</span> <span class="op">+</span> error<span class="op">.</span><span class="at">message</span>)<span class="op">;</span></span>
+<span id="cb11-214"><a href="#cb11-214"></a>    <span class="cf">return</span> ContentService<span class="op">.</span><span class="fu">createTextOutput</span>(<span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>({ <span class="dt">error</span><span class="op">:</span> error<span class="op">.</span><span class="at">message</span> }))<span class="op">.</span><span class="fu">setMimeType</span>(ContentService<span class="op">.</span><span class="at">MimeType</span><span class="op">.</span><span class="at">JSON</span>)<span class="op">;</span></span>
+<span id="cb11-215"><a href="#cb11-215"></a>  }</span>
+<span id="cb11-216"><a href="#cb11-216"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <p>And here’s a visual of what’s going on:</p>
 <p><a href="images/Google Apps Script GetPost.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7"><img src="images/Google Apps Script GetPost.png" class="img-fluid"></a></p>
@@ -1906,6 +1909,21 @@ Code
 
 </div>
 <p>Moving forward I’ll likely add an LCD display, enclosure and more sensors, but the main point of this exercise was to become more familiar with the simpler, cost effective IoT devices. Additionally extending Google Apps script’s functionality to include pulling data for plotting is tremendously useful for anyone who doesn’t want to pay for ThingSpeak.</p>
+<p>Other thoughts:</p>
+<ul>
+<li><p>Getting the sensor to reliably take readings was a pain. Slightly moving the sensor caused readings to fail and no data to be transmitted.</p>
+<ul>
+<li>Moving beyond a simple breadboard and hand soldering connections makes sense, but only for production. If that were the case, the odd 4-8 hours of getting a C/C++ version of this code up and running would make sense.</li>
+</ul></li>
+<li><p>Google Apps Script is awesome and its usually on me if something breaks. The fact that I can log about four-ish years worth of data at 1 log/min</p>
+<ul>
+<li><p>2 million rows at 5 entries per row / 60 entries per hour / 24 hours per year / 365.25 days per year = 3.8 years</p></li>
+<li><p>At 2 logs/min or 30 seconds per log: 1.9 years.</p></li>
+</ul></li>
+<li><p>The amount of processing power/memory and power(wattage) delivered to an ESP32 forced me to re evaluate the order of operations at several steps. Notably I spent some time debugging the wifi until I tried selectively powering things on or off. I also found that the program would randomly crash during POSTs and it would be the size of the response received that would cause a memory error.</p></li>
+<li><p>With the previous post most of the leg work in setting up the web interfaces was already taken care of so all I had to do was the wiring, some rewriting of Python code(notably Google Sheets sending), and overhauling the Google Apps script. Luckily I finally moved away from ThingSpeak for plotting/data acquistion for plotting and now I grab directly from Google. Its a little bit longer now and I could halve the time by grabbing less data. 6,000 data points is a lot and eventually, at a 30 second sampling time, that’s nearly 50 hours of data with each plot.</p></li>
+<li><p>A breakout board would have sped up figuring out the circuit before placing everything down. I picked one up for a Pi Pico I’m tinkering with for a plant project and an Adafruit Pi Cobbler(basically a breakout board) for a raspberry pi and I notice the faster reference time is nice. It would likely be best to have a high quality breakout board alongside a final proto board to make sure the design sticks and loose connections don’t hurt me.</p></li>
+</ul>
 
 
 </section>
@@ -2655,7 +2673,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"selector":".lightbox","closeEffect":"zoom","loop":false,"openEffect":"zoom","descPosition":"bottom"});
+<script>var lightboxQuarto = GLightbox({"loop":false,"closeEffect":"zoom","descPosition":"bottom","selector":".lightbox","openEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

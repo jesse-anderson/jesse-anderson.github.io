@@ -6,7 +6,6 @@ date: '2024-05-26'
 categories:
   - ESP32
   - IoT
-  - OPTICS
 format: html
 jupyter: python3
 image: images/Real_Life_ESP32_Setup.jpg
@@ -256,7 +255,6 @@ SEND_TO_THINGSPEAK = True
 SEND_TO_MONGODB = True
 
 def connect_wifi(ssid, password):
-"""Connect to Wifi using the ESP32 board"""
     wlan = network.WLAN(network.STA_IF)
     wlan.active(True)
     wlan.connect(ssid, password)
@@ -268,19 +266,14 @@ def connect_wifi(ssid, password):
 
 # Function to disable sensors
 def disable_sensors():
-"""Disable sensors by setting power pin low."""
     sensor_power_pin.value(0)  # Turn off sensor by setting the power pin low
 
 # Function to enable sensors
 def enable_sensors():
- """Enable sensors by setting power pin high and waiting for stabilization."""
-    sensor_power_pin.value(1)
     sensor_power_pin.value(1)  # Turn on sensor by setting the power pin high
-    time_module.sleep(4)  # Wait for the sensor to stabilize    
-
+    time_module.sleep(2)  # Wait for the sensor to stabilize    
 # Function to get system status
 def get_system_status(firstRun):
-"""Get system status including memory usage and CPU frequency."""
     free_heap = gc.mem_free()
     total_heap = gc.mem_alloc() + free_heap
     free_heap_percent = (free_heap / total_heap) * 100
@@ -291,7 +284,6 @@ def get_system_status(firstRun):
     print(f"Free heap memory: {free_heap} bytes ({free_heap_percent:.2f}%)")
     
 def get_time_chicago():
-"""Get current time in Chicago, accounting for DST."""
     max_retries = 100
     for attempt in range(max_retries):
         try:
@@ -319,21 +311,29 @@ def get_time_chicago():
     return utime.localtime(local_time)
 
 def read_sensor():
-"""Read temperature and humidity from the sensor. Add sensors here as needed."""
     try:
+        led.off()
         sensor = dht.DHT11(sensor_data_pin)
+        time_module.sleep(1) #the DHT11 sensor takes 1 second
         sensor.measure()
+        led.on()
         temp = sensor.temperature()
         hum = sensor.humidity()
         return temp, hum
     except OSError as e:
-        print("Failed to read sensor.")
+        print("Failed to read sensor. Exception: ", e)
         return None, None
+# Read the access token from the file uploaded earlier
+def read_access_token():
+    with open('access_token.txt', 'r') as token_file:
+        return token_file.read().strip()
+
+# ACCESS_TOKEN = read_access_token()
+# print(ACCESS_TOKEN)
 
 import usocket as socket
 import ssl
 def send_data_to_google_sheets(temp_c, temp_f, humidity, time_str, date_str):
-"""Send data to Google Sheets."""
 #     print(time_module.time())
     url = GOOGLE_URL  # Define your Google URL here
     headers = {
@@ -384,7 +384,7 @@ def send_data_to_google_sheets(temp_c, temp_f, humidity, time_str, date_str):
     except Exception as e:
         print('Failed to send data to Google Sheets:', e)
 
-# # Function to send data to Google Sheets, old method, took forever because response was large.
+# # Function to send data to Google Sheets
 # def send_data_to_google_sheets(temp_c, temp_f, humidity,time_str,date_str):
 #     print(time_module.time())
 #     url = GOOGLE_URL
@@ -400,6 +400,7 @@ def send_data_to_google_sheets(temp_c, temp_f, humidity, time_str, date_str):
 #         "&Temp F=" + str(temp_f) +
 #         "&Temp C=" + str(temp_c)
 #     )
+#     print(encoded_data)
 #     print(time_module.time())
 #     print("request")
 #     try:
@@ -477,7 +478,6 @@ def send_data_to_thingspeak():
                 print('Failed to send data to ThingSpeak:', e)
                 thingspeak_buffer.clear()
 def send_data_to_mongodb():
-"""Send data to MongoDB via Vercel API."""
     url = MONGODB__VERCEL_API_URL
     headers = {
         'x-api-key': VERCEL_API_KEY,
@@ -503,7 +503,6 @@ def send_data_to_mongodb():
         print("Failed to send data to Vercel MongoDB API:", e)
         data_buffer_mongodb.clear()
 def send_data_to_vercel():
-"""Send data to Vercel API."""
     url = VERCEL_API_URL
     headers = {
         'x-api-key': VERCEL_API_KEY,
@@ -586,25 +585,25 @@ def main():
                     'temperatureCelsius': temp,
                 })
                 print("ThingSpeak Buffer:",len(thingspeak_buffer),"|Vercel Buffer:",len(data_buffer_vercel),"|MongoDB Buffer:",len(data_buffer_mongodb))
-                # Send data to Google Sheets every 5 seconds 
+                 # Check if it's time to send data to Google Sheets 
                 if time_module.time() - last_google_sheets_update >= 5:
                     
                     send_data_to_google_sheets(temp_c, temp_f, humidity, time_str, date_str)
                     last_google_sheets_update = time_module.time()
 
-                # Send data to ThingSpeak every 15 seconds
+                # Check if it's time to send data to ThingSpeak
                 if time_module.time() - last_thingspeak_update >= 15:
                     send_data_to_thingspeak()
                     last_thingspeak_update = time_module.time()
 
-    #             # Send data to Vercel every hour
+    #             # Check if it's time to send data to Vercel
     #Vercel DB no good for this low level stuff. Overflow error and out of memory.
     #No append operation as a result.
                 if time_module.time() - last_vercel_update >= 3600:
                     send_data_to_vercel()
                     last_vercel_update = time_module.time()
 
-                # Send data to MongoDB every 15 seconds
+                # Check if it's time to send data to MongoDB
                 if time_module.time() - last_mongodb_update >= 15:
                     send_data_to_mongodb()
                     last_mongodb_update = time_module.time()
@@ -1026,7 +1025,7 @@ At this point, everything should be set up and ready for data logging. Run the p
 
 ### Flashing the Program
 
-Next we put the ESP32 into download mode by holding boot and pressing reset and then saving the Thonny file to the ESP32. After this test that your program is running by unplugging and plugging the ESP32 back in and listening to the COM4 port on Putty or observing the LED. From here you should be able to move the board wherever you want within your home or even hand solder the connection points with something like this:
+Next we put the ESP32 into download mode by holding boot and pressing reset and then saving the Thonny file to the ESP32 as main.py. After this test that your program is running by unplugging and plugging the ESP32 back in and listening to the COM4 port on Putty or observing the LED. Once you've verified this go back into Thonny and select File-\>Open-\>MicroPython device-\>boot.py. Simply type import main as a new line and the program should boot every time you are connected to power. Note that this is a nuclear option and generally main.py should run on power up. From here you should be able to move the board wherever you want within your home or even hand solder the connection points with something like this:
 
 <https://www.amazon.com/Adafruit-Accessories-Perma-Proto-Full-Breadboard/dp/B00SK8KAMM>
 
@@ -1072,16 +1071,20 @@ function handleResponse(e) {
     var action = e.parameter.action;
     Logger.log("handleResponse called with action: " + e.parameter);
 
-    if (e.parameter.action && e.parameter.action === 'getLastRow') {
-    Logger.log("Calling getLastRowData function");
-    return getLastRowData();
-  } else if (e.parameter.action && e.parameter.action === 'getLast6000Rows') {
-    Logger.log("Calling getLast6000Rows function");
-    return getLast6000Rows();
-  } else {
-    Logger.log("Invalid action or no action specified");
-    return ContentService.createTextOutput(JSON.stringify({ error: "Invalid action or no action specified" })).setMimeType(ContentService.MimeType.JSON);
-  }
+    if (action === 'getLastRow') {
+        Logger.log("Calling getLastRowData function");
+        return getLastRowData();
+    } else if (action === 'getLast6000Rows') {
+        Logger.log("Calling getLast6000Rows function");
+        return getLast6000Rows();
+    } else {
+        try {
+            return handleDataSubmission(e);
+        } catch (error) {
+            Logger.log("Error in handleDataSubmission: " + error.message);
+            return ContentService.createTextOutput(JSON.stringify({ error: "Invalid action or no action specified" })).setMimeType(ContentService.MimeType.JSON);
+        }
+    }
 }
 
 function handleDataSubmission(e) {
@@ -1819,3 +1822,21 @@ Finally, as before in this post: <https://jesse-anderson.github.io/Blog/_site/po
 </html>
 ```
 Moving forward I'll likely add an LCD display, enclosure and more sensors, but the main point of this exercise was to become more familiar with the simpler, cost effective IoT devices. Additionally extending Google Apps script's functionality to include pulling data for plotting is tremendously useful for anyone who doesn't want to pay for ThingSpeak.
+
+Other thoughts:
+
+-   Getting the sensor to reliably take readings was a pain. Slightly moving the sensor caused readings to fail and no data to be transmitted.
+
+    -   Moving beyond a simple breadboard and hand soldering connections makes sense, but only for production. If that were the case, the odd 4-8 hours of getting a C/C++ version of this code up and running would make sense.
+
+-   Google Apps Script is awesome and its usually on me if something breaks. The fact that I can log about four-ish years worth of data at 1 log/min
+
+    -   2 million rows at 5 entries per row / 60 entries per hour / 24 hours per year / 365.25 days per year = 3.8 years
+
+    -   At 2 logs/min or 30 seconds per log: 1.9 years.
+
+-   The amount of processing power/memory and power(wattage) delivered to an ESP32 forced me to re evaluate the order of operations at several steps. Notably I spent some time debugging the wifi until I tried selectively powering things on or off. I also found that the program would randomly crash during POSTs and it would be the size of the response received that would cause a memory error.
+
+-   With the previous post most of the leg work in setting up the web interfaces was already taken care of so all I had to do was the wiring, some rewriting of Python code(notably Google Sheets sending), and overhauling the Google Apps script. Luckily I finally moved away from ThingSpeak for plotting/data acquistion for plotting and now I grab directly from Google. Its a little bit longer now and I could halve the time by grabbing less data. 6,000 data points is a lot and eventually, at a 30 second sampling time, that's nearly 50 hours of data with each plot.
+
+-   A breakout board would have sped up figuring out the circuit before placing everything down. I picked one up for a Pi Pico I'm tinkering with for a plant project and an Adafruit Pi Cobbler(basically a breakout board) for a raspberry pi and I notice the faster reference time is nice. It would likely be best to have a high quality breakout board alongside a final proto board to make sure the design sticks and loose connections don't hurt me.
