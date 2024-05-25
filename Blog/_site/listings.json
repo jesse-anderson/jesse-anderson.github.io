@@ -1,7 +1,8 @@
 [
   {
-    "listing": "/index.html",
+    "listing": "/archive.html",
     "items": [
+      "/posts/ESP32_Post_1/index.html",
       "/posts/Pi-Sensor-Part-2/index.html",
       "/posts/Pi-Sensor-Proj-May-2024/index.html",
       "/posts/OPTICSinPython/OPTICS.html",
@@ -12,8 +13,9 @@
     ]
   },
   {
-    "listing": "/archive.html",
+    "listing": "/index.html",
     "items": [
+      "/posts/ESP32_Post_1/index.html",
       "/posts/Pi-Sensor-Part-2/index.html",
       "/posts/Pi-Sensor-Proj-May-2024/index.html",
       "/posts/OPTICSinPython/OPTICS.html",

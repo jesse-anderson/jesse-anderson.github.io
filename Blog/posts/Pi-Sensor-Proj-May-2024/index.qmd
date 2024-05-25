@@ -2807,16 +2807,16 @@ Latest sensor reading Google Sheets(button loads latest data):
     <button class="load-button" onclick="loadLastRowGoogle()">Load Google Sheets Data</button>
     <table id="google-data-table">
 <thead>
-    <tr>
-        <th>Date</th>
-        <th>Time</th>
-        <th>Humidity %</th>
-        <th>Temp F</th>
-        <th>Temp C</th>
-    </tr>
+<tr>
+<th>Date</th>
+<th>Time</th>
+<th>Humidity %</th>
+<th>Temp F</th>
+<th>Temp C</th>
+</tr>
 </thead>
 <tbody>
-    <!-- Data will be inserted here -->
+<!-- Data will be inserted here -->
 </tbody>
 </table>
 </section>
@@ -2892,19 +2892,19 @@ Latest Sensor Reading ThingSpeak(press button):
     <h2>ThingSpeak Data Display</h2>
     <button class="load-button" onclick="loadThingSpeakData()">Load ThingSpeak Data</button>
     <table id="thingspeak-data-table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Humidity %</th>
-                <th>Temp F</th>
-                <th>Temp C</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Data will be inserted here -->
-        </tbody>
-    </table>
+<thead>
+    <tr>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Humidity %</th>
+        <th>Temp F</th>
+        <th>Temp C</th>
+    </tr>
+</thead>
+<tbody>
+    <!-- Data will be inserted here -->
+</tbody>
+</table>
 </section>
 
 <script>
@@ -2976,16 +2976,16 @@ Latest Sensor Reading MongoDB(Read-Only User):
     <button class="load-button" onclick="loadMongoDBData()">Load MongoDB Data</button>
     <table id="mongodb-data-table">
 <thead>
-    <tr>
-        <th>Date</th>
-        <th>Time</th>
-        <th>Humidity %</th>
-        <th>Temp F</th>
-        <th>Temp C</th>
-    </tr>
+<tr>
+<th>Date</th>
+<th>Time</th>
+<th>Humidity %</th>
+<th>Temp F</th>
+<th>Temp C</th>
+</tr>
 </thead>
 <tbody>
-    <!-- Data will be inserted here -->
+<!-- Data will be inserted here -->
 </tbody>
 </table>
 </section>
@@ -3053,16 +3053,16 @@ Latest Sensor Reading Vercel PostgreSQL(Read-Only User):
     <button class="load-button" onclick="loadVercelData()">Load Vercel Data</button>
     <table id="vercel-data-table">
 <thead>
-    <tr>
-        <th>Date</th>
-        <th>Time</th>
-        <th>Humidity %</th>
-        <th>Temp F</th>
-        <th>Temp C</th>
-    </tr>
+<tr>
+<th>Date</th>
+<th>Time</th>
+<th>Humidity %</th>
+<th>Temp F</th>
+<th>Temp C</th>
+</tr>
 </thead>
 <tbody>
-    <!-- Data will be inserted here -->
+<!-- Data will be inserted here -->
 </tbody>
 </table>
 </section>

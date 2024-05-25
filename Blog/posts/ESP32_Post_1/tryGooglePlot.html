@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Plot</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .loading-message {
+            text-align: center;
+            font-size: 1.2em;
+            margin-top: 20px;
+            display: none; /* Hide by default */
+        }
+    </style>
+</head>
+<body>
+    <h2>Pi Environment Test Data</h2>
+    <p><button onclick="loadCharts()">Load Charts</button></p>
+    <p></p>
+    <p><button onclick="refreshData()">Refresh</button></p>
+    <div id="loadingMessage" class="loading-message">Loading, please wait...</div>
+    <canvas id="tempChart" width="400" height="200"></canvas>
+    <canvas id="humidityChart" width="400" height="200"></canvas>
+    <div id="latestValues"></div>
+    <script>
+        async function fetchData() {
+            try {
+                const response = await fetch('https://script.google.com/macros/s/AKfycbzNi7_SbooXqXYjEfJdP233EaJ4EVswgHxm6nWxMG6G5nfmmXfJsV3q5CzEigp_6D-8/exec?action=getLast6000Rows');
+                const data = await response.json();
+                console.log('Fetched data:', data);
+                if (data && Array.isArray(data)) {
+                    return data;
+                } else if (data && Array.isArray(data.rows)) {
+                    return data.rows;
+                } else {
+                    console.error('Unexpected data structure:', data);
+                    document.getElementById('latestValues').innerHTML = `<p>Unexpected data structure. Check console for details.</p>`;
+                    return [];
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                document.getElementById('latestValues').innerHTML = `<p>Error fetching data. Check console for details.</p>`;
+                return [];
+            }
+        }
+
+        function processData(feeds) {
+            console.log('Processing data:', feeds);
+            if (!Array.isArray(feeds)) {
+                console.error('Data is not an array. Type:', typeof feeds);
+                console.log('Data value:', feeds);
+                document.getElementById('latestValues').innerHTML = `<p>Data is not an array. Type: ${typeof feeds}</p>`;
+                return { labels: [], tempF: [], humidity: [] };
+            }
+
+            const labels = feeds.map(feed => new Date(`${feed.Date} ${feed.Time}`));
+            const tempF = feeds.map(feed => parseFloat(feed['Temp F']));
+            const humidity = feeds.map(feed => parseFloat(feed['Humidity %']));
+            return { labels, tempF, humidity };
+        }
+
+        function displayLatestValues(labels, tempF, humidity) {
+            const latestTime = labels[labels.length - 1];
+            const latestTempF = tempF[tempF.length - 1];
+            const latestHumidity = humidity[humidity.length - 1];
+
+            const tableHTML = `
+                <table>
+                    <tr>
+                        <th>Time</th>
+                        <th>Temp F</th>
+                        <th>Humidity</th>
+                    </tr>
+                    <tr>
+                        <td>${latestTime.toLocaleDateString('en-US')} ${latestTime.toLocaleTimeString('en-US')}</td>
+                        <td>${latestTempF.toFixed(2)}</td>
+                        <td>${latestHumidity.toFixed(2)}</td>
+                    </tr>
+                </table>
+            `;
+
+            document.getElementById('latestValues').innerHTML = tableHTML;
+        }
+
+        async function createCharts() {
+            document.getElementById('loadingMessage').style.display = 'block';
+
+            const feeds = await fetchData();
+            const { labels, tempF, humidity } = processData(feeds);
+
+            const tempCtx = document.getElementById('tempChart').getContext('2d');
+            const humidityCtx = document.getElementById('humidityChart').getContext('2d');
+
+            const tempChart = new Chart(tempCtx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Temperature F',
+                            data: tempF,
+                            borderColor: 'rgba(255, 165, 0, 1)',
+                            backgroundColor: 'rgba(255, 165, 0, 0.2)',
+                            borderWidth: 1,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'hour'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            const humidityChart = new Chart(humidityCtx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Humidity',
+                            data: humidity,
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderWidth: 1,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'hour'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            displayLatestValues(labels, tempF, humidity);
+
+            document.getElementById('loadingMessage').style.display = 'none';
+
+            return { tempChart, humidityChart };
+        }
+
+        let chartInstances = {};
+
+        async function refreshData() {
+            document.getElementById('loadingMessage').style.display = 'block';
+
+            const feeds = await fetchData();
+            const { labels, tempF, humidity } = processData(feeds);
+
+            // Clear existing data
+            chartInstances.tempChart.data.labels = [];
+            chartInstances.tempChart.data.datasets[0].data = [];
+
+            chartInstances.humidityChart.data.labels = [];
+            chartInstances.humidityChart.data.datasets[0].data = [];
+
+            // Update with new data
+            chartInstances.tempChart.data.labels = labels;
+            chartInstances.tempChart.data.datasets[0].data = tempF;
+
+            chartInstances.humidityChart.data.labels = labels;
+            chartInstances.humidityChart.data.datasets[0].data = humidity;
+
+            // Update charts
+            chartInstances.tempChart.update();
+            chartInstances.humidityChart.update();
+
+            displayLatestValues(labels, tempF, humidity);
+
+            document.getElementById('loadingMessage').style.display = 'none';
+        }
+
+        async function loadCharts() {
+            document.getElementById('loadingMessage').style.display = 'block';
+
+            if (!chartInstances.tempChart && !chartInstances.humidityChart) {
+                chartInstances = await createCharts();
+            }
+
+            document.getElementById('loadingMessage').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
