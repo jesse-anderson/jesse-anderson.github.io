@@ -132,7 +132,7 @@ Specifically the Microcenter Inland WROOM Board:
 Ensure your device is erased with:
 
 ``` bash
-esptool - p COM4 erase_flash
+esptool.py -p COM4 erase_flash
 ```
 
 Take care to replace the 'COM4' with your port.
@@ -1685,17 +1685,17 @@ Finally, as before in this post: <https://jesse-anderson.github.io/Blog/_site/po
 
             const tableHTML = `
                 <table>
-                    <tr>
-                        <th>Time</th>
-                        <th>Temp F</th>
-                        <th>Humidity</th>
-                    </tr>
-                    <tr>
-                        <td>${latestTime.toLocaleDateString('en-US')} ${latestTime.toLocaleTimeString('en-US')}</td>
-                        <td>${latestTempF.toFixed(2)}</td>
-                        <td>${latestHumidity.toFixed(2)}</td>
-                    </tr>
-                </table>
+    <tr>
+        <th>Time</th>
+        <th>Temp F</th>
+        <th>Humidity</th>
+    </tr>
+    <tr>
+        <td>${latestTime.toLocaleDateString('en-US')} ${latestTime.toLocaleTimeString('en-US')}</td>
+        <td>${latestTempF.toFixed(2)}</td>
+        <td>${latestHumidity.toFixed(2)}</td>
+    </tr>
+</table>
             `;
 
             document.getElementById('latestValues').innerHTML = tableHTML;

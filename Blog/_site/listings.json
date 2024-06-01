@@ -1,7 +1,8 @@
 [
   {
-    "listing": "/archive.html",
+    "listing": "/index.html",
     "items": [
+      "/posts/Soldering_ESP32/index.html",
       "/posts/ESP32_Post_1/index.html",
       "/posts/Pi-Sensor-Part-2/index.html",
       "/posts/Pi-Sensor-Proj-May-2024/index.html",
@@ -13,8 +14,9 @@
     ]
   },
   {
-    "listing": "/index.html",
+    "listing": "/archive.html",
     "items": [
+      "/posts/Soldering_ESP32/index.html",
       "/posts/ESP32_Post_1/index.html",
       "/posts/Pi-Sensor-Part-2/index.html",
       "/posts/Pi-Sensor-Proj-May-2024/index.html",
