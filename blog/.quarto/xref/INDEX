@@ -46,5 +46,9 @@
   },
   "posts/Soldering_ESP32/index.qmd": {
     "index.html": "6925ec66"
+  },
+  "posts/SCD41/index.qmd": {
+    "index.html": "afd6ad8c",
+    "index.tex": "b5e2fd10"
   }
 }

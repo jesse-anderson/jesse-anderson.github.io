@@ -17,7 +17,7 @@ execute:
 
 ### Introduction
 
-After experimentation with the previous project at: <https://jesse-anderson.github.io/Blog/_site/posts/ESP32_Post_1/> , I encountered issues with the DHT11 sensor maintaining reliable contact with the internal breadboard connections. To address this, I acquired some[Protoboards from ElectroCookie](https://www.amazon.com/dp/B07ZYNWJ1S) and began the process of soldering the components together. I chose ElectroCookie as they were highly rated on Amazon and apparently the Adafruit Protoboards are corrosion prone. It also helps that the ElectroCookie ones were far cheaper! This post details the steps I took to resolve these issues and enhance the project's overall performance.
+After experimentation with the previous project at: <https://jesse-anderson.github.io/Blog/_site/posts/ESP32_Post_1/> , I encountered issues with the DHT11 sensor maintaining reliable contact with the internal breadboard connections. To address this, I acquired some [Protoboards from ElectroCookie](https://www.amazon.com/dp/B07ZYNWJ1S) and began the process of soldering the components together. I chose ElectroCookie as they were highly rated on Amazon and apparently the Adafruit Protoboards are corrosion prone. It also helps that the ElectroCookie ones were far cheaper! This post details the steps I took to resolve these issues and enhance the project's overall performance.
 
 ### Soldering the Components
 
