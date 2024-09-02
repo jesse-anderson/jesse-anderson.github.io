@@ -1,0 +1,186 @@
+import machine
+import time
+from machine import Pin, SoftI2C
+from dht import DHT22
+from ssd1306 import SSD1306_I2C
+from StemmaSoilSensor import StemmaSoilSensor
+from tcs34725 import TCS34725
+
+# Pin definitions
+DHT_PIN = Pin(27)
+DHT_POWER_PIN = Pin(26, Pin.OUT)
+# SEESAW_POWER_PIN = Pin(25, Pin.OUT)
+TCS34725_POWER_PIN = Pin(33, Pin.OUT)
+OLED_POWER_PIN = Pin(32, Pin.OUT)
+TCS34725_LED_PIN = Pin(23, Pin.OUT)  # GPIO 23 for TCS34725 LED control
+
+
+# Initialize separate I2C buses
+i2c_oled = SoftI2C(scl=Pin(22), sda=Pin(21))
+i2c_seesaw = SoftI2C(scl=Pin(16), sda=Pin(17))
+i2c_tcs = SoftI2C(scl=Pin(18), sda=Pin(19))
+
+# Scan I2C buses
+OLED_POWER_PIN.value(1)
+print('Scanning I2C bus for OLED...')
+devices_oled = i2c_oled.scan()
+OLED_POWER_PIN.value(0)
+print('OLED I2C devices:', [hex(device) for device in devices_oled])
+time.sleep(1)
+
+print('Scanning I2C bus for Seesaw...')
+# SEESAW_POWER_PIN.value(1)
+devices_seesaw = i2c_seesaw.scan()
+# SEESAW_POWER_PIN.value(0)
+print('Seesaw I2C devices:', [hex(device) for device in devices_seesaw])
+time.sleep(1)
+
+print('Scanning I2C bus for TCS34725...')
+TCS34725_POWER_PIN.value(1)
+TCS34725_LED_PIN.value(0)  # Start with the LED off
+devices_tcs = i2c_tcs.scan()
+print('TCS34725 I2C devices:', [hex(device) for device in devices_tcs])
+
+# Initialize DHT22 sensor and OLED display
+DHT_POWER_PIN.value(1)
+dht_sensor = DHT22(DHT_PIN)
+DHT_POWER_PIN.value(0)
+
+OLED_POWER_PIN.value(1)
+oled = SSD1306_I2C(128, 64, i2c_oled)
+
+# Ensure the addresses are correct (default addresses used)
+if 0x36 in devices_seesaw:
+    soil_sensor = StemmaSoilSensor(i2c_seesaw)
+else:
+    print("Seesaw sensor not found!")
+    
+if 0x39 in devices_tcs:
+    tcs = TCS34725(i2c_tcs)
+else:
+    print("TCS34725 sensor not found!")
+    
+# # Function to adjust gain and integration time based on Lux value
+# def adjust_tcs_settings(tcs, lux):
+#     print(lux)
+#     if lux > 10000:
+#         integration_time = 50  # Short integration time
+#         gain = 1  # Low gain
+#     elif lux > 1000:
+#         integration_time = 100  # Moderate integration time
+#         gain = 1  # Moderate gain
+#     elif lux > 100:
+#         integration_time = 150  # Long integration time
+#         gain = 4  # High gain
+#     else:
+#         integration_time = 200  # Longest integration time
+#         gain = 16  # Highest gain
+# 
+#     tcs.integration_time(integration_time)
+#     tcs.gain(gain)
+#     print(f'Adjusted TCS34725 settings: Integration Time = {integration_time} ms, Gain = {gain}')
+
+# Function to reinitialize the TCS34725 sensor with retries and initial Lux adjustment
+def reinitialize_tcs_sensor(i2c_tcs, retries=5):
+    for attempt in range(retries):
+        try:
+            tcs = TCS34725(i2c_tcs)
+            tcs.gain(4)
+            tcs.integration_time(150)
+            time.sleep(1)
+            tcs.active(True)
+            tcs.led(False)  # Ensure LED is off
+            time.sleep(1)  # Wait for the sensor to stabilize
+            cct, lux = tcs.read()  # Get initial readings to dynamically adjust Lux values
+            cct, lux = tcs.read()  # Get initial readings to dynamically adjust Lux values
+            print("Intial CCT:",cct)
+            print("Initial Lux:",lux)
+            
+            cct, lux = tcs.read()  # Get initial readings to dynamically adjust Lux values
+#             adjust_tcs_settings(tcs, lux)  # Adjust settings based on Lux
+            print("2nd CCT:",cct)
+            print("2nd Lux:",lux)
+            time.sleep(1)  # Wait for settings to take effect
+            print(f"TCS34725 sensor initialized on attempt {attempt + 1}")
+            return tcs, cct, lux
+        except Exception as e:
+            print(f"Error initializing TCS34725 sensor: {e}, retrying...")
+            time.sleep(1)
+    raise RuntimeError("Failed to initialize TCS34725 sensor after multiple attempts")
+
+# Main loop
+while True:
+    try:
+        # Read DHT22 sensor
+        print("Reading DHT22 sensor...")
+        DHT_POWER_PIN.value(1)
+        time.sleep(2)  # Wait for the sensor to stabilize
+        dht_sensor.measure()
+        temp_dht22 = dht_sensor.temperature()
+        humidity = dht_sensor.humidity()
+        temp_fahrenheit = int(temp_dht22 * 9 / 5 + 32)
+        humidity = int(humidity)
+        DHT_POWER_PIN.value(0)
+
+        # Read Seesaw (Soil) sensor if it is found
+        if 'soil_sensor' in locals():
+            print("Reading Seesaw sensor...")
+            soil_temp = soil_sensor.get_temp()
+            soil_temp = int(soil_temp * 9 / 5 + 32)
+            soil_moisture = soil_sensor.get_moisture()
+        else:
+            soil_temp = None
+            soil_moisture = None
+
+        # Reinitialize and read TCS34725 sensor
+        print("Reinitializing and reading TCS34725 sensor...")
+        TCS34725_POWER_PIN.value(1)
+        TCS34725_LED_PIN.value(0)  # Turn on the LED
+        tcs, cct, lux = reinitialize_tcs_sensor(i2c_tcs)
+        time.sleep(1)  # Wait for the sensor to stabilize
+
+        try:
+            raw_data = tcs.read(True)
+            print(f"Raw data: {raw_data}")
+            r, g, b, c = raw_data
+            cct, lux = tcs.read()
+            print(f"RGB: ({r}, {g}, {b}), Clear: {c}, CCT: {cct}, Lux: {lux}")
+            html_rgb_val = tcs.html_rgb(raw_data)
+            html_hex_val = tcs.html_hex(raw_data)
+            print(f"HTML RGB: {html_rgb_val}, HTML Hex: {html_hex_val}")
+        except RuntimeError as e:
+            print("Error reading TCS34725:", e)
+            html_hex_val = "Error"
+            lux = cct = 0
+
+        TCS34725_LED_PIN.value(1)  # Turn off the LED
+        TCS34725_POWER_PIN.value(0)
+
+        # Print sensor data to the console
+        print(f'Color: {html_hex_val}')
+        print(f'Lux: {lux}')
+        print(f'CCT: {cct}')
+        print(f'Temp: {temp_fahrenheit} Hum:{humidity}')
+        if soil_temp is not None and soil_moisture is not None:
+            print(f'Soil Temp: {soil_temp} F')
+            print(f'Soil Moisture: {soil_moisture}')
+        # Display data on OLED
+        print("Updating OLED display...")
+        oled.fill(0)
+        if soil_temp is not None:
+            oled.text(f'Soil Temp: {soil_temp}F', 0, 0)
+        if soil_moisture is not None:
+            oled.text(f'Moisture: {soil_moisture}', 0, 10)
+        oled.text(f'RGB: {int(html_rgb_val[0])},{int(html_rgb_val[1])},{int(html_rgb_val[2])}', 0, 20)
+        oled.text(f'Lux:{int(lux)}', 0, 30)
+        oled.text(f'CCT:{int(cct)}',0,40)
+        oled.text(f'Temp:{temp_fahrenheit}F Hum:{humidity}%', 0, 50)
+        oled.show()
+        print(' ')
+        # Wait before the next update
+        time.sleep(10)
+
+    except Exception as e:
+        print("Error occurred:", e)
+        time.sleep(5)  # Wait for 5 seconds before retrying
+

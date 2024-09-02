@@ -2893,16 +2893,16 @@ Latest Sensor Reading ThingSpeak(press button):
     <button class="load-button" onclick="loadThingSpeakData()">Load ThingSpeak Data</button>
     <table id="thingspeak-data-table">
 <thead>
-    <tr>
-        <th>Date</th>
-        <th>Time</th>
-        <th>Humidity %</th>
-        <th>Temp F</th>
-        <th>Temp C</th>
-    </tr>
+<tr>
+<th>Date</th>
+<th>Time</th>
+<th>Humidity %</th>
+<th>Temp F</th>
+<th>Temp C</th>
+</tr>
 </thead>
 <tbody>
-    <!-- Data will be inserted here -->
+<!-- Data will be inserted here -->
 </tbody>
 </table>
 </section>

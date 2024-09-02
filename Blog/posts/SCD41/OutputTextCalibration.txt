@@ -1,0 +1,61 @@
+MPY: soft reboot
+Device with address 98 found on I2C bus.
+Sensor self test shows good to go
+Sensor ID: 3ec0:5b07:3bec
+Temperature offset: 4.000092 °C
+Desired Altitude: 198 m, Retrieved Altitude: 198 m
+Automatic self-calibration is ON.
+Low Power Mode: True
+Low power periodic measurement started with conversion cycle time: 30000 ms
+Periodic measurement started.
+Initial Reading 1: CO2: 729ppm, Temperature: 17.84°C, Humidity: 53.13%
+Initial Reading 2: CO2: 715ppm, Temperature: 15.18°C, Humidity: 62.73%
+Initial Reading 3: CO2: 720ppm, Temperature: 14.39°C, Humidity: 66.50%
+Initial Reading 4: CO2: 723ppm, Temperature: 13.83°C, Humidity: 68.44%
+Initial Reading 5: CO2: 725ppm, Temperature: 13.62°C, Humidity: 69.37%
+Initial Reading 6: CO2: 724ppm, Temperature: 13.65°C, Humidity: 69.48%
+Initial Reading 7: CO2: 723ppm, Temperature: 13.67°C, Humidity: 69.57%
+Initial Reading 8: CO2: 720ppm, Temperature: 13.43°C, Humidity: 70.26%
+Initial Reading 9: CO2: 717ppm, Temperature: 13.37°C, Humidity: 70.60%
+Initial Reading 10: CO2: 723ppm, Temperature: 13.52°C, Humidity: 70.73%
+Factory reset performed.
+Performing soft reset and reinitialization...
+Continuous Reading: CO2: 736ppm, Temperature: 17.80°C, Humidity: 54.41%
+Sensor Cycled 1 times of 60
+...
+Sensor Cycled 49 times of 60
+Continuous Reading: CO2: 684ppm, Temperature: 13.36°C, Humidity: 71.37%
+Sensor Cycled 50 times of 60
+Continuous Reading: CO2: 686ppm, Temperature: 13.36°C, Humidity: 71.49%
+Sensor Cycled 51 times of 60
+Continuous Reading: CO2: 690ppm, Temperature: 13.36°C, Humidity: 71.41%
+Sensor Cycled 52 times of 60
+Continuous Reading: CO2: 694ppm, Temperature: 13.36°C, Humidity: 71.56%
+Sensor Cycled 53 times of 60
+Continuous Reading: CO2: 697ppm, Temperature: 13.34°C, Humidity: 71.46%
+Sensor Cycled 54 times of 60
+Continuous Reading: CO2: 699ppm, Temperature: 13.44°C, Humidity: 71.29%
+Sensor Cycled 55 times of 60
+Continuous Reading: CO2: 700ppm, Temperature: 13.34°C, Humidity: 71.40%
+Sensor Cycled 56 times of 60
+Continuous Reading: CO2: 701ppm, Temperature: 13.39°C, Humidity: 71.35%
+Sensor Cycled 57 times of 60
+Continuous Reading: CO2: 702ppm, Temperature: 13.33°C, Humidity: 71.50%
+Sensor Cycled 58 times of 60
+Continuous Reading: CO2: 706ppm, Temperature: 13.40°C, Humidity: 71.33%
+Sensor Cycled 59 times of 60
+Initiating forced recalibration...
+Performing forced recalibration with target CO2 concentration: 489 ppm
+Write 0x362f 01e9 3c
+Response: 7f19e8 Correction value: 32537 ppm
+Forced recalibration completed with correction value: 32537 ppm.
+Forced recalibration completed with correction value: 32537 ppm
+Sensor Auto Calibration set to: {sensor.get_auto_calibration}. Rerun the program after power cycling with the calibration commented out to double check persistence! 
+Settings saved.
+Data not ready.
+Attempting to reinitialize the sensor...
+Continuous Reading: CO2: 485ppm, Temperature: 17.22°C, Humidity: 55.51%
+Sensor Cycled 60 times of 60
+Continuous Reading: CO2: 470 ppm, Temperature: 14.85 °C, Humidity: 64.94 %
+Continuous Reading: CO2: 471 ppm, Temperature: 14.29 °C, Humidity: 67.33 %
+Continuous Reading: CO2: 471 ppm, Temperature: 13.93 °C, Humidity: 68.86 %

@@ -1,7 +1,7 @@
 ---
 title: "SCD41: On Demand CO2 Sensor"
 author: Jesse Anderson
-date: '2024-06-01'
+date: '2024-09-02'
 categories:
   - ESP32
   - IoT
@@ -14,6 +14,10 @@ execute:
 #Delete _freeze/posts/thisPost to re render it. Its such a pain but oh well...
 ---
 
+Original Post: 06/01/2024
+
+Update: I updated this post as of 09/0/24 to reflect the changes made to the CO2 sensor, namely using 5V for stability, an OLED screen for display, switches for wifi and calibration, and finally an obnoxious buzzer to let me know I should open my windows/door(\>1500ppm).
+
 *Disclaimer: Please note that the information presented in this article is for informational purposes only. It is not intended to serve as health advice, engineering advice, or any form of professional guidance. Readers should consult with qualified professionals for specific health or engineering concerns and should not rely solely on the content of this article for making decisions. The authors and publishers of this article are not responsible for any actions taken based on the information provided herein.*
 
 In this post I intend to cover the basics of SCD41 sensors, their technical performance, some MicroPython code to use with an ESP32 microcontroller(yes I know there are other ones out there), and some of the limitations/precautions one should take with this particular sensor.
@@ -24,7 +28,7 @@ An SCD41 sensor is Sensirion's miniature CO2 sensor. It uses a photoacoustic NDI
 
 ### Technical Performance
 
-**Generalized CO2 Accuracy Specification:**
+#### **Generalized CO2 Accuracy Specification:**
 
 -   **400-1,000 ppm:** ±(50 ppm + 2.5% of reading)
 
@@ -379,9 +383,55 @@ The circuit used here is fairly simple as the SCD41 has 4 inputs.
 
 -   SDA = Serial Data Line
 
+We also use an LCD to monitor the output and one switch to control calibration on startup(two switches for toggling wifi). For the sake of being able to recreate this fast with the same board here are the associated pin numbers and side.
+
+SCD41
+
+-   SDA: 14-Left
+
+-   SCL: 17-Left
+
+-   VDD: 1-Right
+
+-   GND: 19-Left
+
+Switch Calibration(Left Switch)
+
+-   Top(ON): 12-Right
+
+-   GND: Ground Bar-Right
+
+-   Bottom: N/A
+
+Switch Wifi(Right Switch)
+
+-   Top(ON): 13-Right
+
+-   GND:Ground Bar - Right
+
+-   Bottom: N/A
+
+LCD
+
+-   SDA:10-Left
+
+-   SCL:7-Left
+
+-   VCC: 12-Right
+
+-   GND: Ground Bar-Right
+
+Buzzer
+
+-   15-Right
+
+-   Ground Bar - Right
+
+Note that with some changes to the code one can omit the LCD and the switches, but being able to calibrate on the fly with fresh air is nice as is having an offline version of the sensor. Also note that at 3.3V the peak supply current is typical 175mA with a max of 205mA and at 5.0V typical is 115mA with a max of 137mA. I personally experienced many issues using the 3.3V and switched to 5V and experienced absolutely no issues.
+
 ![](CircuitSetup_bb.jpg)
 
-The MicroPython library used is below. Simply open up the file in Thonny and save it to the device as SCD41.py so it can be imported in the main.py script. Note that the comments can be removed to cut down on space on your device.
+The MicroPython library used is below. Simply open up the file in Thonny and save it to the device as SCD41.py so it can be imported in the main.py script. Note that the comments can be removed to cut down on space on your device. Implementing the Google Drive database and the ThingSpeak database are separate posts. See Raspberry Pi Sensor Server Project for more details on setting that up.
 
 <details>
 
@@ -952,8 +1002,211 @@ And once you have that done run the following code below on your device or save 
 from machine import SoftI2C, Pin
 import time
 from SCD41 import SCD4xSensirion, I2cAdapter, check_device_presence
+from ssd1306 import SSD1306_I2C  # Ensure you have the SSD1306 library
+import urequests as requests
+import network
+import json
+import utime
+import usocket as socket
+import ssl
+import ntptime
+
+# ThingSpeak settings
+THINGSPEAK_API_KEY = 'YOUR_KEY_HERE'
+THINGSPEAK_URL = 'https://api.thingspeak.com/update'
+THINGSPEAK_CHANNEL_ID = '00000000'
+THINGSPEAK_BULK_UPDATE_URL = 'https://api.thingspeak.com/channels/'+str(THINGSPEAK_CHANNEL_ID)+'/bulk_update.json'
+SEND_TO_THINGSPEAK = True
+
+thingspeak_buffer = []  # Buffer for ThingSpeak data
+
+# Google Sheets settings
+SPREADSHEET_ID = 'VERY_LONG_SPREADSHEET_ID_HERE'
+RANGE_NAME = 'Sheet1!A1:C1'
+SHEET_NAME = 'Sheet1'
+GOOGLE_URL = 'https://script.google.com/macros/s/VERY_LONG_URL/exec'
+
+# WiFi settings
+SSID = 'YOUR_SSID'
+PASSWORD = 'WIFI_PSWD'
+
+switchOnWifi = Pin(32, Pin.IN, Pin.PULL_UP)
+switchOnCalibrate = Pin(33, Pin.IN, Pin.PULL_UP)
+buzzer = Pin(26, Pin.OUT)
+
+switch_state_calibrate = switchOnCalibrate.value() # If switch is in up position we consider it on.
+print(switch_state_calibrate)
+
+switch_state_wifi = switchOnWifi.value() # If switch is in up position we consider it on.
+print(switch_state_wifi)
+
+if switch_state_calibrate == 0:
+    print("Calibration switch is on! Calibrating Device...")
+if switch_state_wifi == 0:
+    print("Wifi switch is on! Will use Wifi...")
+    
+# Setup GPIO for OLED power
+oled_power = Pin(19, Pin.OUT)
+
+def connect_wifi(ssid, password):
+    wlan = network.WLAN(network.STA_IF)
+    wlan.active(True)
+    wlan.connect(ssid, password)
+    while not wlan.isconnected():
+        time.sleep(1)
+        print("Connecting to WiFi...")
+    print("Connected to WiFi")
+    print(wlan.ifconfig())
+    
+def get_time_chicago():
+    max_retries = 100
+    for attempt in range(max_retries):
+        try:
+            ntptime.settime()
+            current_time = utime.localtime()
+            break
+        except OSError as e:
+            print(f"Failed to get NTP time, attempt {attempt + 1} of {max_retries}. Error: {e}")
+            time.sleep(1)
+    else:
+        print("Could not get NTP time, proceeding without time synchronization.")
+        return utime.localtime()
+
+    # Determine if it is daylight saving time (DST)
+    month = current_time[1]
+    day = current_time[2]
+    hour = current_time[3]
+    if (month > 3 and month < 11) or (month == 3 and day >= 8 and hour >= 2) or (month == 11 and day < 1 and hour < 2):
+        is_dst = True
+    else:
+        is_dst = False
+    
+    offset = -6 * 3600 if not is_dst else -5 * 3600
+    local_time = utime.mktime(current_time) + offset
+    return utime.localtime(local_time)
+
+# Function to sound the buzzer
+def sound_buzzer():
+    for _ in range(5):
+        buzzer.value(1)  # Turn on buzzer
+        time.sleep(0.25)  # 250 ms delay
+        buzzer.value(0)  # Turn off buzzer
+        time.sleep(0.25)  # 250 ms delay
+
+def send_data_to_google_sheets(data):
+    url = GOOGLE_URL  # Define your Google URL here
+    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+    encoded_data = (
+        "Date=" + data['date'] +
+        "&Time=" + data['time'] +
+        "&CO2=" + str(data['co2']) +
+        "&Temperature=" + str(data['temp_f']) +
+        "&Humidity=" + str(data['humidity'])
+    )
+    try:
+        # Extract host and path from URL
+        _, _, host, path = url.split('/', 3)
+        
+        # Set up a socket connection
+        addr = socket.getaddrinfo(host, 443)[0][-1]
+        s = socket.socket()
+        s.connect(addr)
+        s = ssl.wrap_socket(s)
+        
+        # Create the HTTP request manually
+        request = f"POST /{path} HTTP/1.1\r\nHost: {host}\r\n"
+        request += "Content-Type: application/x-www-form-urlencoded\r\n"
+        request += f"Content-Length: {len(encoded_data)}\r\n\r\n"
+        request += encoded_data
+
+        # Send the request
+        s.write(request)
+        
+        # Close the socket
+        s.close()
+        print('Data sent to Google Sheets!')
+    except Exception as e:
+        print('Failed to send data to Google Sheets:', e)
+        
+def send_data_to_thingspeak():
+    """Send data to ThingSpeak."""
+    if SEND_TO_THINGSPEAK and thingspeak_buffer:
+        if len(thingspeak_buffer) > 1:
+            # Bulk update
+            payload = {
+                'write_api_key': THINGSPEAK_API_KEY,
+                'updates': []
+            }
+            for data in thingspeak_buffer:
+                update = {
+                    'created_at': f"{data['date']} {data['time']} -0500",
+                    'field1': data['co2'],
+                    'field2': data['temp_f'],
+                    'field3': data['humidity']
+                }
+                payload['updates'].append(update)
+
+            try:
+                headers = {'Content-Type': 'application/json'}
+                json_data = json.dumps(payload)
+                response = requests.post(THINGSPEAK_BULK_UPDATE_URL, headers=headers, data=json_data)
+                if response.status_code == 202:
+                    print('Data posted to ThingSpeak (bulk update):', response.text)
+                    thingspeak_buffer.clear()  # Clear the buffer after successful update
+                else:
+                    print(f'Failed to send data to ThingSpeak (bulk update): {response.status_code}, {response.text}')
+            except Exception as e:
+                print('Failed to send data to ThingSpeak (bulk update):', e)
+        else:
+            data = thingspeak_buffer.pop(0)  # Get the first item in the buffer
+            payload = {
+                'api_key': THINGSPEAK_API_KEY,
+                'field1': data['co2'],
+                'field2': data['temp_f'],
+                'field3': data['humidity']
+            }
+            try:
+                response = requests.post(THINGSPEAK_URL, json=payload)
+                if response.status_code == 200:
+                    print('Data posted to ThingSpeak:', response.text)
+                else:
+                    print(f'Failed to send data to ThingSpeak: {response.status_code}, {response.text}')
+            except Exception as e:
+                print('Failed to send data to ThingSpeak:', e)
+
+def get_sensor_reading(sensor, conversion_cycle_time,last_update_sensor):
+    """Get a single sensor reading with a delay equal to the conversion cycle time."""
+    update = False
+    while update == False:
+        print(time.time() - last_update_sensor)
+        if time.time() - last_update_sensor >=30:       
+            try:
+#                 time.sleep_ms(conversion_cycle_time) #I want more fine grained timing of updating the sensor and sending the data so I don't run into power spikes...
+                if sensor.is_data_ready():
+                    update=True
+                    return sensor.get_meas_data()
+                else:
+                    print("Data not ready.")
+                    update=False
+                    time.sleep(1)
+                    return None
+                    
+            except OSError as e:
+                print(f"Error during sensor reading: {e}")
+                update=True
+                return None
+        else:
+            time.sleep(1)
+            update=False
+led = Pin(2, Pin.OUT)
+led.value(0)  # turn off red LED, doesn't work :L hard soldered in.
 
 def main():
+    reading_count = 0
+    if switch_state_wifi == 0:
+        # Connect to WiFi
+        connect_wifi(SSID, PASSWORD)
+    
     # Initialize I2C communication with the specified pins and frequency
     i2c = SoftI2C(scl=Pin(22), sda=Pin(21), freq=400_000)
     device_address = 0x62
@@ -964,10 +1217,67 @@ def main():
         return
 
     print(f"Device with address {device_address} found on I2C bus.")
-    
+    oled_power.value(1)  # Turn on OLED display
+    # Setup SoftI2C for OLED
+    i2c_oled = SoftI2C(scl=Pin(4), sda=Pin(5))
+    # Scan for OLED device
+    print('Scanning for I2C devices...')
+    devices = i2c_oled.scan()
+    if len(devices) == 0:
+        print("No I2C OLED devices found.")
+        OLEDaddress = None
+    else:
+        print('I2C OLED devices found:', len(devices))
+        OLEDaddress = devices[0]  # Assuming the first device found is the OLED
+        for device in devices:
+            print("Device address: ", hex(device))
+
+    # Initialize OLED if found
+    if OLEDaddress:
+        print("Testing OLED...")
+        oled = SSD1306_I2C(128, 64, i2c_oled)
+        i = 0
+        while i < 10:
+            time.sleep(1)
+            oled_power.value(1)
+            oled.fill(0)
+            oled.text(f"Init: Test {i}", 0, 0)
+            oled.show()
+            time.sleep(1)
+            i = i+1
+            oled_power.value(0)
+        oled_power.value(1)
+        oled.fill(0)
+        if switch_state_calibrate == 0:
+            oled.text(f"CALIBRATION ON", 0, 0)
+        if switch_state_calibrate == 1:
+            oled.text(f"CALIBRATION OFF", 0, 0)
+        if switch_state_wifi == 0:
+            oled.text(f"WIFI ON", 0, 10)
+        if switch_state_wifi == 1:
+            oled.text(f"WIFI OFF", 0, 10) 
+        oled.show()
+        time.sleep(10)
+        oled_power.value(0)
     # Create an I2C adapter and sensor instance
-    adaptor = I2cAdapter(i2c)
-    sensor = SCD4xSensirion(adaptor)
+    adapter = I2cAdapter(i2c)
+    sensor = SCD4xSensirion(adapter)
+    sensor.set_measurement(start=False, single_shot=False) #if looping need to put sensor back into IDLE mode. Sensor can't exec self test if currently reading...
+    
+    # Check if sensor is good to go. Note you may need to power cycle to pass this test. Make sure 5V in.
+    selfTest = False
+    while selfTest == False:
+        try:
+            if sensor.exec_self_test():
+                print("Sensor self test shows good to go")
+                selfTest = True
+            else:
+                print("Sensor self test failed!")
+                selfTest = False
+                time.sleep(1)
+        except Exception as e:
+            print("Exception occurred:", e)
+
 
     # Ensure the sensor is in IDLE mode
     sensor.set_measurement(start=False, single_shot=False)
@@ -978,82 +1288,162 @@ def main():
 
     # Retrieve and display the temperature offset
     temp_offset = sensor.get_temperature_offset()
-    print(f"Temperature offset: {temp_offset:.6f} °C")
+    print(f"Temperature offset: {temp_offset:.6f} F")
 
     # Set and retrieve the altitude (meters above sea level)
-    altitude = 160
-    sensor.set_altitude(altitude)
+    altitude = 198
     retrieved_altitude = sensor.get_altitude()
-    print(f"Set altitude: {altitude} m, Retrieved altitude: {retrieved_altitude} m")
-
-    # Check if data is ready to be read
-    if sensor.is_data_ready():
-        print("Measurement data can be read.")
-    else:
-        print("Measurement data missing.")
-
+    print(f"Desired Altitude: {altitude} m, Retrieved Altitude: {retrieved_altitude} m")
+    if altitude != retrieved_altitude:
+        sensor.set_altitude(altitude)
+        print(f"Altitude set to: {altitude}")
+    
     # Check if automatic self-calibration is enabled
     if sensor.is_auto_calibration():
         print("Automatic self-calibration is ON.")
     else:
         print("Automatic self-calibration is OFF.")
-
+    
     # Start periodic measurement
+    sensor._low_power_mode = True
     sensor.set_measurement(start=True, single_shot=False)
     conversion_cycle_time = sensor.get_conversion_cycle_time()
-    print(f"Conversion cycle time: {conversion_cycle_time} ms")
+    last_update_sensor =  time.time()
+    print(f"Low Power Mode: {sensor._low_power_mode}")
+    print(f"Low power periodic measurement started with conversion cycle time: {conversion_cycle_time} ms")
     print("Periodic measurement started.")
 
-    # Perform periodic measurements and display results
-    for i in range(5):
-        try:
-            time.sleep_ms(conversion_cycle_time)
-            co2, temp, humidity = sensor.get_meas_data()
-            print(f"Periodic Measurement {i+1}: CO2: {co2} ppm, Temperature: {temp:.2f} °C, Humidity: {humidity:.2f} %")
-        except OSError as e:
-            print(f"Error during periodic measurement: {e}")
-            break
+#     # Wait for two consecutive valid readings before entering the endless loop
+#     valid_readings = 0
+#     while valid_readings < 10:
+#         reading = get_sensor_reading(sensor, conversion_cycle_time)
+#         if reading:
+#             co2, temp, humidity = reading
+#             temp = temp * 9 / 5 +32
+#             time.sleep(30)
+#             print(f"Initial Reading {valid_readings + 1}: CO2: {co2} ppm, Temperature: {temp:.2f} 閹虹煵, Humidity: {humidity:.2f} %")
+#             valid_readings += 1
+#         else:
+#             # Reset the sensor and reinitialize if an error occurs
+#             print("Attempting to reinitialize the sensor...")
+#             sensor.set_measurement(start=False, single_shot=False)
+#             sensor.set_measurement(start=True, single_shot=False)
+#             valid_readings = 0
+    if switch_state_calibrate == 0:
+        #### We wanna calibrate it with this chunk if anything...
+        # Start periodic measurement
+        print("Performing sensor calibration in 30 seconds...")
+        print("The sensor will be calibrated over 60 min in fresh air.")
+        time.sleep(30)
+        sensorCycle = 0
+        calibrateMe = True
 
-    # Use the sensor in iterator mode to continuously read data
-    print("Reading using an iterator:")
-    for i, measurement in enumerate(sensor):
-        try:
-            time.sleep_ms(conversion_cycle_time)
-            if measurement:
-                co2, temp, humidity = measurement
-                print(f"Iterator Measurement {i+1}: CO2: {co2} ppm, Temperature: {temp:.2f} °C, Humidity: {humidity:.2f} %")
-                if i >= 4:
-                    break
-        except OSError as e:
-            print(f"Error during iterator measurement: {e}")
-            break
+        # Perform factory reset and reinitialize
+        sensor.perform_factory_reset()
+        print("Factory reset performed.")
+        time.sleep(2)  # Wait for the factory reset to complete
+        
+        # Perform soft reset and reinitialize
+        sensor.soft_reset()
+        time.sleep(1)  # Wait for the reset to complete
+        sensor.set_measurement(start=False, single_shot=False)
+        time.sleep(1)
+        sensor.set_measurement(start=True, single_shot=False)
+        time.sleep(1)
+        print("Performing soft reset and reinitialization...")
 
-    # Use single shot mode for measurements
-    print("Using single shot mode:")
-    for i in range(5):
-        try:
-            sensor.set_measurement(start=False, single_shot=True, rht_only=False)
-            time.sleep_ms(conversion_cycle_time * 2)
-            co2, temp, humidity = sensor.get_meas_data()
-            print(f"Single Shot Measurement {i+1}: CO2: {co2} ppm, Temperature: {temp:.2f} °C, Humidity: {humidity:.2f} %")
-        except OSError as e:
-            print(f"Error during single shot measurement: {e}")
-            break
+        while sensorCycle < 60:
+            conversion_cycle_time = sensor.get_conversion_cycle_time()
+            reading = get_sensor_reading(sensor, conversion_cycle_time)
+            if reading:
+                co2, temp, humidity = reading
+                time.sleep(30)
+                sensorCycle += 1
+                print(f"Continuous Reading: CO2: {co2} ppm, Temperature: {temp:.2f} F, Humidity: {humidity:.2f} %")
+                print(f"Sensor Cycled {sensorCycle} times of 3600")
+                if sensorCycle == 59:
+                    if calibrateMe == True:
+                        print("Initiating forced recalibration...")
+                        target_co2_concentration = int(426 * 1.15)  # Mauna Loa CO2 = 426.57ppm April 2024 + 15-20% differential for being near/in a major city(Chicago), to int bc need int for low level
+                        correction_value = sensor.force_recalibration(target_co2_concentration)
+                        print(f"Forced recalibration completed with correction value: {correction_value} ppm")
+                        sensor.set_auto_calibration(False)
+                        print("Sensor Auto Calibration set to: {sensor.get_auto_calibration}. Rerun the program after power cycling with the calibration commented out to double check persistence! ")
+                        sensor.save_config()
+                        print("Settings saved.")
+            else:
+                # Reset the sensor and reinitialize if an error occurs
+                print("Attempting to reinitialize the sensor...")
+                sensor.set_measurement(start=False, single_shot=False)
+                sensor.set_measurement(start=True, single_shot=False)
+    if switch_state_calibrate == 1:
+        print("Skipping calibration.")
+    # Endless loop to continuously read and display sensor data
 
-    # Use single shot mode to measure only temperature and humidity
-    print("Using single shot mode (RHT only):")
-    for i in range(5):
+    while True:
         try:
-            sensor.set_measurement(start=False, single_shot=True, rht_only=True)
-            time.sleep_ms(conversion_cycle_time * 2)
-            co2, temp, humidity = sensor.get_meas_data()
-            print(f"RHT Only Single Shot Measurement {i+1}: CO2: {co2} ppm, Temperature: {temp:.2f} °C, Humidity: {humidity:.2f} %")
-        except OSError as e:
-            print(f"Error during RHT only single shot measurement: {e}")
-            break
+            date_str = None
+            reading = get_sensor_reading(sensor, conversion_cycle_time,last_update_sensor)
+            if reading:
+                co2, temp, humidity = reading
+                last_update_sensor =  time.time()
+                temp = temp * 9 / 5 + 32
+                print(f"Continuous Reading: CO2: {co2} ppm, Temperature: {temp:.2f} F, Humidity: {humidity:.2f} %")
+                # Check CO2 level and sound the buzzer if above threshold
+                if co2 > 1500:
+                    print("CO2 level exceeded 1500 ppm. Activating buzzer.")
+                    sound_buzzer()
+                
+                    
+                if switch_state_wifi == 0:
+                    # Get current date and time
+                    current_time = get_time_chicago()
+                    date_str = "{:04}-{:02}-{:02}".format(current_time[0], current_time[1], current_time[2])
+                    time_str = "{:02}:{:02}:{:02}".format(current_time[3], current_time[4], current_time[5])
 
+                    data = {
+                    'date': date_str, 
+                    'time': time_str, 
+                    'co2': co2,
+                    'temp_f': temp,
+                    'humidity': humidity
+                }
+                
+                    send_data_to_google_sheets(data)
+                    thingspeak_buffer.append(data)  # Add data to buffer
+                    send_data_to_thingspeak()
+                if switch_state_wifi == 1:
+                    thingspeak_buffer.clear()
+               #OLED Logic
+                if OLEDaddress:
+                    reading_count = reading_count +1
+                    oled_power.value(1)
+                    oled.fill(0)
+                    oled.text(f'Reading: {reading_count}', 0, 0)
+                    if date_str is not None:
+                        oled.text(f'Date: {date_str}', 0, 10)
+                        oled.text(f'Time: {time_str}', 0, 20)
+                    oled.text(f'CO2:{int(co2)}ppm', 0, 30)
+                    oled.text(f'Temp:{temp:.2f}F',0,40)
+                    oled.text(f'Hum:{humidity:.2f}%', 0, 50)
+                    oled.show()
+                    time.sleep(20)
+                    oled_power.value(0) 
+                time.sleep(3)
+    #         else:
+    #             # Reset the sensor and reinitialize if an error occurs
+    #             print("Attempting to reinitialize the sensor...")
+    #             sensor.set_measurement(start=False, single_shot=False)
+    #             sensor.set_measurement(start=True, single_shot=False)
+        except Exception as e:
+                print("Error occurred:", e)
+                time.sleep(5)  # Wait for 5 seconds before retrying
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except Exception as e:
+                print("Error occurred:", e)
+                time.sleep(5)  # Wait for 5 seconds before retrying
 ```
 
 </details>
@@ -1077,6 +1467,30 @@ Another intriguing experiment involves mapping a town with sensors placed every 
 Other applications include monitoring the respiratory activity of plants by measuring CO2 exchange in greenhouse or agricultural research settings. This can offer insights into plant health, photosynthetic efficiency, and growth patterns. Pairing this with R/G/B, UV, and light sensors can help determine several growth parameters. Note that NPK (Nitrogen/Phosphorous/Potassium) sensors are often unreliable based on my research. Therefore, it's better to use actual chemical testing methods or automate the chemical testing apparatus rather than relying on electronic sensors for these measurements.
 
 In biotechnology and biochemical engineering contexts, monitoring CO2 levels in cellular cultures and bioreactors is essential. Maintaining precise CO2 concentrations ensures the optimal growth of microorganisms, which can significantly reduce production costs. This is particularly important for the pharmaceutical industry, biofuel production, and other bio-based manufacturing processes.
+
+### Personal Testing
+
+In the recent heat wave I noted that it took roughly 30 minutes to air out the house and cut CO2 levels from \~1200ppm to \~650ppm.
+
+![](CO2_Reduction.jpg)
+
+Its interesting to note that the temperature jumped only a few degrees over the 30 minutes per below:
+
+![](Temp_Humidity.jpeg)
+
+The actual "enclosure" of the sensor is just an old Raspberry Pi 5 Case box, a FLIRC model. The solid wire coming from the main board is hooked up to a smaller board used for data display, switching wifi/calibration on/off, and alerting users to high CO2(1500ppm). Note that I didn't feel like potentially burning the board or buying a soldering attachment to safely remove the LED so I covered it with some cardboard to remove some of the interference caused by the light on the sensor. See below:
+
+Raw Boards, no case
+
+![](SCD41_NoBox.jpg)
+
+Wifi/Calibration Screen, with case
+
+![](SwitchesScreen.jpg)
+
+Normal Output, with case
+
+![](SCD41_Example_Data.jpg)
 
 ### Conclusion
 
