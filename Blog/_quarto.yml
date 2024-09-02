@@ -3,7 +3,7 @@ project:
   output-dir: _site
   resources:
   - "*.ipynb"
-
+  post-render: copy_output.py
 website:
   title: "Jesse Anderson's Blog"
   open-graph: true
