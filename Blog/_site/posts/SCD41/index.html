@@ -235,7 +235,7 @@ cookieconsent.run({
 
 
 <p>Original Post: 06/01/2024</p>
-<p>Update: I updated this post as of 09/0/24 to reflect the changes made to the CO2 sensor, namely using 5V for stability, an OLED screen for display, switches for wifi and calibration, and finally an obnoxious buzzer to let me know I should open my windows/door(&gt;1500ppm).</p>
+<p>Update: I updated this post as of 09/02/24 to reflect the changes made to the CO2 sensor, namely using 5V for stability, an OLED screen for display, switches for wifi and calibration, and finally an obnoxious buzzer to let me know I should open my windows/door(&gt;1500ppm).</p>
 <p><em>Disclaimer: Please note that the information presented in this article is for informational purposes only. It is not intended to serve as health advice, engineering advice, or any form of professional guidance. Readers should consult with qualified professionals for specific health or engineering concerns and should not rely solely on the content of this article for making decisions. The authors and publishers of this article are not responsible for any actions taken based on the information provided herein.</em></p>
 <p>In this post I intend to cover the basics of SCD41 sensors, their technical performance, some MicroPython code to use with an ESP32 microcontroller(yes I know there are other ones out there), and some of the limitations/precautions one should take with this particular sensor.</p>
 <section id="what-is-an-scd41-sensor" class="level3">
@@ -2410,7 +2410,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","loop":false,"selector":".lightbox","descPosition":"bottom","closeEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","closeEffect":"zoom","selector":".lightbox","loop":false,"descPosition":"bottom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;
