@@ -1177,7 +1177,7 @@ Library Code
 <span id="cb71-547"><a href="#cb71-547"></a>    devices <span class="op">=</span> i2c.scan()</span>
 <span id="cb71-548"><a href="#cb71-548"></a>    <span class="cf">return</span> address <span class="kw">in</span> devices</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<p>And once you have that done run the following code below on your device or save it to main.py, whatever you’d like.</p>
+<p>And once you have that done run the following code below on your device or save it to main.py, whatever you’d like. Note that we power cycle every 6 hours on the device to ensure that we don’t run into memory issues. I encountered a memory leak that became a problem roughly 5 days in and felt that chasing it down was a waste compared to a simple power cycling using machine.reset().</p>
 <details>
 <summary>
 Main Code
@@ -1567,68 +1567,72 @@ Main Code
 <span id="cb72-383"><a href="#cb72-383"></a></span>
 <span id="cb72-384"><a href="#cb72-384"></a>    <span class="cf">while</span> <span class="va">True</span>:</span>
 <span id="cb72-385"><a href="#cb72-385"></a>        <span class="cf">try</span>:</span>
-<span id="cb72-386"><a href="#cb72-386"></a>            date_str <span class="op">=</span> <span class="va">None</span></span>
-<span id="cb72-387"><a href="#cb72-387"></a>            reading <span class="op">=</span> get_sensor_reading(sensor, conversion_cycle_time,last_update_sensor)</span>
-<span id="cb72-388"><a href="#cb72-388"></a>            <span class="cf">if</span> reading:</span>
-<span id="cb72-389"><a href="#cb72-389"></a>                co2, temp, humidity <span class="op">=</span> reading</span>
-<span id="cb72-390"><a href="#cb72-390"></a>                last_update_sensor <span class="op">=</span>  time.time()</span>
-<span id="cb72-391"><a href="#cb72-391"></a>                temp <span class="op">=</span> temp <span class="op">*</span> <span class="dv">9</span> <span class="op">/</span> <span class="dv">5</span> <span class="op">+</span> <span class="dv">32</span></span>
-<span id="cb72-392"><a href="#cb72-392"></a>                <span class="bu">print</span>(<span class="ss">f"Continuous Reading: CO2: </span><span class="sc">{</span>co2<span class="sc">}</span><span class="ss"> ppm, Temperature: </span><span class="sc">{</span>temp<span class="sc">:.2f}</span><span class="ss"> F, Humidity: </span><span class="sc">{</span>humidity<span class="sc">:.2f}</span><span class="ss"> %"</span>)</span>
-<span id="cb72-393"><a href="#cb72-393"></a>                <span class="co"># Check CO2 level and sound the buzzer if above threshold</span></span>
-<span id="cb72-394"><a href="#cb72-394"></a>                <span class="cf">if</span> co2 <span class="op">&gt;</span> <span class="dv">1500</span>:</span>
-<span id="cb72-395"><a href="#cb72-395"></a>                    <span class="bu">print</span>(<span class="st">"CO2 level exceeded 1500 ppm. Activating buzzer."</span>)</span>
-<span id="cb72-396"><a href="#cb72-396"></a>                    sound_buzzer()</span>
-<span id="cb72-397"><a href="#cb72-397"></a>                </span>
-<span id="cb72-398"><a href="#cb72-398"></a>                    </span>
-<span id="cb72-399"><a href="#cb72-399"></a>                <span class="cf">if</span> switch_state_wifi <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb72-400"><a href="#cb72-400"></a>                    <span class="co"># Get current date and time</span></span>
-<span id="cb72-401"><a href="#cb72-401"></a>                    current_time <span class="op">=</span> get_time_chicago()</span>
-<span id="cb72-402"><a href="#cb72-402"></a>                    date_str <span class="op">=</span> <span class="st">"</span><span class="sc">{:04}</span><span class="st">-</span><span class="sc">{:02}</span><span class="st">-</span><span class="sc">{:02}</span><span class="st">"</span>.<span class="bu">format</span>(current_time[<span class="dv">0</span>], current_time[<span class="dv">1</span>], current_time[<span class="dv">2</span>])</span>
-<span id="cb72-403"><a href="#cb72-403"></a>                    time_str <span class="op">=</span> <span class="st">"</span><span class="sc">{:02}</span><span class="st">:</span><span class="sc">{:02}</span><span class="st">:</span><span class="sc">{:02}</span><span class="st">"</span>.<span class="bu">format</span>(current_time[<span class="dv">3</span>], current_time[<span class="dv">4</span>], current_time[<span class="dv">5</span>])</span>
-<span id="cb72-404"><a href="#cb72-404"></a></span>
-<span id="cb72-405"><a href="#cb72-405"></a>                    data <span class="op">=</span> {</span>
-<span id="cb72-406"><a href="#cb72-406"></a>                    <span class="st">'date'</span>: date_str, </span>
-<span id="cb72-407"><a href="#cb72-407"></a>                    <span class="st">'time'</span>: time_str, </span>
-<span id="cb72-408"><a href="#cb72-408"></a>                    <span class="st">'co2'</span>: co2,</span>
-<span id="cb72-409"><a href="#cb72-409"></a>                    <span class="st">'temp_f'</span>: temp,</span>
-<span id="cb72-410"><a href="#cb72-410"></a>                    <span class="st">'humidity'</span>: humidity</span>
-<span id="cb72-411"><a href="#cb72-411"></a>                }</span>
-<span id="cb72-412"><a href="#cb72-412"></a>                </span>
-<span id="cb72-413"><a href="#cb72-413"></a>                    send_data_to_google_sheets(data)</span>
-<span id="cb72-414"><a href="#cb72-414"></a>                    thingspeak_buffer.append(data)  <span class="co"># Add data to buffer</span></span>
-<span id="cb72-415"><a href="#cb72-415"></a>                    send_data_to_thingspeak()</span>
-<span id="cb72-416"><a href="#cb72-416"></a>                <span class="cf">if</span> switch_state_wifi <span class="op">==</span> <span class="dv">1</span>:</span>
-<span id="cb72-417"><a href="#cb72-417"></a>                    thingspeak_buffer.clear()</span>
-<span id="cb72-418"><a href="#cb72-418"></a>               <span class="co">#OLED Logic</span></span>
-<span id="cb72-419"><a href="#cb72-419"></a>                <span class="cf">if</span> OLEDaddress:</span>
-<span id="cb72-420"><a href="#cb72-420"></a>                    reading_count <span class="op">=</span> reading_count <span class="op">+</span><span class="dv">1</span></span>
-<span id="cb72-421"><a href="#cb72-421"></a>                    oled_power.value(<span class="dv">1</span>)</span>
-<span id="cb72-422"><a href="#cb72-422"></a>                    oled.fill(<span class="dv">0</span>)</span>
-<span id="cb72-423"><a href="#cb72-423"></a>                    oled.text(<span class="ss">f'Reading: </span><span class="sc">{</span>reading_count<span class="sc">}</span><span class="ss">'</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
-<span id="cb72-424"><a href="#cb72-424"></a>                    <span class="cf">if</span> date_str <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
-<span id="cb72-425"><a href="#cb72-425"></a>                        oled.text(<span class="ss">f'Date: </span><span class="sc">{</span>date_str<span class="sc">}</span><span class="ss">'</span>, <span class="dv">0</span>, <span class="dv">10</span>)</span>
-<span id="cb72-426"><a href="#cb72-426"></a>                        oled.text(<span class="ss">f'Time: </span><span class="sc">{</span>time_str<span class="sc">}</span><span class="ss">'</span>, <span class="dv">0</span>, <span class="dv">20</span>)</span>
-<span id="cb72-427"><a href="#cb72-427"></a>                    oled.text(<span class="ss">f'CO2:</span><span class="sc">{</span><span class="bu">int</span>(co2)<span class="sc">}</span><span class="ss">ppm'</span>, <span class="dv">0</span>, <span class="dv">30</span>)</span>
-<span id="cb72-428"><a href="#cb72-428"></a>                    oled.text(<span class="ss">f'Temp:</span><span class="sc">{</span>temp<span class="sc">:.2f}</span><span class="ss">F'</span>,<span class="dv">0</span>,<span class="dv">40</span>)</span>
-<span id="cb72-429"><a href="#cb72-429"></a>                    oled.text(<span class="ss">f'Hum:</span><span class="sc">{</span>humidity<span class="sc">:.2f}</span><span class="ss">%'</span>, <span class="dv">0</span>, <span class="dv">50</span>)</span>
-<span id="cb72-430"><a href="#cb72-430"></a>                    oled.show()</span>
-<span id="cb72-431"><a href="#cb72-431"></a>                    time.sleep(<span class="dv">20</span>)</span>
-<span id="cb72-432"><a href="#cb72-432"></a>                    oled_power.value(<span class="dv">0</span>) </span>
-<span id="cb72-433"><a href="#cb72-433"></a>                time.sleep(<span class="dv">3</span>)</span>
-<span id="cb72-434"><a href="#cb72-434"></a>    <span class="co">#         else:</span></span>
-<span id="cb72-435"><a href="#cb72-435"></a>    <span class="co">#             # Reset the sensor and reinitialize if an error occurs</span></span>
-<span id="cb72-436"><a href="#cb72-436"></a>    <span class="co">#             print("Attempting to reinitialize the sensor...")</span></span>
-<span id="cb72-437"><a href="#cb72-437"></a>    <span class="co">#             sensor.set_measurement(start=False, single_shot=False)</span></span>
-<span id="cb72-438"><a href="#cb72-438"></a>    <span class="co">#             sensor.set_measurement(start=True, single_shot=False)</span></span>
-<span id="cb72-439"><a href="#cb72-439"></a>        <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
-<span id="cb72-440"><a href="#cb72-440"></a>                <span class="bu">print</span>(<span class="st">"Error occurred:"</span>, e)</span>
-<span id="cb72-441"><a href="#cb72-441"></a>                time.sleep(<span class="dv">5</span>)  <span class="co"># Wait for 5 seconds before retrying</span></span>
-<span id="cb72-442"><a href="#cb72-442"></a><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">'__main__'</span>:</span>
-<span id="cb72-443"><a href="#cb72-443"></a>    <span class="cf">try</span>:</span>
-<span id="cb72-444"><a href="#cb72-444"></a>        main()</span>
-<span id="cb72-445"><a href="#cb72-445"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
-<span id="cb72-446"><a href="#cb72-446"></a>                <span class="bu">print</span>(<span class="st">"Error occurred:"</span>, e)</span>
-<span id="cb72-447"><a href="#cb72-447"></a>                time.sleep(<span class="dv">5</span>)  <span class="co"># Wait for 5 seconds before retrying</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb72-386"><a href="#cb72-386"></a>            <span class="co">#Eventually...somewhere...memory will leak. </span></span>
+<span id="cb72-387"><a href="#cb72-387"></a>            <span class="co"># Power Cycle every 6 hours for good measure.</span></span>
+<span id="cb72-388"><a href="#cb72-388"></a>            <span class="cf">if</span> reading_count <span class="op">&gt;=</span> <span class="dv">360</span>:</span>
+<span id="cb72-389"><a href="#cb72-389"></a>                reset()</span>
+<span id="cb72-390"><a href="#cb72-390"></a>            date_str <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb72-391"><a href="#cb72-391"></a>            reading <span class="op">=</span> get_sensor_reading(sensor, conversion_cycle_time,last_update_sensor)</span>
+<span id="cb72-392"><a href="#cb72-392"></a>            <span class="cf">if</span> reading:</span>
+<span id="cb72-393"><a href="#cb72-393"></a>                co2, temp, humidity <span class="op">=</span> reading</span>
+<span id="cb72-394"><a href="#cb72-394"></a>                last_update_sensor <span class="op">=</span>  time.time()</span>
+<span id="cb72-395"><a href="#cb72-395"></a>                temp <span class="op">=</span> temp <span class="op">*</span> <span class="dv">9</span> <span class="op">/</span> <span class="dv">5</span> <span class="op">+</span> <span class="dv">32</span></span>
+<span id="cb72-396"><a href="#cb72-396"></a>                <span class="bu">print</span>(<span class="ss">f"Continuous Reading: CO2: </span><span class="sc">{</span>co2<span class="sc">}</span><span class="ss"> ppm, Temperature: </span><span class="sc">{</span>temp<span class="sc">:.2f}</span><span class="ss"> F, Humidity: </span><span class="sc">{</span>humidity<span class="sc">:.2f}</span><span class="ss"> %"</span>)</span>
+<span id="cb72-397"><a href="#cb72-397"></a>                <span class="co"># Check CO2 level and sound the buzzer if above threshold</span></span>
+<span id="cb72-398"><a href="#cb72-398"></a>                <span class="cf">if</span> co2 <span class="op">&gt;</span> <span class="dv">1500</span>:</span>
+<span id="cb72-399"><a href="#cb72-399"></a>                    <span class="bu">print</span>(<span class="st">"CO2 level exceeded 1500 ppm. Activating buzzer."</span>)</span>
+<span id="cb72-400"><a href="#cb72-400"></a>                    sound_buzzer()</span>
+<span id="cb72-401"><a href="#cb72-401"></a>                </span>
+<span id="cb72-402"><a href="#cb72-402"></a>                    </span>
+<span id="cb72-403"><a href="#cb72-403"></a>                <span class="cf">if</span> switch_state_wifi <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb72-404"><a href="#cb72-404"></a>                    <span class="co"># Get current date and time</span></span>
+<span id="cb72-405"><a href="#cb72-405"></a>                    current_time <span class="op">=</span> get_time_chicago()</span>
+<span id="cb72-406"><a href="#cb72-406"></a>                    date_str <span class="op">=</span> <span class="st">"</span><span class="sc">{:04}</span><span class="st">-</span><span class="sc">{:02}</span><span class="st">-</span><span class="sc">{:02}</span><span class="st">"</span>.<span class="bu">format</span>(current_time[<span class="dv">0</span>], current_time[<span class="dv">1</span>], current_time[<span class="dv">2</span>])</span>
+<span id="cb72-407"><a href="#cb72-407"></a>                    time_str <span class="op">=</span> <span class="st">"</span><span class="sc">{:02}</span><span class="st">:</span><span class="sc">{:02}</span><span class="st">:</span><span class="sc">{:02}</span><span class="st">"</span>.<span class="bu">format</span>(current_time[<span class="dv">3</span>], current_time[<span class="dv">4</span>], current_time[<span class="dv">5</span>])</span>
+<span id="cb72-408"><a href="#cb72-408"></a></span>
+<span id="cb72-409"><a href="#cb72-409"></a>                    data <span class="op">=</span> {</span>
+<span id="cb72-410"><a href="#cb72-410"></a>                    <span class="st">'date'</span>: date_str, </span>
+<span id="cb72-411"><a href="#cb72-411"></a>                    <span class="st">'time'</span>: time_str, </span>
+<span id="cb72-412"><a href="#cb72-412"></a>                    <span class="st">'co2'</span>: co2,</span>
+<span id="cb72-413"><a href="#cb72-413"></a>                    <span class="st">'temp_f'</span>: temp,</span>
+<span id="cb72-414"><a href="#cb72-414"></a>                    <span class="st">'humidity'</span>: humidity</span>
+<span id="cb72-415"><a href="#cb72-415"></a>                }</span>
+<span id="cb72-416"><a href="#cb72-416"></a>                </span>
+<span id="cb72-417"><a href="#cb72-417"></a>                    send_data_to_google_sheets(data)</span>
+<span id="cb72-418"><a href="#cb72-418"></a>                    thingspeak_buffer.append(data)  <span class="co"># Add data to buffer</span></span>
+<span id="cb72-419"><a href="#cb72-419"></a>                    send_data_to_thingspeak()</span>
+<span id="cb72-420"><a href="#cb72-420"></a>                <span class="cf">if</span> switch_state_wifi <span class="op">==</span> <span class="dv">1</span>:</span>
+<span id="cb72-421"><a href="#cb72-421"></a>                    thingspeak_buffer.clear()</span>
+<span id="cb72-422"><a href="#cb72-422"></a>               <span class="co">#OLED Logic</span></span>
+<span id="cb72-423"><a href="#cb72-423"></a>                <span class="cf">if</span> OLEDaddress:</span>
+<span id="cb72-424"><a href="#cb72-424"></a>                    reading_count <span class="op">=</span> reading_count <span class="op">+</span><span class="dv">1</span></span>
+<span id="cb72-425"><a href="#cb72-425"></a>                    oled_power.value(<span class="dv">1</span>)</span>
+<span id="cb72-426"><a href="#cb72-426"></a>                    oled.fill(<span class="dv">0</span>)</span>
+<span id="cb72-427"><a href="#cb72-427"></a>                    oled.text(<span class="ss">f'Reading: </span><span class="sc">{</span>reading_count<span class="sc">}</span><span class="ss">'</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
+<span id="cb72-428"><a href="#cb72-428"></a>                    <span class="cf">if</span> date_str <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb72-429"><a href="#cb72-429"></a>                        oled.text(<span class="ss">f'Date: </span><span class="sc">{</span>date_str<span class="sc">}</span><span class="ss">'</span>, <span class="dv">0</span>, <span class="dv">10</span>)</span>
+<span id="cb72-430"><a href="#cb72-430"></a>                        oled.text(<span class="ss">f'Time: </span><span class="sc">{</span>time_str<span class="sc">}</span><span class="ss">'</span>, <span class="dv">0</span>, <span class="dv">20</span>)</span>
+<span id="cb72-431"><a href="#cb72-431"></a>                    oled.text(<span class="ss">f'CO2:</span><span class="sc">{</span><span class="bu">int</span>(co2)<span class="sc">}</span><span class="ss">ppm'</span>, <span class="dv">0</span>, <span class="dv">30</span>)</span>
+<span id="cb72-432"><a href="#cb72-432"></a>                    oled.text(<span class="ss">f'Temp:</span><span class="sc">{</span>temp<span class="sc">:.2f}</span><span class="ss">F'</span>,<span class="dv">0</span>,<span class="dv">40</span>)</span>
+<span id="cb72-433"><a href="#cb72-433"></a>                    oled.text(<span class="ss">f'Hum:</span><span class="sc">{</span>humidity<span class="sc">:.2f}</span><span class="ss">%'</span>, <span class="dv">0</span>, <span class="dv">50</span>)</span>
+<span id="cb72-434"><a href="#cb72-434"></a>                    oled.show()</span>
+<span id="cb72-435"><a href="#cb72-435"></a>                    time.sleep(<span class="dv">20</span>)</span>
+<span id="cb72-436"><a href="#cb72-436"></a>                    oled_power.value(<span class="dv">0</span>) </span>
+<span id="cb72-437"><a href="#cb72-437"></a>                time.sleep(<span class="dv">3</span>)</span>
+<span id="cb72-438"><a href="#cb72-438"></a>    <span class="co">#         else:</span></span>
+<span id="cb72-439"><a href="#cb72-439"></a>    <span class="co">#             # Reset the sensor and reinitialize if an error occurs</span></span>
+<span id="cb72-440"><a href="#cb72-440"></a>    <span class="co">#             print("Attempting to reinitialize the sensor...")</span></span>
+<span id="cb72-441"><a href="#cb72-441"></a>    <span class="co">#             sensor.set_measurement(start=False, single_shot=False)</span></span>
+<span id="cb72-442"><a href="#cb72-442"></a>    <span class="co">#             sensor.set_measurement(start=True, single_shot=False)</span></span>
+<span id="cb72-443"><a href="#cb72-443"></a>        <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb72-444"><a href="#cb72-444"></a>                <span class="bu">print</span>(<span class="st">"Error occurred:"</span>, e)</span>
+<span id="cb72-445"><a href="#cb72-445"></a>                time.sleep(<span class="dv">5</span>)  <span class="co"># Wait for 5 seconds before retrying</span></span>
+<span id="cb72-446"><a href="#cb72-446"></a><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">'__main__'</span>:</span>
+<span id="cb72-447"><a href="#cb72-447"></a>    <span class="cf">try</span>:</span>
+<span id="cb72-448"><a href="#cb72-448"></a>        main()</span>
+<span id="cb72-449"><a href="#cb72-449"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb72-450"><a href="#cb72-450"></a>                <span class="bu">print</span>(<span class="st">"Error occurred:"</span>, e)</span>
+<span id="cb72-451"><a href="#cb72-451"></a>                time.sleep(<span class="dv">5</span>)  <span class="co"># Wait for 5 seconds before retrying</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <p>I’m not going to the go too much into the code as the SCD41 chip supports a variety of different modes and unless you do a deep dive into the datasheet and the code for some cursed reason you should be fine with the code above. I was able to log readings fairly close to the reported values for my town and breathing on the device and near the device increased the sensor readings reliably. I did note that the sensor took some time to get back down to baseline and took a bit to get up to the max with me breathing on it. It was roughly 2.5 minutes to get back down to baseline and that’s roughly in line with what we would ideally sample at due to the humidity sampling interval mentioned in the technical specs above. See image below:</p>
 <p><a href="CO2_Values.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6"><img src="CO2_Values.png" class="img-fluid"></a></p>
@@ -2410,7 +2414,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","closeEffect":"zoom","selector":".lightbox","loop":false,"descPosition":"bottom"});
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","descPosition":"bottom","closeEffect":"zoom","loop":false,"openEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

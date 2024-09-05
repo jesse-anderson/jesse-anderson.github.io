@@ -990,7 +990,7 @@ def check_device_presence(i2c, address):
 
 </details>
 
-And once you have that done run the following code below on your device or save it to main.py, whatever you'd like.
+And once you have that done run the following code below on your device or save it to main.py, whatever you'd like. Note that we power cycle every 6 hours on the device to ensure that we don't run into memory issues. I encountered a memory leak that became a problem roughly 5 days in and felt that chasing it down was a waste compared to a simple power cycling using machine.reset().
 
 <details>
 
@@ -1382,6 +1382,10 @@ def main():
 
     while True:
         try:
+            #Eventually...somewhere...memory will leak. 
+            # Power Cycle every 6 hours for good measure.
+            if reading_count >= 360:
+                reset()
             date_str = None
             reading = get_sensor_reading(sensor, conversion_cycle_time,last_update_sensor)
             if reading:
