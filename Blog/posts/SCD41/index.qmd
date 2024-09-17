@@ -1029,25 +1029,6 @@ GOOGLE_URL = 'https://script.google.com/macros/s/VERY_LONG_URL/exec'
 # WiFi settings
 SSID = 'YOUR_SSID'
 PASSWORD = 'WIFI_PSWD'
-
-switchOnWifi = Pin(32, Pin.IN, Pin.PULL_UP)
-switchOnCalibrate = Pin(33, Pin.IN, Pin.PULL_UP)
-buzzer = Pin(26, Pin.OUT)
-
-switch_state_calibrate = switchOnCalibrate.value() # If switch is in up position we consider it on.
-print(switch_state_calibrate)
-
-switch_state_wifi = switchOnWifi.value() # If switch is in up position we consider it on.
-print(switch_state_wifi)
-
-if switch_state_calibrate == 0:
-    print("Calibration switch is on! Calibrating Device...")
-if switch_state_wifi == 0:
-    print("Wifi switch is on! Will use Wifi...")
-    
-# Setup GPIO for OLED power
-oled_power = Pin(19, Pin.OUT)
-
 def connect_wifi(ssid, password):
     wlan = network.WLAN(network.STA_IF)
     wlan.active(True)
@@ -1057,7 +1038,7 @@ def connect_wifi(ssid, password):
         print("Connecting to WiFi...")
     print("Connected to WiFi")
     print(wlan.ifconfig())
-    
+
 def get_time_chicago():
     max_retries = 100
     for attempt in range(max_retries):
@@ -1089,19 +1070,26 @@ def get_time_chicago():
 def sound_buzzer():
     for _ in range(5):
         buzzer.value(1)  # Turn on buzzer
-        time.sleep(0.25)  # 250 ms delay
+        time.sleep(0.5)  # 500 ms delay
         buzzer.value(0)  # Turn off buzzer
-        time.sleep(0.25)  # 250 ms delay
-
+        time.sleep(0.5)  # 500 ms delay
+    
 def send_data_to_google_sheets(data):
     url = GOOGLE_URL  # Define your Google URL here
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
     encoded_data = (
         "Date=" + data['date'] +
         "&Time=" + data['time'] +
-        "&CO2=" + str(data['co2']) +
-        "&Temperature=" + str(data['temp_f']) +
-        "&Humidity=" + str(data['humidity'])
+        "&Temp=" + str(data['temp_f']) +
+        "&Humidity=" + str(data['humidity']) +
+        "&Lux=" + str(data['lux']) +
+        "&CCT=" + str(data['color_temp']) +
+        "&Soil Moisture=" + str(data['soil_moisture']) +
+        "&Soil Temp=" + str(data['soil_temp']) +
+        "&R=" + str(data['r']) +
+        "&G=" + str(data['g']) +
+        "&B=" + str(data['b']) +
+        "&HTML=" + data['html']
     )
     try:
         # Extract host and path from URL
@@ -1140,9 +1128,12 @@ def send_data_to_thingspeak():
             for data in thingspeak_buffer:
                 update = {
                     'created_at': f"{data['date']} {data['time']} -0500",
-                    'field1': data['co2'],
-                    'field2': data['temp_f'],
-                    'field3': data['humidity']
+                    'field1': data['soil_temp'],
+                    'field2': data['soil_moisture'],
+                    'field3': data['lux'],
+                    'field4': data['color_temp'],
+                    'field5': data['temp_f'],
+                    'field6': data['humidity']
                 }
                 payload['updates'].append(update)
 
@@ -1161,9 +1152,12 @@ def send_data_to_thingspeak():
             data = thingspeak_buffer.pop(0)  # Get the first item in the buffer
             payload = {
                 'api_key': THINGSPEAK_API_KEY,
-                'field1': data['co2'],
-                'field2': data['temp_f'],
-                'field3': data['humidity']
+                'field1': data['soil_temp'],
+                'field2': data['soil_moisture'],
+                'field3': data['lux'],
+                'field4': data['color_temp'],
+                'field5': data['temp_f'],
+                'field6': data['humidity']
             }
             try:
                 response = requests.post(THINGSPEAK_URL, json=payload)
@@ -1174,280 +1168,238 @@ def send_data_to_thingspeak():
             except Exception as e:
                 print('Failed to send data to ThingSpeak:', e)
 
-def get_sensor_reading(sensor, conversion_cycle_time,last_update_sensor):
-    """Get a single sensor reading with a delay equal to the conversion cycle time."""
-    update = False
-    while update == False:
-        print(time.time() - last_update_sensor)
-        if time.time() - last_update_sensor >=30:       
-            try:
-#                 time.sleep_ms(conversion_cycle_time) #I want more fine grained timing of updating the sensor and sending the data so I don't run into power spikes...
-                if sensor.is_data_ready():
-                    update=True
-                    return sensor.get_meas_data()
-                else:
-                    print("Data not ready.")
-                    update=False
-                    time.sleep(1)
-                    return None
-                    
-            except OSError as e:
-                print(f"Error during sensor reading: {e}")
-                update=True
-                return None
-        else:
-            time.sleep(1)
-            update=False
-led = Pin(2, Pin.OUT)
-led.value(0)  # turn off red LED, doesn't work :L hard soldered in.
+# Pin definitions
+DHT_PIN = Pin(27)
+DHT_POWER_PIN = Pin(26, Pin.OUT)
+# SEESAW_POWER_PIN = Pin(25, Pin.OUT)
+TCS34725_POWER_PIN = Pin(33, Pin.OUT)
+OLED_POWER_PIN = Pin(32, Pin.OUT)
+TCS34725_LED_PIN = Pin(23, Pin.OUT)  # GPIO 23 for TCS34725 LED control
 
-def main():
-    reading_count = 0
-    if switch_state_wifi == 0:
-        # Connect to WiFi
-        connect_wifi(SSID, PASSWORD)
+# Setup GPIO for Buzzer
+BUZZER_GPIO = 13  # Use GPIO 25 for the buzzer
+buzzer = machine.Pin(BUZZER_GPIO, Pin.OUT)
+
+# Initialize separate I2C buses
+i2c_oled = SoftI2C(scl=Pin(22), sda=Pin(21))
+i2c_seesaw = SoftI2C(scl=Pin(16), sda=Pin(17))
+i2c_tcs = SoftI2C(scl=Pin(18), sda=Pin(19))
+
+# Scan I2C buses
+OLED_POWER_PIN.value(1)
+print('Scanning I2C bus for OLED...')
+devices_oled = i2c_oled.scan()
+OLED_POWER_PIN.value(0)
+print('OLED I2C devices:', [hex(device) for device in devices_oled])
+time.sleep(1)
+
+print('Scanning I2C bus for Seesaw...')
+# SEESAW_POWER_PIN.value(1)
+devices_seesaw = i2c_seesaw.scan()
+# SEESAW_POWER_PIN.value(0)
+print('Seesaw I2C devices:', [hex(device) for device in devices_seesaw])
+time.sleep(1)
+
+print('Scanning I2C bus for TCS34725...')
+TCS34725_POWER_PIN.value(1)
+TCS34725_LED_PIN.value(0)  # Start with the LED off
+devices_tcs = i2c_tcs.scan()
+print('TCS34725 I2C devices:', [hex(device) for device in devices_tcs])
+
+# Initialize DHT22 sensor and OLED display
+DHT_POWER_PIN.value(1)
+dht_sensor = DHT22(DHT_PIN)
+DHT_POWER_PIN.value(0)
+
+OLED_POWER_PIN.value(1)
+oled = SSD1306_I2C(128, 64, i2c_oled)
+
+# Ensure the addresses are correct (default addresses used)
+if 0x36 in devices_seesaw:
+    soil_sensor = StemmaSoilSensor(i2c_seesaw)
+else:
+    print("Seesaw sensor not found!")
     
-    # Initialize I2C communication with the specified pins and frequency
-    i2c = SoftI2C(scl=Pin(22), sda=Pin(21), freq=400_000)
-    device_address = 0x62
-
-    # Check if the device is present on the I2C bus
-    if not check_device_presence(i2c, device_address):
-        print(f"Device with address {device_address} not found on I2C bus.")
-        return
-
-    print(f"Device with address {device_address} found on I2C bus.")
-    oled_power.value(1)  # Turn on OLED display
-    # Setup SoftI2C for OLED
-    i2c_oled = SoftI2C(scl=Pin(4), sda=Pin(5))
-    # Scan for OLED device
-    print('Scanning for I2C devices...')
-    devices = i2c_oled.scan()
-    if len(devices) == 0:
-        print("No I2C OLED devices found.")
-        OLEDaddress = None
-    else:
-        print('I2C OLED devices found:', len(devices))
-        OLEDaddress = devices[0]  # Assuming the first device found is the OLED
-        for device in devices:
-            print("Device address: ", hex(device))
-
-    # Initialize OLED if found
-    if OLEDaddress:
-        print("Testing OLED...")
-        oled = SSD1306_I2C(128, 64, i2c_oled)
-        i = 0
-        while i < 10:
-            time.sleep(1)
-            oled_power.value(1)
-            oled.fill(0)
-            oled.text(f"Init: Test {i}", 0, 0)
-            oled.show()
-            time.sleep(1)
-            i = i+1
-            oled_power.value(0)
-        oled_power.value(1)
-        oled.fill(0)
-        if switch_state_calibrate == 0:
-            oled.text(f"CALIBRATION ON", 0, 0)
-        if switch_state_calibrate == 1:
-            oled.text(f"CALIBRATION OFF", 0, 0)
-        if switch_state_wifi == 0:
-            oled.text(f"WIFI ON", 0, 10)
-        if switch_state_wifi == 1:
-            oled.text(f"WIFI OFF", 0, 10) 
-        oled.show()
-        time.sleep(10)
-        oled_power.value(0)
-    # Create an I2C adapter and sensor instance
-    adapter = I2cAdapter(i2c)
-    sensor = SCD4xSensirion(adapter)
-    sensor.set_measurement(start=False, single_shot=False) #if looping need to put sensor back into IDLE mode. Sensor can't exec self test if currently reading...
+if 0x39 in devices_tcs:
+    tcs = TCS34725(i2c_tcs)
+else:
+    print("TCS34725 sensor not found!")
     
-    # Check if sensor is good to go. Note you may need to power cycle to pass this test. Make sure 5V in.
-    selfTest = False
-    while selfTest == False:
+# # Function to adjust gain and integration time based on Lux value
+# def adjust_tcs_settings(tcs, lux):
+#     print(lux)
+#     if lux > 10000:
+#         integration_time = 50  # Short integration time
+#         gain = 1  # Low gain
+#     elif lux > 1000:
+#         integration_time = 100  # Moderate integration time
+#         gain = 1  # Moderate gain
+#     elif lux > 100:
+#         integration_time = 150  # Long integration time
+#         gain = 4  # High gain
+#     else:
+#         integration_time = 200  # Longest integration time
+#         gain = 16  # Highest gain
+# 
+#     tcs.integration_time(integration_time)
+#     tcs.gain(gain)
+#     print(f'Adjusted TCS34725 settings: Integration Time = {integration_time} ms, Gain = {gain}')
+
+# Function to reinitialize the TCS34725 sensor with retries and initial Lux adjustment
+def reinitialize_tcs_sensor(i2c_tcs, retries=9):
+    for attempt in range(retries):
         try:
-            if sensor.exec_self_test():
-                print("Sensor self test shows good to go")
-                selfTest = True
-            else:
-                print("Sensor self test failed!")
-                selfTest = False
-                time.sleep(1)
+            tcs = TCS34725(i2c_tcs)
+            tcs.gain(4)
+            tcs.integration_time(150)
+            time.sleep(1)
+            tcs.active(True)
+            tcs.led(False)  # Ensure LED is off
+            time.sleep(1)  # Wait for the sensor to stabilize
+            cct, lux = tcs.read()  # Get initial readings to dynamically adjust Lux values
+            cct, lux = tcs.read()  # Get initial readings to dynamically adjust Lux values
+            print("Intial CCT:",cct)
+            print("Initial Lux:",lux)
+            
+            cct, lux = tcs.read()  # Get initial readings to dynamically adjust Lux values
+#             adjust_tcs_settings(tcs, lux)  # Adjust settings based on Lux
+            print("2nd CCT:",cct)
+            print("2nd Lux:",lux)
+            time.sleep(1)  # Wait for settings to take effect
+            print(f"TCS34725 sensor initialized on attempt {attempt + 1}")
+            return tcs, cct, lux
         except Exception as e:
-            print("Exception occurred:", e)
-
-
-    # Ensure the sensor is in IDLE mode
-    sensor.set_measurement(start=False, single_shot=False)
-
-    # Retrieve and display the sensor ID
-    sensor_id = sensor.get_id()
-    print(f"Sensor ID: {sensor_id[0]:x}:{sensor_id[1]:x}:{sensor_id[2]:x}")
-
-    # Retrieve and display the temperature offset
-    temp_offset = sensor.get_temperature_offset()
-    print(f"Temperature offset: {temp_offset:.6f} F")
-
-    # Set and retrieve the altitude (meters above sea level)
-    altitude = 198
-    retrieved_altitude = sensor.get_altitude()
-    print(f"Desired Altitude: {altitude} m, Retrieved Altitude: {retrieved_altitude} m")
-    if altitude != retrieved_altitude:
-        sensor.set_altitude(altitude)
-        print(f"Altitude set to: {altitude}")
-    
-    # Check if automatic self-calibration is enabled
-    if sensor.is_auto_calibration():
-        print("Automatic self-calibration is ON.")
-    else:
-        print("Automatic self-calibration is OFF.")
-    
-    # Start periodic measurement
-    sensor._low_power_mode = True
-    sensor.set_measurement(start=True, single_shot=False)
-    conversion_cycle_time = sensor.get_conversion_cycle_time()
-    last_update_sensor =  time.time()
-    print(f"Low Power Mode: {sensor._low_power_mode}")
-    print(f"Low power periodic measurement started with conversion cycle time: {conversion_cycle_time} ms")
-    print("Periodic measurement started.")
-
-#     # Wait for two consecutive valid readings before entering the endless loop
-#     valid_readings = 0
-#     while valid_readings < 10:
-#         reading = get_sensor_reading(sensor, conversion_cycle_time)
-#         if reading:
-#             co2, temp, humidity = reading
-#             temp = temp * 9 / 5 +32
-#             time.sleep(30)
-#             print(f"Initial Reading {valid_readings + 1}: CO2: {co2} ppm, Temperature: {temp:.2f} 閹虹煵, Humidity: {humidity:.2f} %")
-#             valid_readings += 1
-#         else:
-#             # Reset the sensor and reinitialize if an error occurs
-#             print("Attempting to reinitialize the sensor...")
-#             sensor.set_measurement(start=False, single_shot=False)
-#             sensor.set_measurement(start=True, single_shot=False)
-#             valid_readings = 0
-    if switch_state_calibrate == 0:
-        #### We wanna calibrate it with this chunk if anything...
-        # Start periodic measurement
-        print("Performing sensor calibration in 30 seconds...")
-        print("The sensor will be calibrated over 60 min in fresh air.")
-        time.sleep(30)
-        sensorCycle = 0
-        calibrateMe = True
-
-        # Perform factory reset and reinitialize
-        sensor.perform_factory_reset()
-        print("Factory reset performed.")
-        time.sleep(2)  # Wait for the factory reset to complete
-        
-        # Perform soft reset and reinitialize
-        sensor.soft_reset()
-        time.sleep(1)  # Wait for the reset to complete
-        sensor.set_measurement(start=False, single_shot=False)
-        time.sleep(1)
-        sensor.set_measurement(start=True, single_shot=False)
-        time.sleep(1)
-        print("Performing soft reset and reinitialization...")
-
-        while sensorCycle < 60:
-            conversion_cycle_time = sensor.get_conversion_cycle_time()
-            reading = get_sensor_reading(sensor, conversion_cycle_time)
-            if reading:
-                co2, temp, humidity = reading
-                time.sleep(30)
-                sensorCycle += 1
-                print(f"Continuous Reading: CO2: {co2} ppm, Temperature: {temp:.2f} F, Humidity: {humidity:.2f} %")
-                print(f"Sensor Cycled {sensorCycle} times of 3600")
-                if sensorCycle == 59:
-                    if calibrateMe == True:
-                        print("Initiating forced recalibration...")
-                        target_co2_concentration = int(426 * 1.15)  # Mauna Loa CO2 = 426.57ppm April 2024 + 15-20% differential for being near/in a major city(Chicago), to int bc need int for low level
-                        correction_value = sensor.force_recalibration(target_co2_concentration)
-                        print(f"Forced recalibration completed with correction value: {correction_value} ppm")
-                        sensor.set_auto_calibration(False)
-                        print("Sensor Auto Calibration set to: {sensor.get_auto_calibration}. Rerun the program after power cycling with the calibration commented out to double check persistence! ")
-                        sensor.save_config()
-                        print("Settings saved.")
-            else:
-                # Reset the sensor and reinitialize if an error occurs
-                print("Attempting to reinitialize the sensor...")
-                sensor.set_measurement(start=False, single_shot=False)
-                sensor.set_measurement(start=True, single_shot=False)
-    if switch_state_calibrate == 1:
-        print("Skipping calibration.")
-    # Endless loop to continuously read and display sensor data
-
+            print(f"Error initializing TCS34725 sensor: {e}, retrying...")
+            time.sleep(1)
+    raise RuntimeError("Failed to initialize TCS34725 sensor after multiple attempts")
+def main():
+    # Connect to WiFi
+    connect_wifi(SSID, PASSWORD)
+    count = 0
+    # Main loop
     while True:
         try:
-            #Eventually...somewhere...memory will leak. 
-            # Power Cycle every 6 hours for good measure.
-            if reading_count >= 360:
-                reset()
-            date_str = None
-            reading = get_sensor_reading(sensor, conversion_cycle_time,last_update_sensor)
-            if reading:
-                co2, temp, humidity = reading
-                last_update_sensor =  time.time()
-                temp = temp * 9 / 5 + 32
-                print(f"Continuous Reading: CO2: {co2} ppm, Temperature: {temp:.2f} F, Humidity: {humidity:.2f} %")
-                # Check CO2 level and sound the buzzer if above threshold
-                if co2 > 1500:
-                    print("CO2 level exceeded 1500 ppm. Activating buzzer.")
-                    sound_buzzer()
-                
-                    
-                if switch_state_wifi == 0:
-                    # Get current date and time
-                    current_time = get_time_chicago()
-                    date_str = "{:04}-{:02}-{:02}".format(current_time[0], current_time[1], current_time[2])
-                    time_str = "{:02}:{:02}:{:02}".format(current_time[3], current_time[4], current_time[5])
+            count = count +1
+            # Read DHT22 sensor
+            print("Reading DHT22 sensor...")
+            DHT_POWER_PIN.value(1)
+            time.sleep(2)  # Wait for the sensor to stabilize
+            dht_sensor.measure()
+            temp_dht22 = dht_sensor.temperature()
+            humidity = dht_sensor.humidity()
+            temp_fahrenheit = int(temp_dht22 * 9 / 5 + 32)
+            humidity = int(humidity)
+            DHT_POWER_PIN.value(0)
 
-                    data = {
-                    'date': date_str, 
-                    'time': time_str, 
-                    'co2': co2,
-                    'temp_f': temp,
-                    'humidity': humidity
-                }
-                
-                    send_data_to_google_sheets(data)
-                    thingspeak_buffer.append(data)  # Add data to buffer
-                    send_data_to_thingspeak()
-                if switch_state_wifi == 1:
-                    thingspeak_buffer.clear()
-               #OLED Logic
-                if OLEDaddress:
-                    reading_count = reading_count +1
-                    oled_power.value(1)
-                    oled.fill(0)
-                    oled.text(f'Reading: {reading_count}', 0, 0)
-                    if date_str is not None:
-                        oled.text(f'Date: {date_str}', 0, 10)
-                        oled.text(f'Time: {time_str}', 0, 20)
-                    oled.text(f'CO2:{int(co2)}ppm', 0, 30)
-                    oled.text(f'Temp:{temp:.2f}F',0,40)
-                    oled.text(f'Hum:{humidity:.2f}%', 0, 50)
-                    oled.show()
-                    time.sleep(20)
-                    oled_power.value(0) 
-                time.sleep(3)
-    #         else:
-    #             # Reset the sensor and reinitialize if an error occurs
-    #             print("Attempting to reinitialize the sensor...")
-    #             sensor.set_measurement(start=False, single_shot=False)
-    #             sensor.set_measurement(start=True, single_shot=False)
+            # Read Seesaw (Soil) sensor if it is found
+            if 'soil_sensor' in locals():
+                print("Reading Seesaw sensor...")
+                soil_temp = soil_sensor.get_temp()
+                soil_temp = int(soil_temp * 9 / 5 + 32)
+                soil_moisture = soil_sensor.get_moisture()
+            else:
+                soil_temp = None
+                soil_moisture = None
+
+            # Reinitialize and read TCS34725 sensor
+            print("Reinitializing and reading TCS34725 sensor...")
+            TCS34725_POWER_PIN.value(1)
+            TCS34725_LED_PIN.value(0)  # Turn off the LED
+            tcs, cct, lux = reinitialize_tcs_sensor(i2c_tcs)
+            time.sleep(1)  # Wait for the sensor to stabilize
+
+            try:
+                raw_data = tcs.read(True)
+                print(f"Raw data: {raw_data}")
+                r, g, b, c = raw_data
+                cct, lux = tcs.read()
+                print(f"RGB: ({r}, {g}, {b}), Clear: {c}, CCT: {cct}, Lux: {lux}")
+                html_rgb_val = tcs.html_rgb(raw_data)
+                html_hex_val = tcs.html_hex(raw_data)
+                print(f"HTML RGB: {html_rgb_val}, HTML Hex: {html_hex_val}")
+            except RuntimeError as e:
+                print("Error reading TCS34725:", e)
+                html_hex_val = "Error"
+                lux = cct = 0
+
+            TCS34725_LED_PIN.value(0)  # Turn off the LED
+            TCS34725_POWER_PIN.value(0)
+            
+             # Get current date and time
+            current_time = get_time_chicago()
+            date_str = "{:04}-{:02}-{:02}".format(current_time[0], current_time[1], current_time[2])
+            time_str = "{:02}:{:02}:{:02}".format(current_time[3], current_time[4], current_time[5])
+
+            # Print sensor data to the console
+            print(f'Color: {html_hex_val}')
+            print(f'Lux: {lux}')
+            print(f'CCT: {cct}')
+            print(f'Temp: {temp_fahrenheit} Hum:{humidity}')
+            if soil_temp is not None and soil_moisture is not None:
+                print(f'Soil Temp: {soil_temp} F')
+                print(f'Soil Moisture: {soil_moisture}')
+            # Display data on OLED
+            print("Updating OLED display...")
+            oled.fill(0)
+            if soil_temp is not None:
+                oled.text(f'Soil Temp: {soil_temp}F', 0, 0)
+            if soil_moisture is not None:
+                print("Count: ", count)
+                oled.text(f'Moisture: {soil_moisture}', 0, 10)
+                if count > 60:
+                    count = 0
+                    if soil_moisture < 600:
+                        sound_buzzer()
+                        print("Buzzer sounded")
+            oled.text(f'RGB: {int(html_rgb_val[0])},{int(html_rgb_val[1])},{int(html_rgb_val[2])}', 0, 20)
+            oled.text(f'Lux:{int(lux)}', 0, 30)
+            oled.text(f'CCT:{int(cct)}',0,40)
+            oled.text(f'Temp:{temp_fahrenheit}F Hum:{humidity}%', 0, 50)
+            oled.show()
+            print(' ')
+            # Prepare data for ThingSpeak
+            data = {
+                'soil_temp': soil_temp,
+                'soil_moisture': soil_moisture,
+                'lux': lux,
+                'color_temp': cct,
+                'temp_f': temp_fahrenheit,
+                'humidity': humidity
+            }
+            
+            # Prepare data for ThingSpeak
+            thingspeak_buffer.append(data)
+
+            # Send data to ThingSpeak
+            send_data_to_thingspeak()
+            
+            data = {
+                'date': date_str,
+                'time': time_str,
+                'temp_f': temp_fahrenheit,
+                'humidity': humidity,
+                'lux': lux,
+                'color_temp': cct,
+                'soil_moisture': soil_moisture,
+                'soil_temp': soil_temp,
+                'r': int(html_rgb_val[0]),
+                'g': int(html_rgb_val[1]),
+                'b': int(html_rgb_val[2]),
+                'html': html_hex_val
+            }    
+            # Send data to Google Sheets
+            send_data_to_google_sheets(data)
+
+
+
+            # Wait before the next update
+            time.sleep(45)
+
         except Exception as e:
-                print("Error occurred:", e)
-                time.sleep(5)  # Wait for 5 seconds before retrying
+            print("Error occurred:", e)
+            time.sleep(5)  # Wait for 5 seconds before retrying
 if __name__ == '__main__':
-    try:
-        main()
-    except Exception as e:
-                print("Error occurred:", e)
-                time.sleep(5)  # Wait for 5 seconds before retrying
+    main()
 ```
 
 </details>

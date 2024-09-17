@@ -1214,425 +1214,377 @@ Main Code
 <span id="cb72-30"><a href="#cb72-30"></a><span class="co"># WiFi settings</span></span>
 <span id="cb72-31"><a href="#cb72-31"></a>SSID <span class="op">=</span> <span class="st">'YOUR_SSID'</span></span>
 <span id="cb72-32"><a href="#cb72-32"></a>PASSWORD <span class="op">=</span> <span class="st">'WIFI_PSWD'</span></span>
-<span id="cb72-33"><a href="#cb72-33"></a></span>
-<span id="cb72-34"><a href="#cb72-34"></a>switchOnWifi <span class="op">=</span> Pin(<span class="dv">32</span>, Pin.IN, Pin.PULL_UP)</span>
-<span id="cb72-35"><a href="#cb72-35"></a>switchOnCalibrate <span class="op">=</span> Pin(<span class="dv">33</span>, Pin.IN, Pin.PULL_UP)</span>
-<span id="cb72-36"><a href="#cb72-36"></a>buzzer <span class="op">=</span> Pin(<span class="dv">26</span>, Pin.OUT)</span>
-<span id="cb72-37"><a href="#cb72-37"></a></span>
-<span id="cb72-38"><a href="#cb72-38"></a>switch_state_calibrate <span class="op">=</span> switchOnCalibrate.value() <span class="co"># If switch is in up position we consider it on.</span></span>
-<span id="cb72-39"><a href="#cb72-39"></a><span class="bu">print</span>(switch_state_calibrate)</span>
-<span id="cb72-40"><a href="#cb72-40"></a></span>
-<span id="cb72-41"><a href="#cb72-41"></a>switch_state_wifi <span class="op">=</span> switchOnWifi.value() <span class="co"># If switch is in up position we consider it on.</span></span>
-<span id="cb72-42"><a href="#cb72-42"></a><span class="bu">print</span>(switch_state_wifi)</span>
-<span id="cb72-43"><a href="#cb72-43"></a></span>
-<span id="cb72-44"><a href="#cb72-44"></a><span class="cf">if</span> switch_state_calibrate <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb72-45"><a href="#cb72-45"></a>    <span class="bu">print</span>(<span class="st">"Calibration switch is on! Calibrating Device..."</span>)</span>
-<span id="cb72-46"><a href="#cb72-46"></a><span class="cf">if</span> switch_state_wifi <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb72-47"><a href="#cb72-47"></a>    <span class="bu">print</span>(<span class="st">"Wifi switch is on! Will use Wifi..."</span>)</span>
-<span id="cb72-48"><a href="#cb72-48"></a>    </span>
-<span id="cb72-49"><a href="#cb72-49"></a><span class="co"># Setup GPIO for OLED power</span></span>
-<span id="cb72-50"><a href="#cb72-50"></a>oled_power <span class="op">=</span> Pin(<span class="dv">19</span>, Pin.OUT)</span>
-<span id="cb72-51"><a href="#cb72-51"></a></span>
-<span id="cb72-52"><a href="#cb72-52"></a><span class="kw">def</span> connect_wifi(ssid, password):</span>
-<span id="cb72-53"><a href="#cb72-53"></a>    wlan <span class="op">=</span> network.WLAN(network.STA_IF)</span>
-<span id="cb72-54"><a href="#cb72-54"></a>    wlan.active(<span class="va">True</span>)</span>
-<span id="cb72-55"><a href="#cb72-55"></a>    wlan.<span class="ex">connect</span>(ssid, password)</span>
-<span id="cb72-56"><a href="#cb72-56"></a>    <span class="cf">while</span> <span class="kw">not</span> wlan.isconnected():</span>
-<span id="cb72-57"><a href="#cb72-57"></a>        time.sleep(<span class="dv">1</span>)</span>
-<span id="cb72-58"><a href="#cb72-58"></a>        <span class="bu">print</span>(<span class="st">"Connecting to WiFi..."</span>)</span>
-<span id="cb72-59"><a href="#cb72-59"></a>    <span class="bu">print</span>(<span class="st">"Connected to WiFi"</span>)</span>
-<span id="cb72-60"><a href="#cb72-60"></a>    <span class="bu">print</span>(wlan.ifconfig())</span>
-<span id="cb72-61"><a href="#cb72-61"></a>    </span>
-<span id="cb72-62"><a href="#cb72-62"></a><span class="kw">def</span> get_time_chicago():</span>
-<span id="cb72-63"><a href="#cb72-63"></a>    max_retries <span class="op">=</span> <span class="dv">100</span></span>
-<span id="cb72-64"><a href="#cb72-64"></a>    <span class="cf">for</span> attempt <span class="kw">in</span> <span class="bu">range</span>(max_retries):</span>
-<span id="cb72-65"><a href="#cb72-65"></a>        <span class="cf">try</span>:</span>
-<span id="cb72-66"><a href="#cb72-66"></a>            ntptime.settime()</span>
-<span id="cb72-67"><a href="#cb72-67"></a>            current_time <span class="op">=</span> utime.localtime()</span>
-<span id="cb72-68"><a href="#cb72-68"></a>            <span class="cf">break</span></span>
-<span id="cb72-69"><a href="#cb72-69"></a>        <span class="cf">except</span> <span class="pp">OSError</span> <span class="im">as</span> e:</span>
-<span id="cb72-70"><a href="#cb72-70"></a>            <span class="bu">print</span>(<span class="ss">f"Failed to get NTP time, attempt </span><span class="sc">{</span>attempt <span class="op">+</span> <span class="dv">1</span><span class="sc">}</span><span class="ss"> of </span><span class="sc">{</span>max_retries<span class="sc">}</span><span class="ss">. Error: </span><span class="sc">{</span>e<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb72-71"><a href="#cb72-71"></a>            time.sleep(<span class="dv">1</span>)</span>
-<span id="cb72-72"><a href="#cb72-72"></a>    <span class="cf">else</span>:</span>
-<span id="cb72-73"><a href="#cb72-73"></a>        <span class="bu">print</span>(<span class="st">"Could not get NTP time, proceeding without time synchronization."</span>)</span>
-<span id="cb72-74"><a href="#cb72-74"></a>        <span class="cf">return</span> utime.localtime()</span>
-<span id="cb72-75"><a href="#cb72-75"></a></span>
-<span id="cb72-76"><a href="#cb72-76"></a>    <span class="co"># Determine if it is daylight saving time (DST)</span></span>
-<span id="cb72-77"><a href="#cb72-77"></a>    month <span class="op">=</span> current_time[<span class="dv">1</span>]</span>
-<span id="cb72-78"><a href="#cb72-78"></a>    day <span class="op">=</span> current_time[<span class="dv">2</span>]</span>
-<span id="cb72-79"><a href="#cb72-79"></a>    hour <span class="op">=</span> current_time[<span class="dv">3</span>]</span>
-<span id="cb72-80"><a href="#cb72-80"></a>    <span class="cf">if</span> (month <span class="op">&gt;</span> <span class="dv">3</span> <span class="kw">and</span> month <span class="op">&lt;</span> <span class="dv">11</span>) <span class="kw">or</span> (month <span class="op">==</span> <span class="dv">3</span> <span class="kw">and</span> day <span class="op">&gt;=</span> <span class="dv">8</span> <span class="kw">and</span> hour <span class="op">&gt;=</span> <span class="dv">2</span>) <span class="kw">or</span> (month <span class="op">==</span> <span class="dv">11</span> <span class="kw">and</span> day <span class="op">&lt;</span> <span class="dv">1</span> <span class="kw">and</span> hour <span class="op">&lt;</span> <span class="dv">2</span>):</span>
-<span id="cb72-81"><a href="#cb72-81"></a>        is_dst <span class="op">=</span> <span class="va">True</span></span>
-<span id="cb72-82"><a href="#cb72-82"></a>    <span class="cf">else</span>:</span>
-<span id="cb72-83"><a href="#cb72-83"></a>        is_dst <span class="op">=</span> <span class="va">False</span></span>
-<span id="cb72-84"><a href="#cb72-84"></a>    </span>
-<span id="cb72-85"><a href="#cb72-85"></a>    offset <span class="op">=</span> <span class="op">-</span><span class="dv">6</span> <span class="op">*</span> <span class="dv">3600</span> <span class="cf">if</span> <span class="kw">not</span> is_dst <span class="cf">else</span> <span class="op">-</span><span class="dv">5</span> <span class="op">*</span> <span class="dv">3600</span></span>
-<span id="cb72-86"><a href="#cb72-86"></a>    local_time <span class="op">=</span> utime.mktime(current_time) <span class="op">+</span> offset</span>
-<span id="cb72-87"><a href="#cb72-87"></a>    <span class="cf">return</span> utime.localtime(local_time)</span>
-<span id="cb72-88"><a href="#cb72-88"></a></span>
-<span id="cb72-89"><a href="#cb72-89"></a><span class="co"># Function to sound the buzzer</span></span>
-<span id="cb72-90"><a href="#cb72-90"></a><span class="kw">def</span> sound_buzzer():</span>
-<span id="cb72-91"><a href="#cb72-91"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">5</span>):</span>
-<span id="cb72-92"><a href="#cb72-92"></a>        buzzer.value(<span class="dv">1</span>)  <span class="co"># Turn on buzzer</span></span>
-<span id="cb72-93"><a href="#cb72-93"></a>        time.sleep(<span class="fl">0.25</span>)  <span class="co"># 250 ms delay</span></span>
-<span id="cb72-94"><a href="#cb72-94"></a>        buzzer.value(<span class="dv">0</span>)  <span class="co"># Turn off buzzer</span></span>
-<span id="cb72-95"><a href="#cb72-95"></a>        time.sleep(<span class="fl">0.25</span>)  <span class="co"># 250 ms delay</span></span>
-<span id="cb72-96"><a href="#cb72-96"></a></span>
-<span id="cb72-97"><a href="#cb72-97"></a><span class="kw">def</span> send_data_to_google_sheets(data):</span>
-<span id="cb72-98"><a href="#cb72-98"></a>    url <span class="op">=</span> GOOGLE_URL  <span class="co"># Define your Google URL here</span></span>
-<span id="cb72-99"><a href="#cb72-99"></a>    headers <span class="op">=</span> {<span class="st">'Content-Type'</span>: <span class="st">'application/x-www-form-urlencoded'</span>}</span>
-<span id="cb72-100"><a href="#cb72-100"></a>    encoded_data <span class="op">=</span> (</span>
-<span id="cb72-101"><a href="#cb72-101"></a>        <span class="st">"Date="</span> <span class="op">+</span> data[<span class="st">'date'</span>] <span class="op">+</span></span>
-<span id="cb72-102"><a href="#cb72-102"></a>        <span class="st">"&amp;Time="</span> <span class="op">+</span> data[<span class="st">'time'</span>] <span class="op">+</span></span>
-<span id="cb72-103"><a href="#cb72-103"></a>        <span class="st">"&amp;CO2="</span> <span class="op">+</span> <span class="bu">str</span>(data[<span class="st">'co2'</span>]) <span class="op">+</span></span>
-<span id="cb72-104"><a href="#cb72-104"></a>        <span class="st">"&amp;Temperature="</span> <span class="op">+</span> <span class="bu">str</span>(data[<span class="st">'temp_f'</span>]) <span class="op">+</span></span>
-<span id="cb72-105"><a href="#cb72-105"></a>        <span class="st">"&amp;Humidity="</span> <span class="op">+</span> <span class="bu">str</span>(data[<span class="st">'humidity'</span>])</span>
-<span id="cb72-106"><a href="#cb72-106"></a>    )</span>
-<span id="cb72-107"><a href="#cb72-107"></a>    <span class="cf">try</span>:</span>
-<span id="cb72-108"><a href="#cb72-108"></a>        <span class="co"># Extract host and path from URL</span></span>
-<span id="cb72-109"><a href="#cb72-109"></a>        _, _, host, path <span class="op">=</span> url.split(<span class="st">'/'</span>, <span class="dv">3</span>)</span>
-<span id="cb72-110"><a href="#cb72-110"></a>        </span>
-<span id="cb72-111"><a href="#cb72-111"></a>        <span class="co"># Set up a socket connection</span></span>
-<span id="cb72-112"><a href="#cb72-112"></a>        addr <span class="op">=</span> socket.getaddrinfo(host, <span class="dv">443</span>)[<span class="dv">0</span>][<span class="op">-</span><span class="dv">1</span>]</span>
-<span id="cb72-113"><a href="#cb72-113"></a>        s <span class="op">=</span> socket.socket()</span>
-<span id="cb72-114"><a href="#cb72-114"></a>        s.<span class="ex">connect</span>(addr)</span>
-<span id="cb72-115"><a href="#cb72-115"></a>        s <span class="op">=</span> ssl.wrap_socket(s)</span>
-<span id="cb72-116"><a href="#cb72-116"></a>        </span>
-<span id="cb72-117"><a href="#cb72-117"></a>        <span class="co"># Create the HTTP request manually</span></span>
-<span id="cb72-118"><a href="#cb72-118"></a>        request <span class="op">=</span> <span class="ss">f"POST /</span><span class="sc">{</span>path<span class="sc">}</span><span class="ss"> HTTP/1.1</span><span class="ch">\r\n</span><span class="ss">Host: </span><span class="sc">{</span>host<span class="sc">}</span><span class="ch">\r\n</span><span class="ss">"</span></span>
-<span id="cb72-119"><a href="#cb72-119"></a>        request <span class="op">+=</span> <span class="st">"Content-Type: application/x-www-form-urlencoded</span><span class="ch">\r\n</span><span class="st">"</span></span>
-<span id="cb72-120"><a href="#cb72-120"></a>        request <span class="op">+=</span> <span class="ss">f"Content-Length: </span><span class="sc">{</span><span class="bu">len</span>(encoded_data)<span class="sc">}</span><span class="ch">\r\n\r\n</span><span class="ss">"</span></span>
-<span id="cb72-121"><a href="#cb72-121"></a>        request <span class="op">+=</span> encoded_data</span>
-<span id="cb72-122"><a href="#cb72-122"></a></span>
-<span id="cb72-123"><a href="#cb72-123"></a>        <span class="co"># Send the request</span></span>
-<span id="cb72-124"><a href="#cb72-124"></a>        s.write(request)</span>
-<span id="cb72-125"><a href="#cb72-125"></a>        </span>
-<span id="cb72-126"><a href="#cb72-126"></a>        <span class="co"># Close the socket</span></span>
-<span id="cb72-127"><a href="#cb72-127"></a>        s.close()</span>
-<span id="cb72-128"><a href="#cb72-128"></a>        <span class="bu">print</span>(<span class="st">'Data sent to Google Sheets!'</span>)</span>
-<span id="cb72-129"><a href="#cb72-129"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
-<span id="cb72-130"><a href="#cb72-130"></a>        <span class="bu">print</span>(<span class="st">'Failed to send data to Google Sheets:'</span>, e)</span>
-<span id="cb72-131"><a href="#cb72-131"></a>        </span>
-<span id="cb72-132"><a href="#cb72-132"></a><span class="kw">def</span> send_data_to_thingspeak():</span>
-<span id="cb72-133"><a href="#cb72-133"></a>    <span class="co">"""Send data to ThingSpeak."""</span></span>
-<span id="cb72-134"><a href="#cb72-134"></a>    <span class="cf">if</span> SEND_TO_THINGSPEAK <span class="kw">and</span> thingspeak_buffer:</span>
-<span id="cb72-135"><a href="#cb72-135"></a>        <span class="cf">if</span> <span class="bu">len</span>(thingspeak_buffer) <span class="op">&gt;</span> <span class="dv">1</span>:</span>
-<span id="cb72-136"><a href="#cb72-136"></a>            <span class="co"># Bulk update</span></span>
-<span id="cb72-137"><a href="#cb72-137"></a>            payload <span class="op">=</span> {</span>
-<span id="cb72-138"><a href="#cb72-138"></a>                <span class="st">'write_api_key'</span>: THINGSPEAK_API_KEY,</span>
-<span id="cb72-139"><a href="#cb72-139"></a>                <span class="st">'updates'</span>: []</span>
-<span id="cb72-140"><a href="#cb72-140"></a>            }</span>
-<span id="cb72-141"><a href="#cb72-141"></a>            <span class="cf">for</span> data <span class="kw">in</span> thingspeak_buffer:</span>
-<span id="cb72-142"><a href="#cb72-142"></a>                update <span class="op">=</span> {</span>
-<span id="cb72-143"><a href="#cb72-143"></a>                    <span class="st">'created_at'</span>: <span class="ss">f"</span><span class="sc">{</span>data[<span class="st">'date'</span>]<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>data[<span class="st">'time'</span>]<span class="sc">}</span><span class="ss"> -0500"</span>,</span>
-<span id="cb72-144"><a href="#cb72-144"></a>                    <span class="st">'field1'</span>: data[<span class="st">'co2'</span>],</span>
-<span id="cb72-145"><a href="#cb72-145"></a>                    <span class="st">'field2'</span>: data[<span class="st">'temp_f'</span>],</span>
-<span id="cb72-146"><a href="#cb72-146"></a>                    <span class="st">'field3'</span>: data[<span class="st">'humidity'</span>]</span>
-<span id="cb72-147"><a href="#cb72-147"></a>                }</span>
-<span id="cb72-148"><a href="#cb72-148"></a>                payload[<span class="st">'updates'</span>].append(update)</span>
-<span id="cb72-149"><a href="#cb72-149"></a></span>
-<span id="cb72-150"><a href="#cb72-150"></a>            <span class="cf">try</span>:</span>
-<span id="cb72-151"><a href="#cb72-151"></a>                headers <span class="op">=</span> {<span class="st">'Content-Type'</span>: <span class="st">'application/json'</span>}</span>
-<span id="cb72-152"><a href="#cb72-152"></a>                json_data <span class="op">=</span> json.dumps(payload)</span>
-<span id="cb72-153"><a href="#cb72-153"></a>                response <span class="op">=</span> requests.post(THINGSPEAK_BULK_UPDATE_URL, headers<span class="op">=</span>headers, data<span class="op">=</span>json_data)</span>
-<span id="cb72-154"><a href="#cb72-154"></a>                <span class="cf">if</span> response.status_code <span class="op">==</span> <span class="dv">202</span>:</span>
-<span id="cb72-155"><a href="#cb72-155"></a>                    <span class="bu">print</span>(<span class="st">'Data posted to ThingSpeak (bulk update):'</span>, response.text)</span>
-<span id="cb72-156"><a href="#cb72-156"></a>                    thingspeak_buffer.clear()  <span class="co"># Clear the buffer after successful update</span></span>
-<span id="cb72-157"><a href="#cb72-157"></a>                <span class="cf">else</span>:</span>
-<span id="cb72-158"><a href="#cb72-158"></a>                    <span class="bu">print</span>(<span class="ss">f'Failed to send data to ThingSpeak (bulk update): </span><span class="sc">{</span>response<span class="sc">.</span>status_code<span class="sc">}</span><span class="ss">, </span><span class="sc">{</span>response<span class="sc">.</span>text<span class="sc">}</span><span class="ss">'</span>)</span>
-<span id="cb72-159"><a href="#cb72-159"></a>            <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
-<span id="cb72-160"><a href="#cb72-160"></a>                <span class="bu">print</span>(<span class="st">'Failed to send data to ThingSpeak (bulk update):'</span>, e)</span>
-<span id="cb72-161"><a href="#cb72-161"></a>        <span class="cf">else</span>:</span>
-<span id="cb72-162"><a href="#cb72-162"></a>            data <span class="op">=</span> thingspeak_buffer.pop(<span class="dv">0</span>)  <span class="co"># Get the first item in the buffer</span></span>
-<span id="cb72-163"><a href="#cb72-163"></a>            payload <span class="op">=</span> {</span>
-<span id="cb72-164"><a href="#cb72-164"></a>                <span class="st">'api_key'</span>: THINGSPEAK_API_KEY,</span>
-<span id="cb72-165"><a href="#cb72-165"></a>                <span class="st">'field1'</span>: data[<span class="st">'co2'</span>],</span>
-<span id="cb72-166"><a href="#cb72-166"></a>                <span class="st">'field2'</span>: data[<span class="st">'temp_f'</span>],</span>
-<span id="cb72-167"><a href="#cb72-167"></a>                <span class="st">'field3'</span>: data[<span class="st">'humidity'</span>]</span>
-<span id="cb72-168"><a href="#cb72-168"></a>            }</span>
-<span id="cb72-169"><a href="#cb72-169"></a>            <span class="cf">try</span>:</span>
-<span id="cb72-170"><a href="#cb72-170"></a>                response <span class="op">=</span> requests.post(THINGSPEAK_URL, json<span class="op">=</span>payload)</span>
-<span id="cb72-171"><a href="#cb72-171"></a>                <span class="cf">if</span> response.status_code <span class="op">==</span> <span class="dv">200</span>:</span>
-<span id="cb72-172"><a href="#cb72-172"></a>                    <span class="bu">print</span>(<span class="st">'Data posted to ThingSpeak:'</span>, response.text)</span>
-<span id="cb72-173"><a href="#cb72-173"></a>                <span class="cf">else</span>:</span>
-<span id="cb72-174"><a href="#cb72-174"></a>                    <span class="bu">print</span>(<span class="ss">f'Failed to send data to ThingSpeak: </span><span class="sc">{</span>response<span class="sc">.</span>status_code<span class="sc">}</span><span class="ss">, </span><span class="sc">{</span>response<span class="sc">.</span>text<span class="sc">}</span><span class="ss">'</span>)</span>
-<span id="cb72-175"><a href="#cb72-175"></a>            <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
-<span id="cb72-176"><a href="#cb72-176"></a>                <span class="bu">print</span>(<span class="st">'Failed to send data to ThingSpeak:'</span>, e)</span>
-<span id="cb72-177"><a href="#cb72-177"></a></span>
-<span id="cb72-178"><a href="#cb72-178"></a><span class="kw">def</span> get_sensor_reading(sensor, conversion_cycle_time,last_update_sensor):</span>
-<span id="cb72-179"><a href="#cb72-179"></a>    <span class="co">"""Get a single sensor reading with a delay equal to the conversion cycle time."""</span></span>
-<span id="cb72-180"><a href="#cb72-180"></a>    update <span class="op">=</span> <span class="va">False</span></span>
-<span id="cb72-181"><a href="#cb72-181"></a>    <span class="cf">while</span> update <span class="op">==</span> <span class="va">False</span>:</span>
-<span id="cb72-182"><a href="#cb72-182"></a>        <span class="bu">print</span>(time.time() <span class="op">-</span> last_update_sensor)</span>
-<span id="cb72-183"><a href="#cb72-183"></a>        <span class="cf">if</span> time.time() <span class="op">-</span> last_update_sensor <span class="op">&gt;=</span><span class="dv">30</span>:       </span>
-<span id="cb72-184"><a href="#cb72-184"></a>            <span class="cf">try</span>:</span>
-<span id="cb72-185"><a href="#cb72-185"></a><span class="co">#                 time.sleep_ms(conversion_cycle_time) #I want more fine grained timing of updating the sensor and sending the data so I don't run into power spikes...</span></span>
-<span id="cb72-186"><a href="#cb72-186"></a>                <span class="cf">if</span> sensor.is_data_ready():</span>
-<span id="cb72-187"><a href="#cb72-187"></a>                    update<span class="op">=</span><span class="va">True</span></span>
-<span id="cb72-188"><a href="#cb72-188"></a>                    <span class="cf">return</span> sensor.get_meas_data()</span>
-<span id="cb72-189"><a href="#cb72-189"></a>                <span class="cf">else</span>:</span>
-<span id="cb72-190"><a href="#cb72-190"></a>                    <span class="bu">print</span>(<span class="st">"Data not ready."</span>)</span>
-<span id="cb72-191"><a href="#cb72-191"></a>                    update<span class="op">=</span><span class="va">False</span></span>
-<span id="cb72-192"><a href="#cb72-192"></a>                    time.sleep(<span class="dv">1</span>)</span>
-<span id="cb72-193"><a href="#cb72-193"></a>                    <span class="cf">return</span> <span class="va">None</span></span>
-<span id="cb72-194"><a href="#cb72-194"></a>                    </span>
-<span id="cb72-195"><a href="#cb72-195"></a>            <span class="cf">except</span> <span class="pp">OSError</span> <span class="im">as</span> e:</span>
-<span id="cb72-196"><a href="#cb72-196"></a>                <span class="bu">print</span>(<span class="ss">f"Error during sensor reading: </span><span class="sc">{</span>e<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb72-197"><a href="#cb72-197"></a>                update<span class="op">=</span><span class="va">True</span></span>
-<span id="cb72-198"><a href="#cb72-198"></a>                <span class="cf">return</span> <span class="va">None</span></span>
-<span id="cb72-199"><a href="#cb72-199"></a>        <span class="cf">else</span>:</span>
-<span id="cb72-200"><a href="#cb72-200"></a>            time.sleep(<span class="dv">1</span>)</span>
-<span id="cb72-201"><a href="#cb72-201"></a>            update<span class="op">=</span><span class="va">False</span></span>
-<span id="cb72-202"><a href="#cb72-202"></a>led <span class="op">=</span> Pin(<span class="dv">2</span>, Pin.OUT)</span>
-<span id="cb72-203"><a href="#cb72-203"></a>led.value(<span class="dv">0</span>)  <span class="co"># turn off red LED, doesn't work :L hard soldered in.</span></span>
-<span id="cb72-204"><a href="#cb72-204"></a></span>
-<span id="cb72-205"><a href="#cb72-205"></a><span class="kw">def</span> main():</span>
-<span id="cb72-206"><a href="#cb72-206"></a>    reading_count <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb72-207"><a href="#cb72-207"></a>    <span class="cf">if</span> switch_state_wifi <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb72-208"><a href="#cb72-208"></a>        <span class="co"># Connect to WiFi</span></span>
-<span id="cb72-209"><a href="#cb72-209"></a>        connect_wifi(SSID, PASSWORD)</span>
-<span id="cb72-210"><a href="#cb72-210"></a>    </span>
-<span id="cb72-211"><a href="#cb72-211"></a>    <span class="co"># Initialize I2C communication with the specified pins and frequency</span></span>
-<span id="cb72-212"><a href="#cb72-212"></a>    i2c <span class="op">=</span> SoftI2C(scl<span class="op">=</span>Pin(<span class="dv">22</span>), sda<span class="op">=</span>Pin(<span class="dv">21</span>), freq<span class="op">=</span><span class="dv">400_000</span>)</span>
-<span id="cb72-213"><a href="#cb72-213"></a>    device_address <span class="op">=</span> <span class="bn">0x62</span></span>
+<span id="cb72-33"><a href="#cb72-33"></a><span class="kw">def</span> connect_wifi(ssid, password):</span>
+<span id="cb72-34"><a href="#cb72-34"></a>    wlan <span class="op">=</span> network.WLAN(network.STA_IF)</span>
+<span id="cb72-35"><a href="#cb72-35"></a>    wlan.active(<span class="va">True</span>)</span>
+<span id="cb72-36"><a href="#cb72-36"></a>    wlan.<span class="ex">connect</span>(ssid, password)</span>
+<span id="cb72-37"><a href="#cb72-37"></a>    <span class="cf">while</span> <span class="kw">not</span> wlan.isconnected():</span>
+<span id="cb72-38"><a href="#cb72-38"></a>        time.sleep(<span class="dv">1</span>)</span>
+<span id="cb72-39"><a href="#cb72-39"></a>        <span class="bu">print</span>(<span class="st">"Connecting to WiFi..."</span>)</span>
+<span id="cb72-40"><a href="#cb72-40"></a>    <span class="bu">print</span>(<span class="st">"Connected to WiFi"</span>)</span>
+<span id="cb72-41"><a href="#cb72-41"></a>    <span class="bu">print</span>(wlan.ifconfig())</span>
+<span id="cb72-42"><a href="#cb72-42"></a></span>
+<span id="cb72-43"><a href="#cb72-43"></a><span class="kw">def</span> get_time_chicago():</span>
+<span id="cb72-44"><a href="#cb72-44"></a>    max_retries <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb72-45"><a href="#cb72-45"></a>    <span class="cf">for</span> attempt <span class="kw">in</span> <span class="bu">range</span>(max_retries):</span>
+<span id="cb72-46"><a href="#cb72-46"></a>        <span class="cf">try</span>:</span>
+<span id="cb72-47"><a href="#cb72-47"></a>            ntptime.settime()</span>
+<span id="cb72-48"><a href="#cb72-48"></a>            current_time <span class="op">=</span> utime.localtime()</span>
+<span id="cb72-49"><a href="#cb72-49"></a>            <span class="cf">break</span></span>
+<span id="cb72-50"><a href="#cb72-50"></a>        <span class="cf">except</span> <span class="pp">OSError</span> <span class="im">as</span> e:</span>
+<span id="cb72-51"><a href="#cb72-51"></a>            <span class="bu">print</span>(<span class="ss">f"Failed to get NTP time, attempt </span><span class="sc">{</span>attempt <span class="op">+</span> <span class="dv">1</span><span class="sc">}</span><span class="ss"> of </span><span class="sc">{</span>max_retries<span class="sc">}</span><span class="ss">. Error: </span><span class="sc">{</span>e<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb72-52"><a href="#cb72-52"></a>            time.sleep(<span class="dv">1</span>)</span>
+<span id="cb72-53"><a href="#cb72-53"></a>    <span class="cf">else</span>:</span>
+<span id="cb72-54"><a href="#cb72-54"></a>        <span class="bu">print</span>(<span class="st">"Could not get NTP time, proceeding without time synchronization."</span>)</span>
+<span id="cb72-55"><a href="#cb72-55"></a>        <span class="cf">return</span> utime.localtime()</span>
+<span id="cb72-56"><a href="#cb72-56"></a></span>
+<span id="cb72-57"><a href="#cb72-57"></a>    <span class="co"># Determine if it is daylight saving time (DST)</span></span>
+<span id="cb72-58"><a href="#cb72-58"></a>    month <span class="op">=</span> current_time[<span class="dv">1</span>]</span>
+<span id="cb72-59"><a href="#cb72-59"></a>    day <span class="op">=</span> current_time[<span class="dv">2</span>]</span>
+<span id="cb72-60"><a href="#cb72-60"></a>    hour <span class="op">=</span> current_time[<span class="dv">3</span>]</span>
+<span id="cb72-61"><a href="#cb72-61"></a>    <span class="cf">if</span> (month <span class="op">&gt;</span> <span class="dv">3</span> <span class="kw">and</span> month <span class="op">&lt;</span> <span class="dv">11</span>) <span class="kw">or</span> (month <span class="op">==</span> <span class="dv">3</span> <span class="kw">and</span> day <span class="op">&gt;=</span> <span class="dv">8</span> <span class="kw">and</span> hour <span class="op">&gt;=</span> <span class="dv">2</span>) <span class="kw">or</span> (month <span class="op">==</span> <span class="dv">11</span> <span class="kw">and</span> day <span class="op">&lt;</span> <span class="dv">1</span> <span class="kw">and</span> hour <span class="op">&lt;</span> <span class="dv">2</span>):</span>
+<span id="cb72-62"><a href="#cb72-62"></a>        is_dst <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb72-63"><a href="#cb72-63"></a>    <span class="cf">else</span>:</span>
+<span id="cb72-64"><a href="#cb72-64"></a>        is_dst <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb72-65"><a href="#cb72-65"></a>    </span>
+<span id="cb72-66"><a href="#cb72-66"></a>    offset <span class="op">=</span> <span class="op">-</span><span class="dv">6</span> <span class="op">*</span> <span class="dv">3600</span> <span class="cf">if</span> <span class="kw">not</span> is_dst <span class="cf">else</span> <span class="op">-</span><span class="dv">5</span> <span class="op">*</span> <span class="dv">3600</span></span>
+<span id="cb72-67"><a href="#cb72-67"></a>    local_time <span class="op">=</span> utime.mktime(current_time) <span class="op">+</span> offset</span>
+<span id="cb72-68"><a href="#cb72-68"></a>    <span class="cf">return</span> utime.localtime(local_time)</span>
+<span id="cb72-69"><a href="#cb72-69"></a></span>
+<span id="cb72-70"><a href="#cb72-70"></a><span class="co"># Function to sound the buzzer</span></span>
+<span id="cb72-71"><a href="#cb72-71"></a><span class="kw">def</span> sound_buzzer():</span>
+<span id="cb72-72"><a href="#cb72-72"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">5</span>):</span>
+<span id="cb72-73"><a href="#cb72-73"></a>        buzzer.value(<span class="dv">1</span>)  <span class="co"># Turn on buzzer</span></span>
+<span id="cb72-74"><a href="#cb72-74"></a>        time.sleep(<span class="fl">0.5</span>)  <span class="co"># 500 ms delay</span></span>
+<span id="cb72-75"><a href="#cb72-75"></a>        buzzer.value(<span class="dv">0</span>)  <span class="co"># Turn off buzzer</span></span>
+<span id="cb72-76"><a href="#cb72-76"></a>        time.sleep(<span class="fl">0.5</span>)  <span class="co"># 500 ms delay</span></span>
+<span id="cb72-77"><a href="#cb72-77"></a>    </span>
+<span id="cb72-78"><a href="#cb72-78"></a><span class="kw">def</span> send_data_to_google_sheets(data):</span>
+<span id="cb72-79"><a href="#cb72-79"></a>    url <span class="op">=</span> GOOGLE_URL  <span class="co"># Define your Google URL here</span></span>
+<span id="cb72-80"><a href="#cb72-80"></a>    headers <span class="op">=</span> {<span class="st">'Content-Type'</span>: <span class="st">'application/x-www-form-urlencoded'</span>}</span>
+<span id="cb72-81"><a href="#cb72-81"></a>    encoded_data <span class="op">=</span> (</span>
+<span id="cb72-82"><a href="#cb72-82"></a>        <span class="st">"Date="</span> <span class="op">+</span> data[<span class="st">'date'</span>] <span class="op">+</span></span>
+<span id="cb72-83"><a href="#cb72-83"></a>        <span class="st">"&amp;Time="</span> <span class="op">+</span> data[<span class="st">'time'</span>] <span class="op">+</span></span>
+<span id="cb72-84"><a href="#cb72-84"></a>        <span class="st">"&amp;Temp="</span> <span class="op">+</span> <span class="bu">str</span>(data[<span class="st">'temp_f'</span>]) <span class="op">+</span></span>
+<span id="cb72-85"><a href="#cb72-85"></a>        <span class="st">"&amp;Humidity="</span> <span class="op">+</span> <span class="bu">str</span>(data[<span class="st">'humidity'</span>]) <span class="op">+</span></span>
+<span id="cb72-86"><a href="#cb72-86"></a>        <span class="st">"&amp;Lux="</span> <span class="op">+</span> <span class="bu">str</span>(data[<span class="st">'lux'</span>]) <span class="op">+</span></span>
+<span id="cb72-87"><a href="#cb72-87"></a>        <span class="st">"&amp;CCT="</span> <span class="op">+</span> <span class="bu">str</span>(data[<span class="st">'color_temp'</span>]) <span class="op">+</span></span>
+<span id="cb72-88"><a href="#cb72-88"></a>        <span class="st">"&amp;Soil Moisture="</span> <span class="op">+</span> <span class="bu">str</span>(data[<span class="st">'soil_moisture'</span>]) <span class="op">+</span></span>
+<span id="cb72-89"><a href="#cb72-89"></a>        <span class="st">"&amp;Soil Temp="</span> <span class="op">+</span> <span class="bu">str</span>(data[<span class="st">'soil_temp'</span>]) <span class="op">+</span></span>
+<span id="cb72-90"><a href="#cb72-90"></a>        <span class="st">"&amp;R="</span> <span class="op">+</span> <span class="bu">str</span>(data[<span class="st">'r'</span>]) <span class="op">+</span></span>
+<span id="cb72-91"><a href="#cb72-91"></a>        <span class="st">"&amp;G="</span> <span class="op">+</span> <span class="bu">str</span>(data[<span class="st">'g'</span>]) <span class="op">+</span></span>
+<span id="cb72-92"><a href="#cb72-92"></a>        <span class="st">"&amp;B="</span> <span class="op">+</span> <span class="bu">str</span>(data[<span class="st">'b'</span>]) <span class="op">+</span></span>
+<span id="cb72-93"><a href="#cb72-93"></a>        <span class="st">"&amp;HTML="</span> <span class="op">+</span> data[<span class="st">'html'</span>]</span>
+<span id="cb72-94"><a href="#cb72-94"></a>    )</span>
+<span id="cb72-95"><a href="#cb72-95"></a>    <span class="cf">try</span>:</span>
+<span id="cb72-96"><a href="#cb72-96"></a>        <span class="co"># Extract host and path from URL</span></span>
+<span id="cb72-97"><a href="#cb72-97"></a>        _, _, host, path <span class="op">=</span> url.split(<span class="st">'/'</span>, <span class="dv">3</span>)</span>
+<span id="cb72-98"><a href="#cb72-98"></a>        </span>
+<span id="cb72-99"><a href="#cb72-99"></a>        <span class="co"># Set up a socket connection</span></span>
+<span id="cb72-100"><a href="#cb72-100"></a>        addr <span class="op">=</span> socket.getaddrinfo(host, <span class="dv">443</span>)[<span class="dv">0</span>][<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb72-101"><a href="#cb72-101"></a>        s <span class="op">=</span> socket.socket()</span>
+<span id="cb72-102"><a href="#cb72-102"></a>        s.<span class="ex">connect</span>(addr)</span>
+<span id="cb72-103"><a href="#cb72-103"></a>        s <span class="op">=</span> ssl.wrap_socket(s)</span>
+<span id="cb72-104"><a href="#cb72-104"></a>        </span>
+<span id="cb72-105"><a href="#cb72-105"></a>        <span class="co"># Create the HTTP request manually</span></span>
+<span id="cb72-106"><a href="#cb72-106"></a>        request <span class="op">=</span> <span class="ss">f"POST /</span><span class="sc">{</span>path<span class="sc">}</span><span class="ss"> HTTP/1.1</span><span class="ch">\r\n</span><span class="ss">Host: </span><span class="sc">{</span>host<span class="sc">}</span><span class="ch">\r\n</span><span class="ss">"</span></span>
+<span id="cb72-107"><a href="#cb72-107"></a>        request <span class="op">+=</span> <span class="st">"Content-Type: application/x-www-form-urlencoded</span><span class="ch">\r\n</span><span class="st">"</span></span>
+<span id="cb72-108"><a href="#cb72-108"></a>        request <span class="op">+=</span> <span class="ss">f"Content-Length: </span><span class="sc">{</span><span class="bu">len</span>(encoded_data)<span class="sc">}</span><span class="ch">\r\n\r\n</span><span class="ss">"</span></span>
+<span id="cb72-109"><a href="#cb72-109"></a>        request <span class="op">+=</span> encoded_data</span>
+<span id="cb72-110"><a href="#cb72-110"></a></span>
+<span id="cb72-111"><a href="#cb72-111"></a>        <span class="co"># Send the request</span></span>
+<span id="cb72-112"><a href="#cb72-112"></a>        s.write(request)</span>
+<span id="cb72-113"><a href="#cb72-113"></a>        </span>
+<span id="cb72-114"><a href="#cb72-114"></a>        <span class="co"># Close the socket</span></span>
+<span id="cb72-115"><a href="#cb72-115"></a>        s.close()</span>
+<span id="cb72-116"><a href="#cb72-116"></a>        <span class="bu">print</span>(<span class="st">'Data sent to Google Sheets!'</span>)</span>
+<span id="cb72-117"><a href="#cb72-117"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb72-118"><a href="#cb72-118"></a>        <span class="bu">print</span>(<span class="st">'Failed to send data to Google Sheets:'</span>, e)</span>
+<span id="cb72-119"><a href="#cb72-119"></a>        </span>
+<span id="cb72-120"><a href="#cb72-120"></a><span class="kw">def</span> send_data_to_thingspeak():</span>
+<span id="cb72-121"><a href="#cb72-121"></a>    <span class="co">"""Send data to ThingSpeak."""</span></span>
+<span id="cb72-122"><a href="#cb72-122"></a>    <span class="cf">if</span> SEND_TO_THINGSPEAK <span class="kw">and</span> thingspeak_buffer:</span>
+<span id="cb72-123"><a href="#cb72-123"></a>        <span class="cf">if</span> <span class="bu">len</span>(thingspeak_buffer) <span class="op">&gt;</span> <span class="dv">1</span>:</span>
+<span id="cb72-124"><a href="#cb72-124"></a>            <span class="co"># Bulk update</span></span>
+<span id="cb72-125"><a href="#cb72-125"></a>            payload <span class="op">=</span> {</span>
+<span id="cb72-126"><a href="#cb72-126"></a>                <span class="st">'write_api_key'</span>: THINGSPEAK_API_KEY,</span>
+<span id="cb72-127"><a href="#cb72-127"></a>                <span class="st">'updates'</span>: []</span>
+<span id="cb72-128"><a href="#cb72-128"></a>            }</span>
+<span id="cb72-129"><a href="#cb72-129"></a>            <span class="cf">for</span> data <span class="kw">in</span> thingspeak_buffer:</span>
+<span id="cb72-130"><a href="#cb72-130"></a>                update <span class="op">=</span> {</span>
+<span id="cb72-131"><a href="#cb72-131"></a>                    <span class="st">'created_at'</span>: <span class="ss">f"</span><span class="sc">{</span>data[<span class="st">'date'</span>]<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>data[<span class="st">'time'</span>]<span class="sc">}</span><span class="ss"> -0500"</span>,</span>
+<span id="cb72-132"><a href="#cb72-132"></a>                    <span class="st">'field1'</span>: data[<span class="st">'soil_temp'</span>],</span>
+<span id="cb72-133"><a href="#cb72-133"></a>                    <span class="st">'field2'</span>: data[<span class="st">'soil_moisture'</span>],</span>
+<span id="cb72-134"><a href="#cb72-134"></a>                    <span class="st">'field3'</span>: data[<span class="st">'lux'</span>],</span>
+<span id="cb72-135"><a href="#cb72-135"></a>                    <span class="st">'field4'</span>: data[<span class="st">'color_temp'</span>],</span>
+<span id="cb72-136"><a href="#cb72-136"></a>                    <span class="st">'field5'</span>: data[<span class="st">'temp_f'</span>],</span>
+<span id="cb72-137"><a href="#cb72-137"></a>                    <span class="st">'field6'</span>: data[<span class="st">'humidity'</span>]</span>
+<span id="cb72-138"><a href="#cb72-138"></a>                }</span>
+<span id="cb72-139"><a href="#cb72-139"></a>                payload[<span class="st">'updates'</span>].append(update)</span>
+<span id="cb72-140"><a href="#cb72-140"></a></span>
+<span id="cb72-141"><a href="#cb72-141"></a>            <span class="cf">try</span>:</span>
+<span id="cb72-142"><a href="#cb72-142"></a>                headers <span class="op">=</span> {<span class="st">'Content-Type'</span>: <span class="st">'application/json'</span>}</span>
+<span id="cb72-143"><a href="#cb72-143"></a>                json_data <span class="op">=</span> json.dumps(payload)</span>
+<span id="cb72-144"><a href="#cb72-144"></a>                response <span class="op">=</span> requests.post(THINGSPEAK_BULK_UPDATE_URL, headers<span class="op">=</span>headers, data<span class="op">=</span>json_data)</span>
+<span id="cb72-145"><a href="#cb72-145"></a>                <span class="cf">if</span> response.status_code <span class="op">==</span> <span class="dv">202</span>:</span>
+<span id="cb72-146"><a href="#cb72-146"></a>                    <span class="bu">print</span>(<span class="st">'Data posted to ThingSpeak (bulk update):'</span>, response.text)</span>
+<span id="cb72-147"><a href="#cb72-147"></a>                    thingspeak_buffer.clear()  <span class="co"># Clear the buffer after successful update</span></span>
+<span id="cb72-148"><a href="#cb72-148"></a>                <span class="cf">else</span>:</span>
+<span id="cb72-149"><a href="#cb72-149"></a>                    <span class="bu">print</span>(<span class="ss">f'Failed to send data to ThingSpeak (bulk update): </span><span class="sc">{</span>response<span class="sc">.</span>status_code<span class="sc">}</span><span class="ss">, </span><span class="sc">{</span>response<span class="sc">.</span>text<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb72-150"><a href="#cb72-150"></a>            <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb72-151"><a href="#cb72-151"></a>                <span class="bu">print</span>(<span class="st">'Failed to send data to ThingSpeak (bulk update):'</span>, e)</span>
+<span id="cb72-152"><a href="#cb72-152"></a>        <span class="cf">else</span>:</span>
+<span id="cb72-153"><a href="#cb72-153"></a>            data <span class="op">=</span> thingspeak_buffer.pop(<span class="dv">0</span>)  <span class="co"># Get the first item in the buffer</span></span>
+<span id="cb72-154"><a href="#cb72-154"></a>            payload <span class="op">=</span> {</span>
+<span id="cb72-155"><a href="#cb72-155"></a>                <span class="st">'api_key'</span>: THINGSPEAK_API_KEY,</span>
+<span id="cb72-156"><a href="#cb72-156"></a>                <span class="st">'field1'</span>: data[<span class="st">'soil_temp'</span>],</span>
+<span id="cb72-157"><a href="#cb72-157"></a>                <span class="st">'field2'</span>: data[<span class="st">'soil_moisture'</span>],</span>
+<span id="cb72-158"><a href="#cb72-158"></a>                <span class="st">'field3'</span>: data[<span class="st">'lux'</span>],</span>
+<span id="cb72-159"><a href="#cb72-159"></a>                <span class="st">'field4'</span>: data[<span class="st">'color_temp'</span>],</span>
+<span id="cb72-160"><a href="#cb72-160"></a>                <span class="st">'field5'</span>: data[<span class="st">'temp_f'</span>],</span>
+<span id="cb72-161"><a href="#cb72-161"></a>                <span class="st">'field6'</span>: data[<span class="st">'humidity'</span>]</span>
+<span id="cb72-162"><a href="#cb72-162"></a>            }</span>
+<span id="cb72-163"><a href="#cb72-163"></a>            <span class="cf">try</span>:</span>
+<span id="cb72-164"><a href="#cb72-164"></a>                response <span class="op">=</span> requests.post(THINGSPEAK_URL, json<span class="op">=</span>payload)</span>
+<span id="cb72-165"><a href="#cb72-165"></a>                <span class="cf">if</span> response.status_code <span class="op">==</span> <span class="dv">200</span>:</span>
+<span id="cb72-166"><a href="#cb72-166"></a>                    <span class="bu">print</span>(<span class="st">'Data posted to ThingSpeak:'</span>, response.text)</span>
+<span id="cb72-167"><a href="#cb72-167"></a>                <span class="cf">else</span>:</span>
+<span id="cb72-168"><a href="#cb72-168"></a>                    <span class="bu">print</span>(<span class="ss">f'Failed to send data to ThingSpeak: </span><span class="sc">{</span>response<span class="sc">.</span>status_code<span class="sc">}</span><span class="ss">, </span><span class="sc">{</span>response<span class="sc">.</span>text<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb72-169"><a href="#cb72-169"></a>            <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb72-170"><a href="#cb72-170"></a>                <span class="bu">print</span>(<span class="st">'Failed to send data to ThingSpeak:'</span>, e)</span>
+<span id="cb72-171"><a href="#cb72-171"></a></span>
+<span id="cb72-172"><a href="#cb72-172"></a><span class="co"># Pin definitions</span></span>
+<span id="cb72-173"><a href="#cb72-173"></a>DHT_PIN <span class="op">=</span> Pin(<span class="dv">27</span>)</span>
+<span id="cb72-174"><a href="#cb72-174"></a>DHT_POWER_PIN <span class="op">=</span> Pin(<span class="dv">26</span>, Pin.OUT)</span>
+<span id="cb72-175"><a href="#cb72-175"></a><span class="co"># SEESAW_POWER_PIN = Pin(25, Pin.OUT)</span></span>
+<span id="cb72-176"><a href="#cb72-176"></a>TCS34725_POWER_PIN <span class="op">=</span> Pin(<span class="dv">33</span>, Pin.OUT)</span>
+<span id="cb72-177"><a href="#cb72-177"></a>OLED_POWER_PIN <span class="op">=</span> Pin(<span class="dv">32</span>, Pin.OUT)</span>
+<span id="cb72-178"><a href="#cb72-178"></a>TCS34725_LED_PIN <span class="op">=</span> Pin(<span class="dv">23</span>, Pin.OUT)  <span class="co"># GPIO 23 for TCS34725 LED control</span></span>
+<span id="cb72-179"><a href="#cb72-179"></a></span>
+<span id="cb72-180"><a href="#cb72-180"></a><span class="co"># Setup GPIO for Buzzer</span></span>
+<span id="cb72-181"><a href="#cb72-181"></a>BUZZER_GPIO <span class="op">=</span> <span class="dv">13</span>  <span class="co"># Use GPIO 25 for the buzzer</span></span>
+<span id="cb72-182"><a href="#cb72-182"></a>buzzer <span class="op">=</span> machine.Pin(BUZZER_GPIO, Pin.OUT)</span>
+<span id="cb72-183"><a href="#cb72-183"></a></span>
+<span id="cb72-184"><a href="#cb72-184"></a><span class="co"># Initialize separate I2C buses</span></span>
+<span id="cb72-185"><a href="#cb72-185"></a>i2c_oled <span class="op">=</span> SoftI2C(scl<span class="op">=</span>Pin(<span class="dv">22</span>), sda<span class="op">=</span>Pin(<span class="dv">21</span>))</span>
+<span id="cb72-186"><a href="#cb72-186"></a>i2c_seesaw <span class="op">=</span> SoftI2C(scl<span class="op">=</span>Pin(<span class="dv">16</span>), sda<span class="op">=</span>Pin(<span class="dv">17</span>))</span>
+<span id="cb72-187"><a href="#cb72-187"></a>i2c_tcs <span class="op">=</span> SoftI2C(scl<span class="op">=</span>Pin(<span class="dv">18</span>), sda<span class="op">=</span>Pin(<span class="dv">19</span>))</span>
+<span id="cb72-188"><a href="#cb72-188"></a></span>
+<span id="cb72-189"><a href="#cb72-189"></a><span class="co"># Scan I2C buses</span></span>
+<span id="cb72-190"><a href="#cb72-190"></a>OLED_POWER_PIN.value(<span class="dv">1</span>)</span>
+<span id="cb72-191"><a href="#cb72-191"></a><span class="bu">print</span>(<span class="st">'Scanning I2C bus for OLED...'</span>)</span>
+<span id="cb72-192"><a href="#cb72-192"></a>devices_oled <span class="op">=</span> i2c_oled.scan()</span>
+<span id="cb72-193"><a href="#cb72-193"></a>OLED_POWER_PIN.value(<span class="dv">0</span>)</span>
+<span id="cb72-194"><a href="#cb72-194"></a><span class="bu">print</span>(<span class="st">'OLED I2C devices:'</span>, [<span class="bu">hex</span>(device) <span class="cf">for</span> device <span class="kw">in</span> devices_oled])</span>
+<span id="cb72-195"><a href="#cb72-195"></a>time.sleep(<span class="dv">1</span>)</span>
+<span id="cb72-196"><a href="#cb72-196"></a></span>
+<span id="cb72-197"><a href="#cb72-197"></a><span class="bu">print</span>(<span class="st">'Scanning I2C bus for Seesaw...'</span>)</span>
+<span id="cb72-198"><a href="#cb72-198"></a><span class="co"># SEESAW_POWER_PIN.value(1)</span></span>
+<span id="cb72-199"><a href="#cb72-199"></a>devices_seesaw <span class="op">=</span> i2c_seesaw.scan()</span>
+<span id="cb72-200"><a href="#cb72-200"></a><span class="co"># SEESAW_POWER_PIN.value(0)</span></span>
+<span id="cb72-201"><a href="#cb72-201"></a><span class="bu">print</span>(<span class="st">'Seesaw I2C devices:'</span>, [<span class="bu">hex</span>(device) <span class="cf">for</span> device <span class="kw">in</span> devices_seesaw])</span>
+<span id="cb72-202"><a href="#cb72-202"></a>time.sleep(<span class="dv">1</span>)</span>
+<span id="cb72-203"><a href="#cb72-203"></a></span>
+<span id="cb72-204"><a href="#cb72-204"></a><span class="bu">print</span>(<span class="st">'Scanning I2C bus for TCS34725...'</span>)</span>
+<span id="cb72-205"><a href="#cb72-205"></a>TCS34725_POWER_PIN.value(<span class="dv">1</span>)</span>
+<span id="cb72-206"><a href="#cb72-206"></a>TCS34725_LED_PIN.value(<span class="dv">0</span>)  <span class="co"># Start with the LED off</span></span>
+<span id="cb72-207"><a href="#cb72-207"></a>devices_tcs <span class="op">=</span> i2c_tcs.scan()</span>
+<span id="cb72-208"><a href="#cb72-208"></a><span class="bu">print</span>(<span class="st">'TCS34725 I2C devices:'</span>, [<span class="bu">hex</span>(device) <span class="cf">for</span> device <span class="kw">in</span> devices_tcs])</span>
+<span id="cb72-209"><a href="#cb72-209"></a></span>
+<span id="cb72-210"><a href="#cb72-210"></a><span class="co"># Initialize DHT22 sensor and OLED display</span></span>
+<span id="cb72-211"><a href="#cb72-211"></a>DHT_POWER_PIN.value(<span class="dv">1</span>)</span>
+<span id="cb72-212"><a href="#cb72-212"></a>dht_sensor <span class="op">=</span> DHT22(DHT_PIN)</span>
+<span id="cb72-213"><a href="#cb72-213"></a>DHT_POWER_PIN.value(<span class="dv">0</span>)</span>
 <span id="cb72-214"><a href="#cb72-214"></a></span>
-<span id="cb72-215"><a href="#cb72-215"></a>    <span class="co"># Check if the device is present on the I2C bus</span></span>
-<span id="cb72-216"><a href="#cb72-216"></a>    <span class="cf">if</span> <span class="kw">not</span> check_device_presence(i2c, device_address):</span>
-<span id="cb72-217"><a href="#cb72-217"></a>        <span class="bu">print</span>(<span class="ss">f"Device with address </span><span class="sc">{</span>device_address<span class="sc">}</span><span class="ss"> not found on I2C bus."</span>)</span>
-<span id="cb72-218"><a href="#cb72-218"></a>        <span class="cf">return</span></span>
-<span id="cb72-219"><a href="#cb72-219"></a></span>
-<span id="cb72-220"><a href="#cb72-220"></a>    <span class="bu">print</span>(<span class="ss">f"Device with address </span><span class="sc">{</span>device_address<span class="sc">}</span><span class="ss"> found on I2C bus."</span>)</span>
-<span id="cb72-221"><a href="#cb72-221"></a>    oled_power.value(<span class="dv">1</span>)  <span class="co"># Turn on OLED display</span></span>
-<span id="cb72-222"><a href="#cb72-222"></a>    <span class="co"># Setup SoftI2C for OLED</span></span>
-<span id="cb72-223"><a href="#cb72-223"></a>    i2c_oled <span class="op">=</span> SoftI2C(scl<span class="op">=</span>Pin(<span class="dv">4</span>), sda<span class="op">=</span>Pin(<span class="dv">5</span>))</span>
-<span id="cb72-224"><a href="#cb72-224"></a>    <span class="co"># Scan for OLED device</span></span>
-<span id="cb72-225"><a href="#cb72-225"></a>    <span class="bu">print</span>(<span class="st">'Scanning for I2C devices...'</span>)</span>
-<span id="cb72-226"><a href="#cb72-226"></a>    devices <span class="op">=</span> i2c_oled.scan()</span>
-<span id="cb72-227"><a href="#cb72-227"></a>    <span class="cf">if</span> <span class="bu">len</span>(devices) <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb72-228"><a href="#cb72-228"></a>        <span class="bu">print</span>(<span class="st">"No I2C OLED devices found."</span>)</span>
-<span id="cb72-229"><a href="#cb72-229"></a>        OLEDaddress <span class="op">=</span> <span class="va">None</span></span>
-<span id="cb72-230"><a href="#cb72-230"></a>    <span class="cf">else</span>:</span>
-<span id="cb72-231"><a href="#cb72-231"></a>        <span class="bu">print</span>(<span class="st">'I2C OLED devices found:'</span>, <span class="bu">len</span>(devices))</span>
-<span id="cb72-232"><a href="#cb72-232"></a>        OLEDaddress <span class="op">=</span> devices[<span class="dv">0</span>]  <span class="co"># Assuming the first device found is the OLED</span></span>
-<span id="cb72-233"><a href="#cb72-233"></a>        <span class="cf">for</span> device <span class="kw">in</span> devices:</span>
-<span id="cb72-234"><a href="#cb72-234"></a>            <span class="bu">print</span>(<span class="st">"Device address: "</span>, <span class="bu">hex</span>(device))</span>
-<span id="cb72-235"><a href="#cb72-235"></a></span>
-<span id="cb72-236"><a href="#cb72-236"></a>    <span class="co"># Initialize OLED if found</span></span>
-<span id="cb72-237"><a href="#cb72-237"></a>    <span class="cf">if</span> OLEDaddress:</span>
-<span id="cb72-238"><a href="#cb72-238"></a>        <span class="bu">print</span>(<span class="st">"Testing OLED..."</span>)</span>
-<span id="cb72-239"><a href="#cb72-239"></a>        oled <span class="op">=</span> SSD1306_I2C(<span class="dv">128</span>, <span class="dv">64</span>, i2c_oled)</span>
-<span id="cb72-240"><a href="#cb72-240"></a>        i <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb72-241"><a href="#cb72-241"></a>        <span class="cf">while</span> i <span class="op">&lt;</span> <span class="dv">10</span>:</span>
-<span id="cb72-242"><a href="#cb72-242"></a>            time.sleep(<span class="dv">1</span>)</span>
-<span id="cb72-243"><a href="#cb72-243"></a>            oled_power.value(<span class="dv">1</span>)</span>
-<span id="cb72-244"><a href="#cb72-244"></a>            oled.fill(<span class="dv">0</span>)</span>
-<span id="cb72-245"><a href="#cb72-245"></a>            oled.text(<span class="ss">f"Init: Test </span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">"</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
-<span id="cb72-246"><a href="#cb72-246"></a>            oled.show()</span>
-<span id="cb72-247"><a href="#cb72-247"></a>            time.sleep(<span class="dv">1</span>)</span>
-<span id="cb72-248"><a href="#cb72-248"></a>            i <span class="op">=</span> i<span class="op">+</span><span class="dv">1</span></span>
-<span id="cb72-249"><a href="#cb72-249"></a>            oled_power.value(<span class="dv">0</span>)</span>
-<span id="cb72-250"><a href="#cb72-250"></a>        oled_power.value(<span class="dv">1</span>)</span>
-<span id="cb72-251"><a href="#cb72-251"></a>        oled.fill(<span class="dv">0</span>)</span>
-<span id="cb72-252"><a href="#cb72-252"></a>        <span class="cf">if</span> switch_state_calibrate <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb72-253"><a href="#cb72-253"></a>            oled.text(<span class="ss">f"CALIBRATION ON"</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
-<span id="cb72-254"><a href="#cb72-254"></a>        <span class="cf">if</span> switch_state_calibrate <span class="op">==</span> <span class="dv">1</span>:</span>
-<span id="cb72-255"><a href="#cb72-255"></a>            oled.text(<span class="ss">f"CALIBRATION OFF"</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
-<span id="cb72-256"><a href="#cb72-256"></a>        <span class="cf">if</span> switch_state_wifi <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb72-257"><a href="#cb72-257"></a>            oled.text(<span class="ss">f"WIFI ON"</span>, <span class="dv">0</span>, <span class="dv">10</span>)</span>
-<span id="cb72-258"><a href="#cb72-258"></a>        <span class="cf">if</span> switch_state_wifi <span class="op">==</span> <span class="dv">1</span>:</span>
-<span id="cb72-259"><a href="#cb72-259"></a>            oled.text(<span class="ss">f"WIFI OFF"</span>, <span class="dv">0</span>, <span class="dv">10</span>) </span>
-<span id="cb72-260"><a href="#cb72-260"></a>        oled.show()</span>
-<span id="cb72-261"><a href="#cb72-261"></a>        time.sleep(<span class="dv">10</span>)</span>
-<span id="cb72-262"><a href="#cb72-262"></a>        oled_power.value(<span class="dv">0</span>)</span>
-<span id="cb72-263"><a href="#cb72-263"></a>    <span class="co"># Create an I2C adapter and sensor instance</span></span>
-<span id="cb72-264"><a href="#cb72-264"></a>    adapter <span class="op">=</span> I2cAdapter(i2c)</span>
-<span id="cb72-265"><a href="#cb72-265"></a>    sensor <span class="op">=</span> SCD4xSensirion(adapter)</span>
-<span id="cb72-266"><a href="#cb72-266"></a>    sensor.set_measurement(start<span class="op">=</span><span class="va">False</span>, single_shot<span class="op">=</span><span class="va">False</span>) <span class="co">#if looping need to put sensor back into IDLE mode. Sensor can't exec self test if currently reading...</span></span>
-<span id="cb72-267"><a href="#cb72-267"></a>    </span>
-<span id="cb72-268"><a href="#cb72-268"></a>    <span class="co"># Check if sensor is good to go. Note you may need to power cycle to pass this test. Make sure 5V in.</span></span>
-<span id="cb72-269"><a href="#cb72-269"></a>    selfTest <span class="op">=</span> <span class="va">False</span></span>
-<span id="cb72-270"><a href="#cb72-270"></a>    <span class="cf">while</span> selfTest <span class="op">==</span> <span class="va">False</span>:</span>
-<span id="cb72-271"><a href="#cb72-271"></a>        <span class="cf">try</span>:</span>
-<span id="cb72-272"><a href="#cb72-272"></a>            <span class="cf">if</span> sensor.exec_self_test():</span>
-<span id="cb72-273"><a href="#cb72-273"></a>                <span class="bu">print</span>(<span class="st">"Sensor self test shows good to go"</span>)</span>
-<span id="cb72-274"><a href="#cb72-274"></a>                selfTest <span class="op">=</span> <span class="va">True</span></span>
-<span id="cb72-275"><a href="#cb72-275"></a>            <span class="cf">else</span>:</span>
-<span id="cb72-276"><a href="#cb72-276"></a>                <span class="bu">print</span>(<span class="st">"Sensor self test failed!"</span>)</span>
-<span id="cb72-277"><a href="#cb72-277"></a>                selfTest <span class="op">=</span> <span class="va">False</span></span>
-<span id="cb72-278"><a href="#cb72-278"></a>                time.sleep(<span class="dv">1</span>)</span>
-<span id="cb72-279"><a href="#cb72-279"></a>        <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
-<span id="cb72-280"><a href="#cb72-280"></a>            <span class="bu">print</span>(<span class="st">"Exception occurred:"</span>, e)</span>
-<span id="cb72-281"><a href="#cb72-281"></a></span>
-<span id="cb72-282"><a href="#cb72-282"></a></span>
-<span id="cb72-283"><a href="#cb72-283"></a>    <span class="co"># Ensure the sensor is in IDLE mode</span></span>
-<span id="cb72-284"><a href="#cb72-284"></a>    sensor.set_measurement(start<span class="op">=</span><span class="va">False</span>, single_shot<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb72-285"><a href="#cb72-285"></a></span>
-<span id="cb72-286"><a href="#cb72-286"></a>    <span class="co"># Retrieve and display the sensor ID</span></span>
-<span id="cb72-287"><a href="#cb72-287"></a>    sensor_id <span class="op">=</span> sensor.get_id()</span>
-<span id="cb72-288"><a href="#cb72-288"></a>    <span class="bu">print</span>(<span class="ss">f"Sensor ID: </span><span class="sc">{</span>sensor_id[<span class="dv">0</span>]<span class="sc">:x}</span><span class="ss">:</span><span class="sc">{</span>sensor_id[<span class="dv">1</span>]<span class="sc">:x}</span><span class="ss">:</span><span class="sc">{</span>sensor_id[<span class="dv">2</span>]<span class="sc">:x}</span><span class="ss">"</span>)</span>
-<span id="cb72-289"><a href="#cb72-289"></a></span>
-<span id="cb72-290"><a href="#cb72-290"></a>    <span class="co"># Retrieve and display the temperature offset</span></span>
-<span id="cb72-291"><a href="#cb72-291"></a>    temp_offset <span class="op">=</span> sensor.get_temperature_offset()</span>
-<span id="cb72-292"><a href="#cb72-292"></a>    <span class="bu">print</span>(<span class="ss">f"Temperature offset: </span><span class="sc">{</span>temp_offset<span class="sc">:.6f}</span><span class="ss"> F"</span>)</span>
-<span id="cb72-293"><a href="#cb72-293"></a></span>
-<span id="cb72-294"><a href="#cb72-294"></a>    <span class="co"># Set and retrieve the altitude (meters above sea level)</span></span>
-<span id="cb72-295"><a href="#cb72-295"></a>    altitude <span class="op">=</span> <span class="dv">198</span></span>
-<span id="cb72-296"><a href="#cb72-296"></a>    retrieved_altitude <span class="op">=</span> sensor.get_altitude()</span>
-<span id="cb72-297"><a href="#cb72-297"></a>    <span class="bu">print</span>(<span class="ss">f"Desired Altitude: </span><span class="sc">{</span>altitude<span class="sc">}</span><span class="ss"> m, Retrieved Altitude: </span><span class="sc">{</span>retrieved_altitude<span class="sc">}</span><span class="ss"> m"</span>)</span>
-<span id="cb72-298"><a href="#cb72-298"></a>    <span class="cf">if</span> altitude <span class="op">!=</span> retrieved_altitude:</span>
-<span id="cb72-299"><a href="#cb72-299"></a>        sensor.set_altitude(altitude)</span>
-<span id="cb72-300"><a href="#cb72-300"></a>        <span class="bu">print</span>(<span class="ss">f"Altitude set to: </span><span class="sc">{</span>altitude<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb72-301"><a href="#cb72-301"></a>    </span>
-<span id="cb72-302"><a href="#cb72-302"></a>    <span class="co"># Check if automatic self-calibration is enabled</span></span>
-<span id="cb72-303"><a href="#cb72-303"></a>    <span class="cf">if</span> sensor.is_auto_calibration():</span>
-<span id="cb72-304"><a href="#cb72-304"></a>        <span class="bu">print</span>(<span class="st">"Automatic self-calibration is ON."</span>)</span>
-<span id="cb72-305"><a href="#cb72-305"></a>    <span class="cf">else</span>:</span>
-<span id="cb72-306"><a href="#cb72-306"></a>        <span class="bu">print</span>(<span class="st">"Automatic self-calibration is OFF."</span>)</span>
-<span id="cb72-307"><a href="#cb72-307"></a>    </span>
-<span id="cb72-308"><a href="#cb72-308"></a>    <span class="co"># Start periodic measurement</span></span>
-<span id="cb72-309"><a href="#cb72-309"></a>    sensor._low_power_mode <span class="op">=</span> <span class="va">True</span></span>
-<span id="cb72-310"><a href="#cb72-310"></a>    sensor.set_measurement(start<span class="op">=</span><span class="va">True</span>, single_shot<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb72-311"><a href="#cb72-311"></a>    conversion_cycle_time <span class="op">=</span> sensor.get_conversion_cycle_time()</span>
-<span id="cb72-312"><a href="#cb72-312"></a>    last_update_sensor <span class="op">=</span>  time.time()</span>
-<span id="cb72-313"><a href="#cb72-313"></a>    <span class="bu">print</span>(<span class="ss">f"Low Power Mode: </span><span class="sc">{</span>sensor<span class="sc">.</span>_low_power_mode<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb72-314"><a href="#cb72-314"></a>    <span class="bu">print</span>(<span class="ss">f"Low power periodic measurement started with conversion cycle time: </span><span class="sc">{</span>conversion_cycle_time<span class="sc">}</span><span class="ss"> ms"</span>)</span>
-<span id="cb72-315"><a href="#cb72-315"></a>    <span class="bu">print</span>(<span class="st">"Periodic measurement started."</span>)</span>
-<span id="cb72-316"><a href="#cb72-316"></a></span>
-<span id="cb72-317"><a href="#cb72-317"></a><span class="co">#     # Wait for two consecutive valid readings before entering the endless loop</span></span>
-<span id="cb72-318"><a href="#cb72-318"></a><span class="co">#     valid_readings = 0</span></span>
-<span id="cb72-319"><a href="#cb72-319"></a><span class="co">#     while valid_readings &lt; 10:</span></span>
-<span id="cb72-320"><a href="#cb72-320"></a><span class="co">#         reading = get_sensor_reading(sensor, conversion_cycle_time)</span></span>
-<span id="cb72-321"><a href="#cb72-321"></a><span class="co">#         if reading:</span></span>
-<span id="cb72-322"><a href="#cb72-322"></a><span class="co">#             co2, temp, humidity = reading</span></span>
-<span id="cb72-323"><a href="#cb72-323"></a><span class="co">#             temp = temp * 9 / 5 +32</span></span>
-<span id="cb72-324"><a href="#cb72-324"></a><span class="co">#             time.sleep(30)</span></span>
-<span id="cb72-325"><a href="#cb72-325"></a><span class="co">#             print(f"Initial Reading {valid_readings + 1}: CO2: {co2} ppm, Temperature: {temp:.2f} 閹虹煵, Humidity: {humidity:.2f} %")</span></span>
-<span id="cb72-326"><a href="#cb72-326"></a><span class="co">#             valid_readings += 1</span></span>
-<span id="cb72-327"><a href="#cb72-327"></a><span class="co">#         else:</span></span>
-<span id="cb72-328"><a href="#cb72-328"></a><span class="co">#             # Reset the sensor and reinitialize if an error occurs</span></span>
-<span id="cb72-329"><a href="#cb72-329"></a><span class="co">#             print("Attempting to reinitialize the sensor...")</span></span>
-<span id="cb72-330"><a href="#cb72-330"></a><span class="co">#             sensor.set_measurement(start=False, single_shot=False)</span></span>
-<span id="cb72-331"><a href="#cb72-331"></a><span class="co">#             sensor.set_measurement(start=True, single_shot=False)</span></span>
-<span id="cb72-332"><a href="#cb72-332"></a><span class="co">#             valid_readings = 0</span></span>
-<span id="cb72-333"><a href="#cb72-333"></a>    <span class="cf">if</span> switch_state_calibrate <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb72-334"><a href="#cb72-334"></a>        <span class="co">#### We wanna calibrate it with this chunk if anything...</span></span>
-<span id="cb72-335"><a href="#cb72-335"></a>        <span class="co"># Start periodic measurement</span></span>
-<span id="cb72-336"><a href="#cb72-336"></a>        <span class="bu">print</span>(<span class="st">"Performing sensor calibration in 30 seconds..."</span>)</span>
-<span id="cb72-337"><a href="#cb72-337"></a>        <span class="bu">print</span>(<span class="st">"The sensor will be calibrated over 60 min in fresh air."</span>)</span>
-<span id="cb72-338"><a href="#cb72-338"></a>        time.sleep(<span class="dv">30</span>)</span>
-<span id="cb72-339"><a href="#cb72-339"></a>        sensorCycle <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb72-340"><a href="#cb72-340"></a>        calibrateMe <span class="op">=</span> <span class="va">True</span></span>
-<span id="cb72-341"><a href="#cb72-341"></a></span>
-<span id="cb72-342"><a href="#cb72-342"></a>        <span class="co"># Perform factory reset and reinitialize</span></span>
-<span id="cb72-343"><a href="#cb72-343"></a>        sensor.perform_factory_reset()</span>
-<span id="cb72-344"><a href="#cb72-344"></a>        <span class="bu">print</span>(<span class="st">"Factory reset performed."</span>)</span>
-<span id="cb72-345"><a href="#cb72-345"></a>        time.sleep(<span class="dv">2</span>)  <span class="co"># Wait for the factory reset to complete</span></span>
-<span id="cb72-346"><a href="#cb72-346"></a>        </span>
-<span id="cb72-347"><a href="#cb72-347"></a>        <span class="co"># Perform soft reset and reinitialize</span></span>
-<span id="cb72-348"><a href="#cb72-348"></a>        sensor.soft_reset()</span>
-<span id="cb72-349"><a href="#cb72-349"></a>        time.sleep(<span class="dv">1</span>)  <span class="co"># Wait for the reset to complete</span></span>
-<span id="cb72-350"><a href="#cb72-350"></a>        sensor.set_measurement(start<span class="op">=</span><span class="va">False</span>, single_shot<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb72-351"><a href="#cb72-351"></a>        time.sleep(<span class="dv">1</span>)</span>
-<span id="cb72-352"><a href="#cb72-352"></a>        sensor.set_measurement(start<span class="op">=</span><span class="va">True</span>, single_shot<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb72-353"><a href="#cb72-353"></a>        time.sleep(<span class="dv">1</span>)</span>
-<span id="cb72-354"><a href="#cb72-354"></a>        <span class="bu">print</span>(<span class="st">"Performing soft reset and reinitialization..."</span>)</span>
-<span id="cb72-355"><a href="#cb72-355"></a></span>
-<span id="cb72-356"><a href="#cb72-356"></a>        <span class="cf">while</span> sensorCycle <span class="op">&lt;</span> <span class="dv">60</span>:</span>
-<span id="cb72-357"><a href="#cb72-357"></a>            conversion_cycle_time <span class="op">=</span> sensor.get_conversion_cycle_time()</span>
-<span id="cb72-358"><a href="#cb72-358"></a>            reading <span class="op">=</span> get_sensor_reading(sensor, conversion_cycle_time)</span>
-<span id="cb72-359"><a href="#cb72-359"></a>            <span class="cf">if</span> reading:</span>
-<span id="cb72-360"><a href="#cb72-360"></a>                co2, temp, humidity <span class="op">=</span> reading</span>
-<span id="cb72-361"><a href="#cb72-361"></a>                time.sleep(<span class="dv">30</span>)</span>
-<span id="cb72-362"><a href="#cb72-362"></a>                sensorCycle <span class="op">+=</span> <span class="dv">1</span></span>
-<span id="cb72-363"><a href="#cb72-363"></a>                <span class="bu">print</span>(<span class="ss">f"Continuous Reading: CO2: </span><span class="sc">{</span>co2<span class="sc">}</span><span class="ss"> ppm, Temperature: </span><span class="sc">{</span>temp<span class="sc">:.2f}</span><span class="ss"> F, Humidity: </span><span class="sc">{</span>humidity<span class="sc">:.2f}</span><span class="ss"> %"</span>)</span>
-<span id="cb72-364"><a href="#cb72-364"></a>                <span class="bu">print</span>(<span class="ss">f"Sensor Cycled </span><span class="sc">{</span>sensorCycle<span class="sc">}</span><span class="ss"> times of 3600"</span>)</span>
-<span id="cb72-365"><a href="#cb72-365"></a>                <span class="cf">if</span> sensorCycle <span class="op">==</span> <span class="dv">59</span>:</span>
-<span id="cb72-366"><a href="#cb72-366"></a>                    <span class="cf">if</span> calibrateMe <span class="op">==</span> <span class="va">True</span>:</span>
-<span id="cb72-367"><a href="#cb72-367"></a>                        <span class="bu">print</span>(<span class="st">"Initiating forced recalibration..."</span>)</span>
-<span id="cb72-368"><a href="#cb72-368"></a>                        target_co2_concentration <span class="op">=</span> <span class="bu">int</span>(<span class="dv">426</span> <span class="op">*</span> <span class="fl">1.15</span>)  <span class="co"># Mauna Loa CO2 = 426.57ppm April 2024 + 15-20% differential for being near/in a major city(Chicago), to int bc need int for low level</span></span>
-<span id="cb72-369"><a href="#cb72-369"></a>                        correction_value <span class="op">=</span> sensor.force_recalibration(target_co2_concentration)</span>
-<span id="cb72-370"><a href="#cb72-370"></a>                        <span class="bu">print</span>(<span class="ss">f"Forced recalibration completed with correction value: </span><span class="sc">{</span>correction_value<span class="sc">}</span><span class="ss"> ppm"</span>)</span>
-<span id="cb72-371"><a href="#cb72-371"></a>                        sensor.set_auto_calibration(<span class="va">False</span>)</span>
-<span id="cb72-372"><a href="#cb72-372"></a>                        <span class="bu">print</span>(<span class="st">"Sensor Auto Calibration set to: </span><span class="sc">{sensor.get_auto_calibration}</span><span class="st">. Rerun the program after power cycling with the calibration commented out to double check persistence! "</span>)</span>
-<span id="cb72-373"><a href="#cb72-373"></a>                        sensor.save_config()</span>
-<span id="cb72-374"><a href="#cb72-374"></a>                        <span class="bu">print</span>(<span class="st">"Settings saved."</span>)</span>
-<span id="cb72-375"><a href="#cb72-375"></a>            <span class="cf">else</span>:</span>
-<span id="cb72-376"><a href="#cb72-376"></a>                <span class="co"># Reset the sensor and reinitialize if an error occurs</span></span>
-<span id="cb72-377"><a href="#cb72-377"></a>                <span class="bu">print</span>(<span class="st">"Attempting to reinitialize the sensor..."</span>)</span>
-<span id="cb72-378"><a href="#cb72-378"></a>                sensor.set_measurement(start<span class="op">=</span><span class="va">False</span>, single_shot<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb72-379"><a href="#cb72-379"></a>                sensor.set_measurement(start<span class="op">=</span><span class="va">True</span>, single_shot<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb72-380"><a href="#cb72-380"></a>    <span class="cf">if</span> switch_state_calibrate <span class="op">==</span> <span class="dv">1</span>:</span>
-<span id="cb72-381"><a href="#cb72-381"></a>        <span class="bu">print</span>(<span class="st">"Skipping calibration."</span>)</span>
-<span id="cb72-382"><a href="#cb72-382"></a>    <span class="co"># Endless loop to continuously read and display sensor data</span></span>
-<span id="cb72-383"><a href="#cb72-383"></a></span>
-<span id="cb72-384"><a href="#cb72-384"></a>    <span class="cf">while</span> <span class="va">True</span>:</span>
-<span id="cb72-385"><a href="#cb72-385"></a>        <span class="cf">try</span>:</span>
-<span id="cb72-386"><a href="#cb72-386"></a>            <span class="co">#Eventually...somewhere...memory will leak. </span></span>
-<span id="cb72-387"><a href="#cb72-387"></a>            <span class="co"># Power Cycle every 6 hours for good measure.</span></span>
-<span id="cb72-388"><a href="#cb72-388"></a>            <span class="cf">if</span> reading_count <span class="op">&gt;=</span> <span class="dv">360</span>:</span>
-<span id="cb72-389"><a href="#cb72-389"></a>                reset()</span>
-<span id="cb72-390"><a href="#cb72-390"></a>            date_str <span class="op">=</span> <span class="va">None</span></span>
-<span id="cb72-391"><a href="#cb72-391"></a>            reading <span class="op">=</span> get_sensor_reading(sensor, conversion_cycle_time,last_update_sensor)</span>
-<span id="cb72-392"><a href="#cb72-392"></a>            <span class="cf">if</span> reading:</span>
-<span id="cb72-393"><a href="#cb72-393"></a>                co2, temp, humidity <span class="op">=</span> reading</span>
-<span id="cb72-394"><a href="#cb72-394"></a>                last_update_sensor <span class="op">=</span>  time.time()</span>
-<span id="cb72-395"><a href="#cb72-395"></a>                temp <span class="op">=</span> temp <span class="op">*</span> <span class="dv">9</span> <span class="op">/</span> <span class="dv">5</span> <span class="op">+</span> <span class="dv">32</span></span>
-<span id="cb72-396"><a href="#cb72-396"></a>                <span class="bu">print</span>(<span class="ss">f"Continuous Reading: CO2: </span><span class="sc">{</span>co2<span class="sc">}</span><span class="ss"> ppm, Temperature: </span><span class="sc">{</span>temp<span class="sc">:.2f}</span><span class="ss"> F, Humidity: </span><span class="sc">{</span>humidity<span class="sc">:.2f}</span><span class="ss"> %"</span>)</span>
-<span id="cb72-397"><a href="#cb72-397"></a>                <span class="co"># Check CO2 level and sound the buzzer if above threshold</span></span>
-<span id="cb72-398"><a href="#cb72-398"></a>                <span class="cf">if</span> co2 <span class="op">&gt;</span> <span class="dv">1500</span>:</span>
-<span id="cb72-399"><a href="#cb72-399"></a>                    <span class="bu">print</span>(<span class="st">"CO2 level exceeded 1500 ppm. Activating buzzer."</span>)</span>
-<span id="cb72-400"><a href="#cb72-400"></a>                    sound_buzzer()</span>
-<span id="cb72-401"><a href="#cb72-401"></a>                </span>
-<span id="cb72-402"><a href="#cb72-402"></a>                    </span>
-<span id="cb72-403"><a href="#cb72-403"></a>                <span class="cf">if</span> switch_state_wifi <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb72-404"><a href="#cb72-404"></a>                    <span class="co"># Get current date and time</span></span>
-<span id="cb72-405"><a href="#cb72-405"></a>                    current_time <span class="op">=</span> get_time_chicago()</span>
-<span id="cb72-406"><a href="#cb72-406"></a>                    date_str <span class="op">=</span> <span class="st">"</span><span class="sc">{:04}</span><span class="st">-</span><span class="sc">{:02}</span><span class="st">-</span><span class="sc">{:02}</span><span class="st">"</span>.<span class="bu">format</span>(current_time[<span class="dv">0</span>], current_time[<span class="dv">1</span>], current_time[<span class="dv">2</span>])</span>
-<span id="cb72-407"><a href="#cb72-407"></a>                    time_str <span class="op">=</span> <span class="st">"</span><span class="sc">{:02}</span><span class="st">:</span><span class="sc">{:02}</span><span class="st">:</span><span class="sc">{:02}</span><span class="st">"</span>.<span class="bu">format</span>(current_time[<span class="dv">3</span>], current_time[<span class="dv">4</span>], current_time[<span class="dv">5</span>])</span>
-<span id="cb72-408"><a href="#cb72-408"></a></span>
-<span id="cb72-409"><a href="#cb72-409"></a>                    data <span class="op">=</span> {</span>
-<span id="cb72-410"><a href="#cb72-410"></a>                    <span class="st">'date'</span>: date_str, </span>
-<span id="cb72-411"><a href="#cb72-411"></a>                    <span class="st">'time'</span>: time_str, </span>
-<span id="cb72-412"><a href="#cb72-412"></a>                    <span class="st">'co2'</span>: co2,</span>
-<span id="cb72-413"><a href="#cb72-413"></a>                    <span class="st">'temp_f'</span>: temp,</span>
-<span id="cb72-414"><a href="#cb72-414"></a>                    <span class="st">'humidity'</span>: humidity</span>
-<span id="cb72-415"><a href="#cb72-415"></a>                }</span>
-<span id="cb72-416"><a href="#cb72-416"></a>                </span>
-<span id="cb72-417"><a href="#cb72-417"></a>                    send_data_to_google_sheets(data)</span>
-<span id="cb72-418"><a href="#cb72-418"></a>                    thingspeak_buffer.append(data)  <span class="co"># Add data to buffer</span></span>
-<span id="cb72-419"><a href="#cb72-419"></a>                    send_data_to_thingspeak()</span>
-<span id="cb72-420"><a href="#cb72-420"></a>                <span class="cf">if</span> switch_state_wifi <span class="op">==</span> <span class="dv">1</span>:</span>
-<span id="cb72-421"><a href="#cb72-421"></a>                    thingspeak_buffer.clear()</span>
-<span id="cb72-422"><a href="#cb72-422"></a>               <span class="co">#OLED Logic</span></span>
-<span id="cb72-423"><a href="#cb72-423"></a>                <span class="cf">if</span> OLEDaddress:</span>
-<span id="cb72-424"><a href="#cb72-424"></a>                    reading_count <span class="op">=</span> reading_count <span class="op">+</span><span class="dv">1</span></span>
-<span id="cb72-425"><a href="#cb72-425"></a>                    oled_power.value(<span class="dv">1</span>)</span>
-<span id="cb72-426"><a href="#cb72-426"></a>                    oled.fill(<span class="dv">0</span>)</span>
-<span id="cb72-427"><a href="#cb72-427"></a>                    oled.text(<span class="ss">f'Reading: </span><span class="sc">{</span>reading_count<span class="sc">}</span><span class="ss">'</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
-<span id="cb72-428"><a href="#cb72-428"></a>                    <span class="cf">if</span> date_str <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
-<span id="cb72-429"><a href="#cb72-429"></a>                        oled.text(<span class="ss">f'Date: </span><span class="sc">{</span>date_str<span class="sc">}</span><span class="ss">'</span>, <span class="dv">0</span>, <span class="dv">10</span>)</span>
-<span id="cb72-430"><a href="#cb72-430"></a>                        oled.text(<span class="ss">f'Time: </span><span class="sc">{</span>time_str<span class="sc">}</span><span class="ss">'</span>, <span class="dv">0</span>, <span class="dv">20</span>)</span>
-<span id="cb72-431"><a href="#cb72-431"></a>                    oled.text(<span class="ss">f'CO2:</span><span class="sc">{</span><span class="bu">int</span>(co2)<span class="sc">}</span><span class="ss">ppm'</span>, <span class="dv">0</span>, <span class="dv">30</span>)</span>
-<span id="cb72-432"><a href="#cb72-432"></a>                    oled.text(<span class="ss">f'Temp:</span><span class="sc">{</span>temp<span class="sc">:.2f}</span><span class="ss">F'</span>,<span class="dv">0</span>,<span class="dv">40</span>)</span>
-<span id="cb72-433"><a href="#cb72-433"></a>                    oled.text(<span class="ss">f'Hum:</span><span class="sc">{</span>humidity<span class="sc">:.2f}</span><span class="ss">%'</span>, <span class="dv">0</span>, <span class="dv">50</span>)</span>
-<span id="cb72-434"><a href="#cb72-434"></a>                    oled.show()</span>
-<span id="cb72-435"><a href="#cb72-435"></a>                    time.sleep(<span class="dv">20</span>)</span>
-<span id="cb72-436"><a href="#cb72-436"></a>                    oled_power.value(<span class="dv">0</span>) </span>
-<span id="cb72-437"><a href="#cb72-437"></a>                time.sleep(<span class="dv">3</span>)</span>
-<span id="cb72-438"><a href="#cb72-438"></a>    <span class="co">#         else:</span></span>
-<span id="cb72-439"><a href="#cb72-439"></a>    <span class="co">#             # Reset the sensor and reinitialize if an error occurs</span></span>
-<span id="cb72-440"><a href="#cb72-440"></a>    <span class="co">#             print("Attempting to reinitialize the sensor...")</span></span>
-<span id="cb72-441"><a href="#cb72-441"></a>    <span class="co">#             sensor.set_measurement(start=False, single_shot=False)</span></span>
-<span id="cb72-442"><a href="#cb72-442"></a>    <span class="co">#             sensor.set_measurement(start=True, single_shot=False)</span></span>
-<span id="cb72-443"><a href="#cb72-443"></a>        <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
-<span id="cb72-444"><a href="#cb72-444"></a>                <span class="bu">print</span>(<span class="st">"Error occurred:"</span>, e)</span>
-<span id="cb72-445"><a href="#cb72-445"></a>                time.sleep(<span class="dv">5</span>)  <span class="co"># Wait for 5 seconds before retrying</span></span>
-<span id="cb72-446"><a href="#cb72-446"></a><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">'__main__'</span>:</span>
-<span id="cb72-447"><a href="#cb72-447"></a>    <span class="cf">try</span>:</span>
-<span id="cb72-448"><a href="#cb72-448"></a>        main()</span>
-<span id="cb72-449"><a href="#cb72-449"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
-<span id="cb72-450"><a href="#cb72-450"></a>                <span class="bu">print</span>(<span class="st">"Error occurred:"</span>, e)</span>
-<span id="cb72-451"><a href="#cb72-451"></a>                time.sleep(<span class="dv">5</span>)  <span class="co"># Wait for 5 seconds before retrying</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb72-215"><a href="#cb72-215"></a>OLED_POWER_PIN.value(<span class="dv">1</span>)</span>
+<span id="cb72-216"><a href="#cb72-216"></a>oled <span class="op">=</span> SSD1306_I2C(<span class="dv">128</span>, <span class="dv">64</span>, i2c_oled)</span>
+<span id="cb72-217"><a href="#cb72-217"></a></span>
+<span id="cb72-218"><a href="#cb72-218"></a><span class="co"># Ensure the addresses are correct (default addresses used)</span></span>
+<span id="cb72-219"><a href="#cb72-219"></a><span class="cf">if</span> <span class="bn">0x36</span> <span class="kw">in</span> devices_seesaw:</span>
+<span id="cb72-220"><a href="#cb72-220"></a>    soil_sensor <span class="op">=</span> StemmaSoilSensor(i2c_seesaw)</span>
+<span id="cb72-221"><a href="#cb72-221"></a><span class="cf">else</span>:</span>
+<span id="cb72-222"><a href="#cb72-222"></a>    <span class="bu">print</span>(<span class="st">"Seesaw sensor not found!"</span>)</span>
+<span id="cb72-223"><a href="#cb72-223"></a>    </span>
+<span id="cb72-224"><a href="#cb72-224"></a><span class="cf">if</span> <span class="bn">0x39</span> <span class="kw">in</span> devices_tcs:</span>
+<span id="cb72-225"><a href="#cb72-225"></a>    tcs <span class="op">=</span> TCS34725(i2c_tcs)</span>
+<span id="cb72-226"><a href="#cb72-226"></a><span class="cf">else</span>:</span>
+<span id="cb72-227"><a href="#cb72-227"></a>    <span class="bu">print</span>(<span class="st">"TCS34725 sensor not found!"</span>)</span>
+<span id="cb72-228"><a href="#cb72-228"></a>    </span>
+<span id="cb72-229"><a href="#cb72-229"></a><span class="co"># # Function to adjust gain and integration time based on Lux value</span></span>
+<span id="cb72-230"><a href="#cb72-230"></a><span class="co"># def adjust_tcs_settings(tcs, lux):</span></span>
+<span id="cb72-231"><a href="#cb72-231"></a><span class="co">#     print(lux)</span></span>
+<span id="cb72-232"><a href="#cb72-232"></a><span class="co">#     if lux &gt; 10000:</span></span>
+<span id="cb72-233"><a href="#cb72-233"></a><span class="co">#         integration_time = 50  # Short integration time</span></span>
+<span id="cb72-234"><a href="#cb72-234"></a><span class="co">#         gain = 1  # Low gain</span></span>
+<span id="cb72-235"><a href="#cb72-235"></a><span class="co">#     elif lux &gt; 1000:</span></span>
+<span id="cb72-236"><a href="#cb72-236"></a><span class="co">#         integration_time = 100  # Moderate integration time</span></span>
+<span id="cb72-237"><a href="#cb72-237"></a><span class="co">#         gain = 1  # Moderate gain</span></span>
+<span id="cb72-238"><a href="#cb72-238"></a><span class="co">#     elif lux &gt; 100:</span></span>
+<span id="cb72-239"><a href="#cb72-239"></a><span class="co">#         integration_time = 150  # Long integration time</span></span>
+<span id="cb72-240"><a href="#cb72-240"></a><span class="co">#         gain = 4  # High gain</span></span>
+<span id="cb72-241"><a href="#cb72-241"></a><span class="co">#     else:</span></span>
+<span id="cb72-242"><a href="#cb72-242"></a><span class="co">#         integration_time = 200  # Longest integration time</span></span>
+<span id="cb72-243"><a href="#cb72-243"></a><span class="co">#         gain = 16  # Highest gain</span></span>
+<span id="cb72-244"><a href="#cb72-244"></a><span class="co"># </span></span>
+<span id="cb72-245"><a href="#cb72-245"></a><span class="co">#     tcs.integration_time(integration_time)</span></span>
+<span id="cb72-246"><a href="#cb72-246"></a><span class="co">#     tcs.gain(gain)</span></span>
+<span id="cb72-247"><a href="#cb72-247"></a><span class="co">#     print(f'Adjusted TCS34725 settings: Integration Time = {integration_time} ms, Gain = {gain}')</span></span>
+<span id="cb72-248"><a href="#cb72-248"></a></span>
+<span id="cb72-249"><a href="#cb72-249"></a><span class="co"># Function to reinitialize the TCS34725 sensor with retries and initial Lux adjustment</span></span>
+<span id="cb72-250"><a href="#cb72-250"></a><span class="kw">def</span> reinitialize_tcs_sensor(i2c_tcs, retries<span class="op">=</span><span class="dv">9</span>):</span>
+<span id="cb72-251"><a href="#cb72-251"></a>    <span class="cf">for</span> attempt <span class="kw">in</span> <span class="bu">range</span>(retries):</span>
+<span id="cb72-252"><a href="#cb72-252"></a>        <span class="cf">try</span>:</span>
+<span id="cb72-253"><a href="#cb72-253"></a>            tcs <span class="op">=</span> TCS34725(i2c_tcs)</span>
+<span id="cb72-254"><a href="#cb72-254"></a>            tcs.gain(<span class="dv">4</span>)</span>
+<span id="cb72-255"><a href="#cb72-255"></a>            tcs.integration_time(<span class="dv">150</span>)</span>
+<span id="cb72-256"><a href="#cb72-256"></a>            time.sleep(<span class="dv">1</span>)</span>
+<span id="cb72-257"><a href="#cb72-257"></a>            tcs.active(<span class="va">True</span>)</span>
+<span id="cb72-258"><a href="#cb72-258"></a>            tcs.led(<span class="va">False</span>)  <span class="co"># Ensure LED is off</span></span>
+<span id="cb72-259"><a href="#cb72-259"></a>            time.sleep(<span class="dv">1</span>)  <span class="co"># Wait for the sensor to stabilize</span></span>
+<span id="cb72-260"><a href="#cb72-260"></a>            cct, lux <span class="op">=</span> tcs.read()  <span class="co"># Get initial readings to dynamically adjust Lux values</span></span>
+<span id="cb72-261"><a href="#cb72-261"></a>            cct, lux <span class="op">=</span> tcs.read()  <span class="co"># Get initial readings to dynamically adjust Lux values</span></span>
+<span id="cb72-262"><a href="#cb72-262"></a>            <span class="bu">print</span>(<span class="st">"Intial CCT:"</span>,cct)</span>
+<span id="cb72-263"><a href="#cb72-263"></a>            <span class="bu">print</span>(<span class="st">"Initial Lux:"</span>,lux)</span>
+<span id="cb72-264"><a href="#cb72-264"></a>            </span>
+<span id="cb72-265"><a href="#cb72-265"></a>            cct, lux <span class="op">=</span> tcs.read()  <span class="co"># Get initial readings to dynamically adjust Lux values</span></span>
+<span id="cb72-266"><a href="#cb72-266"></a><span class="co">#             adjust_tcs_settings(tcs, lux)  # Adjust settings based on Lux</span></span>
+<span id="cb72-267"><a href="#cb72-267"></a>            <span class="bu">print</span>(<span class="st">"2nd CCT:"</span>,cct)</span>
+<span id="cb72-268"><a href="#cb72-268"></a>            <span class="bu">print</span>(<span class="st">"2nd Lux:"</span>,lux)</span>
+<span id="cb72-269"><a href="#cb72-269"></a>            time.sleep(<span class="dv">1</span>)  <span class="co"># Wait for settings to take effect</span></span>
+<span id="cb72-270"><a href="#cb72-270"></a>            <span class="bu">print</span>(<span class="ss">f"TCS34725 sensor initialized on attempt </span><span class="sc">{</span>attempt <span class="op">+</span> <span class="dv">1</span><span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb72-271"><a href="#cb72-271"></a>            <span class="cf">return</span> tcs, cct, lux</span>
+<span id="cb72-272"><a href="#cb72-272"></a>        <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb72-273"><a href="#cb72-273"></a>            <span class="bu">print</span>(<span class="ss">f"Error initializing TCS34725 sensor: </span><span class="sc">{</span>e<span class="sc">}</span><span class="ss">, retrying..."</span>)</span>
+<span id="cb72-274"><a href="#cb72-274"></a>            time.sleep(<span class="dv">1</span>)</span>
+<span id="cb72-275"><a href="#cb72-275"></a>    <span class="cf">raise</span> <span class="pp">RuntimeError</span>(<span class="st">"Failed to initialize TCS34725 sensor after multiple attempts"</span>)</span>
+<span id="cb72-276"><a href="#cb72-276"></a><span class="kw">def</span> main():</span>
+<span id="cb72-277"><a href="#cb72-277"></a>    <span class="co"># Connect to WiFi</span></span>
+<span id="cb72-278"><a href="#cb72-278"></a>    connect_wifi(SSID, PASSWORD)</span>
+<span id="cb72-279"><a href="#cb72-279"></a>    count <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb72-280"><a href="#cb72-280"></a>    <span class="co"># Main loop</span></span>
+<span id="cb72-281"><a href="#cb72-281"></a>    <span class="cf">while</span> <span class="va">True</span>:</span>
+<span id="cb72-282"><a href="#cb72-282"></a>        <span class="cf">try</span>:</span>
+<span id="cb72-283"><a href="#cb72-283"></a>            count <span class="op">=</span> count <span class="op">+</span><span class="dv">1</span></span>
+<span id="cb72-284"><a href="#cb72-284"></a>            <span class="co"># Read DHT22 sensor</span></span>
+<span id="cb72-285"><a href="#cb72-285"></a>            <span class="bu">print</span>(<span class="st">"Reading DHT22 sensor..."</span>)</span>
+<span id="cb72-286"><a href="#cb72-286"></a>            DHT_POWER_PIN.value(<span class="dv">1</span>)</span>
+<span id="cb72-287"><a href="#cb72-287"></a>            time.sleep(<span class="dv">2</span>)  <span class="co"># Wait for the sensor to stabilize</span></span>
+<span id="cb72-288"><a href="#cb72-288"></a>            dht_sensor.measure()</span>
+<span id="cb72-289"><a href="#cb72-289"></a>            temp_dht22 <span class="op">=</span> dht_sensor.temperature()</span>
+<span id="cb72-290"><a href="#cb72-290"></a>            humidity <span class="op">=</span> dht_sensor.humidity()</span>
+<span id="cb72-291"><a href="#cb72-291"></a>            temp_fahrenheit <span class="op">=</span> <span class="bu">int</span>(temp_dht22 <span class="op">*</span> <span class="dv">9</span> <span class="op">/</span> <span class="dv">5</span> <span class="op">+</span> <span class="dv">32</span>)</span>
+<span id="cb72-292"><a href="#cb72-292"></a>            humidity <span class="op">=</span> <span class="bu">int</span>(humidity)</span>
+<span id="cb72-293"><a href="#cb72-293"></a>            DHT_POWER_PIN.value(<span class="dv">0</span>)</span>
+<span id="cb72-294"><a href="#cb72-294"></a></span>
+<span id="cb72-295"><a href="#cb72-295"></a>            <span class="co"># Read Seesaw (Soil) sensor if it is found</span></span>
+<span id="cb72-296"><a href="#cb72-296"></a>            <span class="cf">if</span> <span class="st">'soil_sensor'</span> <span class="kw">in</span> <span class="bu">locals</span>():</span>
+<span id="cb72-297"><a href="#cb72-297"></a>                <span class="bu">print</span>(<span class="st">"Reading Seesaw sensor..."</span>)</span>
+<span id="cb72-298"><a href="#cb72-298"></a>                soil_temp <span class="op">=</span> soil_sensor.get_temp()</span>
+<span id="cb72-299"><a href="#cb72-299"></a>                soil_temp <span class="op">=</span> <span class="bu">int</span>(soil_temp <span class="op">*</span> <span class="dv">9</span> <span class="op">/</span> <span class="dv">5</span> <span class="op">+</span> <span class="dv">32</span>)</span>
+<span id="cb72-300"><a href="#cb72-300"></a>                soil_moisture <span class="op">=</span> soil_sensor.get_moisture()</span>
+<span id="cb72-301"><a href="#cb72-301"></a>            <span class="cf">else</span>:</span>
+<span id="cb72-302"><a href="#cb72-302"></a>                soil_temp <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb72-303"><a href="#cb72-303"></a>                soil_moisture <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb72-304"><a href="#cb72-304"></a></span>
+<span id="cb72-305"><a href="#cb72-305"></a>            <span class="co"># Reinitialize and read TCS34725 sensor</span></span>
+<span id="cb72-306"><a href="#cb72-306"></a>            <span class="bu">print</span>(<span class="st">"Reinitializing and reading TCS34725 sensor..."</span>)</span>
+<span id="cb72-307"><a href="#cb72-307"></a>            TCS34725_POWER_PIN.value(<span class="dv">1</span>)</span>
+<span id="cb72-308"><a href="#cb72-308"></a>            TCS34725_LED_PIN.value(<span class="dv">0</span>)  <span class="co"># Turn off the LED</span></span>
+<span id="cb72-309"><a href="#cb72-309"></a>            tcs, cct, lux <span class="op">=</span> reinitialize_tcs_sensor(i2c_tcs)</span>
+<span id="cb72-310"><a href="#cb72-310"></a>            time.sleep(<span class="dv">1</span>)  <span class="co"># Wait for the sensor to stabilize</span></span>
+<span id="cb72-311"><a href="#cb72-311"></a></span>
+<span id="cb72-312"><a href="#cb72-312"></a>            <span class="cf">try</span>:</span>
+<span id="cb72-313"><a href="#cb72-313"></a>                raw_data <span class="op">=</span> tcs.read(<span class="va">True</span>)</span>
+<span id="cb72-314"><a href="#cb72-314"></a>                <span class="bu">print</span>(<span class="ss">f"Raw data: </span><span class="sc">{</span>raw_data<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb72-315"><a href="#cb72-315"></a>                r, g, b, c <span class="op">=</span> raw_data</span>
+<span id="cb72-316"><a href="#cb72-316"></a>                cct, lux <span class="op">=</span> tcs.read()</span>
+<span id="cb72-317"><a href="#cb72-317"></a>                <span class="bu">print</span>(<span class="ss">f"RGB: (</span><span class="sc">{</span>r<span class="sc">}</span><span class="ss">, </span><span class="sc">{</span>g<span class="sc">}</span><span class="ss">, </span><span class="sc">{</span>b<span class="sc">}</span><span class="ss">), Clear: </span><span class="sc">{</span>c<span class="sc">}</span><span class="ss">, CCT: </span><span class="sc">{</span>cct<span class="sc">}</span><span class="ss">, Lux: </span><span class="sc">{</span>lux<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb72-318"><a href="#cb72-318"></a>                html_rgb_val <span class="op">=</span> tcs.html_rgb(raw_data)</span>
+<span id="cb72-319"><a href="#cb72-319"></a>                html_hex_val <span class="op">=</span> tcs.html_hex(raw_data)</span>
+<span id="cb72-320"><a href="#cb72-320"></a>                <span class="bu">print</span>(<span class="ss">f"HTML RGB: </span><span class="sc">{</span>html_rgb_val<span class="sc">}</span><span class="ss">, HTML Hex: </span><span class="sc">{</span>html_hex_val<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb72-321"><a href="#cb72-321"></a>            <span class="cf">except</span> <span class="pp">RuntimeError</span> <span class="im">as</span> e:</span>
+<span id="cb72-322"><a href="#cb72-322"></a>                <span class="bu">print</span>(<span class="st">"Error reading TCS34725:"</span>, e)</span>
+<span id="cb72-323"><a href="#cb72-323"></a>                html_hex_val <span class="op">=</span> <span class="st">"Error"</span></span>
+<span id="cb72-324"><a href="#cb72-324"></a>                lux <span class="op">=</span> cct <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb72-325"><a href="#cb72-325"></a></span>
+<span id="cb72-326"><a href="#cb72-326"></a>            TCS34725_LED_PIN.value(<span class="dv">0</span>)  <span class="co"># Turn off the LED</span></span>
+<span id="cb72-327"><a href="#cb72-327"></a>            TCS34725_POWER_PIN.value(<span class="dv">0</span>)</span>
+<span id="cb72-328"><a href="#cb72-328"></a>            </span>
+<span id="cb72-329"><a href="#cb72-329"></a>             <span class="co"># Get current date and time</span></span>
+<span id="cb72-330"><a href="#cb72-330"></a>            current_time <span class="op">=</span> get_time_chicago()</span>
+<span id="cb72-331"><a href="#cb72-331"></a>            date_str <span class="op">=</span> <span class="st">"</span><span class="sc">{:04}</span><span class="st">-</span><span class="sc">{:02}</span><span class="st">-</span><span class="sc">{:02}</span><span class="st">"</span>.<span class="bu">format</span>(current_time[<span class="dv">0</span>], current_time[<span class="dv">1</span>], current_time[<span class="dv">2</span>])</span>
+<span id="cb72-332"><a href="#cb72-332"></a>            time_str <span class="op">=</span> <span class="st">"</span><span class="sc">{:02}</span><span class="st">:</span><span class="sc">{:02}</span><span class="st">:</span><span class="sc">{:02}</span><span class="st">"</span>.<span class="bu">format</span>(current_time[<span class="dv">3</span>], current_time[<span class="dv">4</span>], current_time[<span class="dv">5</span>])</span>
+<span id="cb72-333"><a href="#cb72-333"></a></span>
+<span id="cb72-334"><a href="#cb72-334"></a>            <span class="co"># Print sensor data to the console</span></span>
+<span id="cb72-335"><a href="#cb72-335"></a>            <span class="bu">print</span>(<span class="ss">f'Color: </span><span class="sc">{</span>html_hex_val<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb72-336"><a href="#cb72-336"></a>            <span class="bu">print</span>(<span class="ss">f'Lux: </span><span class="sc">{</span>lux<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb72-337"><a href="#cb72-337"></a>            <span class="bu">print</span>(<span class="ss">f'CCT: </span><span class="sc">{</span>cct<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb72-338"><a href="#cb72-338"></a>            <span class="bu">print</span>(<span class="ss">f'Temp: </span><span class="sc">{</span>temp_fahrenheit<span class="sc">}</span><span class="ss"> Hum:</span><span class="sc">{</span>humidity<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb72-339"><a href="#cb72-339"></a>            <span class="cf">if</span> soil_temp <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span> <span class="kw">and</span> soil_moisture <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb72-340"><a href="#cb72-340"></a>                <span class="bu">print</span>(<span class="ss">f'Soil Temp: </span><span class="sc">{</span>soil_temp<span class="sc">}</span><span class="ss"> F'</span>)</span>
+<span id="cb72-341"><a href="#cb72-341"></a>                <span class="bu">print</span>(<span class="ss">f'Soil Moisture: </span><span class="sc">{</span>soil_moisture<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb72-342"><a href="#cb72-342"></a>            <span class="co"># Display data on OLED</span></span>
+<span id="cb72-343"><a href="#cb72-343"></a>            <span class="bu">print</span>(<span class="st">"Updating OLED display..."</span>)</span>
+<span id="cb72-344"><a href="#cb72-344"></a>            oled.fill(<span class="dv">0</span>)</span>
+<span id="cb72-345"><a href="#cb72-345"></a>            <span class="cf">if</span> soil_temp <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb72-346"><a href="#cb72-346"></a>                oled.text(<span class="ss">f'Soil Temp: </span><span class="sc">{</span>soil_temp<span class="sc">}</span><span class="ss">F'</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
+<span id="cb72-347"><a href="#cb72-347"></a>            <span class="cf">if</span> soil_moisture <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb72-348"><a href="#cb72-348"></a>                <span class="bu">print</span>(<span class="st">"Count: "</span>, count)</span>
+<span id="cb72-349"><a href="#cb72-349"></a>                oled.text(<span class="ss">f'Moisture: </span><span class="sc">{</span>soil_moisture<span class="sc">}</span><span class="ss">'</span>, <span class="dv">0</span>, <span class="dv">10</span>)</span>
+<span id="cb72-350"><a href="#cb72-350"></a>                <span class="cf">if</span> count <span class="op">&gt;</span> <span class="dv">60</span>:</span>
+<span id="cb72-351"><a href="#cb72-351"></a>                    count <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb72-352"><a href="#cb72-352"></a>                    <span class="cf">if</span> soil_moisture <span class="op">&lt;</span> <span class="dv">600</span>:</span>
+<span id="cb72-353"><a href="#cb72-353"></a>                        sound_buzzer()</span>
+<span id="cb72-354"><a href="#cb72-354"></a>                        <span class="bu">print</span>(<span class="st">"Buzzer sounded"</span>)</span>
+<span id="cb72-355"><a href="#cb72-355"></a>            oled.text(<span class="ss">f'RGB: </span><span class="sc">{</span><span class="bu">int</span>(html_rgb_val[<span class="dv">0</span>])<span class="sc">}</span><span class="ss">,</span><span class="sc">{</span><span class="bu">int</span>(html_rgb_val[<span class="dv">1</span>])<span class="sc">}</span><span class="ss">,</span><span class="sc">{</span><span class="bu">int</span>(html_rgb_val[<span class="dv">2</span>])<span class="sc">}</span><span class="ss">'</span>, <span class="dv">0</span>, <span class="dv">20</span>)</span>
+<span id="cb72-356"><a href="#cb72-356"></a>            oled.text(<span class="ss">f'Lux:</span><span class="sc">{</span><span class="bu">int</span>(lux)<span class="sc">}</span><span class="ss">'</span>, <span class="dv">0</span>, <span class="dv">30</span>)</span>
+<span id="cb72-357"><a href="#cb72-357"></a>            oled.text(<span class="ss">f'CCT:</span><span class="sc">{</span><span class="bu">int</span>(cct)<span class="sc">}</span><span class="ss">'</span>,<span class="dv">0</span>,<span class="dv">40</span>)</span>
+<span id="cb72-358"><a href="#cb72-358"></a>            oled.text(<span class="ss">f'Temp:</span><span class="sc">{</span>temp_fahrenheit<span class="sc">}</span><span class="ss">F Hum:</span><span class="sc">{</span>humidity<span class="sc">}</span><span class="ss">%'</span>, <span class="dv">0</span>, <span class="dv">50</span>)</span>
+<span id="cb72-359"><a href="#cb72-359"></a>            oled.show()</span>
+<span id="cb72-360"><a href="#cb72-360"></a>            <span class="bu">print</span>(<span class="st">' '</span>)</span>
+<span id="cb72-361"><a href="#cb72-361"></a>            <span class="co"># Prepare data for ThingSpeak</span></span>
+<span id="cb72-362"><a href="#cb72-362"></a>            data <span class="op">=</span> {</span>
+<span id="cb72-363"><a href="#cb72-363"></a>                <span class="st">'soil_temp'</span>: soil_temp,</span>
+<span id="cb72-364"><a href="#cb72-364"></a>                <span class="st">'soil_moisture'</span>: soil_moisture,</span>
+<span id="cb72-365"><a href="#cb72-365"></a>                <span class="st">'lux'</span>: lux,</span>
+<span id="cb72-366"><a href="#cb72-366"></a>                <span class="st">'color_temp'</span>: cct,</span>
+<span id="cb72-367"><a href="#cb72-367"></a>                <span class="st">'temp_f'</span>: temp_fahrenheit,</span>
+<span id="cb72-368"><a href="#cb72-368"></a>                <span class="st">'humidity'</span>: humidity</span>
+<span id="cb72-369"><a href="#cb72-369"></a>            }</span>
+<span id="cb72-370"><a href="#cb72-370"></a>            </span>
+<span id="cb72-371"><a href="#cb72-371"></a>            <span class="co"># Prepare data for ThingSpeak</span></span>
+<span id="cb72-372"><a href="#cb72-372"></a>            thingspeak_buffer.append(data)</span>
+<span id="cb72-373"><a href="#cb72-373"></a></span>
+<span id="cb72-374"><a href="#cb72-374"></a>            <span class="co"># Send data to ThingSpeak</span></span>
+<span id="cb72-375"><a href="#cb72-375"></a>            send_data_to_thingspeak()</span>
+<span id="cb72-376"><a href="#cb72-376"></a>            </span>
+<span id="cb72-377"><a href="#cb72-377"></a>            data <span class="op">=</span> {</span>
+<span id="cb72-378"><a href="#cb72-378"></a>                <span class="st">'date'</span>: date_str,</span>
+<span id="cb72-379"><a href="#cb72-379"></a>                <span class="st">'time'</span>: time_str,</span>
+<span id="cb72-380"><a href="#cb72-380"></a>                <span class="st">'temp_f'</span>: temp_fahrenheit,</span>
+<span id="cb72-381"><a href="#cb72-381"></a>                <span class="st">'humidity'</span>: humidity,</span>
+<span id="cb72-382"><a href="#cb72-382"></a>                <span class="st">'lux'</span>: lux,</span>
+<span id="cb72-383"><a href="#cb72-383"></a>                <span class="st">'color_temp'</span>: cct,</span>
+<span id="cb72-384"><a href="#cb72-384"></a>                <span class="st">'soil_moisture'</span>: soil_moisture,</span>
+<span id="cb72-385"><a href="#cb72-385"></a>                <span class="st">'soil_temp'</span>: soil_temp,</span>
+<span id="cb72-386"><a href="#cb72-386"></a>                <span class="st">'r'</span>: <span class="bu">int</span>(html_rgb_val[<span class="dv">0</span>]),</span>
+<span id="cb72-387"><a href="#cb72-387"></a>                <span class="st">'g'</span>: <span class="bu">int</span>(html_rgb_val[<span class="dv">1</span>]),</span>
+<span id="cb72-388"><a href="#cb72-388"></a>                <span class="st">'b'</span>: <span class="bu">int</span>(html_rgb_val[<span class="dv">2</span>]),</span>
+<span id="cb72-389"><a href="#cb72-389"></a>                <span class="st">'html'</span>: html_hex_val</span>
+<span id="cb72-390"><a href="#cb72-390"></a>            }    </span>
+<span id="cb72-391"><a href="#cb72-391"></a>            <span class="co"># Send data to Google Sheets</span></span>
+<span id="cb72-392"><a href="#cb72-392"></a>            send_data_to_google_sheets(data)</span>
+<span id="cb72-393"><a href="#cb72-393"></a></span>
+<span id="cb72-394"><a href="#cb72-394"></a></span>
+<span id="cb72-395"><a href="#cb72-395"></a></span>
+<span id="cb72-396"><a href="#cb72-396"></a>            <span class="co"># Wait before the next update</span></span>
+<span id="cb72-397"><a href="#cb72-397"></a>            time.sleep(<span class="dv">45</span>)</span>
+<span id="cb72-398"><a href="#cb72-398"></a></span>
+<span id="cb72-399"><a href="#cb72-399"></a>        <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb72-400"><a href="#cb72-400"></a>            <span class="bu">print</span>(<span class="st">"Error occurred:"</span>, e)</span>
+<span id="cb72-401"><a href="#cb72-401"></a>            time.sleep(<span class="dv">5</span>)  <span class="co"># Wait for 5 seconds before retrying</span></span>
+<span id="cb72-402"><a href="#cb72-402"></a><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">'__main__'</span>:</span>
+<span id="cb72-403"><a href="#cb72-403"></a>    main()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <p>I’m not going to the go too much into the code as the SCD41 chip supports a variety of different modes and unless you do a deep dive into the datasheet and the code for some cursed reason you should be fine with the code above. I was able to log readings fairly close to the reported values for my town and breathing on the device and near the device increased the sensor readings reliably. I did note that the sensor took some time to get back down to baseline and took a bit to get up to the max with me breathing on it. It was roughly 2.5 minutes to get back down to baseline and that’s roughly in line with what we would ideally sample at due to the humidity sampling interval mentioned in the technical specs above. See image below:</p>
 <p><a href="CO2_Values.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6"><img src="CO2_Values.png" class="img-fluid"></a></p>
@@ -2414,7 +2366,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"selector":".lightbox","descPosition":"bottom","closeEffect":"zoom","loop":false,"openEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"loop":false,"openEffect":"zoom","selector":".lightbox","descPosition":"bottom","closeEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;
