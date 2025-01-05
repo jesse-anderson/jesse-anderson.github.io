@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_ced7ebce2630a8e431067fa3d96b831a {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/leaflet.markercluster.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.Default.css"/>
+</head>
+<body>
+    
+    
+         <h3 align="center" style="font-size:20px"><b>Oak Park Crime Map</b></h3>
+         
+    
+            <div class="folium-map" id="map_ced7ebce2630a8e431067fa3d96b831a" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_ced7ebce2630a8e431067fa3d96b831a = L.map(
+                "map_ced7ebce2630a8e431067fa3d96b831a",
+                {
+                    center: [41.885, -87.78],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 13,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_5f2a2e1fb89095e248496335c57655e8 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_5f2a2e1fb89095e248496335c57655e8.addTo(map_ced7ebce2630a8e431067fa3d96b831a);
+        
+    
+            var marker_cluster_a0e358b12be17c0cb233b0f1ee246365 = L.markerClusterGroup(
+                {
+}
+            );
+        
+    
+            var marker_11206122724ab60d2b17ecb3747778cf = L.marker(
+                [41.9075079, -87.7781562],
+                {
+}
+            ).addTo(marker_cluster_a0e358b12be17c0cb233b0f1ee246365);
+        
+    
+            var icon_354f3e3366b7d937a53662abb02c5f85 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_11206122724ab60d2b17ecb3747778cf.setIcon(icon_354f3e3366b7d937a53662abb02c5f85);
+        
+    
+        var popup_933ecd90c00f965f5ceab6a8e2ab0413 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_11933f22278eba97d007fe98ed41a459 = $(`<div id="html_11933f22278eba97d007fe98ed41a459" style="width: 100.0%; height: 100.0%;">         <b>Offense:</b> DOMESTIC BATTERY ARREST<br>         <b>Date:</b> 2025-01-02         </div>`)[0];
+                popup_933ecd90c00f965f5ceab6a8e2ab0413.setContent(html_11933f22278eba97d007fe98ed41a459);
+            
+        
+
+        marker_11206122724ab60d2b17ecb3747778cf.bindPopup(popup_933ecd90c00f965f5ceab6a8e2ab0413)
+        ;
+
+        
+    
+    
+            var marker_4bd755cee4d3924a215d0cd32b16ef10 = L.marker(
+                [41.9056631, -87.7879609],
+                {
+}
+            ).addTo(marker_cluster_a0e358b12be17c0cb233b0f1ee246365);
+        
+    
+            var icon_f722d72c7550d83361dfe8e79c6a5a4f = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_4bd755cee4d3924a215d0cd32b16ef10.setIcon(icon_f722d72c7550d83361dfe8e79c6a5a4f);
+        
+    
+        var popup_b5e775393e003c0f681d9d69858cbcb7 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_190586b527b740f2935625acaa26fd40 = $(`<div id="html_190586b527b740f2935625acaa26fd40" style="width: 100.0%; height: 100.0%;">         <b>Offense:</b> CRIMINAL DAMAGE TO MOTOR VEHICLE<br>         <b>Date:</b> 2025-01-01         </div>`)[0];
+                popup_b5e775393e003c0f681d9d69858cbcb7.setContent(html_190586b527b740f2935625acaa26fd40);
+            
+        
+
+        marker_4bd755cee4d3924a215d0cd32b16ef10.bindPopup(popup_b5e775393e003c0f681d9d69858cbcb7)
+        ;
+
+        
+    
+    
+            var marker_4a509386eef6be2d4962862ac481617e = L.marker(
+                [41.881447, -87.7908312],
+                {
+}
+            ).addTo(marker_cluster_a0e358b12be17c0cb233b0f1ee246365);
+        
+    
+            var icon_ed4a83d5abb701cdb785bb6dfb72672f = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_4a509386eef6be2d4962862ac481617e.setIcon(icon_ed4a83d5abb701cdb785bb6dfb72672f);
+        
+    
+        var popup_8a475048d3ce76393cdc4958a874dc2c = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_17737d62963099e3050cb61701628e96 = $(`<div id="html_17737d62963099e3050cb61701628e96" style="width: 100.0%; height: 100.0%;">         <b>Offense:</b> BURGLARY TO GARAGE<br>         <b>Date:</b> 2025-01-01         </div>`)[0];
+                popup_8a475048d3ce76393cdc4958a874dc2c.setContent(html_17737d62963099e3050cb61701628e96);
+            
+        
+
+        marker_4a509386eef6be2d4962862ac481617e.bindPopup(popup_8a475048d3ce76393cdc4958a874dc2c)
+        ;
+
+        
+    
+    
+            var marker_a7fdfb0ec747f0015bbe37dcb34a0fcc = L.marker(
+                [41.8871362, -87.8049887],
+                {
+}
+            ).addTo(marker_cluster_a0e358b12be17c0cb233b0f1ee246365);
+        
+    
+            var icon_50fd1006d374ecfeef36e7d23199fee3 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_a7fdfb0ec747f0015bbe37dcb34a0fcc.setIcon(icon_50fd1006d374ecfeef36e7d23199fee3);
+        
+    
+        var popup_28a3b72e101fe837f90ef4373aba6eae = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_947eac0d67b79607bf95a7bc9d5f0c28 = $(`<div id="html_947eac0d67b79607bf95a7bc9d5f0c28" style="width: 100.0%; height: 100.0%;">         <b>Offense:</b> BIKE THEFT<br>         <b>Date:</b> 2025-01-01         </div>`)[0];
+                popup_28a3b72e101fe837f90ef4373aba6eae.setContent(html_947eac0d67b79607bf95a7bc9d5f0c28);
+            
+        
+
+        marker_a7fdfb0ec747f0015bbe37dcb34a0fcc.bindPopup(popup_28a3b72e101fe837f90ef4373aba6eae)
+        ;
+
+        
+    
+    
+            var marker_2315d5f3d605f9975f67ecfc1a40c56d = L.marker(
+                [41.8820572, -87.7779888],
+                {
+}
+            ).addTo(marker_cluster_a0e358b12be17c0cb233b0f1ee246365);
+        
+    
+            var icon_61deb748cac9df51a90da8d2e8738750 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_2315d5f3d605f9975f67ecfc1a40c56d.setIcon(icon_61deb748cac9df51a90da8d2e8738750);
+        
+    
+        var popup_fe0bdf890a5ace9b1f11bf518172ebf7 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d9cb18d0fa47edea303685e48359270c = $(`<div id="html_d9cb18d0fa47edea303685e48359270c" style="width: 100.0%; height: 100.0%;">         <b>Offense:</b> RECKLESS DISCHARGE OF A FIREARM<br>         <b>Date:</b> 2024-12-31         </div>`)[0];
+                popup_fe0bdf890a5ace9b1f11bf518172ebf7.setContent(html_d9cb18d0fa47edea303685e48359270c);
+            
+        
+
+        marker_2315d5f3d605f9975f67ecfc1a40c56d.bindPopup(popup_fe0bdf890a5ace9b1f11bf518172ebf7)
+        ;
+
+        
+    
+    
+            var marker_22b5fb0bc0bcb917cb2a13cd606b2fa0 = L.marker(
+                [41.89332539999999, -87.7812524],
+                {
+}
+            ).addTo(marker_cluster_a0e358b12be17c0cb233b0f1ee246365);
+        
+    
+            var icon_b67f34d8532186d9c333dce8bc99c472 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_22b5fb0bc0bcb917cb2a13cd606b2fa0.setIcon(icon_b67f34d8532186d9c333dce8bc99c472);
+        
+    
+        var popup_1e67ab5dd439e119d4e02ecbdff3fb23 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3a8f36b2eadb92b2a19910f0c3a501fa = $(`<div id="html_3a8f36b2eadb92b2a19910f0c3a501fa" style="width: 100.0%; height: 100.0%;">         <b>Offense:</b> BURGLARY TO MOTOR VEHICLE<br>         <b>Date:</b> 2024-12-30         </div>`)[0];
+                popup_1e67ab5dd439e119d4e02ecbdff3fb23.setContent(html_3a8f36b2eadb92b2a19910f0c3a501fa);
+            
+        
+
+        marker_22b5fb0bc0bcb917cb2a13cd606b2fa0.bindPopup(popup_1e67ab5dd439e119d4e02ecbdff3fb23)
+        ;
+
+        
+    
+    
+            var marker_c1472105bc69478e06756e4dc8654744 = L.marker(
+                [41.8708584, -87.7746244],
+                {
+}
+            ).addTo(marker_cluster_a0e358b12be17c0cb233b0f1ee246365);
+        
+    
+            var icon_585b113521676a9f76ec99554fec1528 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_c1472105bc69478e06756e4dc8654744.setIcon(icon_585b113521676a9f76ec99554fec1528);
+        
+    
+        var popup_a071463fdab694dd4c3558cbff071118 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2350df6dae42b31737c4adee6e4c9105 = $(`<div id="html_2350df6dae42b31737c4adee6e4c9105" style="width: 100.0%; height: 100.0%;">         <b>Offense:</b> WARRANT ARREST<br>         <b>Date:</b> 2024-12-30         </div>`)[0];
+                popup_a071463fdab694dd4c3558cbff071118.setContent(html_2350df6dae42b31737c4adee6e4c9105);
+            
+        
+
+        marker_c1472105bc69478e06756e4dc8654744.bindPopup(popup_a071463fdab694dd4c3558cbff071118)
+        ;
+
+        
+    
+    
+            var marker_ee216b90cf82c1a398a67b961c8205ff = L.marker(
+                [41.8714082, -87.7866234],
+                {
+}
+            ).addTo(marker_cluster_a0e358b12be17c0cb233b0f1ee246365);
+        
+    
+            var icon_ce10f5aeb3df14af7de36615da51352f = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_ee216b90cf82c1a398a67b961c8205ff.setIcon(icon_ce10f5aeb3df14af7de36615da51352f);
+        
+    
+        var popup_c0a75f86cbf5e0d14e0800316afc3b24 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2efd7ff655f2b743d657d4281f9699c1 = $(`<div id="html_2efd7ff655f2b743d657d4281f9699c1" style="width: 100.0%; height: 100.0%;">         <b>Offense:</b> BURGLARY TO MOTOR VEHICLE<br>         <b>Date:</b> 2024-12-30         </div>`)[0];
+                popup_c0a75f86cbf5e0d14e0800316afc3b24.setContent(html_2efd7ff655f2b743d657d4281f9699c1);
+            
+        
+
+        marker_ee216b90cf82c1a398a67b961c8205ff.bindPopup(popup_c0a75f86cbf5e0d14e0800316afc3b24)
+        ;
+
+        
+    
+    
+            var marker_0f3c9b5c3e9f327ad40fce3990c73edc = L.marker(
+                [41.8882935, -87.77560299999999],
+                {
+}
+            ).addTo(marker_cluster_a0e358b12be17c0cb233b0f1ee246365);
+        
+    
+            var icon_852f9f73a4a6effab413b92999e5695e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_0f3c9b5c3e9f327ad40fce3990c73edc.setIcon(icon_852f9f73a4a6effab413b92999e5695e);
+        
+    
+        var popup_1f7f647b6b7ac03578b14c12a86d56f5 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_637fcaa322a9330a46f47f46ce4f6dae = $(`<div id="html_637fcaa322a9330a46f47f46ce4f6dae" style="width: 100.0%; height: 100.0%;">         <b>Offense:</b> ARMED ROBBERY<br>         <b>Date:</b> 2024-12-30         </div>`)[0];
+                popup_1f7f647b6b7ac03578b14c12a86d56f5.setContent(html_637fcaa322a9330a46f47f46ce4f6dae);
+            
+        
+
+        marker_0f3c9b5c3e9f327ad40fce3990c73edc.bindPopup(popup_1f7f647b6b7ac03578b14c12a86d56f5)
+        ;
+
+        
+    
+    
+            var marker_e4a4d0ae7633e74188accfbf95b5f0ed = L.marker(
+                [41.8744079, -87.7766858],
+                {
+}
+            ).addTo(marker_cluster_a0e358b12be17c0cb233b0f1ee246365);
+        
+    
+            var icon_c27280adb21f31aceb21a96676755cee = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_e4a4d0ae7633e74188accfbf95b5f0ed.setIcon(icon_c27280adb21f31aceb21a96676755cee);
+        
+    
+        var popup_3870c509be1f62fe5bc64981f8f302db = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_17fecedbbe81dffe8c4b09b1ff35e56d = $(`<div id="html_17fecedbbe81dffe8c4b09b1ff35e56d" style="width: 100.0%; height: 100.0%;">         <b>Offense:</b> THEFT OF LICENSE PLATE<br>         <b>Date:</b> 2024-12-30         </div>`)[0];
+                popup_3870c509be1f62fe5bc64981f8f302db.setContent(html_17fecedbbe81dffe8c4b09b1ff35e56d);
+            
+        
+
+        marker_e4a4d0ae7633e74188accfbf95b5f0ed.bindPopup(popup_3870c509be1f62fe5bc64981f8f302db)
+        ;
+
+        
+    
+    
+            var marker_d974df6ebe2d412456988a0a995a5148 = L.marker(
+                [41.8889519, -87.80295470000002],
+                {
+}
+            ).addTo(marker_cluster_a0e358b12be17c0cb233b0f1ee246365);
+        
+    
+            var icon_a1ce44b4feabbdbd72a943ed6e684e02 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_d974df6ebe2d412456988a0a995a5148.setIcon(icon_a1ce44b4feabbdbd72a943ed6e684e02);
+        
+    
+        var popup_236b8c203cf273976f885e729beffd0d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_0b9a8b580b06de8894071fea2e054252 = $(`<div id="html_0b9a8b580b06de8894071fea2e054252" style="width: 100.0%; height: 100.0%;">         <b>Offense:</b> RETAIL THEFT<br>         <b>Date:</b> 2024-12-29         </div>`)[0];
+                popup_236b8c203cf273976f885e729beffd0d.setContent(html_0b9a8b580b06de8894071fea2e054252);
+            
+        
+
+        marker_d974df6ebe2d412456988a0a995a5148.bindPopup(popup_236b8c203cf273976f885e729beffd0d)
+        ;
+
+        
+    
+    
+            var marker_c3563384d6700af6b6e7029b5c5789ed = L.marker(
+                [41.886797, -87.80497729999999],
+                {
+}
+            ).addTo(marker_cluster_a0e358b12be17c0cb233b0f1ee246365);
+        
+    
+            var icon_d55ac4130e90574ea070ae964337d133 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_c3563384d6700af6b6e7029b5c5789ed.setIcon(icon_d55ac4130e90574ea070ae964337d133);
+        
+    
+        var popup_3939730d31ed2e51b8fe97476bed743b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c11bcbf9b7cbc821e8c7f0768cee535b = $(`<div id="html_c11bcbf9b7cbc821e8c7f0768cee535b" style="width: 100.0%; height: 100.0%;">         <b>Offense:</b> THEFT<br>         <b>Date:</b> 2024-12-29         </div>`)[0];
+                popup_3939730d31ed2e51b8fe97476bed743b.setContent(html_c11bcbf9b7cbc821e8c7f0768cee535b);
+            
+        
+
+        marker_c3563384d6700af6b6e7029b5c5789ed.bindPopup(popup_3939730d31ed2e51b8fe97476bed743b)
+        ;
+
+        
+    
+    
+            var marker_81d9220fe5f2a30fc169a77d0ad03a94 = L.marker(
+                [41.8889519, -87.80295470000002],
+                {
+}
+            ).addTo(marker_cluster_a0e358b12be17c0cb233b0f1ee246365);
+        
+    
+            var icon_d289a60a852fddbc9766e43554d905bd = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_81d9220fe5f2a30fc169a77d0ad03a94.setIcon(icon_d289a60a852fddbc9766e43554d905bd);
+        
+    
+        var popup_1b099f3b37bd7886574b77dd7d3c4d15 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2f15d35aebbab69de9770b770bc716d3 = $(`<div id="html_2f15d35aebbab69de9770b770bc716d3" style="width: 100.0%; height: 100.0%;">         <b>Offense:</b> RETAIL THEFT<br>         <b>Date:</b> 2024-12-28         </div>`)[0];
+                popup_1b099f3b37bd7886574b77dd7d3c4d15.setContent(html_2f15d35aebbab69de9770b770bc716d3);
+            
+        
+
+        marker_81d9220fe5f2a30fc169a77d0ad03a94.bindPopup(popup_1b099f3b37bd7886574b77dd7d3c4d15)
+        ;
+
+        
+    
+    
+            var marker_91900bccb505e068c97783343ea4e0a9 = L.marker(
+                [41.909081, -87.79504159999999],
+                {
+}
+            ).addTo(marker_cluster_a0e358b12be17c0cb233b0f1ee246365);
+        
+    
+            var icon_a2193b8247132a6b417d4f5869934aa9 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_91900bccb505e068c97783343ea4e0a9.setIcon(icon_a2193b8247132a6b417d4f5869934aa9);
+        
+    
+        var popup_5d92197eee03bfb96a98f05fdf409cb5 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_62e7a5c2f1246ab17eff3d0025cd762e = $(`<div id="html_62e7a5c2f1246ab17eff3d0025cd762e" style="width: 100.0%; height: 100.0%;">         <b>Offense:</b> CRIMINAL DAMAGE TO PROPERTY<br>         <b>Date:</b> 2024-12-28         </div>`)[0];
+                popup_5d92197eee03bfb96a98f05fdf409cb5.setContent(html_62e7a5c2f1246ab17eff3d0025cd762e);
+            
+        
+
+        marker_91900bccb505e068c97783343ea4e0a9.bindPopup(popup_5d92197eee03bfb96a98f05fdf409cb5)
+        ;
+
+        
+    
+    
+            var marker_3e8c53f8aed9e9e4735d6910115beccb = L.marker(
+                [41.8804251, -87.77486180000001],
+                {
+}
+            ).addTo(marker_cluster_a0e358b12be17c0cb233b0f1ee246365);
+        
+    
+            var icon_7302832d420ef385d00c5591451c9e5e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_3e8c53f8aed9e9e4735d6910115beccb.setIcon(icon_7302832d420ef385d00c5591451c9e5e);
+        
+    
+        var popup_86b1c2fdb139e4ce92cb28ca551e0dee = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_6cb98807d73d33c9515b98e96b341d7c = $(`<div id="html_6cb98807d73d33c9515b98e96b341d7c" style="width: 100.0%; height: 100.0%;">         <b>Offense:</b> DRIVING UNDER THE INFLUENCE ARREST<br>         <b>Date:</b> 2024-12-27         </div>`)[0];
+                popup_86b1c2fdb139e4ce92cb28ca551e0dee.setContent(html_6cb98807d73d33c9515b98e96b341d7c);
+            
+        
+
+        marker_3e8c53f8aed9e9e4735d6910115beccb.bindPopup(popup_86b1c2fdb139e4ce92cb28ca551e0dee)
+        ;
+
+        
+    
+    
+            var marker_fd108974e37021aa9f37486ee9d6f5a1 = L.marker(
+                [41.881373, -87.8056109],
+                {
+}
+            ).addTo(marker_cluster_a0e358b12be17c0cb233b0f1ee246365);
+        
+    
+            var icon_ef2cdf201737868a0c532220bab72893 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_fd108974e37021aa9f37486ee9d6f5a1.setIcon(icon_ef2cdf201737868a0c532220bab72893);
+        
+    
+        var popup_ff9167032dd900b7397ab63201e74658 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_dcc4bfc663bd0060b8e0510dd1f77b91 = $(`<div id="html_dcc4bfc663bd0060b8e0510dd1f77b91" style="width: 100.0%; height: 100.0%;">         <b>Offense:</b> BURGLARY<br>         <b>Date:</b> 2024-12-27         </div>`)[0];
+                popup_ff9167032dd900b7397ab63201e74658.setContent(html_dcc4bfc663bd0060b8e0510dd1f77b91);
+            
+        
+
+        marker_fd108974e37021aa9f37486ee9d6f5a1.bindPopup(popup_ff9167032dd900b7397ab63201e74658)
+        ;
+
+        
+    
+    
+            var marker_68b60d1c30477b3fe7dbaf4960de6a77 = L.marker(
+                [41.8867347, -87.8032958],
+                {
+}
+            ).addTo(marker_cluster_a0e358b12be17c0cb233b0f1ee246365);
+        
+    
+            var icon_73cc54bc77ab05d9c1b7ba5cb4a8a103 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_68b60d1c30477b3fe7dbaf4960de6a77.setIcon(icon_73cc54bc77ab05d9c1b7ba5cb4a8a103);
+        
+    
+        var popup_16fc42ee28504d03176ef09f75e38141 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f682eb49b13ea8785c9ad796d042a1db = $(`<div id="html_f682eb49b13ea8785c9ad796d042a1db" style="width: 100.0%; height: 100.0%;">         <b>Offense:</b> BURGLARY TO AUTO<br>         <b>Date:</b> 2024-12-27         </div>`)[0];
+                popup_16fc42ee28504d03176ef09f75e38141.setContent(html_f682eb49b13ea8785c9ad796d042a1db);
+            
+        
+
+        marker_68b60d1c30477b3fe7dbaf4960de6a77.bindPopup(popup_16fc42ee28504d03176ef09f75e38141)
+        ;
+
+        
+    
+    
+            var marker_0fda9d99b1a25965e5021dce6b977c98 = L.marker(
+                [41.8688662, -87.7825623],
+                {
+}
+            ).addTo(marker_cluster_a0e358b12be17c0cb233b0f1ee246365);
+        
+    
+            var icon_4b16550603fb5a3b06bea8fcda518e99 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_0fda9d99b1a25965e5021dce6b977c98.setIcon(icon_4b16550603fb5a3b06bea8fcda518e99);
+        
+    
+        var popup_5dcb293a44be0e775de5479981d65234 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9dab730e73b0e87f1156f99ce89ac79a = $(`<div id="html_9dab730e73b0e87f1156f99ce89ac79a" style="width: 100.0%; height: 100.0%;">         <b>Offense:</b> VIOLATION OF AN ORDER OF PROTECTION ARREST<br>         <b>Date:</b> 2024-12-27         </div>`)[0];
+                popup_5dcb293a44be0e775de5479981d65234.setContent(html_9dab730e73b0e87f1156f99ce89ac79a);
+            
+        
+
+        marker_0fda9d99b1a25965e5021dce6b977c98.bindPopup(popup_5dcb293a44be0e775de5479981d65234)
+        ;
+
+        
+    
+    
+            marker_cluster_a0e358b12be17c0cb233b0f1ee246365.addTo(map_ced7ebce2630a8e431067fa3d96b831a);
+        
+</script>
+</html>
