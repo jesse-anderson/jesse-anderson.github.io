@@ -25,7 +25,7 @@
             <meta name="viewport" content="width=device-width,
                 initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
             <style>
-                #map_873808da5b877d7f4fdd78ca475e87e5 {
+                #map_4dfc1ee3d23ee36dc9018157d29ea512 {
                     position: relative;
                     width: 100.0%;
                     height: 100.0%;
@@ -42,11 +42,17 @@
 <body>
     
     
-         <h3 align="center" style="font-size:20px"><b>Oak Park Crime Map</b></h3>
-         <br>
-         <h3 align="center" style="font-size:10px">
-         <a href ="https://jesse-anderson.net/">My Portfolio</a>() | <a href ="https://blog.jesse-anderson.net/">My Blog</a></h3>
-         
+    <h3 align="center" style="font-size:20px"><b>Oak Park Crime Map</b></h3>
+    <br>
+    <h3 align="center" style="font-size:10px">
+    <a href="https://jesse-anderson.net/">My Portfolio</a> |
+    <a href="https://blog.jesse-anderson.net/">My Blog</a> |
+    <a href="https://blog.jesse-anderson.net/">Documentation</a> |
+    <a href="mailto:jesse@jesse-anderson.net">Contact</a> |
+    <a href="mailto:jesse@jesse-anderson.net?subject=Add%20me%20to%20Weekly%20Updates&body=Hello%20Jesse,%0A%0APlease%20add%20me%20to%20the%20weekly%20updates%20list%20for%20the%20Oak%20Park%20Crime%20Map.%0A%0AThank%20you!">
+        Add me to Weekly Updates
+    </a>
+    </h3>
     
     <style>
     /* Full-page overlay styling */
@@ -119,14 +125,14 @@
     </script>
     
     
-            <div class="folium-map" id="map_873808da5b877d7f4fdd78ca475e87e5" ></div>
+            <div class="folium-map" id="map_4dfc1ee3d23ee36dc9018157d29ea512" ></div>
         
 </body>
 <script>
     
     
-            var map_873808da5b877d7f4fdd78ca475e87e5 = L.map(
-                "map_873808da5b877d7f4fdd78ca475e87e5",
+            var map_4dfc1ee3d23ee36dc9018157d29ea512 = L.map(
+                "map_4dfc1ee3d23ee36dc9018157d29ea512",
                 {
                     center: [41.885, -87.78],
                     crs: L.CRS.EPSG3857,
@@ -143,7 +149,7 @@
 
         
     
-            var tile_layer_eb459b030b9d370bb60da78c845ea84f = L.tileLayer(
+            var tile_layer_7c1a2ae2b9b5bc57f9594d549d93219b = L.tileLayer(
                 "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
                 {
   "minZoom": 0,
@@ -160,23 +166,23 @@
             );
         
     
-            tile_layer_eb459b030b9d370bb60da78c845ea84f.addTo(map_873808da5b877d7f4fdd78ca475e87e5);
+            tile_layer_7c1a2ae2b9b5bc57f9594d549d93219b.addTo(map_4dfc1ee3d23ee36dc9018157d29ea512);
         
     
-            var marker_cluster_57c1adfe6688adef12ca16413310fa14 = L.markerClusterGroup(
+            var marker_cluster_a76eac208b44d2349a5fb3c030563bf0 = L.markerClusterGroup(
                 {
 }
             );
         
     
-            var marker_2ea83c4ab31366d165f2269c65da9099 = L.marker(
+            var marker_bf655134515aaa9bb01b057370bfe8fb = L.marker(
                 [41.9075079, -87.7781562],
                 {
 }
-            ).addTo(marker_cluster_57c1adfe6688adef12ca16413310fa14);
+            ).addTo(marker_cluster_a76eac208b44d2349a5fb3c030563bf0);
         
     
-            var icon_b2a91360fb8bcb92a78fe8bc11dc29c0 = L.AwesomeMarkers.icon(
+            var icon_59e9445593cdefb4726eb0f72d6fc0e9 = L.AwesomeMarkers.icon(
                 {
   "markerColor": "red",
   "iconColor": "white",
@@ -185,34 +191,34 @@
   "extraClasses": "fa-rotate-0",
 }
             );
-            marker_2ea83c4ab31366d165f2269c65da9099.setIcon(icon_b2a91360fb8bcb92a78fe8bc11dc29c0);
+            marker_bf655134515aaa9bb01b057370bfe8fb.setIcon(icon_59e9445593cdefb4726eb0f72d6fc0e9);
         
     
-        var popup_e3b007ee35a403891a3021aaed586667 = L.popup({
+        var popup_86f1201404397f177f3db625c05c5ffa = L.popup({
   "maxWidth": 300,
 });
 
         
             
-                var html_6b27c5e00b091452bc1b480f0d233a00 = $(`<div id="html_6b27c5e00b091452bc1b480f0d233a00" style="width: 100.0%; height: 100.0%;">             <b>Complaint #:</b> 25-00018<br/>             <b>Offense:</b> DOMESTIC BATTERY ARREST<br/>             <details>               <summary>View Details</summary>               <b>Date:</b> 2025-01-02<br/>               <b>Time:</b> 1242 HRS<br/>               <b>Location:</b> 1200 BLOCK OF N. TAYLOR<br/>               <b>Victim:</b> OAK PARK RESIDENT<br/>               <b>Narrative:</b> gutierrez villa, alejandra (f/34) of t he 1200 block of n. taylor, oak park, il. was arrested for domestic battery.<br/>             </details>         </div>`)[0];
-                popup_e3b007ee35a403891a3021aaed586667.setContent(html_6b27c5e00b091452bc1b480f0d233a00);
+                var html_4d525b0331fa8bad42cb6d7eb0bd706f = $(`<div id="html_4d525b0331fa8bad42cb6d7eb0bd706f" style="width: 100.0%; height: 100.0%;">             <b>Complaint #:</b> 25-00018<br/>             <b>Offense:</b> DOMESTIC BATTERY ARREST<br/>             <details>               <summary>View Details</summary>               <b>Date:</b> 2025-01-02<br/>               <b>Time:</b> 1242 HRS<br/>               <b>Location:</b> 1200 BLOCK OF N. TAYLOR<br/>               <b>Victim:</b> OAK PARK RESIDENT<br/>               <b>Narrative:</b> gutierrez villa, alejandra (f/34) of t he 1200 block of n. taylor, oak park, il. was arrested for domestic battery.<br/>             </details>         </div>`)[0];
+                popup_86f1201404397f177f3db625c05c5ffa.setContent(html_4d525b0331fa8bad42cb6d7eb0bd706f);
             
         
 
-        marker_2ea83c4ab31366d165f2269c65da9099.bindPopup(popup_e3b007ee35a403891a3021aaed586667)
+        marker_bf655134515aaa9bb01b057370bfe8fb.bindPopup(popup_86f1201404397f177f3db625c05c5ffa)
         ;
 
         
     
     
-            var marker_c19b13dd35927c1640edc9b6c5ef4ba2 = L.marker(
+            var marker_91498fbe3c3afb8ea13c4c3a8c49544d = L.marker(
                 [41.9056631, -87.7879609],
                 {
 }
-            ).addTo(marker_cluster_57c1adfe6688adef12ca16413310fa14);
+            ).addTo(marker_cluster_a76eac208b44d2349a5fb3c030563bf0);
         
     
-            var icon_f3cde9abbce6944a971eb20b3331d94d = L.AwesomeMarkers.icon(
+            var icon_d7effd668dddeee8a482c4aa234c237f = L.AwesomeMarkers.icon(
                 {
   "markerColor": "red",
   "iconColor": "white",
@@ -221,34 +227,34 @@
   "extraClasses": "fa-rotate-0",
 }
             );
-            marker_c19b13dd35927c1640edc9b6c5ef4ba2.setIcon(icon_f3cde9abbce6944a971eb20b3331d94d);
+            marker_91498fbe3c3afb8ea13c4c3a8c49544d.setIcon(icon_d7effd668dddeee8a482c4aa234c237f);
         
     
-        var popup_1f362840055593d9aee3ba637cc61aa4 = L.popup({
+        var popup_aadfaa8a13d9ecfa20ec86babacf87eb = L.popup({
   "maxWidth": 300,
 });
 
         
             
-                var html_8c43dce5c50f53f5b359dc45d684bf37 = $(`<div id="html_8c43dce5c50f53f5b359dc45d684bf37" style="width: 100.0%; height: 100.0%;">             <b>Complaint #:</b> 25-00008<br/>             <b>Offense:</b> CRIMINAL DAMAGE TO MOTOR VEHICLE<br/>             <details>               <summary>View Details</summary>               <b>Date:</b> 2025-01-01<br/>               <b>Time:</b> 1053 – 1300 HRS<br/>               <b>Location:</b> FIRST BLOCK OF GREENFIELD<br/>               <b>Victim:</b> OAK PARK RESIDENT<br/>               <b>Narrative:</b> person(s) unknown by unknown means sma shed the windshiled to the victim’s 2023 black chevrolet tra il blazer while parked, at the above address. estimated damage unknown at t ime of report.<br/>             </details>         </div>`)[0];
-                popup_1f362840055593d9aee3ba637cc61aa4.setContent(html_8c43dce5c50f53f5b359dc45d684bf37);
+                var html_8bd45ee11773051ec004446c13812cc1 = $(`<div id="html_8bd45ee11773051ec004446c13812cc1" style="width: 100.0%; height: 100.0%;">             <b>Complaint #:</b> 25-00008<br/>             <b>Offense:</b> CRIMINAL DAMAGE TO MOTOR VEHICLE<br/>             <details>               <summary>View Details</summary>               <b>Date:</b> 2025-01-01<br/>               <b>Time:</b> 1053 – 1300 HRS<br/>               <b>Location:</b> FIRST BLOCK OF GREENFIELD<br/>               <b>Victim:</b> OAK PARK RESIDENT<br/>               <b>Narrative:</b> person(s) unknown by unknown means sma shed the windshiled to the victim’s 2023 black chevrolet tra il blazer while parked, at the above address. estimated damage unknown at t ime of report.<br/>             </details>         </div>`)[0];
+                popup_aadfaa8a13d9ecfa20ec86babacf87eb.setContent(html_8bd45ee11773051ec004446c13812cc1);
             
         
 
-        marker_c19b13dd35927c1640edc9b6c5ef4ba2.bindPopup(popup_1f362840055593d9aee3ba637cc61aa4)
+        marker_91498fbe3c3afb8ea13c4c3a8c49544d.bindPopup(popup_aadfaa8a13d9ecfa20ec86babacf87eb)
         ;
 
         
     
     
-            var marker_2ff8ae0ae3e9238e73cb7109181f2c93 = L.marker(
+            var marker_e269700d89ca8bc4ea96c87e7dc35bc5 = L.marker(
                 [41.881447, -87.7908312],
                 {
 }
-            ).addTo(marker_cluster_57c1adfe6688adef12ca16413310fa14);
+            ).addTo(marker_cluster_a76eac208b44d2349a5fb3c030563bf0);
         
     
-            var icon_1b067402a17ae64e5d431922be100fdc = L.AwesomeMarkers.icon(
+            var icon_5e93d136663bd62506bf6ddd6679b613 = L.AwesomeMarkers.icon(
                 {
   "markerColor": "red",
   "iconColor": "white",
@@ -257,34 +263,34 @@
   "extraClasses": "fa-rotate-0",
 }
             );
-            marker_2ff8ae0ae3e9238e73cb7109181f2c93.setIcon(icon_1b067402a17ae64e5d431922be100fdc);
+            marker_e269700d89ca8bc4ea96c87e7dc35bc5.setIcon(icon_5e93d136663bd62506bf6ddd6679b613);
         
     
-        var popup_929d636b88e7b83d88eafd4fc9fad93f = L.popup({
+        var popup_2f5460d54fee9cd89a958e824877884b = L.popup({
   "maxWidth": 300,
 });
 
         
             
-                var html_419fd1a8b73f09c14823d14580a042c2 = $(`<div id="html_419fd1a8b73f09c14823d14580a042c2" style="width: 100.0%; height: 100.0%;">             <b>Complaint #:</b> 25-00005<br/>             <b>Offense:</b> BURGLARY TO GARAGE<br/>             <details>               <summary>View Details</summary>               <b>Date:</b> 2025-01-01<br/>               <b>Time:</b> 0800-0450 HRS<br/>               <b>Location:</b> 400 BLOCK OF WESLEY<br/>               <b>Victim:</b> OAK PARK RESIDENT<br/>               <b>Narrative:</b> person(s) unknown entered the victim’s unlocked garage then entered and ransacked her unlocked red 2018 kia which was parked inside. no loss reported.<br/>             </details>         </div>`)[0];
-                popup_929d636b88e7b83d88eafd4fc9fad93f.setContent(html_419fd1a8b73f09c14823d14580a042c2);
+                var html_e8bc9a1d56b9f31d75aee3c9c110f297 = $(`<div id="html_e8bc9a1d56b9f31d75aee3c9c110f297" style="width: 100.0%; height: 100.0%;">             <b>Complaint #:</b> 25-00005<br/>             <b>Offense:</b> BURGLARY TO GARAGE<br/>             <details>               <summary>View Details</summary>               <b>Date:</b> 2025-01-01<br/>               <b>Time:</b> 0800-0450 HRS<br/>               <b>Location:</b> 400 BLOCK OF WESLEY<br/>               <b>Victim:</b> OAK PARK RESIDENT<br/>               <b>Narrative:</b> person(s) unknown entered the victim’s unlocked garage then entered and ransacked her unlocked red 2018 kia which was parked inside. no loss reported.<br/>             </details>         </div>`)[0];
+                popup_2f5460d54fee9cd89a958e824877884b.setContent(html_e8bc9a1d56b9f31d75aee3c9c110f297);
             
         
 
-        marker_2ff8ae0ae3e9238e73cb7109181f2c93.bindPopup(popup_929d636b88e7b83d88eafd4fc9fad93f)
+        marker_e269700d89ca8bc4ea96c87e7dc35bc5.bindPopup(popup_2f5460d54fee9cd89a958e824877884b)
         ;
 
         
     
     
-            var marker_3430af634e8655979a58cfe9efd69f3f = L.marker(
+            var marker_500df9a9b2c468f7d55c8ebd10faca2d = L.marker(
                 [41.8871362, -87.8049887],
                 {
 }
-            ).addTo(marker_cluster_57c1adfe6688adef12ca16413310fa14);
+            ).addTo(marker_cluster_a76eac208b44d2349a5fb3c030563bf0);
         
     
-            var icon_450b64bcc529e2eadb6469062640484f = L.AwesomeMarkers.icon(
+            var icon_cd9a69897543f8d25af701b663677bb9 = L.AwesomeMarkers.icon(
                 {
   "markerColor": "red",
   "iconColor": "white",
@@ -293,34 +299,34 @@
   "extraClasses": "fa-rotate-0",
 }
             );
-            marker_3430af634e8655979a58cfe9efd69f3f.setIcon(icon_450b64bcc529e2eadb6469062640484f);
+            marker_500df9a9b2c468f7d55c8ebd10faca2d.setIcon(icon_cd9a69897543f8d25af701b663677bb9);
         
     
-        var popup_b19270de4d23437db2df2c631a8ee799 = L.popup({
+        var popup_1ba7165bb3f284fdab2fe1dd637b2f0b = L.popup({
   "maxWidth": 300,
 });
 
         
             
-                var html_a958bbbfda54ac549fcd02ebda54542f = $(`<div id="html_a958bbbfda54ac549fcd02ebda54542f" style="width: 100.0%; height: 100.0%;">             <b>Complaint #:</b> 25-00011<br/>             <b>Offense:</b> BIKE THEFT<br/>             <details>               <summary>View Details</summary>               <b>Date:</b> 2025-01-01<br/>               <b>Time:</b> 1400-1700 HRS<br/>               <b>Location:</b> 400 BLOCK OF N. HARLEM<br/>               <b>Victim:</b> RIVER FOREST RESID ENT<br/>               <b>Narrative:</b> person(s) unknown, by unknown means, r emoved the victim’s locked black “trek” mountain bike. loss es timated at $600.00. oak park police department *individuals listed have been charged with a crimin al offense and have a pending court date. all defendants are considered innocent until proven gui lty in a court of law.<br/>             </details>         </div>`)[0];
-                popup_b19270de4d23437db2df2c631a8ee799.setContent(html_a958bbbfda54ac549fcd02ebda54542f);
+                var html_dce90cc1fe444246a306242b8ef20a1f = $(`<div id="html_dce90cc1fe444246a306242b8ef20a1f" style="width: 100.0%; height: 100.0%;">             <b>Complaint #:</b> 25-00011<br/>             <b>Offense:</b> BIKE THEFT<br/>             <details>               <summary>View Details</summary>               <b>Date:</b> 2025-01-01<br/>               <b>Time:</b> 1400-1700 HRS<br/>               <b>Location:</b> 400 BLOCK OF N. HARLEM<br/>               <b>Victim:</b> RIVER FOREST RESID ENT<br/>               <b>Narrative:</b> person(s) unknown, by unknown means, r emoved the victim’s locked black “trek” mountain bike. loss es timated at $600.00. oak park police department *individuals listed have been charged with a crimin al offense and have a pending court date. all defendants are considered innocent until proven gui lty in a court of law.<br/>             </details>         </div>`)[0];
+                popup_1ba7165bb3f284fdab2fe1dd637b2f0b.setContent(html_dce90cc1fe444246a306242b8ef20a1f);
             
         
 
-        marker_3430af634e8655979a58cfe9efd69f3f.bindPopup(popup_b19270de4d23437db2df2c631a8ee799)
+        marker_500df9a9b2c468f7d55c8ebd10faca2d.bindPopup(popup_1ba7165bb3f284fdab2fe1dd637b2f0b)
         ;
 
         
     
     
-            var marker_6daeb413bbdcb49c02190fec21b98c69 = L.marker(
+            var marker_ade4526fde7dc89c5214e95839c927ab = L.marker(
                 [41.8820572, -87.7779888],
                 {
 }
-            ).addTo(marker_cluster_57c1adfe6688adef12ca16413310fa14);
+            ).addTo(marker_cluster_a76eac208b44d2349a5fb3c030563bf0);
         
     
-            var icon_4b6304b5503774a0ae5a0c306a03ab1e = L.AwesomeMarkers.icon(
+            var icon_635fc12bc022daf188b91e44228f67b8 = L.AwesomeMarkers.icon(
                 {
   "markerColor": "red",
   "iconColor": "white",
@@ -329,34 +335,34 @@
   "extraClasses": "fa-rotate-0",
 }
             );
-            marker_6daeb413bbdcb49c02190fec21b98c69.setIcon(icon_4b6304b5503774a0ae5a0c306a03ab1e);
+            marker_ade4526fde7dc89c5214e95839c927ab.setIcon(icon_635fc12bc022daf188b91e44228f67b8);
         
     
-        var popup_72ff9d757f5913e8f173dbe52644aac9 = L.popup({
+        var popup_352c9e43330434ccff8c84a6b1a3ca1d = L.popup({
   "maxWidth": 300,
 });
 
         
             
-                var html_c8118acca5ce915c507f4c107cc87852 = $(`<div id="html_c8118acca5ce915c507f4c107cc87852" style="width: 100.0%; height: 100.0%;">             <b>Complaint #:</b> 24-07788<br/>             <b>Offense:</b> RECKLESS DISCHARGE OF A FIREARM<br/>             <details>               <summary>View Details</summary>               <b>Date:</b> 2024-12-31<br/>               <b>Time:</b> 1437 HRS<br/>               <b>Location:</b> 100 BLOCK OF WASHINGTON BLVD<br/>               <b>Victim:</b> STATE OF ILLINOIS<br/>               <b>Narrative:</b> witnesses related to hearing muliple g unshots in the rear alley at 61washington blvd. nine (9) “9mm luger hornady” shell casings were recovered. additionally, another witne ss related, while standing in the 400 block of s. taylor ave, he obse rved a m/b subject with a black handgun, running eastbound in the south washi ngton blvd alley from taylor st. six (6) to seven (7) shots were fir ed and the same subject continued running eastbound in the alley.<br/>             </details>         </div>`)[0];
-                popup_72ff9d757f5913e8f173dbe52644aac9.setContent(html_c8118acca5ce915c507f4c107cc87852);
+                var html_cd6c4852beb046771c89aa6b95cddf6a = $(`<div id="html_cd6c4852beb046771c89aa6b95cddf6a" style="width: 100.0%; height: 100.0%;">             <b>Complaint #:</b> 24-07788<br/>             <b>Offense:</b> RECKLESS DISCHARGE OF A FIREARM<br/>             <details>               <summary>View Details</summary>               <b>Date:</b> 2024-12-31<br/>               <b>Time:</b> 1437 HRS<br/>               <b>Location:</b> 100 BLOCK OF WASHINGTON BLVD<br/>               <b>Victim:</b> STATE OF ILLINOIS<br/>               <b>Narrative:</b> witnesses related to hearing muliple g unshots in the rear alley at 61washington blvd. nine (9) “9mm luger hornady” shell casings were recovered. additionally, another witne ss related, while standing in the 400 block of s. taylor ave, he obse rved a m/b subject with a black handgun, running eastbound in the south washi ngton blvd alley from taylor st. six (6) to seven (7) shots were fir ed and the same subject continued running eastbound in the alley.<br/>             </details>         </div>`)[0];
+                popup_352c9e43330434ccff8c84a6b1a3ca1d.setContent(html_cd6c4852beb046771c89aa6b95cddf6a);
             
         
 
-        marker_6daeb413bbdcb49c02190fec21b98c69.bindPopup(popup_72ff9d757f5913e8f173dbe52644aac9)
+        marker_ade4526fde7dc89c5214e95839c927ab.bindPopup(popup_352c9e43330434ccff8c84a6b1a3ca1d)
         ;
 
         
     
     
-            var marker_6c6cd60e200bea37d817762f38ae2508 = L.marker(
+            var marker_dfeeb03d9632cf66c4f7fc929d0c16c4 = L.marker(
                 [41.89332539999999, -87.7812524],
                 {
 }
-            ).addTo(marker_cluster_57c1adfe6688adef12ca16413310fa14);
+            ).addTo(marker_cluster_a76eac208b44d2349a5fb3c030563bf0);
         
     
-            var icon_0a5ae228635f9c379e9bbe695e3a7a5d = L.AwesomeMarkers.icon(
+            var icon_2254e4cac2a1619c336126c287b1378c = L.AwesomeMarkers.icon(
                 {
   "markerColor": "red",
   "iconColor": "white",
@@ -365,34 +371,34 @@
   "extraClasses": "fa-rotate-0",
 }
             );
-            marker_6c6cd60e200bea37d817762f38ae2508.setIcon(icon_0a5ae228635f9c379e9bbe695e3a7a5d);
+            marker_dfeeb03d9632cf66c4f7fc929d0c16c4.setIcon(icon_2254e4cac2a1619c336126c287b1378c);
         
     
-        var popup_a20e0eea8274bd3932459e96bc9c4b75 = L.popup({
+        var popup_a8dd5fc96edb9dbd22c5edd71e3e9602 = L.popup({
   "maxWidth": 300,
 });
 
         
             
-                var html_40d968018eb383c7527d19d8cde88b70 = $(`<div id="html_40d968018eb383c7527d19d8cde88b70" style="width: 100.0%; height: 100.0%;">             <b>Complaint #:</b> 24-07768<br/>             <b>Offense:</b> BURGLARY TO MOTOR VEHICLE<br/>             <details>               <summary>View Details</summary>               <b>Date:</b> 2024-12-30<br/>               <b>Time:</b> 1502 HRS<br/>               <b>Location:</b> 200 BLOCK OF N. GROVE<br/>               <b>Victim:</b> OAK PARK RESIDENT NARRITIVE: A M/B SUBJECT ENTERED THE BLACK BMW BY UNKNOWN MEANS AND REMOVED AN UNKOWN AMOUNT OF USC COINS. T HE SUBJECT LEFT THE SCENE E/B ONTARIO ON A BLUE DIVY BIKE. COMPLAINT NUMBER: 24-07769 OFFENSE: BURGLARY TO MOTOR VEHICLE DATE(S): 30-DEC-24 TIME(S): 0700 – 1458 HRS LOCATION: 500 BLOCK OF GARFIELD VICTIM/ADDRESS: MCHENRY RESIDENT<br/>               <b>Narrative:</b> person(s) unknown, by unknown means en tered the white 2017 ford truck and removed the red “hilti” j ackhammer. estimated loss $5,500.00. no leads entry made due to lack of serial number.<br/>             </details>         </div>`)[0];
-                popup_a20e0eea8274bd3932459e96bc9c4b75.setContent(html_40d968018eb383c7527d19d8cde88b70);
+                var html_fbd3ec8715ea1aba28b3ff3390aa6a1b = $(`<div id="html_fbd3ec8715ea1aba28b3ff3390aa6a1b" style="width: 100.0%; height: 100.0%;">             <b>Complaint #:</b> 24-07768<br/>             <b>Offense:</b> BURGLARY TO MOTOR VEHICLE<br/>             <details>               <summary>View Details</summary>               <b>Date:</b> 2024-12-30<br/>               <b>Time:</b> 1502 HRS<br/>               <b>Location:</b> 200 BLOCK OF N. GROVE<br/>               <b>Victim:</b> OAK PARK RESIDENT NARRITIVE: A M/B SUBJECT ENTERED THE BLACK BMW BY UNKNOWN MEANS AND REMOVED AN UNKOWN AMOUNT OF USC COINS. T HE SUBJECT LEFT THE SCENE E/B ONTARIO ON A BLUE DIVY BIKE. COMPLAINT NUMBER: 24-07769 OFFENSE: BURGLARY TO MOTOR VEHICLE DATE(S): 30-DEC-24 TIME(S): 0700 – 1458 HRS LOCATION: 500 BLOCK OF GARFIELD VICTIM/ADDRESS: MCHENRY RESIDENT<br/>               <b>Narrative:</b> person(s) unknown, by unknown means en tered the white 2017 ford truck and removed the red “hilti” j ackhammer. estimated loss $5,500.00. no leads entry made due to lack of serial number.<br/>             </details>         </div>`)[0];
+                popup_a8dd5fc96edb9dbd22c5edd71e3e9602.setContent(html_fbd3ec8715ea1aba28b3ff3390aa6a1b);
             
         
 
-        marker_6c6cd60e200bea37d817762f38ae2508.bindPopup(popup_a20e0eea8274bd3932459e96bc9c4b75)
+        marker_dfeeb03d9632cf66c4f7fc929d0c16c4.bindPopup(popup_a8dd5fc96edb9dbd22c5edd71e3e9602)
         ;
 
         
     
     
-            var marker_c75a08bb2ec6fbec6a0106d005e48c40 = L.marker(
+            var marker_c4b2580af4a600b2040ce3482c003bc3 = L.marker(
                 [41.8708584, -87.7746244],
                 {
 }
-            ).addTo(marker_cluster_57c1adfe6688adef12ca16413310fa14);
+            ).addTo(marker_cluster_a76eac208b44d2349a5fb3c030563bf0);
         
     
-            var icon_99b231df157b7c46d91c09e8ade5fa3e = L.AwesomeMarkers.icon(
+            var icon_57d909a035590b54fec0092f054aa4ad = L.AwesomeMarkers.icon(
                 {
   "markerColor": "red",
   "iconColor": "white",
@@ -401,34 +407,34 @@
   "extraClasses": "fa-rotate-0",
 }
             );
-            marker_c75a08bb2ec6fbec6a0106d005e48c40.setIcon(icon_99b231df157b7c46d91c09e8ade5fa3e);
+            marker_c4b2580af4a600b2040ce3482c003bc3.setIcon(icon_57d909a035590b54fec0092f054aa4ad);
         
     
-        var popup_1f5516fccbf550ec9c451876af365e92 = L.popup({
+        var popup_adc5011d00e0c68c383c3040e64266b6 = L.popup({
   "maxWidth": 300,
 });
 
         
             
-                var html_80727b436f2412b6e4e8905634a32116 = $(`<div id="html_80727b436f2412b6e4e8905634a32116" style="width: 100.0%; height: 100.0%;">             <b>Complaint #:</b> 24-07760<br/>             <b>Offense:</b> WARRANT ARREST<br/>             <details>               <summary>View Details</summary>               <b>Date:</b> 2024-12-30<br/>               <b>Time:</b> 0014 HRS<br/>               <b>Location:</b> 700 BLOCK OF S. AUSTIN<br/>               <b>Victim:</b> Not found<br/>               <b>Narrative:</b> ordonez, david (m/23) of the 3000 bloc k of school, zion, il. was arrested on an active mchenry county warrant for driving on a revoked drivers license.<br/>             </details>         </div>`)[0];
-                popup_1f5516fccbf550ec9c451876af365e92.setContent(html_80727b436f2412b6e4e8905634a32116);
+                var html_f3ec9cd579a6e83cafdc057c0c605843 = $(`<div id="html_f3ec9cd579a6e83cafdc057c0c605843" style="width: 100.0%; height: 100.0%;">             <b>Complaint #:</b> 24-07760<br/>             <b>Offense:</b> WARRANT ARREST<br/>             <details>               <summary>View Details</summary>               <b>Date:</b> 2024-12-30<br/>               <b>Time:</b> 0014 HRS<br/>               <b>Location:</b> 700 BLOCK OF S. AUSTIN<br/>               <b>Victim:</b> Not found<br/>               <b>Narrative:</b> ordonez, david (m/23) of the 3000 bloc k of school, zion, il. was arrested on an active mchenry county warrant for driving on a revoked drivers license.<br/>             </details>         </div>`)[0];
+                popup_adc5011d00e0c68c383c3040e64266b6.setContent(html_f3ec9cd579a6e83cafdc057c0c605843);
             
         
 
-        marker_c75a08bb2ec6fbec6a0106d005e48c40.bindPopup(popup_1f5516fccbf550ec9c451876af365e92)
+        marker_c4b2580af4a600b2040ce3482c003bc3.bindPopup(popup_adc5011d00e0c68c383c3040e64266b6)
         ;
 
         
     
     
-            var marker_d1416711dc0bf3bf517df9a4978f9b74 = L.marker(
+            var marker_0cee24daa2c581220e447fdeb092b9ee = L.marker(
                 [41.8714082, -87.7866234],
                 {
 }
-            ).addTo(marker_cluster_57c1adfe6688adef12ca16413310fa14);
+            ).addTo(marker_cluster_a76eac208b44d2349a5fb3c030563bf0);
         
     
-            var icon_cf42e76202acd0f33ae1830c8a517f02 = L.AwesomeMarkers.icon(
+            var icon_3bcb827c5a73dd4fb5d4a6ab5f11c5f7 = L.AwesomeMarkers.icon(
                 {
   "markerColor": "red",
   "iconColor": "white",
@@ -437,34 +443,34 @@
   "extraClasses": "fa-rotate-0",
 }
             );
-            marker_d1416711dc0bf3bf517df9a4978f9b74.setIcon(icon_cf42e76202acd0f33ae1830c8a517f02);
+            marker_0cee24daa2c581220e447fdeb092b9ee.setIcon(icon_3bcb827c5a73dd4fb5d4a6ab5f11c5f7);
         
     
-        var popup_3fa560a2a10d6ff18f5cee34959e5502 = L.popup({
+        var popup_64c13ab8778e4edd7e90584e565b796f = L.popup({
   "maxWidth": 300,
 });
 
         
             
-                var html_95b3aa4894cc99f0b937c8a502bf06dd = $(`<div id="html_95b3aa4894cc99f0b937c8a502bf06dd" style="width: 100.0%; height: 100.0%;">             <b>Complaint #:</b> 24-07769<br/>             <b>Offense:</b> BURGLARY TO MOTOR VEHICLE<br/>             <details>               <summary>View Details</summary>               <b>Date:</b> 2024-12-30<br/>               <b>Time:</b> 0700 – 1458 HRS<br/>               <b>Location:</b> 500 BLOCK OF GARFIELD<br/>               <b>Victim:</b> TWO CHICAGO RESIDENTS<br/>               <b>Narrative:</b> a m/b subject entered the red misubish i occupied by the victims. he then displayed a black handgun wit h extended magazine and demanded money. the subject then struck both vi ctims in the face with the handgun. the subject fled the scene n/b a ustin from madison st. total estimated loss unknown amount of usc. oak park police department *individuals listed have been charged with a crimin al offense and have a pending court date. all defendants are considered innocent until proven gui lty in a court of law.<br/>             </details>         </div>`)[0];
-                popup_3fa560a2a10d6ff18f5cee34959e5502.setContent(html_95b3aa4894cc99f0b937c8a502bf06dd);
+                var html_871dfe2c2f1eeb6c568bb8ed5095e30e = $(`<div id="html_871dfe2c2f1eeb6c568bb8ed5095e30e" style="width: 100.0%; height: 100.0%;">             <b>Complaint #:</b> 24-07769<br/>             <b>Offense:</b> BURGLARY TO MOTOR VEHICLE<br/>             <details>               <summary>View Details</summary>               <b>Date:</b> 2024-12-30<br/>               <b>Time:</b> 0700 – 1458 HRS<br/>               <b>Location:</b> 500 BLOCK OF GARFIELD<br/>               <b>Victim:</b> TWO CHICAGO RESIDENTS<br/>               <b>Narrative:</b> a m/b subject entered the red misubish i occupied by the victims. he then displayed a black handgun wit h extended magazine and demanded money. the subject then struck both vi ctims in the face with the handgun. the subject fled the scene n/b a ustin from madison st. total estimated loss unknown amount of usc. oak park police department *individuals listed have been charged with a crimin al offense and have a pending court date. all defendants are considered innocent until proven gui lty in a court of law.<br/>             </details>         </div>`)[0];
+                popup_64c13ab8778e4edd7e90584e565b796f.setContent(html_871dfe2c2f1eeb6c568bb8ed5095e30e);
             
         
 
-        marker_d1416711dc0bf3bf517df9a4978f9b74.bindPopup(popup_3fa560a2a10d6ff18f5cee34959e5502)
+        marker_0cee24daa2c581220e447fdeb092b9ee.bindPopup(popup_64c13ab8778e4edd7e90584e565b796f)
         ;
 
         
     
     
-            var marker_f2c5f54dff334ee595b661996599ab90 = L.marker(
+            var marker_251915d1c5cc15780645e6d432ab48b9 = L.marker(
                 [41.8882935, -87.77560299999999],
                 {
 }
-            ).addTo(marker_cluster_57c1adfe6688adef12ca16413310fa14);
+            ).addTo(marker_cluster_a76eac208b44d2349a5fb3c030563bf0);
         
     
-            var icon_5e05f7e219cafc0845bc2fff9aa12ca1 = L.AwesomeMarkers.icon(
+            var icon_51536ad23611586f4f349e9e8d3b7fff = L.AwesomeMarkers.icon(
                 {
   "markerColor": "red",
   "iconColor": "white",
@@ -473,34 +479,34 @@
   "extraClasses": "fa-rotate-0",
 }
             );
-            marker_f2c5f54dff334ee595b661996599ab90.setIcon(icon_5e05f7e219cafc0845bc2fff9aa12ca1);
+            marker_251915d1c5cc15780645e6d432ab48b9.setIcon(icon_51536ad23611586f4f349e9e8d3b7fff);
         
     
-        var popup_7afc70910449da729de7d14acce7c62e = L.popup({
+        var popup_f0e7f1fe5c5537da95d74906b66c352c = L.popup({
   "maxWidth": 300,
 });
 
         
             
-                var html_6c930ae65265a0c71af55a3bd019808f = $(`<div id="html_6c930ae65265a0c71af55a3bd019808f" style="width: 100.0%; height: 100.0%;">             <b>Complaint #:</b> 24-07778<br/>             <b>Offense:</b> ARMED ROBBERY<br/>             <details>               <summary>View Details</summary>               <b>Date:</b> 2024-12-30<br/>               <b>Time:</b> 1725 HRS<br/>               <b>Location:</b> FIRST BLOCK OF MADISON<br/>               <b>Victim:</b> Not found<br/>               <b>Narrative:</b> Not found<br/>             </details>         </div>`)[0];
-                popup_7afc70910449da729de7d14acce7c62e.setContent(html_6c930ae65265a0c71af55a3bd019808f);
+                var html_f2abb19e0a25f3d9b643b635c3ae6432 = $(`<div id="html_f2abb19e0a25f3d9b643b635c3ae6432" style="width: 100.0%; height: 100.0%;">             <b>Complaint #:</b> 24-07778<br/>             <b>Offense:</b> ARMED ROBBERY<br/>             <details>               <summary>View Details</summary>               <b>Date:</b> 2024-12-30<br/>               <b>Time:</b> 1725 HRS<br/>               <b>Location:</b> FIRST BLOCK OF MADISON<br/>               <b>Victim:</b> Not found<br/>               <b>Narrative:</b> Not found<br/>             </details>         </div>`)[0];
+                popup_f0e7f1fe5c5537da95d74906b66c352c.setContent(html_f2abb19e0a25f3d9b643b635c3ae6432);
             
         
 
-        marker_f2c5f54dff334ee595b661996599ab90.bindPopup(popup_7afc70910449da729de7d14acce7c62e)
+        marker_251915d1c5cc15780645e6d432ab48b9.bindPopup(popup_f0e7f1fe5c5537da95d74906b66c352c)
         ;
 
         
     
     
-            var marker_47414766d993517f02e9ebe03d20c33a = L.marker(
+            var marker_165ddac2800be4c01e0493e8d970fbff = L.marker(
                 [41.8744079, -87.7766858],
                 {
 }
-            ).addTo(marker_cluster_57c1adfe6688adef12ca16413310fa14);
+            ).addTo(marker_cluster_a76eac208b44d2349a5fb3c030563bf0);
         
     
-            var icon_d27188d88e5823e334c68444a1f03e8f = L.AwesomeMarkers.icon(
+            var icon_91616312ed4b86cc786c60901d4ca89b = L.AwesomeMarkers.icon(
                 {
   "markerColor": "red",
   "iconColor": "white",
@@ -509,34 +515,34 @@
   "extraClasses": "fa-rotate-0",
 }
             );
-            marker_47414766d993517f02e9ebe03d20c33a.setIcon(icon_d27188d88e5823e334c68444a1f03e8f);
+            marker_165ddac2800be4c01e0493e8d970fbff.setIcon(icon_91616312ed4b86cc786c60901d4ca89b);
         
     
-        var popup_74cad2d12a7206dfee9aec3f2543eae0 = L.popup({
+        var popup_f9c1486f28bd29a00dc5a37e38b9bd34 = L.popup({
   "maxWidth": 300,
 });
 
         
             
-                var html_af7c8cf009cdf3761a9dff47a8470170 = $(`<div id="html_af7c8cf009cdf3761a9dff47a8470170" style="width: 100.0%; height: 100.0%;">             <b>Complaint #:</b> 24-07771<br/>             <b>Offense:</b> THEFT OF LICENSE PLATE<br/>             <details>               <summary>View Details</summary>               <b>Date:</b> 2024-12-30<br/>               <b>Time:</b> 2400-2400 HRS<br/>               <b>Location:</b> 800 BLOCK OF LYMAN<br/>               <b>Victim:</b> OAK PARK RESIDENT<br/>               <b>Narrative:</b> person(s) unknown removed rear the ill inois license plate from the blue 2014 jeep cherokee whil e it was parked in the driveway. the plate was entered into leads.<br/>             </details>         </div>`)[0];
-                popup_74cad2d12a7206dfee9aec3f2543eae0.setContent(html_af7c8cf009cdf3761a9dff47a8470170);
+                var html_725f32fbf855e387574eaa2885c16ebf = $(`<div id="html_725f32fbf855e387574eaa2885c16ebf" style="width: 100.0%; height: 100.0%;">             <b>Complaint #:</b> 24-07771<br/>             <b>Offense:</b> THEFT OF LICENSE PLATE<br/>             <details>               <summary>View Details</summary>               <b>Date:</b> 2024-12-30<br/>               <b>Time:</b> 2400-2400 HRS<br/>               <b>Location:</b> 800 BLOCK OF LYMAN<br/>               <b>Victim:</b> OAK PARK RESIDENT<br/>               <b>Narrative:</b> person(s) unknown removed rear the ill inois license plate from the blue 2014 jeep cherokee whil e it was parked in the driveway. the plate was entered into leads.<br/>             </details>         </div>`)[0];
+                popup_f9c1486f28bd29a00dc5a37e38b9bd34.setContent(html_725f32fbf855e387574eaa2885c16ebf);
             
         
 
-        marker_47414766d993517f02e9ebe03d20c33a.bindPopup(popup_74cad2d12a7206dfee9aec3f2543eae0)
+        marker_165ddac2800be4c01e0493e8d970fbff.bindPopup(popup_f9c1486f28bd29a00dc5a37e38b9bd34)
         ;
 
         
     
     
-            var marker_ff2f727e82a967087432936ab0d31732 = L.marker(
+            var marker_a5292ebae97eda0fdc35fa20254e4dbf = L.marker(
                 [41.8889519, -87.80295470000002],
                 {
 }
-            ).addTo(marker_cluster_57c1adfe6688adef12ca16413310fa14);
+            ).addTo(marker_cluster_a76eac208b44d2349a5fb3c030563bf0);
         
     
-            var icon_1a718dd39921714f461cfad3a8daeb0c = L.AwesomeMarkers.icon(
+            var icon_23325ff4d3b6597c3354eacee19bd071 = L.AwesomeMarkers.icon(
                 {
   "markerColor": "red",
   "iconColor": "white",
@@ -545,34 +551,34 @@
   "extraClasses": "fa-rotate-0",
 }
             );
-            marker_ff2f727e82a967087432936ab0d31732.setIcon(icon_1a718dd39921714f461cfad3a8daeb0c);
+            marker_a5292ebae97eda0fdc35fa20254e4dbf.setIcon(icon_23325ff4d3b6597c3354eacee19bd071);
         
     
-        var popup_98285ed49cfe374f64419640f28cff80 = L.popup({
+        var popup_d8662120489fda229b0e1d377d4764af = L.popup({
   "maxWidth": 300,
 });
 
         
             
-                var html_4b1c127d804f99c1b8d6633fd9a7ecc0 = $(`<div id="html_4b1c127d804f99c1b8d6633fd9a7ecc0" style="width: 100.0%; height: 100.0%;">             <b>Complaint #:</b> 24-07755<br/>             <b>Offense:</b> RETAIL THEFT<br/>             <details>               <summary>View Details</summary>               <b>Date:</b> 2024-12-29<br/>               <b>Time:</b> 1104 HRS<br/>               <b>Location:</b> 1100 BLOCK OF LAKE<br/>               <b>Victim:</b> OAK PARK NATURAL PET & FISH / 23 N . HARLEM<br/>               <b>Narrative:</b> m/b, removed a honeywell space heater, a 2-pack of bic lighters and a white target reusable bag and th en exited the business without payment. estimated loss $48.00 oak park police department *individuals listed have been charged with a crimin al offense and have a pending court date. all defendants are considered innocent until proven gui lty in a court of law.<br/>             </details>         </div>`)[0];
-                popup_98285ed49cfe374f64419640f28cff80.setContent(html_4b1c127d804f99c1b8d6633fd9a7ecc0);
+                var html_41a4ee0bfe16b86d434f37e5d1c9c898 = $(`<div id="html_41a4ee0bfe16b86d434f37e5d1c9c898" style="width: 100.0%; height: 100.0%;">             <b>Complaint #:</b> 24-07755<br/>             <b>Offense:</b> RETAIL THEFT<br/>             <details>               <summary>View Details</summary>               <b>Date:</b> 2024-12-29<br/>               <b>Time:</b> 1104 HRS<br/>               <b>Location:</b> 1100 BLOCK OF LAKE<br/>               <b>Victim:</b> OAK PARK NATURAL PET & FISH / 23 N . HARLEM<br/>               <b>Narrative:</b> m/b, removed a honeywell space heater, a 2-pack of bic lighters and a white target reusable bag and th en exited the business without payment. estimated loss $48.00 oak park police department *individuals listed have been charged with a crimin al offense and have a pending court date. all defendants are considered innocent until proven gui lty in a court of law.<br/>             </details>         </div>`)[0];
+                popup_d8662120489fda229b0e1d377d4764af.setContent(html_41a4ee0bfe16b86d434f37e5d1c9c898);
             
         
 
-        marker_ff2f727e82a967087432936ab0d31732.bindPopup(popup_98285ed49cfe374f64419640f28cff80)
+        marker_a5292ebae97eda0fdc35fa20254e4dbf.bindPopup(popup_d8662120489fda229b0e1d377d4764af)
         ;
 
         
     
     
-            var marker_3d7b90a8da03a8185f24b6583036991f = L.marker(
+            var marker_090b9ed7772d838179c9aead82b56118 = L.marker(
                 [41.886797, -87.80497729999999],
                 {
 }
-            ).addTo(marker_cluster_57c1adfe6688adef12ca16413310fa14);
+            ).addTo(marker_cluster_a76eac208b44d2349a5fb3c030563bf0);
         
     
-            var icon_ffb0ca676fea28f5e280feb167cd7a24 = L.AwesomeMarkers.icon(
+            var icon_29ee130a8a3b92a630702f0242f08689 = L.AwesomeMarkers.icon(
                 {
   "markerColor": "red",
   "iconColor": "white",
@@ -581,34 +587,34 @@
   "extraClasses": "fa-rotate-0",
 }
             );
-            marker_3d7b90a8da03a8185f24b6583036991f.setIcon(icon_ffb0ca676fea28f5e280feb167cd7a24);
+            marker_090b9ed7772d838179c9aead82b56118.setIcon(icon_29ee130a8a3b92a630702f0242f08689);
         
     
-        var popup_3b15501164f319fa631f7b6479ddb482 = L.popup({
+        var popup_22dc44dc299c6789cc85240ba9c31d19 = L.popup({
   "maxWidth": 300,
 });
 
         
             
-                var html_04b3330acf32941eee67da69d14f2429 = $(`<div id="html_04b3330acf32941eee67da69d14f2429" style="width: 100.0%; height: 100.0%;">             <b>Complaint #:</b> 24-07758<br/>             <b>Offense:</b> THEFT<br/>             <details>               <summary>View Details</summary>               <b>Date:</b> 2024-12-29<br/>               <b>Time:</b> 1746 HRS<br/>               <b>Location:</b> 0 – 100 BLOCK OF N. HARLEM<br/>               <b>Victim:</b> Not found<br/>               <b>Narrative:</b> two m/b’s entered the business while t he employee was in the back of the store. one subject stood by the door as the second subject removed the cash register containing u.s.c. both subjects then fled with the cash register on foot and were last s een going east. estimated loss $1,500.00<br/>             </details>         </div>`)[0];
-                popup_3b15501164f319fa631f7b6479ddb482.setContent(html_04b3330acf32941eee67da69d14f2429);
+                var html_f153d25c931d49a08976b74c4d9f9fdc = $(`<div id="html_f153d25c931d49a08976b74c4d9f9fdc" style="width: 100.0%; height: 100.0%;">             <b>Complaint #:</b> 24-07758<br/>             <b>Offense:</b> THEFT<br/>             <details>               <summary>View Details</summary>               <b>Date:</b> 2024-12-29<br/>               <b>Time:</b> 1746 HRS<br/>               <b>Location:</b> 0 – 100 BLOCK OF N. HARLEM<br/>               <b>Victim:</b> Not found<br/>               <b>Narrative:</b> two m/b’s entered the business while t he employee was in the back of the store. one subject stood by the door as the second subject removed the cash register containing u.s.c. both subjects then fled with the cash register on foot and were last s een going east. estimated loss $1,500.00<br/>             </details>         </div>`)[0];
+                popup_22dc44dc299c6789cc85240ba9c31d19.setContent(html_f153d25c931d49a08976b74c4d9f9fdc);
             
         
 
-        marker_3d7b90a8da03a8185f24b6583036991f.bindPopup(popup_3b15501164f319fa631f7b6479ddb482)
+        marker_090b9ed7772d838179c9aead82b56118.bindPopup(popup_22dc44dc299c6789cc85240ba9c31d19)
         ;
 
         
     
     
-            var marker_bf4cf77fe62e823ab1b7047e61e81fbc = L.marker(
+            var marker_33ee83c7d7008bf57c76f7dbf93aa57f = L.marker(
                 [41.8889519, -87.80295470000002],
                 {
 }
-            ).addTo(marker_cluster_57c1adfe6688adef12ca16413310fa14);
+            ).addTo(marker_cluster_a76eac208b44d2349a5fb3c030563bf0);
         
     
-            var icon_5a75c62647619d905f06add3293b55c2 = L.AwesomeMarkers.icon(
+            var icon_3f533a86cfb76e841332043ff394eb7a = L.AwesomeMarkers.icon(
                 {
   "markerColor": "red",
   "iconColor": "white",
@@ -617,34 +623,34 @@
   "extraClasses": "fa-rotate-0",
 }
             );
-            marker_bf4cf77fe62e823ab1b7047e61e81fbc.setIcon(icon_5a75c62647619d905f06add3293b55c2);
+            marker_33ee83c7d7008bf57c76f7dbf93aa57f.setIcon(icon_3f533a86cfb76e841332043ff394eb7a);
         
     
-        var popup_eb943181b7a527eaeec78a2dda65863f = L.popup({
+        var popup_c7f8454c246a40916f6b4f14d617a1f1 = L.popup({
   "maxWidth": 300,
 });
 
         
             
-                var html_f74f170ef73e2deac7739e1b11266ee0 = $(`<div id="html_f74f170ef73e2deac7739e1b11266ee0" style="width: 100.0%; height: 100.0%;">             <b>Complaint #:</b> 24-07747<br/>             <b>Offense:</b> RETAIL THEFT<br/>             <details>               <summary>View Details</summary>               <b>Date:</b> 2024-12-28<br/>               <b>Time:</b> 0950 - 1006 HRS<br/>               <b>Location:</b> 1100 BLOCK OF LAKE<br/>               <b>Victim:</b> TARGET / 1129 LAKE<br/>               <b>Narrative:</b> m/b, removed four deodorant sticks, a tube of toothpaste, a pack of paper towels, a pack of tissu e paper, a roll of garbage bags and a large white trash can and exited the business without payment. estimated loss $75.00<br/>             </details>         </div>`)[0];
-                popup_eb943181b7a527eaeec78a2dda65863f.setContent(html_f74f170ef73e2deac7739e1b11266ee0);
+                var html_db25992446a2b74b7c2ae28e38b6b614 = $(`<div id="html_db25992446a2b74b7c2ae28e38b6b614" style="width: 100.0%; height: 100.0%;">             <b>Complaint #:</b> 24-07747<br/>             <b>Offense:</b> RETAIL THEFT<br/>             <details>               <summary>View Details</summary>               <b>Date:</b> 2024-12-28<br/>               <b>Time:</b> 0950 - 1006 HRS<br/>               <b>Location:</b> 1100 BLOCK OF LAKE<br/>               <b>Victim:</b> TARGET / 1129 LAKE<br/>               <b>Narrative:</b> m/b, removed four deodorant sticks, a tube of toothpaste, a pack of paper towels, a pack of tissu e paper, a roll of garbage bags and a large white trash can and exited the business without payment. estimated loss $75.00<br/>             </details>         </div>`)[0];
+                popup_c7f8454c246a40916f6b4f14d617a1f1.setContent(html_db25992446a2b74b7c2ae28e38b6b614);
             
         
 
-        marker_bf4cf77fe62e823ab1b7047e61e81fbc.bindPopup(popup_eb943181b7a527eaeec78a2dda65863f)
+        marker_33ee83c7d7008bf57c76f7dbf93aa57f.bindPopup(popup_c7f8454c246a40916f6b4f14d617a1f1)
         ;
 
         
     
     
-            var marker_9994bb7676df3451a182c9967563e9d4 = L.marker(
+            var marker_e55a4cf6b47df137bb6e73657b92ccdb = L.marker(
                 [41.909081, -87.79504159999999],
                 {
 }
-            ).addTo(marker_cluster_57c1adfe6688adef12ca16413310fa14);
+            ).addTo(marker_cluster_a76eac208b44d2349a5fb3c030563bf0);
         
     
-            var icon_e86a86ac8d934100ad6d06eb4cd101a5 = L.AwesomeMarkers.icon(
+            var icon_c5d2f0dfdbe251536093fbb06a30dbac = L.AwesomeMarkers.icon(
                 {
   "markerColor": "red",
   "iconColor": "white",
@@ -653,34 +659,34 @@
   "extraClasses": "fa-rotate-0",
 }
             );
-            marker_9994bb7676df3451a182c9967563e9d4.setIcon(icon_e86a86ac8d934100ad6d06eb4cd101a5);
+            marker_e55a4cf6b47df137bb6e73657b92ccdb.setIcon(icon_c5d2f0dfdbe251536093fbb06a30dbac);
         
     
-        var popup_e46ce7bcfda30dff3462d102a1179aed = L.popup({
+        var popup_5035c7ae9196c408ee5eb2564ff427a5 = L.popup({
   "maxWidth": 300,
 });
 
         
             
-                var html_09f2e55963662d01e0f83355a84145eb = $(`<div id="html_09f2e55963662d01e0f83355a84145eb" style="width: 100.0%; height: 100.0%;">             <b>Complaint #:</b> 24-07748<br/>             <b>Offense:</b> CRIMINAL DAMAGE TO PROPERTY<br/>             <details>               <summary>View Details</summary>               <b>Date:</b> 2024-12-28<br/>               <b>Time:</b> 1826 - 1015 HRS<br/>               <b>Location:</b> 6800 BLOCK OF NORTH AVE.<br/>               <b>Victim:</b> TARGET / 1129 LAKE<br/>               <b>Narrative:</b> person(s) unknown by unknown means dam aged the rear door of the business. estimated damage $500.0 0<br/>             </details>         </div>`)[0];
-                popup_e46ce7bcfda30dff3462d102a1179aed.setContent(html_09f2e55963662d01e0f83355a84145eb);
+                var html_36c12bf7a7713836a62fca4f1450daef = $(`<div id="html_36c12bf7a7713836a62fca4f1450daef" style="width: 100.0%; height: 100.0%;">             <b>Complaint #:</b> 24-07748<br/>             <b>Offense:</b> CRIMINAL DAMAGE TO PROPERTY<br/>             <details>               <summary>View Details</summary>               <b>Date:</b> 2024-12-28<br/>               <b>Time:</b> 1826 - 1015 HRS<br/>               <b>Location:</b> 6800 BLOCK OF NORTH AVE.<br/>               <b>Victim:</b> TARGET / 1129 LAKE<br/>               <b>Narrative:</b> person(s) unknown by unknown means dam aged the rear door of the business. estimated damage $500.0 0<br/>             </details>         </div>`)[0];
+                popup_5035c7ae9196c408ee5eb2564ff427a5.setContent(html_36c12bf7a7713836a62fca4f1450daef);
             
         
 
-        marker_9994bb7676df3451a182c9967563e9d4.bindPopup(popup_e46ce7bcfda30dff3462d102a1179aed)
+        marker_e55a4cf6b47df137bb6e73657b92ccdb.bindPopup(popup_5035c7ae9196c408ee5eb2564ff427a5)
         ;
 
         
     
     
-            var marker_0890d650d699f2b55a8cf9f5415ddf31 = L.marker(
+            var marker_60a7bc51cee5f454099f03f47734d281 = L.marker(
                 [41.8804251, -87.77486180000001],
                 {
 }
-            ).addTo(marker_cluster_57c1adfe6688adef12ca16413310fa14);
+            ).addTo(marker_cluster_a76eac208b44d2349a5fb3c030563bf0);
         
     
-            var icon_18ca3468cd2d3a61f3b9d6d512943a60 = L.AwesomeMarkers.icon(
+            var icon_90bd67613ff684440892bfe1cff868ea = L.AwesomeMarkers.icon(
                 {
   "markerColor": "red",
   "iconColor": "white",
@@ -689,34 +695,34 @@
   "extraClasses": "fa-rotate-0",
 }
             );
-            marker_0890d650d699f2b55a8cf9f5415ddf31.setIcon(icon_18ca3468cd2d3a61f3b9d6d512943a60);
+            marker_60a7bc51cee5f454099f03f47734d281.setIcon(icon_90bd67613ff684440892bfe1cff868ea);
         
     
-        var popup_b45094b992ec8fe840f8663101a7fec1 = L.popup({
+        var popup_9db60e0df0790e55cdf6cbbfe395194d = L.popup({
   "maxWidth": 300,
 });
 
         
             
-                var html_e14cb70bbf11c014e64fcbd959c2c881 = $(`<div id="html_e14cb70bbf11c014e64fcbd959c2c881" style="width: 100.0%; height: 100.0%;">             <b>Complaint #:</b> 24-07742<br/>             <b>Offense:</b> DRIVING UNDER THE INFLUENCE ARREST<br/>             <details>               <summary>View Details</summary>               <b>Date:</b> 2024-12-27<br/>               <b>Time:</b> 1730 HRS<br/>               <b>Location:</b> 100 BLOCK OF N. AUSTIN<br/>               <b>Victim:</b> AUSTIN MUSIC CENTER / 6815 NORTH A VE.<br/>               <b>Narrative:</b> soto, jesus (m/61) of the 1300 block o f ridgeland, berwyn, il. was arrested for drving under the influ ence of alcohol after being involved in an accident.<br/>             </details>         </div>`)[0];
-                popup_b45094b992ec8fe840f8663101a7fec1.setContent(html_e14cb70bbf11c014e64fcbd959c2c881);
+                var html_bbf909c0a1fdae94f09946ead0804d33 = $(`<div id="html_bbf909c0a1fdae94f09946ead0804d33" style="width: 100.0%; height: 100.0%;">             <b>Complaint #:</b> 24-07742<br/>             <b>Offense:</b> DRIVING UNDER THE INFLUENCE ARREST<br/>             <details>               <summary>View Details</summary>               <b>Date:</b> 2024-12-27<br/>               <b>Time:</b> 1730 HRS<br/>               <b>Location:</b> 100 BLOCK OF N. AUSTIN<br/>               <b>Victim:</b> AUSTIN MUSIC CENTER / 6815 NORTH A VE.<br/>               <b>Narrative:</b> soto, jesus (m/61) of the 1300 block o f ridgeland, berwyn, il. was arrested for drving under the influ ence of alcohol after being involved in an accident.<br/>             </details>         </div>`)[0];
+                popup_9db60e0df0790e55cdf6cbbfe395194d.setContent(html_bbf909c0a1fdae94f09946ead0804d33);
             
         
 
-        marker_0890d650d699f2b55a8cf9f5415ddf31.bindPopup(popup_b45094b992ec8fe840f8663101a7fec1)
+        marker_60a7bc51cee5f454099f03f47734d281.bindPopup(popup_9db60e0df0790e55cdf6cbbfe395194d)
         ;
 
         
     
     
-            var marker_359e7fac07b891d3226f377d28a66b17 = L.marker(
+            var marker_5f36c1f4859366c3b4a259d5d456fde6 = L.marker(
                 [41.881373, -87.8056109],
                 {
 }
-            ).addTo(marker_cluster_57c1adfe6688adef12ca16413310fa14);
+            ).addTo(marker_cluster_a76eac208b44d2349a5fb3c030563bf0);
         
     
-            var icon_0f08f613215387fb032b65c9a59e98dd = L.AwesomeMarkers.icon(
+            var icon_abcfc66b9133c0c22316de47ae633611 = L.AwesomeMarkers.icon(
                 {
   "markerColor": "red",
   "iconColor": "white",
@@ -725,34 +731,34 @@
   "extraClasses": "fa-rotate-0",
 }
             );
-            marker_359e7fac07b891d3226f377d28a66b17.setIcon(icon_0f08f613215387fb032b65c9a59e98dd);
+            marker_5f36c1f4859366c3b4a259d5d456fde6.setIcon(icon_abcfc66b9133c0c22316de47ae633611);
         
     
-        var popup_03c5864680b2d22e6ba87b8a2e592dc7 = L.popup({
+        var popup_11b7863b84af4de4eef6a0c69690b4e8 = L.popup({
   "maxWidth": 300,
 });
 
         
             
-                var html_d787e743d2673c3668f50454bbc88579 = $(`<div id="html_d787e743d2673c3668f50454bbc88579" style="width: 100.0%; height: 100.0%;">             <b>Complaint #:</b> 24-07728<br/>             <b>Offense:</b> BURGLARY<br/>             <details>               <summary>View Details</summary>               <b>Date:</b> 2024-12-27<br/>               <b>Time:</b> 2130 - 0900 HRS<br/>               <b>Location:</b> 600 BLOCK OF WASHINGTON<br/>               <b>Victim:</b> OAK PARK RESIDENT<br/>               <b>Narrative:</b> person(s) unknown by means of an unloc ked door gained entry to the victim’s 2023 subaru crosstrek. once inside, offender(s) ransacked the interior and removed the victim’s id card, credit / debit cards, and u.s.c. estimated loss $5.00<br/>             </details>         </div>`)[0];
-                popup_03c5864680b2d22e6ba87b8a2e592dc7.setContent(html_d787e743d2673c3668f50454bbc88579);
+                var html_d8f3e763d558d588c5b525258121f955 = $(`<div id="html_d8f3e763d558d588c5b525258121f955" style="width: 100.0%; height: 100.0%;">             <b>Complaint #:</b> 24-07728<br/>             <b>Offense:</b> BURGLARY<br/>             <details>               <summary>View Details</summary>               <b>Date:</b> 2024-12-27<br/>               <b>Time:</b> 2130 - 0900 HRS<br/>               <b>Location:</b> 600 BLOCK OF WASHINGTON<br/>               <b>Victim:</b> OAK PARK RESIDENT<br/>               <b>Narrative:</b> person(s) unknown by means of an unloc ked door gained entry to the victim’s 2023 subaru crosstrek. once inside, offender(s) ransacked the interior and removed the victim’s id card, credit / debit cards, and u.s.c. estimated loss $5.00<br/>             </details>         </div>`)[0];
+                popup_11b7863b84af4de4eef6a0c69690b4e8.setContent(html_d8f3e763d558d588c5b525258121f955);
             
         
 
-        marker_359e7fac07b891d3226f377d28a66b17.bindPopup(popup_03c5864680b2d22e6ba87b8a2e592dc7)
+        marker_5f36c1f4859366c3b4a259d5d456fde6.bindPopup(popup_11b7863b84af4de4eef6a0c69690b4e8)
         ;
 
         
     
     
-            var marker_0e523f97c6f8cc55ca9570288e374ec2 = L.marker(
+            var marker_7360a0fb6eeb933798143f361ee07337 = L.marker(
                 [41.8867347, -87.8032958],
                 {
 }
-            ).addTo(marker_cluster_57c1adfe6688adef12ca16413310fa14);
+            ).addTo(marker_cluster_a76eac208b44d2349a5fb3c030563bf0);
         
     
-            var icon_80e075ace21e085394580188c80641d0 = L.AwesomeMarkers.icon(
+            var icon_e6be87f26d224e7698a9440b1266fe26 = L.AwesomeMarkers.icon(
                 {
   "markerColor": "red",
   "iconColor": "white",
@@ -761,34 +767,34 @@
   "extraClasses": "fa-rotate-0",
 }
             );
-            marker_0e523f97c6f8cc55ca9570288e374ec2.setIcon(icon_80e075ace21e085394580188c80641d0);
+            marker_7360a0fb6eeb933798143f361ee07337.setIcon(icon_e6be87f26d224e7698a9440b1266fe26);
         
     
-        var popup_ed417b74c35b5b0316152c67112a2f61 = L.popup({
+        var popup_4a96ce052a7d2700489cbdcd45669c98 = L.popup({
   "maxWidth": 300,
 });
 
         
             
-                var html_d392de9579a22f4866a93b2013fec22d = $(`<div id="html_d392de9579a22f4866a93b2013fec22d" style="width: 100.0%; height: 100.0%;">             <b>Complaint #:</b> 24-07724<br/>             <b>Offense:</b> BURGLARY TO AUTO<br/>             <details>               <summary>View Details</summary>               <b>Date:</b> 2024-12-27<br/>               <b>Time:</b> 1200-0212 HRS<br/>               <b>Location:</b> 1100 BLOCK OF SOUTH BLVD<br/>               <b>Victim:</b> OAK PARK RESIDENT<br/>               <b>Narrative:</b> person(s) unknown broke the passenger side rear window of the victim’s white nissan rogue which was parked on the street at the above location by unknown means and once ins ide removed a small black menscape leather bag containing misc. items. loss estimated at $210.<br/>             </details>         </div>`)[0];
-                popup_ed417b74c35b5b0316152c67112a2f61.setContent(html_d392de9579a22f4866a93b2013fec22d);
+                var html_e53c921c3e0d7492d250c50e723005af = $(`<div id="html_e53c921c3e0d7492d250c50e723005af" style="width: 100.0%; height: 100.0%;">             <b>Complaint #:</b> 24-07724<br/>             <b>Offense:</b> BURGLARY TO AUTO<br/>             <details>               <summary>View Details</summary>               <b>Date:</b> 2024-12-27<br/>               <b>Time:</b> 1200-0212 HRS<br/>               <b>Location:</b> 1100 BLOCK OF SOUTH BLVD<br/>               <b>Victim:</b> OAK PARK RESIDENT<br/>               <b>Narrative:</b> person(s) unknown broke the passenger side rear window of the victim’s white nissan rogue which was parked on the street at the above location by unknown means and once ins ide removed a small black menscape leather bag containing misc. items. loss estimated at $210.<br/>             </details>         </div>`)[0];
+                popup_4a96ce052a7d2700489cbdcd45669c98.setContent(html_e53c921c3e0d7492d250c50e723005af);
             
         
 
-        marker_0e523f97c6f8cc55ca9570288e374ec2.bindPopup(popup_ed417b74c35b5b0316152c67112a2f61)
+        marker_7360a0fb6eeb933798143f361ee07337.bindPopup(popup_4a96ce052a7d2700489cbdcd45669c98)
         ;
 
         
     
     
-            var marker_d89b8c4b3c19b10a5dcfa524cb55e8dc = L.marker(
+            var marker_0002dcc7f40266d2c6d8810ad2ee62dd = L.marker(
                 [41.8688662, -87.7825623],
                 {
 }
-            ).addTo(marker_cluster_57c1adfe6688adef12ca16413310fa14);
+            ).addTo(marker_cluster_a76eac208b44d2349a5fb3c030563bf0);
         
     
-            var icon_3e43505ebd0c3e17efdb3bbcec953a3a = L.AwesomeMarkers.icon(
+            var icon_2d75089055320cbf39c5ea306354561b = L.AwesomeMarkers.icon(
                 {
   "markerColor": "red",
   "iconColor": "white",
@@ -797,27 +803,27 @@
   "extraClasses": "fa-rotate-0",
 }
             );
-            marker_d89b8c4b3c19b10a5dcfa524cb55e8dc.setIcon(icon_3e43505ebd0c3e17efdb3bbcec953a3a);
+            marker_0002dcc7f40266d2c6d8810ad2ee62dd.setIcon(icon_2d75089055320cbf39c5ea306354561b);
         
     
-        var popup_427342704423241f8a525c288da21fe0 = L.popup({
+        var popup_5ad9572d033c02a7bf7e8a0fdc8ca129 = L.popup({
   "maxWidth": 300,
 });
 
         
             
-                var html_9eb77b1bf4d74a0f549dcc9086a73f0f = $(`<div id="html_9eb77b1bf4d74a0f549dcc9086a73f0f" style="width: 100.0%; height: 100.0%;">             <b>Complaint #:</b> 24-07730<br/>             <b>Offense:</b> VIOLATION OF AN ORDER OF PROTECTION ARREST<br/>             <details>               <summary>View Details</summary>               <b>Date:</b> 2024-12-27<br/>               <b>Time:</b> 1009 HRS<br/>               <b>Location:</b> 1100 BLOCK OF S. CUYLER<br/>               <b>Victim:</b> OAK PARK RESIDENT<br/>               <b>Narrative:</b> dantzler, aidan l. (m/18) of the 1100 block of s. cuyler, oak park, il. was arrested for violation of an order of protection.<br/>             </details>         </div>`)[0];
-                popup_427342704423241f8a525c288da21fe0.setContent(html_9eb77b1bf4d74a0f549dcc9086a73f0f);
+                var html_28b7d02cb53ced2c43d9f6269497c10c = $(`<div id="html_28b7d02cb53ced2c43d9f6269497c10c" style="width: 100.0%; height: 100.0%;">             <b>Complaint #:</b> 24-07730<br/>             <b>Offense:</b> VIOLATION OF AN ORDER OF PROTECTION ARREST<br/>             <details>               <summary>View Details</summary>               <b>Date:</b> 2024-12-27<br/>               <b>Time:</b> 1009 HRS<br/>               <b>Location:</b> 1100 BLOCK OF S. CUYLER<br/>               <b>Victim:</b> OAK PARK RESIDENT<br/>               <b>Narrative:</b> dantzler, aidan l. (m/18) of the 1100 block of s. cuyler, oak park, il. was arrested for violation of an order of protection.<br/>             </details>         </div>`)[0];
+                popup_5ad9572d033c02a7bf7e8a0fdc8ca129.setContent(html_28b7d02cb53ced2c43d9f6269497c10c);
             
         
 
-        marker_d89b8c4b3c19b10a5dcfa524cb55e8dc.bindPopup(popup_427342704423241f8a525c288da21fe0)
+        marker_0002dcc7f40266d2c6d8810ad2ee62dd.bindPopup(popup_5ad9572d033c02a7bf7e8a0fdc8ca129)
         ;
 
         
     
     
-            marker_cluster_57c1adfe6688adef12ca16413310fa14.addTo(map_873808da5b877d7f4fdd78ca475e87e5);
+            marker_cluster_a76eac208b44d2349a5fb3c030563bf0.addTo(map_4dfc1ee3d23ee36dc9018157d29ea512);
         
 </script>
 </html>
