@@ -198,6 +198,7 @@ c = (q / (n V)) [1 - (1 / e<sup>n t</sup>)] + (c<sub>0</sub> - c<sub>i</sub>) (1
         <li><b>c<sub>0</sub></b> = carbon dioxide concentration in the room at start, \( t=0 \) (m<sup>3</sup>/m<sup>3</sup>)</li>
     </ul>
 ```
+
 Calculator(the same formula as Engineering Toolbox): Defaults: 2 people, 10ft by 10ft room with 10ft feet ceilings, 1 air change per hour, and the makeup air is the standard 400ppm CO2. This is of course assuming absolutely no gaps and you're truly enclosed. Worst case scenario and as this is not cited anywhere take with a grain of salt!
 
 ```{=html}
@@ -279,6 +280,7 @@ Calculator(the same formula as Engineering Toolbox): Defaults: 2 people, 10ft by
 </body>
 </html>
 ```
+
 We also have a similar calculator here: <https://www.soletairpower.fi/co2-calculator/>
 
 For a more scientifically based study one can navigate to the following: <https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7411428/>
