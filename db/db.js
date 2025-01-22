@@ -68,11 +68,19 @@ export const projects = {
   
   mlProjects: [
     {
+      projectName: "VAE-GAN",
+      image: "images/GANOutput.png",
+      summary:
+        "Train a Variational AutoEncoder Generative Adversarial Network to generate images from the MNIST dataset prior to training a Denoising Autoencoder, Variational Autoencoder, and Generative Adversarial Network.",
+      preview: "https://blog.jesse-anderson.net/posts/VAE_GAN/VAEGAN",
+      techStack: ["Python","Cluster Analysis"],
+    },
+    {
       projectName: "Educational DBSCAN Tool",
       image: "images/DBSCAN_JS_Img.png",
       summary:
         "Javascript program which will perform DBSCAN clustering on various distributions in 2 dimensions.",
-      preview: "https://jesse-anderson.github.io/DBSCANProj/tryDB/DBSCAN.html",
+      preview: "https://blog.jesse-anderson.net/posts/DBSCAN/#conclusion",
       techStack: ["Javascript","Cluster Analysis", "DBSCAN","d3.v7.js"],
     },
     {
@@ -123,6 +131,14 @@ export const projects = {
     },
   ],
   webProjects: [
+    {
+      projectName: "Oak Park Crime Reporting",
+      image: "images/OP-Crime.jpg",
+      summary:
+        "Developed an ETL pipeline to parse Oak Park crimes and place into a Folium static web application to track crimes over time. Updated daily using a raspberry pi, pushed to a weekly mailing list, and NLP enabled to determine commonalities across incidents.",
+      preview: "https://jesse-anderson.net/OP-Crime-Maps/map",
+      techStack: ["Python", "ETL", "AWS", "GCP", "NLP"],
+    },
     {
       projectName: "UIC Faculty Web Scraping",
       image: "images/webScraping.png",
@@ -213,6 +229,8 @@ export const education = [
     subtitle: "University of Illinois at Urbana-Champaign",
     details: [
       "IN PROGRESS",
+      "GPA: 4.00",
+      "Courses Completed: Applied Machine Learning, Practical Statistical Learning, Distributed Systems, Methods of Applied Statistics",
       "Professional Master of Computer Science (MCS) at UIUC. The University of Illinois CS graduate program is ranked 5th by U.S. News & World Report (2022)."
     ],
     tags: [
@@ -337,5 +355,5 @@ const mediumUserName = "Jesse-Anderson";
 
 export const URLs = {
   mediumURL: `https://api.rss2json.com/v1/api.json?rss_url=https://medium.com/feed/@${mediumUserName}`,
-  quartoURL: 'https://jesse-anderson.github.io/Blog/_site/index.html'
+  quartoURL: 'https://blog.jesse-anderson.net/'
 };
