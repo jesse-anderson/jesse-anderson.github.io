@@ -225,7 +225,7 @@ export const experience = [
     "Ensured safe execution of any mechanical repairs by mechanics.",
     "Acquired parts on an as needed basis to ensure that contracts serviced did not experience time offline"
     ],
-    tags: ["VBA-Excel"],
+    tags: ["Project Management"],
     icon: "gears",
   },
 ];
