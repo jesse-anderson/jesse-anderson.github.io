@@ -140,6 +140,14 @@ export const projects = {
       techStack: ["Python", "ETL", "AWS", "GCP", "NLP"],
     },
     {
+      projectName: "Rasp Pi Sensor Server",
+      image: "images/Pi Sensor Flow Complete.png",
+      summary:
+        "Developed a web-based ETL pipeline to monitor and visualize environmental data using a Raspberry Pi and DHT11 sensor. Collected data was pushed to MongoDB, PostgreSQL, ThingSpeak, and Google Sheets. ",
+      preview: "https://blog.jesse-anderson.net/posts/Pi-Sensor-Proj-May-2024/",
+      techStack: ["Python","IoT", "ETL", "SQL", "GCP", "MongoDB"],
+    },
+    {
       projectName: "UIC Faculty Web Scraping",
       image: "images/webScraping.png",
       summary:
