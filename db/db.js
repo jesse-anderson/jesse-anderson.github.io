@@ -61,7 +61,7 @@ export const skills = [
     percentage: "60",
   },
 ];
-
+ 
 export const projects = {
   disclaimer:
     "<em>***All the projects I listed were completed in an academic or research setting. As for my work in industry, many projects are proprietary and cannot be disclosed.***",
