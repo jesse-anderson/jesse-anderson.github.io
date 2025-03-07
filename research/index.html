@@ -60,7 +60,7 @@
                       `redirect_uri=${encodeURIComponent(redirectUri)}&` +
                       `code_challenge_method=S256&` +
                       `code_challenge=${codeChallenge}&` +
-                      `scope=openid+profile+email`;
+                      `scope=openid+email+phone`;
       console.log("Redirecting to Cognito at:", authUrl);
       window.location.href = authUrl;
     });
