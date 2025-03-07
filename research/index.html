@@ -1,27 +1,33 @@
-<a href="https://jesse-anderson-research.auth.us-east-1.amazoncognito.com/login?client_id=4i7uf21sm605mgfc0bbo9u1mii&response_type=code&scope=email+openid+phone&redirect_uri=https%3A%2F%2Fjesse-anderson.net%2Fresearch%2Findex.html">
-    Login
-</a>
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Paid Research Blog - Login</title>
+  <title>Paid Research Blog - Login & Subscribe</title>
+  <!-- Include Stripe.js -->
+  <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
+  <!-- Existing Cognito Login Link and Button -->
+  <a href="https://jesse-anderson-research.auth.us-east-1.amazoncognito.com/login?client_id=4i7uf21sm605mgfc0bbo9u1mii&response_type=code&scope=email+openid+phone&redirect_uri=https%3A%2F%2Fjesse-anderson.net%2Fresearch%2Findex.html">
+    Login
+  </a>
   <h1>Welcome to My Research Blog</h1>
   <p>Click the button below to log in.</p>
   <button id="login-btn">Login with Cognito</button>
 
+  <!-- New Subscribe Button -->
+  <p>Or subscribe for full access:</p>
+  <button id="subscribe-btn">Subscribe Now</button>
+
+  <!-- Cognito PKCE & Login Script -->
   <script>
-    // Configuration: Replace these placeholders with your actual values.
+    // Configuration for Cognito
     const domainPrefix = "jesse-anderson-research"; // e.g., "jesseandersonblog"
     const clientId = "4i7uf21sm605mgfc0bbo9u1mii";
     const redirectUri = "https://jesse-anderson.net/research/index.html";
     const cognitoDomain = `https://${domainPrefix}.auth.us-east-1.amazoncognito.com`;
 
     // --- PKCE Utility Functions ---
-
-    // Generate a random string for the code verifier.
     function generateRandomString(length) {
       const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
       let result = '';
@@ -33,29 +39,19 @@
       return result;
     }
 
-    // Generate the code challenge from the verifier using SHA256.
     async function generateCodeChallenge(verifier) {
       const encoder = new TextEncoder();
       const data = encoder.encode(verifier);
       const digest = await window.crypto.subtle.digest('SHA-256', data);
       const base64String = btoa(String.fromCharCode(...new Uint8Array(digest)));
-      // Convert base64 to base64url
-      return base64String
-          .replace(/\+/g, '-')
-          .replace(/\//g, '_')
-          .replace(/=+$/, '');
+      return base64String.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
     }
 
-    // --- Redirect to Cognito Authorization Endpoint with PKCE parameters ---
+    // Redirect to Cognito Hosted UI with PKCE parameters.
     document.getElementById('login-btn').addEventListener('click', async function() {
-      // Generate the PKCE code verifier and store it for later use.
       const codeVerifier = generateRandomString(128);
       sessionStorage.setItem('code_verifier', codeVerifier);
-
-      // Generate the corresponding code challenge.
       const codeChallenge = await generateCodeChallenge(codeVerifier);
-
-      // Build the authorization URL with the required parameters.
       const authUrl = `${cognitoDomain}/oauth2/authorize?` +
                       `response_type=code&` +
                       `client_id=${clientId}&` +
@@ -63,66 +59,78 @@
                       `code_challenge_method=S256&` +
                       `code_challenge=${codeChallenge}&` +
                       `scope=openid+profile+email`;
-
-      // Redirect the user to the Cognito Hosted UI.
       window.location.href = authUrl;
     });
-  </script>
-<script>
-  // Function to handle the redirect and exchange the code for tokens.
-  async function handleRedirect() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code');
-    if (code) {
-      // Retrieve the code_verifier stored earlier.
-      const codeVerifier = sessionStorage.getItem('code_verifier');
-      if (!codeVerifier) {
-        console.error("Code verifier not found in sessionStorage.");
-        return;
-      }
-      // Construct the token endpoint URL.
-      const tokenUrl = `${cognitoDomain}/oauth2/token`;
-      const body = new URLSearchParams({
-        grant_type: 'authorization_code',
-        client_id: clientId,
-        code: code,
-        redirect_uri: redirectUri,
-        code_verifier: codeVerifier
-      });
 
-      try {
-        // Exchange the authorization code for tokens.
-        const response = await fetch(tokenUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          },
-          body: body.toString()
-        });
-
-        if (!response.ok) {
-          console.error("Token exchange failed:", response.statusText);
+    // Handle redirect to exchange code for tokens.
+    async function handleRedirect() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+      if (code) {
+        const codeVerifier = sessionStorage.getItem('code_verifier');
+        if (!codeVerifier) {
+          console.error("Code verifier not found in sessionStorage.");
           return;
         }
-
-        const tokens = await response.json();
-        console.log("Tokens received:", tokens);
-
-        // Store the ID token (or access token) in a cookie for Lambda@Edge usage.
-        // Here, we store the id_token. Adjust as needed.
-        document.cookie = `Authorization=Bearer ${tokens.id_token}; path=/; secure;`;
-
-        // Clean up the URL by removing the code parameter.
-        window.history.replaceState({}, document.title, window.location.pathname);
-      } catch (error) {
-        console.error("Error during token exchange:", error);
+        const tokenUrl = `${cognitoDomain}/oauth2/token`;
+        const body = new URLSearchParams({
+          grant_type: 'authorization_code',
+          client_id: clientId,
+          code: code,
+          redirect_uri: redirectUri,
+          code_verifier: codeVerifier
+        });
+        try {
+          const response = await fetch(tokenUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: body.toString()
+          });
+          if (!response.ok) {
+            console.error("Token exchange failed:", response.statusText);
+            return;
+          }
+          const tokens = await response.json();
+          console.log("Tokens received:", tokens);
+          document.cookie = `Authorization=Bearer ${tokens.id_token}; path=/; secure;`;
+          window.history.replaceState({}, document.title, window.location.pathname);
+        } catch (error) {
+          console.error("Error during token exchange:", error);
+        }
       }
     }
-  }
+    handleRedirect();
+  </script>
 
-  // Call handleRedirect() on page load.
-  handleRedirect();
-</script>
+  <!-- Stripe Subscription Script -->
+  <script>
+    // Replace with your actual Stripe publishable key.
+    const stripe = Stripe('pk_live_51Qzo0aG63GZnBv0Q2SnwR8WdUnpuAEq4Jxckv3h4XmoADgURRNxbFW3rxdnCRX9mSg77xZr3gnF3u9kZx50YoV8y00ohfh62Cn');
 
+    document.getElementById('subscribe-btn').addEventListener('click', async function() {
+      try {
+        // Call your backend endpoint to create a Stripe Checkout Session.
+        // The backend should use your Stripe secret key to create a session with:
+        //  - price: "price_1QzoLWG63GZnBv0QporlcbwQ"
+        //  - mode: "subscription"
+        // and return the session id.
+        const response = await fetch('/create-checkout-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            priceId: "price_1QzoLWG63GZnBv0QporlcbwQ"
+          })
+        });
+        const session = await response.json();
+        // Redirect to Stripe Checkout
+        const result = await stripe.redirectToCheckout({ sessionId: session.id });
+        if (result.error) {
+          console.error(result.error.message);
+        }
+      } catch (error) {
+        console.error("Error creating Checkout Session:", error);
+      }
+    });
+  </script>
 </body>
 </html>
