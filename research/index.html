@@ -7,8 +7,6 @@
   <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
-  <!-- Removed duplicate login link -->
-  
   <h1>Welcome to My Research Blog</h1>
   <p>Click the button below to log in.</p>
   <button id="login-btn">Login with Cognito</button>
@@ -21,9 +19,9 @@
   <script>
     // Configuration for Cognito
     const domainPrefix = "jesse-anderson-research"; // Your Cognito domain prefix
-    const clientId = "10op7cbeof6nrs3lqa93biv7m5";   // Your App Client ID (make sure this client does not have a secret)
+    const clientId = "10op7cbeof6nrs3lqa93biv7m5";   // Your App Client ID (public client, no secret)
     // IMPORTANT: This redirect URI must exactly match an Allowed Callback URL in Cognito.
-    const redirectUri = "https://jesse-anderson.net/research/index.html";
+    const redirectUri = "https://research.jesse-anderson.net/index.html";
     const cognitoDomain = `https://${domainPrefix}.auth.us-east-1.amazoncognito.com`;
 
     // --- PKCE Utility Functions ---
@@ -46,7 +44,7 @@
       return base64String.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
     }
 
-    // Redirect to Cognito Hosted UI with PKCE parameters when login button is clicked.
+    // Redirect to Cognito Hosted UI with PKCE parameters.
     document.getElementById('login-btn').addEventListener('click', async function() {
       console.log("Login button clicked");
       const codeVerifier = generateRandomString(128);
@@ -99,9 +97,8 @@
           }
           const tokens = await response.json();
           console.log("Tokens received:", tokens);
-          // Store the ID token in a cookie for subsequent requests.
-          document.cookie = `Authorization=Bearer ${tokens.id_token}; path=/; secure;`;
-          // Remove the code parameter from the URL.
+          // Set cookie with domain .jesse-anderson.net so it's available on all subdomains.
+          document.cookie = `Authorization=Bearer ${tokens.id_token}; path=/; domain=.jesse-anderson.net; secure;`;
           window.history.replaceState({}, document.title, window.location.pathname);
         } catch (error) {
           console.error("Error during token exchange:", error);
@@ -119,7 +116,6 @@
     document.getElementById('subscribe-btn').addEventListener('click', async function() {
       console.log("Subscribe button clicked");
       try {
-        // Use the full API Gateway endpoint URL for creating a Stripe Checkout Session.
         const response = await fetch('https://qotpp50cjl.execute-api.us-east-1.amazonaws.com/prod/create-checkout-session', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
