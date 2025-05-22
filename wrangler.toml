@@ -1,9 +1,25 @@
-name = "op-crime-maps"
-compatibility_date = "2025-05-22"
+name = "jesse-anderson-github-io" # Or your existing Cloudflare Pages project name like "op-crime-maps"
+compatibility_date = "2025-05-22" # Use your project's actual compatibility date
 
-# Tell Pages that the static assets live in OP-Crime-Maps/
-pages_build_output_dir = "OP-Crime-Maps"
+# --- Build Configuration for Cloudflare Pages ---
+[pages_build_config]
+# This command does the following:
+# 1. Creates a new directory named "cf_site_output".
+# 2. Copies EVERYTHING from your project root (".") into "cf_site_output",
+#    EXCLUDING:
+#      - The '.git' directory (essential).
+#      - The 'cf_site_output' directory itself (to prevent recursion errors).
+#      - The specific large WASM file 'OP-Crime-Maps/js/duckdb/duckdb-eh.wasm'.
+command = "mkdir ./cf_site_output && rsync -av --exclude='.git' --exclude='cf_site_output' --exclude='OP-Crime-Maps/js/duckdb/duckdb-eh.wasm' ./ ./cf_site_output/"
 
+# --- Output Directory for Cloudflare Pages ---
+# Cloudflare Pages will deploy the contents of this "cf_site_output" directory.
+# This directory will contain your entire site, minus the excluded WASM file.
+pages_build_output_dir = "./cf_site_output"
+
+# --- R2 Bucket Binding ---
+# For server-side functions if you use them.
+# Client-side JS will fetch WASM from the public R2 URL.
 [[r2_buckets]]
 binding = "ASSET_BUCKET"
 bucket_name = "duckdb-assets"
