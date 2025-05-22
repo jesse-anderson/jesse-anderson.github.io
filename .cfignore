@@ -1,3 +1,3 @@
-# --- Cloudflare Pages should SKIP these ---
+# --- Cloudflare Pages should SKIP these  ---
 OP-Crime-Maps/js/duckdb/duckdb-eh.wasm
 OP-Crime-Maps/js/duckdb/duckdb-browser-eh.worker.js
