@@ -2,6 +2,7 @@
 # This is the directory Cloudflare Pages will deploy.
 # It MUST exist after your build command runs.
 pages_build_output_dir = "./cf_site_output"
+name = "jesse-anderson-github-io"
 
 # Configuration for the build process for Cloudflare Pages
 [pages_build_config]
