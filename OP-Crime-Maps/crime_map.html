@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oak Park Crime Map</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+    
+    <!-- Date Range Picker -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    
+    <!-- Import map for apache-arrow (needed for DuckDB-WASM) -->
+    <script type="importmap">
+    {
+      "imports": {
+        "apache-arrow": "https://esm.sh/apache-arrow@11.0.0",
+        "apache-arrow/": "https://esm.sh/apache-arrow@11.0.0/"
+      }
+    }
+    </script>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        #map {
+            width: 100%;
+            height: 100vh;
+        }
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .leaflet-popup-content {
+            max-width: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .control-panel {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.2);
+            max-width: 320px;
+            min-width: 280px;
+        }
+        .control-panel h3 {
+            margin: 0 0 15px 0;
+            color: #333;
+            font-size: 18px;
+        }
+        .time-selector, .offense-selector {
+            margin-bottom: 15px;
+        }
+        .date-range {
+            margin-top: 10px;
+            display: none;
+        }
+        #dateSelector, #offenseType {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        #customRange {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        #applyFilters, #exportCSV {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        #exportCSV {
+            background: #2196F3;
+            margin-top: 10px;
+        }
+        #applyFilters:hover {
+            background: #45a049;
+        }
+        #exportCSV:hover {
+            background: #1976D2;
+        }
+        #applyFilters:disabled, #exportCSV:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+        #stats {
+            margin-top: 15px;
+            font-size: 12px;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            border-left: 4px solid #4CAF50;
+        }
+        .label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+            font-size: 13px;
+        }
+        #disclaimerOverlay {
+            position: fixed;
+            z-index: 9999; 
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            display: block;
+            overflow: auto;
+            text-align: center;
+            padding-top: 100px;
+            font-family: Arial, sans-serif;
+        }
+        #disclaimerContent {
+            background: #f9f9f9;
+            border: 1px solid #ccc;
+            display: inline-block;
+            padding: 20px;
+            max-width: 800px;
+            text-align: left;
+        }
+        #acceptButton {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .footer {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background-color: #f1f1f1;
+            color: #555;
+            text-align: center;
+            padding: 5px 0;
+            font-size: 10px;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+            z-index: 10000;
+        }
+        .footer a {
+            color: #555;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        #loadStatus {
+            margin-bottom: 10px;
+            font-size: 0.8em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <!-- Disclaimer Overlay -->
+    <div id="disclaimerOverlay">
+        <div id="disclaimerContent">
+            <h2>Important Legal Disclaimer</h2>
+            <p><strong>By using this demonstrative research tool, you acknowledge and agree:</strong></p>
+            <ul>
+                <li>This tool is for <strong>demonstration purposes only</strong>.</li>
+                <li>The data originated from publicly available Oak Park Police Department PDF files.
+                    View the official site here: 
+                    <a href="https://www.oak-park.us/Public-Safety/Police-Department"
+                      target="_blank">Oak Park Police Department</a>.</li>
+                <li>During parsing, <strong>~10%</strong> of complaints were <strong>omitted</strong> 
+                    due to parsing issues; thus the data is <strong>incomplete</strong>.</li>
+                <li>The <strong>official</strong> and <strong>complete</strong> PDF files remain 
+                    with the Oak Park Police Department.</li>
+                <li>You <strong>will not hold</strong> the author <strong>liable</strong> for <strong>any</strong> 
+                    decisions—formal or informal—based on this tool.</li>
+                <li>This tool <strong>should not</strong> be used in <strong>any</strong> official or unofficial 
+                    <strong>decision-making</strong>.</li>
+            </ul>
+            <p><strong>By continuing, you indicate your acceptance of these terms 
+              and disclaim all liability.</strong></p>
+            <hr/>
+            <button id="acceptButton">I Accept</button>
+        </div>
+    </div>
+
+    <!-- Loading Container -->
+    <div id="loading" class="loading">
+        <h3>Loading DuckDB and Crime Data</h3>
+        <p>Please wait while we initialize the database...</p>
+        <div id="loadStatus"></div>
+    </div>
+
+    <!-- Map Container -->
+    <div id="map"></div>
+
+    <!-- Control Panel -->
+    <div class="control-panel">
+        <h3>Oak Park Crime Map</h3>
+        <div class="time-selector">
+            <label class="label" for="dateSelector">Time Period:</label>
+            <select id="dateSelector">
+                <option value="last7">Last 7 Days</option>
+                <option value="last14">Last 14 Days</option>
+                <option value="last30">Last 30 Days</option>
+                <option value="last90">Last 90 Days</option>
+                <option value="thisYear">This Year</option>
+                <option value="lastYear">Last Year</option>
+                <option value="2025">Year 2025</option>
+                <option value="2024">Year 2024</option>
+                <option value="2023">Year 2023</option>
+                <option value="2022">Year 2022</option>
+                <option value="2021">Year 2021</option>
+                <option value="2020">Year 2020</option>
+                <option value="2019">Year 2019</option>
+                <option value="2018">Year 2018</option>
+                <option value="2017">Year 2017</option>
+                <option value="all">All Time</option>
+                <option value="custom">Custom Range</option>
+            </select>
+        </div>
+        <div id="customRangeDiv" class="date-range">
+            <input type="text" id="customRange" placeholder="Select date range" />
+        </div>
+        <div class="offense-selector">
+            <label class="label" for="offenseType">Filter by Offense:</label>
+            <select id="offenseType">
+                <option value="all">Loading offenses...</option>
+            </select>
+        </div>
+        <button id="applyFilters">Apply Filters</button>
+        <button id="exportCSV" disabled>Export Current View to CSV</button>
+        <div id="stats">
+            <p><strong>Results:</strong> <span id="crimeCount">0</span> crimes</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div>
+            <a href="https://jesse-anderson.net/">My Portfolio</a> |
+            <a href="https://blog.jesse-anderson.net/">My Blog</a> |
+            <a href="https://blog.jesse-anderson.net/posts/OP-Crime-Documentation/">Documentation</a> |
+            <a href="mailto:jesse@jesse-anderson.net">Contact</a> |
+            <a href="https://forms.gle/GnyaVwo1Vzm8nBH6A">Add me to Weekly Updates</a>
+        </div>
+        <div>Copyright &copy; <span id="currentYear"></span> Jesse Anderson. All rights reserved.</div>
+    </div>
+
+    <!-- Scripts -->
+    <!-- Leaflet and Plugins -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+    <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+    
+    <!-- jQuery, Moment and Date Range Picker -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+    <!-- Main application script as a module -->
+    <script type="module">
+        // Import DuckDB ES module
+        import * as duckdb from './js/duckdb/duckdb-browser.mjs';
+
+        // Constants
+        const OAK_PARK_VILLAGE_HALL_LAT = 41.87984134058715;
+        const OAK_PARK_VILLAGE_HALL_LNG = -87.7789930902372;
+        
+        // Global variables
+        let db;
+        let map;
+        let markerClusterGroup;
+        let heatmapLayer;
+        let markers = [];
+        let heatmapData = [];
+        let offenseTypes = new Set();
+        let currentCrimeData = []; // Store current filtered results for export
+        let layerControl; // Keep track of layer control to avoid duplicates
+        
+        // Initialize everything once the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set current year in footer
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+            
+            // Initialize date range picker
+            $('#customRange').daterangepicker({
+                opens: 'left',
+                maxDate: new Date(),
+                locale: {
+                    format: 'YYYY-MM-DD'
+                }
+            });
+            
+            // Show custom range if selected and trigger offense update
+            document.getElementById('dateSelector').addEventListener('change', function() {
+                const customRangeDiv = document.getElementById('customRangeDiv');
+                if (this.value === 'custom') {
+                    customRangeDiv.style.display = 'block';
+                } else {
+                    customRangeDiv.style.display = 'none';
+                }
+                
+                // Update offense dropdown when time period changes
+                updateOffenseDropdownForTimePeriod();
+            });
+            
+            // Disclaimer button
+            document.getElementById('acceptButton').addEventListener('click', function() {
+                document.getElementById('disclaimerOverlay').style.display = 'none';
+            });
+            
+            // Export CSV button
+            document.getElementById('exportCSV').addEventListener('click', exportCurrentViewToCSV);
+            
+            // Initialize DuckDB
+            initializeDuckDB();
+        });
+        
+        async function initializeDuckDB() {
+            try {
+                updateLoadStatus("Loading DuckDB WASM...");
+                
+                // Resolve absolute URLs for worker + wasm
+                const workerURL = new URL('./js/duckdb/duckdb-browser-eh.worker.js', location.href).href;
+                const wasmURL = new URL('./js/duckdb/duckdb-eh.wasm', location.href).href;
+                
+                // Blob-wrap to satisfy same-origin for WorkerGlobalScope
+                const blob = new Blob(
+                    [`importScripts("${workerURL}");`],
+                    { type: 'application/javascript' }
+                );
+                const worker = new Worker(URL.createObjectURL(blob));
+                
+                // Instantiate DuckDB
+                const logger = new duckdb.ConsoleLogger();
+                const db_instance = new duckdb.AsyncDuckDB(logger, worker);
+                await db_instance.instantiate(wasmURL);
+                
+                updateLoadStatus("DuckDB WASM loaded, fetching database file...");
+                
+                // Fetch the database file
+                const response = await fetch('db/crime_data.duckdb');
+                const arrayBuffer = await response.arrayBuffer();
+                
+                updateLoadStatus("Database file downloaded, loading into DuckDB...");
+                
+                // Create an in-memory connection first
+                db = await db_instance.connect();
+                
+                // Register the database file
+                await db_instance.registerFileBuffer('crime_data.duckdb', new Uint8Array(arrayBuffer));
+                
+                // Attach the database file instead of connecting to it directly
+                await db.query(`ATTACH 'crime_data.duckdb' AS crimedb`);
+                
+                // Set the search path to include the attached database
+                await db.query(`SET search_path = 'crimedb'`);
+                
+                // Verify that the table exists and check its structure
+                try {
+                    const tableCheck = await db.query(`SELECT * FROM information_schema.tables WHERE table_name = 'crimes'`);
+                    console.log("Table check result:", tableCheck.toArray());
+                    
+                    // Also check the columns to understand the schema
+                    const columnCheck = await db.query(`SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'crimes'`);
+                    console.log("Column check result:", columnCheck.toArray());
+                } catch (err) {
+                    console.error("Table check error:", err);
+                }
+                
+                updateLoadStatus("Database loaded, initializing map...");
+                
+                // Initialize map and fetch metadata
+                initializeMap();
+                await loadMetadata();
+                await populateInitialOffenseDropdown();
+                
+                // Hide loading screen
+                document.getElementById('loading').style.display = 'none';
+                
+                // Apply default filters (last 7 days)
+                document.getElementById('applyFilters').click();
+                
+            } catch (error) {
+                console.error("Error initializing DuckDB:", error);
+                updateLoadStatus(`Error: ${error.message}`);
+                alert("Error loading the database. Please try again later.");
+            }
+        }
+        
+        function updateLoadStatus(message) {
+            document.getElementById('loadStatus').textContent = message;
+            console.log(message);
+        }
+        
+        async function loadMetadata() {
+            try {
+                const response = await fetch('db/metadata.json');
+                const metadata = await response.json();
+                // Note: Removed the lastUpdated display as requested
+            } catch (error) {
+                console.error("Error loading metadata:", error);
+            }
+        }
+        
+        async function populateInitialOffenseDropdown() {
+            try {
+                // Initial population with all offenses
+                const result = await db.query(`
+                    SELECT DISTINCT offense
+                    FROM crimedb.crimes
+                    WHERE offense IS NOT NULL
+                    ORDER BY offense
+                `);
+                
+                const dropdown = document.getElementById('offenseType');
+                
+                // Clear existing options
+                dropdown.innerHTML = '<option value="all">All Offenses</option>';
+                
+                // Add new options
+                for (const row of result.toArray()) {
+                    if (row.offense) {
+                        const option = document.createElement('option');
+                        option.value = row.offense;
+                        option.textContent = row.offense;
+                        dropdown.appendChild(option);
+                    }
+                }
+            } catch (error) {
+                console.error("Error populating initial offense dropdown:", error);
+            }
+        }
+        
+        // Function to build date conditions based on time selector
+        // This centralized function ensures consistent date logic across all queries
+        function buildDateConditions(timeSelector) {
+            const now = new Date();
+            let startDate, endDate;
+            const conditions = [];
+            
+            // Handle each time period option with careful date calculation
+            switch (timeSelector) {
+                case 'last7':
+                    startDate = new Date(now);
+                    startDate.setDate(now.getDate() - 7);
+                    conditions.push(`date >= '${startDate.toISOString().split('T')[0]}'`);
+                    conditions.push(`date <= '${now.toISOString().split('T')[0]}'`);
+                    break;
+                    
+                case 'last14':
+                    startDate = new Date(now);
+                    startDate.setDate(now.getDate() - 14);
+                    conditions.push(`date >= '${startDate.toISOString().split('T')[0]}'`);
+                    conditions.push(`date <= '${now.toISOString().split('T')[0]}'`);
+                    break;
+                    
+                case 'last30':
+                    startDate = new Date(now);
+                    startDate.setDate(now.getDate() - 30);
+                    conditions.push(`date >= '${startDate.toISOString().split('T')[0]}'`);
+                    conditions.push(`date <= '${now.toISOString().split('T')[0]}'`);
+                    break;
+                    
+                case 'last90':
+                    startDate = new Date(now);
+                    startDate.setDate(now.getDate() - 90);
+                    conditions.push(`date >= '${startDate.toISOString().split('T')[0]}'`);
+                    conditions.push(`date <= '${now.toISOString().split('T')[0]}'`);
+                    break;
+                    
+                case 'thisYear':
+                    startDate = new Date(now.getFullYear(), 0, 1);
+                    conditions.push(`date >= '${startDate.toISOString().split('T')[0]}'`);
+                    conditions.push(`date <= '${now.toISOString().split('T')[0]}'`);
+                    break;
+                    
+                case 'lastYear':
+                    startDate = new Date(now.getFullYear() - 1, 0, 1);
+                    endDate = new Date(now.getFullYear() - 1, 11, 31);
+                    conditions.push(`date >= '${startDate.toISOString().split('T')[0]}'`);
+                    conditions.push(`date <= '${endDate.toISOString().split('T')[0]}'`);
+                    break;
+                    
+                case 'custom':
+                    const customRange = document.getElementById('customRange').value;
+                    const dates = customRange.split(' - ');
+                    if (dates.length === 2) {
+                        conditions.push(`date >= '${dates[0]}'`);
+                        conditions.push(`date <= '${dates[1]}'`);
+                    }
+                    break;
+                    
+                case 'all':
+                    // No date conditions for "All Time" - this is the key fix
+                    break;
+                    
+                default:
+                    // Handle specific year selections (2025, 2024, etc.)
+                    if (/^\d{4}$/.test(timeSelector)) {
+                        const year = parseInt(timeSelector);
+                        startDate = new Date(year, 0, 1);  // January 1st of the year
+                        endDate = new Date(year, 11, 31);  // December 31st of the year
+                        conditions.push(`date >= '${startDate.toISOString().split('T')[0]}'`);
+                        conditions.push(`date <= '${endDate.toISOString().split('T')[0]}'`);
+                    }
+                    break;
+            }
+            
+            return conditions;
+        }
+        
+        // FIXED: Function to update offense dropdown based on selected time period
+        // This addresses the SQL syntax error by properly building WHERE clauses
+        async function updateOffenseDropdownForTimePeriod() {
+            try {
+                const timeSelector = document.getElementById('dateSelector').value;
+                
+                // Use our centralized date condition builder
+                const dateConditions = buildDateConditions(timeSelector);
+                
+                // Build the complete WHERE clause properly
+                // The key insight: we always need to filter for non-null offenses,
+                // but we only add date conditions if they exist
+                let allConditions = ['offense IS NOT NULL'];
+                
+                // Add date conditions to our base condition
+                allConditions = allConditions.concat(dateConditions);
+                
+                // Build the final WHERE clause - this ensures we always have valid SQL
+                const whereClause = `WHERE ${allConditions.join(' AND ')}`;
+                
+                // Query for offenses in the selected time period
+                const query = `
+                    SELECT DISTINCT offense, COUNT(*) as offense_count
+                    FROM crimedb.crimes
+                    ${whereClause}
+                    GROUP BY offense
+                    ORDER BY offense_count DESC, offense
+                `;
+                
+                console.log("Offense dropdown query:", query); // Helpful for debugging
+                
+                const result = await db.query(query);
+                const dropdown = document.getElementById('offenseType');
+                const currentSelection = dropdown.value;
+                
+                // Clear and rebuild dropdown
+                dropdown.innerHTML = '<option value="all">All Offenses</option>';
+                
+                let hasCurrentSelection = false;
+                for (const row of result.toArray()) {
+                    if (row.offense) {
+                        const option = document.createElement('option');
+                        option.value = row.offense;
+                        option.textContent = `${row.offense} (${row.offense_count})`;
+                        dropdown.appendChild(option);
+                        
+                        if (row.offense === currentSelection) {
+                            hasCurrentSelection = true;
+                        }
+                    }
+                }
+                
+                // Restore selection if it exists in the new time period
+                if (hasCurrentSelection) {
+                    dropdown.value = currentSelection;
+                } else {
+                    dropdown.value = 'all';
+                }
+                
+                console.log(`Updated offense dropdown for ${timeSelector}: ${result.toArray().length} offense types available`);
+                
+            } catch (error) {
+                console.error("Error updating offense dropdown for time period:", error);
+                // Fall back to all offenses if there's an error
+                await populateInitialOffenseDropdown();
+            }
+        }
+        
+        function initializeMap() {
+            // Create map centered on Oak Park
+            map = L.map('map').setView([OAK_PARK_VILLAGE_HALL_LAT, OAK_PARK_VILLAGE_HALL_LNG], 13);
+            
+            // Add tile layer
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+            
+            // Initialize apply filters button
+            document.getElementById('applyFilters').addEventListener('click', applyFilters);
+        }
+        
+        async function applyFilters() {
+            // Start timing the entire operation
+            const operationStartTime = performance.now();
+            
+            clearMap();
+            updateLoadStatus("Applying filters...");
+            
+            const timeSelector = document.getElementById('dateSelector').value;
+            const offenseType = document.getElementById('offenseType').value;
+            
+            // Use our centralized date condition builder for consistency
+            const dateConditions = buildDateConditions(timeSelector);
+            let allConditions = [];
+            
+            // Add date conditions if they exist
+            allConditions = allConditions.concat(dateConditions);
+            
+            // Add offense filter if needed
+            if (offenseType !== 'all') {
+                // Escape single quotes in offense type for SQL safety
+                const escapedOffense = offenseType.replace(/'/g, "''");
+                allConditions.push(`offense = '${escapedOffense}'`);
+            }
+            
+            // Build the final WHERE clause only if we have conditions
+            const whereClause = allConditions.length > 0 ? `WHERE ${allConditions.join(' AND ')}` : '';
+            
+            // Execute the query with timing
+            try {
+                updateLoadStatus("Querying database...");
+                
+                // Start timing just the database query
+                const queryStartTime = performance.now();
+                
+                // Build the complete query
+                const query = `
+                    SELECT 
+                        date_str, complaint_num, offense, time, location, victim, 
+                        narrative, file_name, lat, long
+                    FROM crimedb.crimes
+                    ${whereClause}
+                    ORDER BY date DESC
+                `;
+                
+                console.log("Executing query:", query); // For debugging
+                
+                const result = await db.query(query);
+                const crimes = result.toArray();
+                
+                // Calculate and log query timing
+                const queryEndTime = performance.now();
+                const queryTime = queryEndTime - queryStartTime;
+                
+                // Store current data for export functionality
+                currentCrimeData = crimes;
+                
+                // Log performance information to console
+                console.log(`🚀 Query Performance Report:`);
+                console.log(`   Query time: ${queryTime.toFixed(2)}ms`);
+                console.log(`   Records returned: ${crimes.length.toLocaleString()}`);
+                console.log(`   Query throughput: ${(crimes.length / (queryTime / 1000)).toFixed(0)} records/second`);
+                console.log(`   Time period: ${timeSelector}`);
+                console.log(`   Offense filter: ${offenseType}`);
+                
+                updateLoadStatus(`Loading ${crimes.length} records on map...`);
+                document.getElementById('crimeCount').textContent = crimes.length.toLocaleString();
+                
+                if (crimes.length > 0) {
+                    addCrimesToMap(crimes);
+                    updateLoadStatus("Map updated successfully.");
+                    
+                    // Enable export button
+                    document.getElementById('exportCSV').disabled = false;
+                } else {
+                    updateLoadStatus("No crimes found for the selected filters.");
+                    // Disable export button when no data
+                    document.getElementById('exportCSV').disabled = true;
+                }
+                
+                // Calculate total operation time
+                const operationEndTime = performance.now();
+                const totalOperationTime = operationEndTime - operationStartTime;
+                
+                console.log(`   Total operation time: ${totalOperationTime.toFixed(2)}ms`);
+                console.log(`   Map rendering time: ${(totalOperationTime - queryTime).toFixed(2)}ms`);
+                
+            } catch (error) {
+                console.error("Error applying filters:", error);
+                updateLoadStatus(`Error: ${error.message}`);
+                alert("Error querying the database. Please try again.");
+            }
+        }
+        
+        function clearMap() {
+            // Clear existing markers and data
+            if (markerClusterGroup) {
+                map.removeLayer(markerClusterGroup);
+                markerClusterGroup = null;
+            }
+            
+            if (heatmapLayer) {
+                map.removeLayer(heatmapLayer);
+                heatmapLayer = null;
+            }
+            
+            // Remove existing layer control if it exists
+            if (layerControl) {
+                map.removeControl(layerControl);
+                layerControl = null;
+            }
+            
+            markers = [];
+            heatmapData = [];
+        }
+        
+        function addCrimesToMap(crimes) {
+            // Create marker cluster group - this needs to be recreated each time to ensure clean state
+            markerClusterGroup = L.markerClusterGroup({
+                showCoverageOnHover: false,
+                maxClusterRadius: 50,
+                spiderfyOnMaxZoom: true,
+                chunkedLoading: true
+            });
+            
+            // Process each crime record and add to appropriate data structures
+            crimes.forEach(crime => {
+                // Skip if no coordinates
+                if (!crime.lat || !crime.long) {
+                    return;
+                }
+                
+                // Add to heatmap data
+                heatmapData.push([crime.lat, crime.long]);
+                
+                // Create popup content for individual markers
+                const popupContent = `
+                    <b>Complaint #:</b> ${safeField(crime.complaint_num)}<br/>
+                    <b>Offense:</b> ${safeField(crime.offense)}<br/>
+                    <b>Date:</b> ${safeField(crime.date_str)}<br/>
+                    <details>
+                      <summary><b>View Details</b></summary>
+                      <b>Time:</b> ${safeField(crime.time)}<br/>
+                      <b>Location:</b> ${safeField(crime.location)}<br/>
+                      <b>Victim:</b> ${safeField(crime.victim)}<br/>
+                      <b>Narrative:</b> ${safeField(crime.narrative)}<br/>
+                      <b>URL:</b> <a href="${safeField(crime.file_name)}" target="_blank">PDF Link</a>
+                    </details>
+                `;
+                
+                // Create marker and add to cluster group
+                const marker = L.marker([crime.lat, crime.long], {
+                    icon: L.icon({
+                        iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+                        iconSize: [25, 41],
+                        iconAnchor: [12, 41],
+                        popupAnchor: [1, -34],
+                        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+                        shadowSize: [41, 41]
+                    })
+                }).bindPopup(popupContent);
+                
+                markerClusterGroup.addLayer(marker);
+                markers.push(marker);
+            });
+            
+            // Create the heatmap layer if we have data
+            if (heatmapData.length > 0) {
+                heatmapLayer = L.heatLayer(heatmapData, {
+                    radius: 20,
+                    blur: 15,
+                    maxZoom: 17
+                });
+            }
+            
+            // Add both layers to the map initially - this ensures they both appear
+            if (markerClusterGroup) {
+                markerClusterGroup.addTo(map);
+            }
+            if (heatmapLayer) {
+                heatmapLayer.addTo(map);
+            }
+            
+            // Create the layer control with both options
+            // This is the critical part that enables toggling between visualization modes
+            const overlays = {};
+            if (markerClusterGroup) {
+                overlays["Crime Markers"] = markerClusterGroup;
+            }
+            if (heatmapLayer) {
+                overlays["Heatmap"] = heatmapLayer;
+            }
+            
+            // Add layer control only if we have layers to control
+            if (Object.keys(overlays).length > 0) {
+                layerControl = L.control.layers(null, overlays, {
+                    collapsed: false,
+                    position: 'topleft'
+                }).addTo(map);
+            }
+            
+            // Fit map to show all markers if we have any
+            if (markers.length > 0) {
+                const group = new L.featureGroup(markers);
+                map.fitBounds(group.getBounds(), {padding: [50, 50]});
+            }
+        }
+        
+        // Function to export current view to CSV
+        function exportCurrentViewToCSV() {
+            if (!currentCrimeData || currentCrimeData.length === 0) {
+                alert('No data available to export. Please apply filters first.');
+                return;
+            }
+            
+            try {
+                // Convert the current crime data to CSV format
+                const headers = ['Date', 'Complaint #', 'Offense', 'Time', 'Location', 'Victim', 'Narrative', 'File Name', 'Latitude', 'Longitude'];
+                
+                // Create CSV content
+                let csvContent = headers.join(',') + '\n';
+                
+                currentCrimeData.forEach(crime => {
+                    const row = [
+                        safeFieldForCSV(crime.date_str),
+                        safeFieldForCSV(crime.complaint_num),
+                        safeFieldForCSV(crime.offense),
+                        safeFieldForCSV(crime.time),
+                        safeFieldForCSV(crime.location),
+                        safeFieldForCSV(crime.victim),
+                        safeFieldForCSV(crime.narrative),
+                        safeFieldForCSV(crime.file_name),
+                        safeFieldForCSV(crime.lat),
+                        safeFieldForCSV(crime.long)
+                    ];
+                    csvContent += row.join(',') + '\n';
+                });
+                
+                // Create download link
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                
+                // Generate filename with current date and time
+                const now = new Date();
+                const dateStr = now.toISOString().split('T')[0];
+                const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '-');
+                link.setAttribute('download', `oak_park_crime_data_${dateStr}_${timeStr}.csv`);
+                
+                // Trigger download
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                console.log(`📥 Exported ${currentCrimeData.length} crime records to CSV`);
+                updateLoadStatus(`Exported ${currentCrimeData.length} records to CSV successfully.`);
+                
+            } catch (error) {
+                console.error('Error exporting CSV:', error);
+                alert('Failed to export CSV. Please try again.');
+            }
+        }
+        
+        function safeField(value) {
+            if (value === null || value === undefined || value === "" || value === "null") {
+                return "Not found";
+            }
+            return String(value)
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+        }
+        
+        // Safe field formatting for CSV export
+        function safeFieldForCSV(value) {
+            if (value === null || value === undefined || value === "" || value === "null") {
+                return "";
+            }
+            
+            // Convert to string and handle CSV escaping
+            let stringValue = String(value);
+            
+            // If the value contains commas, quotes, or newlines, wrap it in quotes
+            if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
+                // Escape existing quotes by doubling them
+                stringValue = stringValue.replace(/"/g, '""');
+                // Wrap in quotes
+                stringValue = '"' + stringValue + '"';
+            }
+            
+            return stringValue;
+        }
+    </script>
+</body>
+</html>
