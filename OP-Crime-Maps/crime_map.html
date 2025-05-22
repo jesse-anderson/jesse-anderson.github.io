@@ -205,6 +205,31 @@
             font-size: 0.8em;
             color: #666;
         }
+
+        .control-panel h3      { display:flex; align-items:center; cursor:pointer; }
+
+        .toggle-arrow          { margin-left:8px; transition:transform .25s ease; }
+
+        .control-panel.collapsed .toggle-arrow { transform:rotate(-90deg); }
+
+        .panel-body                     { margin-top:15px; }
+
+        .control-panel.collapsed .panel-body { display:none; }
+
+        .control-panel.collapsed        { opacity:.9; }   /* optional fade */
+
+        /* 2‑B. Mobile-friendly sizing */
+        @media (max-width:600px){
+        .control-panel{
+            left:50%; right:auto; transform:translateX(-50%);
+            width:92vw; max-width:none; padding:10px;
+        }
+        #dateSelector,#offenseType,#customRange{ font-size:13px; padding:6px; }
+        #applyFilters,#exportCSV{ font-size:13px; padding:8px; }
+        .control-panel h3{ font-size:16px; }
+        }
+
+        
     </style>
 </head>
 <body>
@@ -245,46 +270,67 @@
     <!-- Map Container -->
     <div id="map"></div>
 
-    <!-- Control Panel -->
-    <div class="control-panel">
-        <h3>Oak Park Crime Map</h3>
-        <div class="time-selector">
-            <label class="label" for="dateSelector">Time Period:</label>
-            <select id="dateSelector">
-                <option value="last7">Last 7 Days</option>
-                <option value="last14">Last 14 Days</option>
-                <option value="last30">Last 30 Days</option>
-                <option value="last90">Last 90 Days</option>
-                <option value="thisYear">This Year</option>
-                <option value="lastYear">Last Year</option>
-                <option value="2025">Year 2025</option>
-                <option value="2024">Year 2024</option>
-                <option value="2023">Year 2023</option>
-                <option value="2022">Year 2022</option>
-                <option value="2021">Year 2021</option>
-                <option value="2020">Year 2020</option>
-                <option value="2019">Year 2019</option>
-                <option value="2018">Year 2018</option>
-                <option value="2017">Year 2017</option>
-                <option value="all">All Time</option>
-                <option value="custom">Custom Range</option>
-            </select>
-        </div>
-        <div id="customRangeDiv" class="date-range">
-            <input type="text" id="customRange" placeholder="Select date range" />
-        </div>
-        <div class="offense-selector">
-            <label class="label" for="offenseType">Filter by Offense:</label>
-            <select id="offenseType">
-                <option value="all">Loading offenses...</option>
-            </select>
-        </div>
-        <button id="applyFilters">Apply Filters</button>
-        <button id="exportCSV" disabled>Export Current View to CSV</button>
-        <div id="stats">
-            <p><strong>Results:</strong> <span id="crimeCount">0</span> crimes</p>
-        </div>
+    <!-- Control Panel (accordion‑ready, mobile‑friendly) -->
+<div class="control-panel" id="controlPanel">
+
+  <!-- clickable header -->
+  <h3 id="panelHeader">
+    Oak&nbsp;Park&nbsp;Crime&nbsp;Map
+    <span class="toggle-arrow">&#9654;</span>
+  </h3>
+
+  <!-- everything collapses inside this body -->
+  <div class="panel-body">
+
+    <!-- time period selector -->
+    <div class="time-selector">
+      <label class="label" for="dateSelector">Time&nbsp;Period:</label>
+      <select id="dateSelector">
+        <option value="last7">Last&nbsp;7&nbsp;Days</option>
+        <option value="last14">Last&nbsp;14&nbsp;Days</option>
+        <option value="last30">Last&nbsp;30&nbsp;Days</option>
+        <option value="last90">Last&nbsp;90&nbsp;Days</option>
+        <option value="thisYear">This&nbsp;Year</option>
+        <option value="lastYear">Last&nbsp;Year</option>
+        <option value="2025">Year&nbsp;2025</option>
+        <option value="2024">Year&nbsp;2024</option>
+        <option value="2023">Year&nbsp;2023</option>
+        <option value="2022">Year&nbsp;2022</option>
+        <option value="2021">Year&nbsp;2021</option>
+        <option value="2020">Year&nbsp;2020</option>
+        <option value="2019">Year&nbsp;2019</option>
+        <option value="2018">Year&nbsp;2018</option>
+        <option value="2017">Year&nbsp;2017</option>
+        <option value="all">All&nbsp;Time</option>
+        <option value="custom">Custom&nbsp;Range</option>
+      </select>
     </div>
+
+    <!-- custom date‑range picker, toggled via JS -->
+    <div id="customRangeDiv" class="date-range">
+      <input type="text" id="customRange" placeholder="Select date range">
+    </div>
+
+    <!-- offense filter -->
+    <div class="offense-selector">
+      <label class="label" for="offenseType">Filter&nbsp;by&nbsp;Offense:</label>
+      <select id="offenseType">
+        <option value="all">Loading offenses…</option>
+      </select>
+    </div>
+
+    <!-- action buttons -->
+    <button id="applyFilters">Apply&nbsp;Filters</button>
+    <button id="exportCSV" disabled>Export&nbsp;Current&nbsp;View&nbsp;to&nbsp;CSV</button>
+
+    <!-- dynamic stats -->
+    <div id="stats">
+      <p><strong>Results:</strong> <span id="crimeCount">0</span> crimes</p>
+    </div>
+
+  </div><!-- /.panel-body -->
+</div><!-- /.control-panel -->
+
 
     <!-- Footer -->
     <div class="footer">
@@ -364,6 +410,11 @@
             // Export CSV button
             document.getElementById('exportCSV').addEventListener('click', exportCurrentViewToCSV);
             
+            /*Accordion click handler */
+            document.getElementById('panelHeader').addEventListener('click', ()=>{
+            document.getElementById('controlPanel').classList.toggle('collapsed');
+            });
+
             // Initialize DuckDB
             initializeDuckDB();
         });
