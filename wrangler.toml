@@ -1,26 +1,28 @@
-name = "jesse-anderson-github-io" # Or your existing Cloudflare Pages project name like "op-crime-maps"
-compatibility_date = "2025-05-22" # Use your project's actual compatibility date
-
-# --- Build Configuration for Cloudflare Pages ---
-[pages_build_config]
-# This command does the following:
-# 1. Creates a new directory named "cf_site_output".
-# 2. Copies EVERYTHING from your project root (".") into "cf_site_output",
-#    EXCLUDING:
-#      - The '.git' directory (essential).
-#      - The 'cf_site_output' directory itself (to prevent recursion errors).
-#      - The specific large WASM file 'OP-Crime-Maps/js/duckdb/duckdb-eh.wasm'.
-command = "mkdir ./cf_site_output && rsync -av --exclude='.git' --exclude='cf_site_output' --exclude='OP-Crime-Maps/js/duckdb/duckdb-eh.wasm' ./ ./cf_site_output/"
-
-# --- Output Directory for Cloudflare Pages ---
-# Cloudflare Pages will deploy the contents of this "cf_site_output" directory.
-# This directory will contain your entire site, minus the excluded WASM file.
+# --- Cloudflare Pages Settings ---
+# This is the directory Cloudflare Pages will deploy.
+# It MUST exist after your build command runs.
 pages_build_output_dir = "./cf_site_output"
 
-# --- R2 Bucket Binding ---
-# For server-side functions if you use them.
-# Client-side JS will fetch WASM from the public R2 URL.
+# Configuration for the build process for Cloudflare Pages
+[pages_build_config]
+# This command:
+# 1. Creates "./cf_site_output".
+# 2. Copies your entire project root (".") into "./cf_site_output".
+# 3. Excludes '.git', the output directory itself, and your large WASM file during the copy.
+command = "mkdir ./cf_site_output && rsync -av --exclude='.git' --exclude='cf_site_output' --exclude='OP-Crime-Maps/js/duckdb/duckdb-eh.wasm' ./ ./cf_site_output/"
+
+# --- General Wrangler Project Settings ---
+# This is important for Wrangler to know how to interpret features.
+compatibility_date = "2025-05-22" # Use your project's actual compatibility date
+
+# The 'name' field is primarily for Wrangler CLI deployments of Workers.
+# For Cloudflare Pages projects, the project name is set in the Cloudflare dashboard.
+# It's generally safe to include it or omit it for Pages `wrangler.toml`.
+# name = "jesse-anderson-portfolio" # Or your existing project name
+
+# --- R2 Bucket Bindings ---
+# Makes the R2 bucket available to server-side Cloudflare Functions (if you use them).
 [[r2_buckets]]
 binding = "ASSET_BUCKET"
 bucket_name = "duckdb-assets"
-preview_bucket_name = "duckdb-assets"
+preview_bucket_name = "duckdb-assets" # Often the same as bucket_name
