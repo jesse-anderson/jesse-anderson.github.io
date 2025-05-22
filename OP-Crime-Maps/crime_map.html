@@ -206,30 +206,44 @@
             color: #666;
         }
 
+        .control-panel{
+        padding:5px 5px;      /* was 15px all around */
+        }
+
         .control-panel h3      { display:flex; align-items:center; cursor:pointer; }
 
         .toggle-arrow          { margin-left:8px; transition:transform .25s ease; }
 
         .control-panel.collapsed .toggle-arrow { transform:rotate(-90deg); }
 
-        .panel-body                     { margin-top:15px; }
+        .panel-body                     { margin-top:10px; }
 
         .control-panel.collapsed .panel-body { display:none; }
 
-        .control-panel.collapsed        { opacity:.9; }   /* optional fade */
+        .control-panel.collapsed        { opacity:.4; }   /* optional fade */
 
         /* 2‑B. Mobile-friendly sizing */
         @media (max-width:600px){
         .control-panel{
-            left:50%; right:auto; transform:translateX(-50%);
-            width:92vw; max-width:none; padding:10px;
+            left:auto; right:5px; transform:none;
+            width:auto; max-width:none; padding:5px 5px;
         }
-        #dateSelector,#offenseType,#customRange{ font-size:13px; padding:6px; }
-        #applyFilters,#exportCSV{ font-size:13px; padding:8px; }
-        .control-panel h3{ font-size:16px; }
+        #dateSelector,#offenseType,#customRange{ font-size:12px; padding:5px; }
+        #applyFilters,#exportCSV{ font-size:12px; padding:5px; }
+        .control-panel h3{ font-size:12px; }
         }
 
-        
+        /* Keep Leaflet controls (zoom +/- and layer‑toggle) always on top */
+        .leaflet-control-zoom,
+        .leaflet-control-layers {
+        position: relative;          /* preserves Leaflet’s corner anchoring   */
+        z-index: 30000 !important;    /* > control‑panel’s 1000, < footer 10000 */
+        }
+        .control-panel{
+        max-width:33vw;   /* ≤ 25 % of viewport width            */
+        max-height:33vh;  /* ≤ 25 % of viewport height           */
+        overflow-y:auto;  /* allow scrolling inside if it overflows */
+        }
     </style>
 </head>
 <body>
