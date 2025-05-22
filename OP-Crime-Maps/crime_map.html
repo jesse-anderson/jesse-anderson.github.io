@@ -60,35 +60,35 @@
         }
         .control-panel {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 5px;
+            right: 5px;
             z-index: 1000;
             background: white;
-            padding: 15px;
+            padding: 5px;
             border-radius: 8px;
             box-shadow: 0 2px 15px rgba(0,0,0,0.2);
             max-width: 320px;
             min-width: 280px;
         }
         .control-panel h3 {
-            margin: 0 0 15px 0;
+            margin: 0 0 5px 0;
             color: #333;
             font-size: 18px;
         }
         .time-selector, .offense-selector {
-            margin-bottom: 15px;
+            margin-bottom: 5px;
         }
         .date-range {
-            margin-top: 10px;
+            margin-top: 5px;
             display: none;
         }
         #dateSelector, #offenseType {
             width: 100%;
-            padding: 8px;
-            margin-bottom: 8px;
+            padding: 5px;
+            margin-bottom: 5px;
             border: 1px solid #ddd;
             border-radius: 4px;
-            font-size: 14px;
+            font-size: 12px;
         }
         #customRange {
             width: 100%;
@@ -105,7 +105,7 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: bold;
         }
         #exportCSV {
@@ -123,10 +123,10 @@
             cursor: not-allowed;
         }
         #stats {
-            margin-top: 15px;
+            margin-top: 5px;
             font-size: 12px;
             background: #f8f9fa;
-            padding: 10px;
+            padding: 5px;
             border-radius: 4px;
             border-left: 4px solid #4CAF50;
         }
@@ -150,7 +150,7 @@
             -webkit-overflow-scrolling:touch;
             overflow: auto;
             text-align: center;
-            padding-top: 100px;
+            padding-top: 20px;
             font-family: Arial, sans-serif;
             display:flex;
             flex-direction:column;
@@ -159,7 +159,7 @@
             background: #f9f9f9;
             border: 1px solid #ccc;
             display: inline-block;
-            padding: 20px;
+            padding: 10px;
             max-width: 800px;
             max-height:calc(100vh - 200px);
             overflow-y:auto;
@@ -169,14 +169,14 @@
             
         }
         #acceptButton {
-            margin-top: 20px;
+            margin-top: 5px;
             font-size: 16px;
             cursor: pointer;
             align-self:center;
             position:sticky;
             bottom:0;
             background:#4CAF50; color:#fff; border:none; border-radius:2px;
-            padding:10px 10px; font-size:14px; cursor:pointer;
+            padding:5px 5px; font-size:14px; cursor:pointer;
             margin:px 0;
 
         }
@@ -198,6 +198,7 @@
             z-index:auto;             /* reset                                        */
             padding:8px 0;
             text-align: center;
+            z-index: 10000;
 
         }
         .footer a {
@@ -209,7 +210,7 @@
             text-decoration: underline;
         }
         #loadStatus {
-            margin-bottom: 10px;
+            margin-bottom: 5px;
             font-size: 0.8em;
             color: #666;
         }
@@ -220,11 +221,11 @@
 
         .control-panel h3      { display:flex; align-items:center; cursor:pointer; }
 
-        .toggle-arrow          { margin-left:8px; transition:transform .25s ease; }
+        .toggle-arrow          { margin-left:0px; transition:transform .25s ease; }
 
         .control-panel.collapsed .toggle-arrow { transform:rotate(-90deg); }
 
-        .panel-body                     { margin-top:10px; }
+        .panel-body                     { margin-top:5px; }
 
         .control-panel.collapsed .panel-body { display:none; }
 
@@ -252,6 +253,26 @@
         max-height:33vh;  /* ≤ 25 % of viewport height           */
         overflow-y:auto;  /* allow scrolling inside if it overflows */
         }
+
+        /* 2‑A.  Header layout */
+        .panel-header{
+        display:flex; align-items:center; gap:6px;
+        }
+
+        /* 2‑B.  Toggle button */
+        .panel-toggle{
+        background:none; border:none; font-size:14px; font-weight:bold;
+        cursor:pointer; color:#007bff; padding:0; line-height:1;
+        }
+
+        /* simple arrow caret that flips */
+        .panel-toggle::after{
+        content:""; display:inline-block; margin-left:2px;
+        border:solid currentColor; border-width:0 2px 2px 0; padding:3px;
+        transform:rotate(45deg); transition:transform .25s ease;
+        }
+        .panel-toggle[aria-expanded="false"]::after{ transform:rotate(-135deg); }
+
     </style>
 </head>
 <body>
@@ -296,10 +317,12 @@
 <div class="control-panel" id="controlPanel">
 
   <!-- clickable header -->
-  <h3 id="panelHeader">
-    Oak&nbsp;Park&nbsp;Crime&nbsp;Map
-    <span class="toggle-arrow">&#9654;</span>
-  </h3>
+  <div class="panel-header" id="panelHeader">
+  <button id="panelToggle" class="panel-toggle" aria-expanded="true">
+    HIDE ▾
+  </button>
+  <span class="panel-title">Oak&nbsp;Park&nbsp;Crime&nbsp;Map</span>
+    </div>
 
   <!-- everything collapses inside this body -->
   <div class="panel-body">
@@ -433,8 +456,16 @@
             document.getElementById('exportCSV').addEventListener('click', exportCurrentViewToCSV);
             
             /*Accordion click handler */
-            document.getElementById('panelHeader').addEventListener('click', ()=>{
-            document.getElementById('controlPanel').classList.toggle('collapsed');
+            const panel       = document.getElementById('controlPanel');
+            const panelToggle = document.getElementById('panelToggle');
+
+            panelToggle.addEventListener('click', (e)=>{
+            e.stopPropagation();                    // keep click from bubbling
+            panel.classList.toggle('collapsed');
+
+            const expanded = !panel.classList.contains('collapsed');
+            panelToggle.setAttribute('aria-expanded', expanded);
+            panelToggle.textContent = expanded ? 'HIDE ' : 'SHOW ';
             });
 
             // Initialize DuckDB
