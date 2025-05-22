@@ -1,7 +1,10 @@
-name = "op-crime-maps"                # any unique name
-compatibility_date = "2025-05-22"     # today's date
+name = "op-crime-maps"
+compatibility_date = "2025-05-22"
+
+# Tell Pages that the static assets live in OP-Crime-Maps/
+pages_build_output_dir = "OP-Crime-Maps"
 
 [[r2_buckets]]
-binding = "ASSET_BUCKET"              # <‑ JS will use env.ASSET_BUCKET
-bucket_name = "duckdb-assets"         # <‑ exact bucket name you created
+binding = "ASSET_BUCKET"
+bucket_name = "duckdb-assets"
 preview_bucket_name = "duckdb-assets"
