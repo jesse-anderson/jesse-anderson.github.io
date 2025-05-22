@@ -1,0 +1,7 @@
+name = "op-crime-maps"                # any unique name
+compatibility_date = "2025-05-22"     # today's date
+
+[[r2_buckets]]
+binding = "ASSET_BUCKET"              # <‑ JS will use env.ASSET_BUCKET
+bucket_name = "duckdb-assets"         # <‑ exact bucket name you created
+preview_bucket_name = "duckdb-assets"
