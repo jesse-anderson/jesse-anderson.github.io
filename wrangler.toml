@@ -5,7 +5,7 @@ pages_build_output_dir = "./cf_site_output"
 name = "jesse-anderson-github-io"
 
 # Configuration for the build process for Cloudflare Pages
-[pages_build_config]
+[build]
 # This command:
 # 1. Creates "./cf_site_output".
 # 2. Copies your entire project root (".") into "./cf_site_output".
