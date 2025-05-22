@@ -533,6 +533,7 @@
                 initializeMap();
                 await loadMetadata();
                 await populateInitialOffenseDropdown();
+                await updateOffenseDropdownForTimePeriod();
                 
                 // Hide loading screen
                 document.getElementById('loading').style.display = 'none';
