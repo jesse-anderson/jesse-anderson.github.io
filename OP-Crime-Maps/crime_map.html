@@ -478,20 +478,20 @@
 
 
 
-
 async function initializeDuckDB() {
     const logger = new duckdb.ConsoleLogger(duckdb.LogLevel.INFO);
     let db_instance;
     let worker;
 
     // --- Configuration ---
-    const R2_PROXY_BASE_URL = "https://jesse-anderson.net/r2-assets/"; // For Cloudflare Pages via Worker
+    // Ensure your Worker proxy is working and this URL is correct.
+    const R2_PROXY_BASE_URL = "https://jesse-anderson.net/r2-assets/"; 
 
-    const VSCODE_LIVE_PREVIEW_URL_PREFIX = "http://127.0.0.1:3004/c:/Users/Jesse/Documents/GitHub/jesse-anderson.github.io/OP-Crime-Maps/js/duckdb/"; // For specific local setup
-
-    // Base path for assets when served from GitHub Pages (relative to origin)
-    // This will be prepended by origin (e.g., https://jesse-anderson.net OR https://jesse-anderson.github.io)
-    const GITHUB_PAGES_ASSET_PATH_PREFIX = "/OP-Crime-Maps/js/duckdb/"; 
+    const VSCODE_LIVE_PREVIEW_URL_PREFIX = "http://127.0.0.1:3004/c:/Users/Jesse/Documents/GitHub/jesse-anderson.github.io/OP-Crime-Maps/js/duckdb/";
+    
+    // Path from the origin for GitHub Pages / standard web servers
+    // e.g. https://jesse-anderson.github.io/OP-Crime-Maps/js/duckdb/
+    const STANDARD_WEB_ASSET_PATH_PREFIX = "/OP-Crime-Maps/js/duckdb/"; 
 
     const CDN_DUCKDB_VERSION = '1.29.0';
     const WASM_FILE_NAME = 'duckdb-eh.wasm';
@@ -501,10 +501,9 @@ async function initializeDuckDB() {
     let currentAttemptSource = "";
 
     const hostname = window.location.hostname;
-    const origin = window.location.origin; // e.g., "http://127.0.0.1:3004" or "https://jesse-anderson.net"
+    const origin = window.location.origin;
 
     console.log(`[DB Init] Detected hostname: ${hostname}, origin: ${origin}`);
-    console.log(`[DB Init] Full window.location.href: ${window.location.href}`);
     updateLoadStatus("Initializing DuckDB - Please wait...");
 
     async function tryInstantiate(wasmUrl, workerUrl, sourceName) {
@@ -518,18 +517,17 @@ async function initializeDuckDB() {
         const workerBlob = new Blob([`importScripts("${workerUrl}");`], { type: 'application/javascript' });
         worker = new Worker(URL.createObjectURL(workerBlob));
         db_instance = new duckdb.AsyncDuckDB(logger, worker);
-        await db_instance.instantiate(wasmUrl);
+        await db_instance.instantiate(wasmUrl); // This is where the WASM magic word error or importScripts error can happen
         console.log(`[DB Init] Successfully initiated DuckDB from ${sourceName}.`);
         currentAttemptSource = sourceName;
     }
 
     // --- Loading Strategy ---
 
-    // 1. VS Code Live Preview Special Case (127.0.0.1 or localhost AND specific URL pattern)
+    // 1. VS Code Live Preview Special Case
     if ((hostname === "127.0.0.1" || hostname === "localhost") && window.location.href.startsWith(origin + "/c:/Users/Jesse/")) {
-        currentAttemptSource = "Local (VS Code Live Preview Path)";
+        currentAttemptSource = "Local (VS Code Live Preview)";
         try {
-            // Use the hardcoded prefix you confirmed works for your VSCode Live Preview
             chosenWasmPath = `${VSCODE_LIVE_PREVIEW_URL_PREFIX}${WASM_FILE_NAME}`;
             chosenWorkerPath = `${VSCODE_LIVE_PREVIEW_URL_PREFIX}${WORKER_FILE_NAME}`;
             await tryInstantiate(chosenWasmPath, chosenWorkerPath, currentAttemptSource);
@@ -539,14 +537,14 @@ async function initializeDuckDB() {
         }
     }
 
-    // 2. GitHub Pages Style Local/Relative Path (Primary for jesse-anderson.github.io, also first attempt for jesse-anderson.net)
-    // This will also serve as a fallback for generic local servers if the VSCode path above isn't met or fails.
-    if (!db_instance && (hostname === "jesse-anderson.github.io" || hostname === "jesse-anderson.net" || hostname === "127.0.0.1" || hostname === "localhost" )) {
+    // 2. GitHub Pages or Standard Web Server (relative paths from origin)
+    // Also acts as a fallback for 127.0.0.1 if the VSCode special path isn't met or fails.
+    if (!db_instance && (hostname === "jesse-anderson.github.io" || hostname === "jesse-anderson.net" || hostname === "127.0.0.1" || hostname === "localhost")) {
         currentAttemptSource = `Local/GitHub Pages (${hostname})`;
         try {
             // Construct path like https://jesse-anderson.net/OP-Crime-Maps/js/duckdb/file.wasm
-            chosenWasmPath = `${origin}${GITHUB_PAGES_ASSET_PATH_PREFIX}${WASM_FILE_NAME}`.replace(/([^:])\/\/\//g, '$1/').replace(/([^:])\/\//g, '$1/');
-            chosenWorkerPath = `${origin}${GITHUB_PAGES_ASSET_PATH_PREFIX}${WORKER_FILE_NAME}`.replace(/([^:])\/\/\//g, '$1/').replace(/([^:])\/\//g, '$1/');
+            chosenWasmPath = `${origin}${STANDARD_WEB_ASSET_PATH_PREFIX}${WASM_FILE_NAME}`.replace(/([^:])\/\/\//g, '$1/').replace(/([^:])\/\//g, '$1/');
+            chosenWorkerPath = `${origin}${STANDARD_WEB_ASSET_PATH_PREFIX}${WORKER_FILE_NAME}`.replace(/([^:])\/\/\//g, '$1/').replace(/([^:])\/\//g, '$1/');
             await tryInstantiate(chosenWasmPath, chosenWorkerPath, currentAttemptSource);
         } catch (ghPagesOrLocalError) {
             console.error(`[DB Init] Failed to load from ${currentAttemptSource}:`, ghPagesOrLocalError);
@@ -554,8 +552,11 @@ async function initializeDuckDB() {
         }
     }
     
-    // 3. R2 via Worker Proxy (Primary for *.pages.dev, and for jesse-anderson.net if GH-style local path failed)
+    // 3. R2 via Worker Proxy (Specifically for Cloudflare Pages domains if other attempts failed or weren't applicable)
     if (!db_instance && (hostname.endsWith(".pages.dev") || hostname === "jesse-anderson.net")) {
+        // This ensures that if jesse-anderson.net was GitHub Pages and failed, it doesn't try R2.
+        // But if jesse-anderson.net is Cloudflare Pages, the above local attempt *should* fail (404), then this R2 path is tried.
+        // For *.pages.dev, the local attempt will also fail (404), then this is tried.
         currentAttemptSource = "R2 (via Worker Proxy)";
         try {
             chosenWasmPath = R2_PROXY_BASE_URL + WASM_FILE_NAME;
@@ -569,8 +570,9 @@ async function initializeDuckDB() {
 
     // 4. Final CDN Fallback
     if (!db_instance) {
-        console.warn(`[DB Init] All configured attempts failed. Falling back to CDN.`);
+        console.warn(`[DB Init] All configured attempts failed for hostname '${hostname}'. Falling back to CDN.`);
         currentAttemptSource = "CDN";
+        // The updateLoadStatus was inside the catch before, moving it before the try
         updateLoadStatus(`All primary loads failed. Trying CDN...`);
         try {
             const cdnDistPath = `https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@${CDN_DUCKDB_VERSION}/dist/`;
@@ -581,12 +583,13 @@ async function initializeDuckDB() {
             console.error(`[DB Init] Critical: Failed to load DuckDB from all sources:`, cdnError);
             updateLoadStatus(`ERROR: Failed to initialize DuckDB. ${cdnError.message}`);
             alert("A critical error occurred while loading DuckDB. Please try refreshing the page.");
-            if (worker) worker.terminate();
+            if (worker) worker.terminate(); // Ensure worker is terminated on final failure
             throw cdnError; 
         }
     }
 
     // --- Database Loading and Application Initialization ---
+    // (This part remains the same, assuming db_instance is now valid)
     updateLoadStatus(`DuckDB instantiated from ${currentAttemptSource}, fetching database file...`);
     try {
         const dbFilePath = 'db/crime_data.duckdb'; 
@@ -633,8 +636,6 @@ async function initializeDuckDB() {
         if (worker) worker.terminate(); 
     }
 }
-
-
 
 
 
