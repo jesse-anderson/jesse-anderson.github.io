@@ -1,0 +1,58 @@
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches:
+      - main # Or your primary branch, e.g., master, production
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read # To checkout the repository
+      deployments: write # If you want to see deployments in GitHub UI
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4 # Or latest version
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4 # Or latest version
+        with:
+          node-version: '18' # Or your preferred Node.js version for Wrangler
+
+      - name: Install Wrangler CLI
+        run: npm install -g wrangler
+
+      - name: Custom Build Step (Prepare site for deployment)
+        run: |
+          echo "Starting custom build process..."
+          # 1. Create a directory for the clean deployment
+          mkdir ./dist
+
+          # 2. Copy all site files to the 'dist' directory,
+          #    excluding .git, the 'dist' directory itself, and the large WASM file.
+          #    Adjust exclude patterns as needed for other files/dirs not to be deployed.
+          rsync -av \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='dist' \
+            --exclude='node_modules' \
+            --exclude='OP-Crime-Maps/js/duckdb/duckdb-eh.wasm' \
+            ./ ./dist/
+          
+          echo "Files prepared in ./dist directory:"
+          ls -alh ./dist
+          # If OP-Crime-Maps is a subdirectory, verify its contents in dist as well
+          echo "Contents of ./dist/OP-Crime-Maps/js/duckdb/ (if it exists):"
+          ls -alh ./dist/OP-Crime-Maps/js/duckdb/ || echo "Directory not found or ls failed"
+
+
+      - name: Deploy to Cloudflare Pages
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          wrangler pages deploy ./dist \
+            --project-name="your-cloudflare-pages-project-name" \
+            --branch="${{ github.ref_name }}" # Deploys to a preview or production based on the branch name
