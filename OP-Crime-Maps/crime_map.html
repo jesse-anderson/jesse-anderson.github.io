@@ -475,79 +475,198 @@
             initializeDuckDB();
         });
         
-        async function initializeDuckDB() {
-            try {
-                updateLoadStatus("Loading DuckDB WASM...");
-                
-                // Resolve absolute URLs for worker + wasm
-                const workerURL = new URL('./js/duckdb/duckdb-browser-eh.worker.js', location.href).href;
-                const wasmURL = new URL('./js/duckdb/duckdb-eh.wasm', location.href).href;
-                
-                // Blob-wrap to satisfy same-origin for WorkerGlobalScope
-                const blob = new Blob(
-                    [`importScripts("${workerURL}");`],
-                    { type: 'application/javascript' }
-                );
-                const worker = new Worker(URL.createObjectURL(blob));
-                
-                // Instantiate DuckDB
-                const logger = new duckdb.ConsoleLogger();
-                const db_instance = new duckdb.AsyncDuckDB(logger, worker);
-                await db_instance.instantiate(wasmURL);
-                
-                updateLoadStatus("DuckDB WASM loaded, fetching database file...");
-                
-                // Fetch the database file
-                const response = await fetch('db/crime_data.duckdb');
-                const arrayBuffer = await response.arrayBuffer();
-                
-                updateLoadStatus("Database file downloaded, loading into DuckDB...");
-                
-                // Create an in-memory connection first
-                db = await db_instance.connect();
-                
-                // Register the database file
-                await db_instance.registerFileBuffer('crime_data.duckdb', new Uint8Array(arrayBuffer));
-                
-                // Attach the database file instead of connecting to it directly
-                await db.query(`ATTACH 'crime_data.duckdb' AS crimedb`);
-                
-                // Set the search path to include the attached database
-                await db.query(`SET search_path = 'crimedb'`);
-                
-                // Verify that the table exists and check its structure
-                try {
-                    const tableCheck = await db.query(`SELECT * FROM information_schema.tables WHERE table_name = 'crimes'`);
-                    console.log("Table check result:", tableCheck.toArray());
-                    
-                    // Also check the columns to understand the schema
-                    const columnCheck = await db.query(`SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'crimes'`);
-                    console.log("Column check result:", columnCheck.toArray());
-                } catch (err) {
-                    console.error("Table check error:", err);
-                }
-                
-                updateLoadStatus("Database loaded, initializing map...");
-                
-                // Initialize map and fetch metadata
-                initializeMap();
-                await loadMetadata();
-                await populateInitialOffenseDropdown();
-                await updateOffenseDropdownForTimePeriod();
-                
-                // Hide loading screen
-                document.getElementById('loading').style.display = 'none';
-                
-                // Apply default filters (last 7 days)
-                document.getElementById('applyFilters').click();
-                
-            } catch (error) {
-                console.error("Error initializing DuckDB:", error);
-                updateLoadStatus(`Error: ${error.message}`);
-                alert("Error loading the database. Please try again later.");
-            }
+
+
+
+
+
+
+
+async function initializeDuckDB() {
+    const logger = new duckdb.ConsoleLogger(duckdb.LogLevel.INFO);
+    let db_instance;
+    let worker;
+
+    // --- Configuration for WASM loading ---
+    const R2_DUCKDB_FILES_BASE_URL = "https://r2.jesse-anderson.net/"; // <<< ENSURE THIS IS YOUR CORRECT R2 BASE URL
+
+    // This is the path component your VS Code Live Preview server uses AFTER the host:port
+    // It directly reflects your file system structure.
+    const VSCODE_LIVE_PREVIEW_ABSOLUTE_PATH_PREFIX = 'c:/Users/Jesse/Documents/GitHub/jesse-anderson.github.io/OP-Crime-Maps/';
+    const DUCKDB_SUBFOLDER = 'js/duckdb/'; // Subfolder within OP-Crime-Maps
+
+    // For GitHub Pages, this is the path from the root of the GH Pages site
+    // If jesse-anderson.github.io serves OP-Crime-Maps directly, it would be 'js/duckdb/'
+    // If jesse-anderson.github.io is the repo root and OP-Crime-Maps is a folder, it's 'OP-Crime-Maps/js/duckdb/'
+    const GITHUB_PAGES_SERVER_RELATIVE_PATH_TO_DUCKDB_ASSETS = 'OP-Crime-Maps/js/duckdb/'; 
+    const CDN_DUCKDB_VERSION = '1.29.0';
+
+    const WASM_FILE_NAME = 'duckdb-eh.wasm';
+    const WORKER_FILE_NAME = 'duckdb-browser-eh.worker.js';
+
+    let chosenWasmPath, chosenWorkerPath;
+    let loadAttemptSource = "";
+
+    const hostname = window.location.hostname;
+    const origin = window.location.origin; // e.g., "http://127.0.0.1:3004"
+
+    console.log(`[DB Init] Detected hostname: ${hostname}, origin: ${origin}`);
+    console.log(`[DB Init] Full window.location.href: ${window.location.href}`); // Log full href for debugging
+    updateLoadStatus("Detecting environment...");
+
+    if (hostname === "jesse-anderson.net" || hostname.endsWith(".pages.dev")) {
+        console.log("[DB Init] Environment: Cloudflare Pages. Using R2 URLs.");
+        loadAttemptSource = "R2";
+        if (R2_DUCKDB_FILES_BASE_URL.includes("YOUR_R2_BUCKET_PUBLIC_URL_HERE") || R2_DUCKDB_FILES_BASE_URL.length < 20) {
+            console.warn("[DB Init] R2_DUCKDB_FILES_BASE_URL looks like a placeholder. This R2 load attempt will likely fail.");
         }
+        chosenWasmPath = R2_DUCKDB_FILES_BASE_URL + WASM_FILE_NAME;
+        chosenWorkerPath = R2_DUCKDB_FILES_BASE_URL + WORKER_FILE_NAME;
+
+    } else if (hostname === "127.0.0.1" || hostname === "localhost") {
+        console.log("[DB Init] Environment: Local development (VS Code Live Preview). Using server's absolute file path mapping.");
+        loadAttemptSource = "Local (VS Code Live Preview Path)";
         
+        // Construct the URL exactly as your VS Code Live Preview server expects it
+        // origin will be "http://127.0.0.1:3004"
+        // We append the absolute file path part, ensuring no double slashes if VSCODE_LIVE_PREVIEW_ABSOLUTE_PATH_PREFIX starts with one.
+        let livePreviewPathPrefix = VSCODE_LIVE_PREVIEW_ABSOLUTE_PATH_PREFIX;
+        if (livePreviewPathPrefix.startsWith('/') || livePreviewPathPrefix.startsWith('\\')) {
+            livePreviewPathPrefix = livePreviewPathPrefix.substring(1);
+        }
+        // Replace backslashes with forward slashes for URL consistency
+        livePreviewPathPrefix = livePreviewPathPrefix.replace(/\\/g, '/');
+        
+        chosenWasmPath = `${origin}/${livePreviewPathPrefix}${DUCKDB_SUBFOLDER}${WASM_FILE_NAME}`;
+        chosenWorkerPath = `${origin}/${livePreviewPathPrefix}${DUCKDB_SUBFOLDER}${WORKER_FILE_NAME}`;
+        
+        // Normalize any potential double slashes after the protocol
+        chosenWasmPath = chosenWasmPath.replace(/([^:])\/\//g, '$1/');
+        chosenWorkerPath = chosenWorkerPath.replace(/([^:])\/\//g, '$1/');
+
+    } else if (hostname === "jesse-anderson.github.io") {
+        console.log("[DB Init] Environment: GitHub Pages. Constructing server-relative HTTP URLs.");
+        loadAttemptSource = "GitHub Pages (Server-Relative)";
+        let pathPrefix = GITHUB_PAGES_SERVER_RELATIVE_PATH_TO_DUCKDB_ASSETS;
+        if (pathPrefix.startsWith('/')) { pathPrefix = pathPrefix.substring(1); }
+
+        chosenWasmPath = `${origin}/${pathPrefix}${WASM_FILE_NAME}`.replace(/([^:])\/\//g, '$1/');
+        chosenWorkerPath = `${origin}/${pathPrefix}${WORKER_FILE_NAME}`.replace(/([^:])\/\//g, '$1/');
+    } else {
+        console.warn(`[DB Init] Environment: Unknown hostname (${hostname}). Defaulting to CDN.`);
+        loadAttemptSource = "CDN (Unknown Hostname Fallback)";
+        // ... (CDN fallback URL construction remains the same) ...
+        const cdnDistPath = `https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@${CDN_DUCKDB_VERSION}/dist/`;
+        chosenWasmPath = cdnDistPath + WASM_FILE_NAME;
+        chosenWorkerPath = cdnDistPath + WORKER_FILE_NAME;
+    }
+
+    console.log(`[DB Init] Attempt 1: Loading from ${loadAttemptSource}`);
+    console.log(`[DB Init]   WASM Path for instantiate: ${chosenWasmPath}`);
+    console.log(`[DB Init]   Worker Path for blob: ${chosenWorkerPath}`);
+    updateLoadStatus(`Loading DuckDB from ${loadAttemptSource}...`);
+
+    try {
+        const workerBlob = new Blob([`importScripts("${chosenWorkerPath}");`], { type: 'application/javascript' });
+        worker = new Worker(URL.createObjectURL(workerBlob));
+        
+        db_instance = new duckdb.AsyncDuckDB(logger, worker);
+        await db_instance.instantiate(chosenWasmPath);
+        
+        console.log(`[DB Init] Successfully initiated DuckDB worker and WASM instantiation from ${loadAttemptSource}.`);
+
+    } catch (primaryError) {
+        console.error(`[DB Init] Failed to load DuckDB from ${loadAttemptSource}:`, primaryError);
+        console.error(`[DB Init] Primary error details: Message: ${primaryError.message}, Name: ${primaryError.name}`);
+        updateLoadStatus(`Failed with ${loadAttemptSource}. Falling back to CDN...`);
+
+        loadAttemptSource = "CDN";
+        console.log(`[DB Init] Attempt 2: Loading from ${loadAttemptSource} (v${CDN_DUCKDB_VERSION})`);
+        updateLoadStatus(`Loading DuckDB from CDN (v${CDN_DUCKDB_VERSION})...`);
+        try {
+            if (worker) {
+                worker.terminate();
+                console.log("[DB Init] Terminated previous worker.");
+            }
+            const cdnDistPath = `https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@${CDN_DUCKDB_VERSION}/dist/`;
+            chosenWasmPath = cdnDistPath + WASM_FILE_NAME;
+            chosenWorkerPath = cdnDistPath + WORKER_FILE_NAME;
+            console.log(`[DB Init]   CDN WASM Path: ${chosenWasmPath}`);
+            console.log(`[DB Init]   CDN Worker Path: ${chosenWorkerPath}`);
+            const cdnWorkerBlob = new Blob([`importScripts("${chosenWorkerPath}");`], { type: 'application/javascript' });
+            worker = new Worker(URL.createObjectURL(cdnWorkerBlob));
+            db_instance = new duckdb.AsyncDuckDB(logger, worker);
+            await db_instance.instantiate(chosenWasmPath);
+            console.log(`[DB Init] Successfully loaded DuckDB from ${loadAttemptSource}.`);
+        } catch (cdnError) {
+            console.error(`[DB Init] Critical: Failed to load DuckDB from ${loadAttemptSource} as well:`, cdnError);
+            updateLoadStatus(`ERROR: Failed to initialize DuckDB from all sources. ${cdnError.message}`);
+            alert("A critical error occurred while loading DuckDB. The map functionality may not be available. Please try refreshing the page.");
+            if (worker) worker.terminate();
+            throw cdnError;
+        }
+    }
+
+    // --- Database Loading and Application Initialization ---
+    updateLoadStatus("DuckDB instantiated, fetching database file...");
+    try {
+        // This path is relative to crime_map.html. 
+        // If crime_map.html is at /OP-Crime-Maps/crime_map.html 
+        // and db file is at /OP-Crime-Maps/db/crime_data.duckdb, then 'db/crime_data.duckdb' is correct.
+        const dbFilePath = 'db/crime_data.duckdb'; 
+        console.log(`[DB Init] Fetching database file from (relative to HTML): ${dbFilePath}`);
+        const response = await fetch(dbFilePath); 
+        if (!response.ok) throw new Error(`Failed to fetch database: ${response.status} ${response.statusText} from ${response.url}`);
+        const arrayBuffer = await response.arrayBuffer();
+        
+        updateLoadStatus("Database file downloaded, registering with DuckDB...");
+        db = await db_instance.connect(); 
+        await db_instance.registerFileBuffer('crime_data.duckdb', new Uint8Array(arrayBuffer));
+        await db.query(`ATTACH 'crime_data.duckdb' AS attached_crimedb (READ_ONLY)`); 
+        await db.query(`USE attached_crimedb`); 
+
+        console.log("[DB Init] Database file registered and attached as 'attached_crimedb'. Used 'USE attached_crimedb'.");
+        
+        const tableCheckResult = await db.query(`SELECT COUNT(*) as count FROM crimes`);
+        const countValue = tableCheckResult.toArray()[0].count; 
+        console.log("[DB Init] Crimes table count:", typeof countValue === 'bigint' ? countValue.toString() : countValue);
+
+        updateLoadStatus("Database loaded, initializing map controls...");
+        initializeMap(); 
+        await loadMetadata(); 
+        await populateInitialOffenseDropdown(); 
+        
+        // Set default date selection to "Last 14 Days"
+        document.getElementById('dateSelector').value = 'last14';
+        console.log("[DB Init] Default dateSelector changed to 'last14'.");
+        
+        await updateOffenseDropdownForTimePeriod(); 
+        
+        document.getElementById('loading').style.display = 'none';
+        const applyFiltersButton = document.getElementById('applyFilters');
+        if (applyFiltersButton) {
+            applyFiltersButton.click();
+        } else {
+            console.error("[DB Init] Apply Filters button not found.");
+        }
+        console.log("[DB Init] Initialization complete.");
+
+    } catch (dbLoadError) {
+        console.error("[DB Init] Error loading or attaching database file:", dbLoadError);
+        updateLoadStatus(`ERROR: Could not load crime data. ${dbLoadError.message}`);
+        alert("Error loading the crime data. The map may not function correctly.");
+        if (worker) worker.terminate(); 
+    }
+}
+
+
+
+
+
+
+
+
+
         function updateLoadStatus(message) {
             document.getElementById('loadStatus').textContent = message;
             console.log(message);
@@ -568,7 +687,7 @@
                 // Initial population with all offenses
                 const result = await db.query(`
                     SELECT DISTINCT offense
-                    FROM crimedb.crimes
+                    FROM crimes
                     WHERE offense IS NOT NULL
                     ORDER BY offense
                 `);
@@ -693,7 +812,7 @@
                 // Query for offenses in the selected time period
                 const query = `
                     SELECT DISTINCT offense, COUNT(*) as offense_count
-                    FROM crimedb.crimes
+                    FROM crimes
                     ${whereClause}
                     GROUP BY offense
                     ORDER BY offense_count DESC, offense
@@ -790,7 +909,7 @@
                     SELECT 
                         date_str, complaint_num, offense, time, location, victim, 
                         narrative, file_name, lat, long
-                    FROM crimedb.crimes
+                    FROM crimes
                     ${whereClause}
                     ORDER BY date DESC
                 `;
