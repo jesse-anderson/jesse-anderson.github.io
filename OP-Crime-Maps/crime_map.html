@@ -481,138 +481,149 @@
 
 
 
-
 async function initializeDuckDB() {
     const logger = new duckdb.ConsoleLogger(duckdb.LogLevel.INFO);
     let db_instance;
     let worker;
 
     // --- Configuration for WASM loading ---
-    const R2_DUCKDB_FILES_BASE_URL = "https://53ddd6f50d8467e28832fd5819c1041a.r2.cloudflarestorage.com/duckdb-assets/"; // <<< ENSURE THIS IS YOUR CORRECT R2 BASE URL
+    const R2_PROXY_BASE_URL = "https://jesse-anderson.net/r2-assets/"; // Your Worker proxy route
 
-    // This is the path component your VS Code Live Preview server uses AFTER the host:port
-    // It directly reflects your file system structure.
     const VSCODE_LIVE_PREVIEW_ABSOLUTE_PATH_PREFIX = 'c:/Users/Jesse/Documents/GitHub/jesse-anderson.github.io/OP-Crime-Maps/';
-    const DUCKDB_SUBFOLDER = 'js/duckdb/'; // Subfolder within OP-Crime-Maps
+    const DUCKDB_SUBFOLDER_FOR_VSCODE = 'js/duckdb/';
 
-    // For GitHub Pages, this is the path from the root of the GH Pages site
-    // If jesse-anderson.github.io serves OP-Crime-Maps directly, it would be 'js/duckdb/'
-    // If jesse-anderson.github.io is the repo root and OP-Crime-Maps is a folder, it's 'OP-Crime-Maps/js/duckdb/'
-    const GITHUB_PAGES_SERVER_RELATIVE_PATH_TO_DUCKDB_ASSETS = 'OP-Crime-Maps/js/duckdb/'; 
+    // This is relative from crime_map.html for standard web servers (including GitHub Pages)
+    const STANDARD_WEB_RELATIVE_PATH_TO_DUCKDB_ASSETS = 'js/duckdb/'; 
+    
     const CDN_DUCKDB_VERSION = '1.29.0';
 
     const WASM_FILE_NAME = 'duckdb-eh.wasm';
     const WORKER_FILE_NAME = 'duckdb-browser-eh.worker.js';
 
     let chosenWasmPath, chosenWorkerPath;
-    let loadAttemptSource = "";
+    let currentAttemptSource = ""; // For logging
 
     const hostname = window.location.hostname;
-    const origin = window.location.origin; // e.g., "http://127.0.0.1:3004"
+    const origin = window.location.origin;
 
     console.log(`[DB Init] Detected hostname: ${hostname}, origin: ${origin}`);
-    console.log(`[DB Init] Full window.location.href: ${window.location.href}`); // Log full href for debugging
-    updateLoadStatus("Detecting environment...");
+    console.log(`[DB Init] Full window.location.href: ${window.location.href}`);
+    updateLoadStatus("Initializing DuckDB - Please wait...");
 
-    if (hostname === "jesse-anderson.net" || hostname.endsWith(".pages.dev")) {
-        console.log("[DB Init] Environment: Cloudflare Pages. Using R2 URLs.");
-        loadAttemptSource = "R2";
-        if (R2_DUCKDB_FILES_BASE_URL.includes("YOUR_R2_BUCKET_PUBLIC_URL_HERE") || R2_DUCKDB_FILES_BASE_URL.length < 20) {
-            console.warn("[DB Init] R2_DUCKDB_FILES_BASE_URL looks like a placeholder. This R2 load attempt will likely fail.");
+    // Helper to attempt instantiation
+    async function tryInstantiate(wasmUrl, workerUrl, sourceName) {
+        console.log(`[DB Init] Attempting to load from ${sourceName}`);
+        console.log(`[DB Init]   WASM Path: ${wasmUrl}`);
+        console.log(`[DB Init]   Worker Path: ${workerUrl}`);
+        updateLoadStatus(`Loading DuckDB from ${sourceName}...`);
+
+        if (worker) { // Terminate any previous worker
+            worker.terminate();
+            console.log(`[DB Init] Terminated existing worker before trying ${sourceName}.`);
+            worker = undefined;
         }
-        chosenWasmPath = R2_DUCKDB_FILES_BASE_URL + WASM_FILE_NAME;
-        chosenWorkerPath = R2_DUCKDB_FILES_BASE_URL + WORKER_FILE_NAME;
 
-    } else if (hostname === "127.0.0.1" || hostname === "localhost") {
-        console.log("[DB Init] Environment: Local development (VS Code Live Preview). Using server's absolute file path mapping.");
-        loadAttemptSource = "Local (VS Code Live Preview Path)";
-        
-        // Construct the URL exactly as your VS Code Live Preview server expects it
-        // origin will be "http://127.0.0.1:3004"
-        // We append the absolute file path part, ensuring no double slashes if VSCODE_LIVE_PREVIEW_ABSOLUTE_PATH_PREFIX starts with one.
-        let livePreviewPathPrefix = VSCODE_LIVE_PREVIEW_ABSOLUTE_PATH_PREFIX;
-        if (livePreviewPathPrefix.startsWith('/') || livePreviewPathPrefix.startsWith('\\')) {
-            livePreviewPathPrefix = livePreviewPathPrefix.substring(1);
-        }
-        // Replace backslashes with forward slashes for URL consistency
-        livePreviewPathPrefix = livePreviewPathPrefix.replace(/\\/g, '/');
-        
-        chosenWasmPath = `${origin}/${livePreviewPathPrefix}${DUCKDB_SUBFOLDER}${WASM_FILE_NAME}`;
-        chosenWorkerPath = `${origin}/${livePreviewPathPrefix}${DUCKDB_SUBFOLDER}${WORKER_FILE_NAME}`;
-        
-        // Normalize any potential double slashes after the protocol
-        chosenWasmPath = chosenWasmPath.replace(/([^:])\/\//g, '$1/');
-        chosenWorkerPath = chosenWorkerPath.replace(/([^:])\/\//g, '$1/');
-
-    } else if (hostname === "jesse-anderson.github.io") {
-        console.log("[DB Init] Environment: GitHub Pages. Constructing server-relative HTTP URLs.");
-        loadAttemptSource = "GitHub Pages (Server-Relative)";
-        let pathPrefix = GITHUB_PAGES_SERVER_RELATIVE_PATH_TO_DUCKDB_ASSETS;
-        if (pathPrefix.startsWith('/')) { pathPrefix = pathPrefix.substring(1); }
-
-        chosenWasmPath = `${origin}/${pathPrefix}${WASM_FILE_NAME}`.replace(/([^:])\/\//g, '$1/');
-        chosenWorkerPath = `${origin}/${pathPrefix}${WORKER_FILE_NAME}`.replace(/([^:])\/\//g, '$1/');
-    } else {
-        console.warn(`[DB Init] Environment: Unknown hostname (${hostname}). Defaulting to CDN.`);
-        loadAttemptSource = "CDN (Unknown Hostname Fallback)";
-        // ... (CDN fallback URL construction remains the same) ...
-        const cdnDistPath = `https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@${CDN_DUCKDB_VERSION}/dist/`;
-        chosenWasmPath = cdnDistPath + WASM_FILE_NAME;
-        chosenWorkerPath = cdnDistPath + WORKER_FILE_NAME;
-    }
-
-    console.log(`[DB Init] Attempt 1: Loading from ${loadAttemptSource}`);
-    console.log(`[DB Init]   WASM Path for instantiate: ${chosenWasmPath}`);
-    console.log(`[DB Init]   Worker Path for blob: ${chosenWorkerPath}`);
-    updateLoadStatus(`Loading DuckDB from ${loadAttemptSource}...`);
-
-    try {
-        const workerBlob = new Blob([`importScripts("${chosenWorkerPath}");`], { type: 'application/javascript' });
+        const workerBlob = new Blob([`importScripts("${workerUrl}");`], { type: 'application/javascript' });
         worker = new Worker(URL.createObjectURL(workerBlob));
         
         db_instance = new duckdb.AsyncDuckDB(logger, worker);
-        await db_instance.instantiate(chosenWasmPath);
-        
-        console.log(`[DB Init] Successfully initiated DuckDB worker and WASM instantiation from ${loadAttemptSource}.`);
+        await db_instance.instantiate(wasmUrl);
+        console.log(`[DB Init] Successfully initiated DuckDB from ${sourceName}.`);
+        currentAttemptSource = sourceName;
+    }
 
-    } catch (primaryError) {
-        console.error(`[DB Init] Failed to load DuckDB from ${loadAttemptSource}:`, primaryError);
-        console.error(`[DB Init] Primary error details: Message: ${primaryError.message}, Name: ${primaryError.name}`);
-        updateLoadStatus(`Failed with ${loadAttemptSource}. Falling back to CDN...`);
+    // --- Determine loading strategy ---
 
-        loadAttemptSource = "CDN";
-        console.log(`[DB Init] Attempt 2: Loading from ${loadAttemptSource} (v${CDN_DUCKDB_VERSION})`);
-        updateLoadStatus(`Loading DuckDB from CDN (v${CDN_DUCKDB_VERSION})...`);
+    // Attempt 1: VS Code Live Preview Special Case (127.0.0.1)
+    if (hostname === "127.0.0.1" || hostname === "localhost") {
+        console.log("[DB Init] Environment: Local development (VS Code Live Preview). Using server's absolute file path mapping.");
+        currentAttemptSource = "Local (VS Code Live Preview Path)";
         try {
-            if (worker) {
-                worker.terminate();
-                console.log("[DB Init] Terminated previous worker.");
+            let livePreviewPathPrefix = VSCODE_LIVE_PREVIEW_ABSOLUTE_PATH_PREFIX;
+            if (livePreviewPathPrefix.startsWith('/') || livePreviewPathPrefix.startsWith('\\')) {
+                livePreviewPathPrefix = livePreviewPathPrefix.substring(1);
             }
+            livePreviewPathPrefix = livePreviewPathPrefix.replace(/\\/g, '/');
+            if (!livePreviewPathPrefix.endsWith('/')) livePreviewPathPrefix += '/';
+            
+            let duckdbSubfolder = DUCKDB_SUBFOLDER_FOR_VSCODE;
+            if (duckdbSubfolder.startsWith('/')) duckdbSubfolder = duckdbSubfolder.substring(1);
+            if (!duckdbSubfolder.endsWith('/')) duckdbSubfolder += '/';
+
+            chosenWasmPath = `${origin}/${livePreviewPathPrefix}${duckdbSubfolder}${WASM_FILE_NAME}`.replace(/([^:])\/\//g, '$1/');
+            chosenWorkerPath = `${origin}/${livePreviewPathPrefix}${duckdbSubfolder}${WORKER_FILE_NAME}`.replace(/([^:])\/\//g, '$1/');
+            await tryInstantiate(chosenWasmPath, chosenWorkerPath, currentAttemptSource);
+        } catch (localErrorVSCode) {
+            console.error(`[DB Init] Failed to load from ${currentAttemptSource}:`, localErrorVSCode);
+            db_instance = null; // Ensure it proceeds to next fallback
+        }
+    }
+
+    // Attempt 2: Standard Local Web Relative (GitHub Pages, or jesse-anderson.net if R2 fails or is secondary)
+    if (!db_instance) { 
+        if (hostname === "jesse-anderson.github.io" || 
+            hostname === "jesse-anderson.net" || // Also try local for primary domain before CDN
+            hostname.endsWith(".pages.dev")) {    // Also try local for CF Pages previews before CDN
+            
+            console.log("[DB Init] Attempting Local (Web Relative) path - for GitHub Pages or as a fallback for Cloudflare domains.");
+            currentAttemptSource = "Local (Web Relative)";
+            try {
+                // These paths are relative to where crime_map.html is served.
+                // If crime_map.html is at /OP-Crime-Maps/crime_map.html and assets are in /OP-Crime-Maps/js/duckdb/
+                // then 'js/duckdb/' is the correct relative path.
+                // The browser will resolve this against the HTML's current location.
+                chosenWasmPath = STANDARD_WEB_RELATIVE_PATH_TO_DUCKDB_ASSETS + WASM_FILE_NAME;
+                chosenWorkerPath = STANDARD_WEB_RELATIVE_PATH_TO_DUCKDB_ASSETS + WORKER_FILE_NAME;
+                
+                // For importScripts and instantiate, we need full URLs.
+                // new URL() resolves relative paths against the document's base URL.
+                const absoluteWorkerPath = new URL(chosenWorkerPath, window.location.href).href;
+                const absoluteWasmPath = new URL(chosenWasmPath, window.location.href).href;
+
+                await tryInstantiate(absoluteWasmPath, absoluteWorkerPath, currentAttemptSource);
+            } catch (localWebError) {
+                console.error(`[DB Init] Failed to load from ${currentAttemptSource}:`, localWebError);
+                db_instance = null;
+            }
+        }
+    }
+    
+    // Attempt 3: R2 via Worker Proxy (If on Cloudflare domains and local web relative failed or wasn't primary for them)
+    if (!db_instance && (hostname === "jesse-anderson.net" || hostname.endsWith(".pages.dev"))) {
+        console.log("[DB Init] Attempting R2 (via Worker Proxy) as configured for Cloudflare Pages.");
+        currentAttemptSource = "R2 (via Worker Proxy)";
+        try {
+            chosenWasmPath = R2_PROXY_BASE_URL + WASM_FILE_NAME;
+            chosenWorkerPath = R2_PROXY_BASE_URL + WORKER_FILE_NAME;
+            await tryInstantiate(chosenWasmPath, chosenWorkerPath, currentAttemptSource);
+        } catch (r2ProxyError) {
+            console.error(`[DB Init] Failed to load from ${currentAttemptSource}:`, r2ProxyError);
+            db_instance = null;
+        }
+    }
+
+    // Attempt 4: CDN (Final Fallback)
+    if (!db_instance) {
+        console.warn(`[DB Init] All primary load attempts failed or were not applicable. Falling back to CDN.`);
+        currentAttemptSource = "CDN";
+        updateLoadStatus(`Primary loads failed. Trying CDN...`);
+        try {
             const cdnDistPath = `https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@${CDN_DUCKDB_VERSION}/dist/`;
             chosenWasmPath = cdnDistPath + WASM_FILE_NAME;
             chosenWorkerPath = cdnDistPath + WORKER_FILE_NAME;
-            console.log(`[DB Init]   CDN WASM Path: ${chosenWasmPath}`);
-            console.log(`[DB Init]   CDN Worker Path: ${chosenWorkerPath}`);
-            const cdnWorkerBlob = new Blob([`importScripts("${chosenWorkerPath}");`], { type: 'application/javascript' });
-            worker = new Worker(URL.createObjectURL(cdnWorkerBlob));
-            db_instance = new duckdb.AsyncDuckDB(logger, worker);
-            await db_instance.instantiate(chosenWasmPath);
-            console.log(`[DB Init] Successfully loaded DuckDB from ${loadAttemptSource}.`);
+            await tryInstantiate(chosenWasmPath, chosenWorkerPath, currentAttemptSource);
         } catch (cdnError) {
-            console.error(`[DB Init] Critical: Failed to load DuckDB from ${loadAttemptSource} as well:`, cdnError);
-            updateLoadStatus(`ERROR: Failed to initialize DuckDB from all sources. ${cdnError.message}`);
-            alert("A critical error occurred while loading DuckDB. The map functionality may not be available. Please try refreshing the page.");
+            console.error(`[DB Init] Critical: Failed to load DuckDB from all sources:`, cdnError);
+            updateLoadStatus(`ERROR: Failed to initialize DuckDB. ${cdnError.message}`);
+            alert("A critical error occurred while loading DuckDB. Please try refreshing.");
             if (worker) worker.terminate();
-            throw cdnError;
+            throw cdnError; 
         }
     }
 
     // --- Database Loading and Application Initialization ---
-    updateLoadStatus("DuckDB instantiated, fetching database file...");
+    updateLoadStatus(`DuckDB instantiated from ${currentAttemptSource}, fetching database file...`);
     try {
-        // This path is relative to crime_map.html. 
-        // If crime_map.html is at /OP-Crime-Maps/crime_map.html 
-        // and db file is at /OP-Crime-Maps/db/crime_data.duckdb, then 'db/crime_data.duckdb' is correct.
         const dbFilePath = 'db/crime_data.duckdb'; 
         console.log(`[DB Init] Fetching database file from (relative to HTML): ${dbFilePath}`);
         const response = await fetch(dbFilePath); 
@@ -635,10 +646,9 @@ async function initializeDuckDB() {
         initializeMap(); 
         await loadMetadata(); 
         await populateInitialOffenseDropdown(); 
-
-        // Set default date selection to "Last 14 Days"
+        
         document.getElementById('dateSelector').value = 'last14';
-        console.log("[DB Init] Default dateSelector changed to 'last14'.");
+        console.log("[DB Init] Default dateSelector set to 'last14'.");
         
         await updateOffenseDropdownForTimePeriod(); 
         
@@ -658,7 +668,6 @@ async function initializeDuckDB() {
         if (worker) worker.terminate(); 
     }
 }
-
 
 
 
