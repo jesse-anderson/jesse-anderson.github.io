@@ -43,7 +43,7 @@ jobs:
           
           echo "Files prepared in ./dist directory:"
           ls -alh ./dist
-          # If OP-Crime-Maps is a subdirectory, verify its contents in dist as well 
+          # If OP-Crime-Maps is a subdirectory, verify its contents in dist as well  
           echo "Contents of ./dist/OP-Crime-Maps/js/duckdb/ (if it exists):"
           ls -alh ./dist/OP-Crime-Maps/js/duckdb/ || echo "Directory not found or ls failed"
 
