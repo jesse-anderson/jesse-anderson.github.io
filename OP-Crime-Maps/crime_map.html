@@ -488,7 +488,7 @@ async function initializeDuckDB() {
     let worker;
 
     // --- Configuration for WASM loading ---
-    const R2_DUCKDB_FILES_BASE_URL = "https://r2.jesse-anderson.net/"; // <<< ENSURE THIS IS YOUR CORRECT R2 BASE URL
+    const R2_DUCKDB_FILES_BASE_URL = "https://53ddd6f50d8467e28832fd5819c1041a.r2.cloudflarestorage.com/duckdb-assets/"; // <<< ENSURE THIS IS YOUR CORRECT R2 BASE URL
 
     // This is the path component your VS Code Live Preview server uses AFTER the host:port
     // It directly reflects your file system structure.
@@ -635,7 +635,7 @@ async function initializeDuckDB() {
         initializeMap(); 
         await loadMetadata(); 
         await populateInitialOffenseDropdown(); 
-        
+
         // Set default date selection to "Last 14 Days"
         document.getElementById('dateSelector').value = 'last14';
         console.log("[DB Init] Default dateSelector changed to 'last14'.");
