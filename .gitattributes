@@ -1,2 +1,0 @@
-OP-Crime-Maps/js/duckdb/duckdb-eh.wasm filter=lfs diff=lfs merge=lfs -text
-OP-Crime-Maps/js/duckdb/duckdb-browser-eh.worker.js filter=lfs diff=lfs merge=lfs -text
