@@ -19,7 +19,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4 # Or latest version
         with:
-          node-version: '18' # Or your preferred Node.js version for Wrangler
+          node-version: '20' # Or your preferred Node.js version for Wrangler
 
       - name: Install Wrangler CLI
         run: npm install -g wrangler
@@ -54,5 +54,5 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           wrangler pages deploy ./dist \
-            --project-name="your-cloudflare-pages-project-name" \
+            --project-name="jesse-anderson-github-io" \
             --branch="${{ github.ref_name }}" # Deploys to a preview or production based on the branch name

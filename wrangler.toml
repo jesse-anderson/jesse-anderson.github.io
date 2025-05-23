@@ -1,29 +1,28 @@
-# --- Cloudflare Pages Settings ---
-# This is the directory Cloudflare Pages will deploy.
-# It MUST exist after your build command runs.
-pages_build_output_dir = "./cf_site_output"
+# General Wrangler project settings
+# This is important for feature compatibility.
+compatibility_date = "2025-05-22" # Or your project's actual compatibility date
+
+# Optional: You can specify the project name here, but using --project-name
+# in the deploy command (as in your GitHub Action) is more explicit for CI.
+# If present, ensure it matches your Cloudflare Pages project name.
 name = "jesse-anderson-github-io"
 
-# Configuration for the build process for Cloudflare Pages
-[build]
-# This command:
-# 1. Creates "./cf_site_output".
-# 2. Copies your entire project root (".") into "./cf_site_output".
-# 3. Excludes '.git', the output directory itself, and your large WASM file during the copy.
-command = "mkdir ./cf_site_output && rsync -av --exclude='.git' --exclude='cf_site_output' --exclude='OP-Crime-Maps/js/duckdb/duckdb-eh.wasm' ./ ./cf_site_output/"
-
-# --- General Wrangler Project Settings ---
-# This is important for Wrangler to know how to interpret features.
-compatibility_date = "2025-05-22" # Use your project's actual compatibility date
-
-# The 'name' field is primarily for Wrangler CLI deployments of Workers.
-# For Cloudflare Pages projects, the project name is set in the Cloudflare dashboard.
-# It's generally safe to include it or omit it for Pages `wrangler.toml`.
-# name = "jesse-anderson-portfolio" # Or your existing project name
-
-# --- R2 Bucket Bindings ---
-# Makes the R2 bucket available to server-side Cloudflare Functions (if you use them).
+# R2 Bucket Bindings
+# These are relevant if you deploy Cloudflare Functions within your Pages project
+# (e.g., in a 'functions' folder inside your 'dist' directory) that need to access R2.
+# Client-side JavaScript (like your DuckDB WASM loader) accesses R2 via its public URL,
+# not directly through this binding. This is also useful for `wrangler pages dev`.
 [[r2_buckets]]
 binding = "ASSET_BUCKET"
 bucket_name = "duckdb-assets"
-preview_bucket_name = "duckdb-assets" # Often the same as bucket_name
+preview_bucket_name = "duckdb-assets" # Can be the same as bucket_name
+
+# DO NOT INCLUDE:
+# - [build] table
+# - [pages_build_config] table
+# - pages_build_output_dir key
+# - pages_build_command key
+#
+# These are for Cloudflare's Git-integrated build system, which you are now bypassing.
+# The GitHub Action handles the build and specifies the output directory directly
+# to `wrangler pages deploy`.
