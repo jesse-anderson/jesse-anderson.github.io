@@ -1001,8 +1001,9 @@ And once you have that done run the following code below on your device or save 
 ``` python
 # main.py
 
-from machine import SoftI2C, Pin
+from machine import SoftI2C, Pin, reset, freq
 import time
+import gc  # Make sure we import gc
 from SCD41 import SCD4xSensirion, I2cAdapter, check_device_presence
 from ssd1306 import SSD1306_I2C  # Ensure you have the SSD1306 library
 import urequests as requests
@@ -1031,30 +1032,95 @@ GOOGLE_URL = 'https://script.google.com/macros/s/VERY_LONG_URL/exec'
 # WiFi settings
 SSID = 'YOUR_SSID'
 PASSWORD = 'WIFI_PSWD'
+# NTP sync settings
+last_ntp_sync = 0  # Last NTP sync timestamp
+NTP_SYNC_INTERVAL = 3600  # Sync once per hour (in seconds)
+
+switchOnWifi = Pin(32, Pin.IN, Pin.PULL_UP)
+switchOnCalibrate = Pin(33, Pin.IN, Pin.PULL_UP)
+buzzer = Pin(26, Pin.OUT)
+
+switch_state_calibrate = switchOnCalibrate.value() # If switch is in up position we consider it on.
+print(switch_state_calibrate)
+
+switch_state_wifi = switchOnWifi.value() # If switch is in up position we consider it on.
+print(switch_state_wifi)
+
+if switch_state_calibrate == 0:
+    print("Calibration switch is on! Calibrating Device...")
+if switch_state_wifi == 0:
+    print("Wifi switch is on! Will use Wifi...")
+    
+# Setup GPIO for OLED power
+oled_power = Pin(19, Pin.OUT)
+
+# Function to get system status
+def get_system_status(firstRun):
+    gc.collect()  # Ensure memory is collected before checking
+    free_heap = gc.mem_free()
+    total_heap = gc.mem_alloc() + free_heap
+    free_heap_percent = (free_heap / total_heap) * 100
+    if firstRun == True:
+        print(f"Total heap memory: {total_heap} bytes")
+        # Additional information about the system
+        print(f"Frequency: {freq()} Hz")
+    print(f"Free heap memory: {free_heap} bytes ({free_heap_percent:.2f}%)")
+    
 def connect_wifi(ssid, password):
     wlan = network.WLAN(network.STA_IF)
     wlan.active(True)
+    
+    # Check if already connected
+    if wlan.isconnected():
+        print("Already connected to WiFi")
+        print(wlan.ifconfig())
+        return True
+        
+    print("Connecting to WiFi...")
     wlan.connect(ssid, password)
-    while not wlan.isconnected():
+    
+    # Wait with timeout instead of infinite loop
+    max_wait = 20  # 20 seconds timeout
+    while max_wait > 0 and not wlan.isconnected():
+        max_wait -= 1
         time.sleep(1)
         print("Connecting to WiFi...")
-    print("Connected to WiFi")
-    print(wlan.ifconfig())
-
-def get_time_chicago():
-    max_retries = 100
-    for attempt in range(max_retries):
-        try:
-            ntptime.settime()
-            current_time = utime.localtime()
-            break
-        except OSError as e:
-            print(f"Failed to get NTP time, attempt {attempt + 1} of {max_retries}. Error: {e}")
-            time.sleep(1)
+    
+    if wlan.isconnected():
+        print("Connected to WiFi")
+        print(wlan.ifconfig())
+        return True
     else:
-        print("Could not get NTP time, proceeding without time synchronization.")
-        return utime.localtime()
-
+        print("Failed to connect to WiFi")
+        return False
+    
+def get_time_chicago():
+    """Get Chicago time with NTP sync once per hour"""
+    global last_ntp_sync
+    current_time = time.time()
+    
+    # Check if we should sync (if an hour has passed since last sync)
+    if current_time - last_ntp_sync >= NTP_SYNC_INTERVAL:
+        print(f"NTP sync needed (last sync was {(current_time - last_ntp_sync) / 60:.1f} minutes ago)")
+        max_retries = 3  # Limit retries to save resources
+        for attempt in range(max_retries):
+            try:
+                ntptime.settime()
+                last_ntp_sync = time.time()  # Update the last sync time
+                print(f"NTP sync successful at: {last_ntp_sync}")
+                break
+            except OSError as e:
+                print(f"Failed to get NTP time, attempt {attempt + 1} of {max_retries}. Error: {e}")
+                time.sleep(1)
+        else:
+            print("Could not sync with NTP server, using internal RTC time")
+    else:
+        minutes_since_sync = (current_time - last_ntp_sync) / 60
+        print(f"Using cached time (next sync in {60 - minutes_since_sync:.1f} minutes)")
+    
+    # Get current time and apply timezone offset
+    current_time = utime.localtime()
+    
     # Determine if it is daylight saving time (DST)
     month = current_time[1]
     day = current_time[2]
@@ -1072,336 +1138,482 @@ def get_time_chicago():
 def sound_buzzer():
     for _ in range(5):
         buzzer.value(1)  # Turn on buzzer
-        time.sleep(0.5)  # 500 ms delay
+        time.sleep(0.25)  # 250 ms delay
         buzzer.value(0)  # Turn off buzzer
-        time.sleep(0.5)  # 500 ms delay
-    
-def send_data_to_google_sheets(data):
-    url = GOOGLE_URL  # Define your Google URL here
-    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-    encoded_data = (
-        "Date=" + data['date'] +
-        "&Time=" + data['time'] +
-        "&Temp=" + str(data['temp_f']) +
-        "&Humidity=" + str(data['humidity']) +
-        "&Lux=" + str(data['lux']) +
-        "&CCT=" + str(data['color_temp']) +
-        "&Soil Moisture=" + str(data['soil_moisture']) +
-        "&Soil Temp=" + str(data['soil_temp']) +
-        "&R=" + str(data['r']) +
-        "&G=" + str(data['g']) +
-        "&B=" + str(data['b']) +
-        "&HTML=" + data['html']
-    )
-    try:
-        # Extract host and path from URL
-        _, _, host, path = url.split('/', 3)
-        
-        # Set up a socket connection
-        addr = socket.getaddrinfo(host, 443)[0][-1]
-        s = socket.socket()
-        s.connect(addr)
-        s = ssl.wrap_socket(s)
-        
-        # Create the HTTP request manually
-        request = f"POST /{path} HTTP/1.1\r\nHost: {host}\r\n"
-        request += "Content-Type: application/x-www-form-urlencoded\r\n"
-        request += f"Content-Length: {len(encoded_data)}\r\n\r\n"
-        request += encoded_data
+        time.sleep(0.25)  # 250 ms delay
 
-        # Send the request
-        s.write(request)
-        
-        # Close the socket
-        s.close()
-        print('Data sent to Google Sheets!')
-    except Exception as e:
-        print('Failed to send data to Google Sheets:', e)
-        
+# Memory-optimized version of send_data_to_google_sheets
+def send_data_to_google_sheets(data):
+    for attempt in range(3):
+        try:
+            # Force garbage collection before making a network connection
+            gc.collect()
+            
+            # Format the URL components separately to avoid long string concatenation
+            url = GOOGLE_URL
+            _, _, host, path = url.split('/', 3)
+            
+            # Format data carefully to minimize memory usage
+            encoded_data = "Date=" + data['date']
+            encoded_data += "&Time=" + data['time']
+            encoded_data += "&CO2=" + str(data['co2'])
+            encoded_data += "&Temperature=" + str(data['temp_f'])
+            encoded_data += "&Humidity=" + str(data['humidity'])
+            
+            s = None
+            try:
+                # Create socket first without SSL
+                addr = socket.getaddrinfo(host, 443)[0][-1]
+                s = socket.socket()
+                s.settimeout(15)  # Add timeout to prevent hanging
+                s.connect(addr)
+                
+                # Build request in parts
+                request_header = f"POST /{path} HTTP/1.1\r\nHost: {host}\r\n"
+                request_header += "Content-Type: application/x-www-form-urlencoded\r\n"
+                request_header += f"Content-Length: {len(encoded_data)}\r\n\r\n"
+                
+                # Wrap socket with SSL AFTER connecting
+                s = ssl.wrap_socket(s)
+                
+                # Send in two parts to reduce memory pressure
+                s.write(request_header)
+                s.write(encoded_data)
+                
+                # Read minimal response to verify success
+                response = s.read(64)
+                
+                # Close the socket before any other operations
+                s.close()
+                s = None
+                
+                print('Data sent to Google Sheets!')
+                gc.collect()  # Force collection after network operation
+                return True
+                
+            except Exception as e:
+                print('Failed to send data to Google Sheets:', e)
+                if s:
+                    try:
+                        s.close()
+                    except:
+                        pass
+                    s = None
+                gc.collect()  # Force collection after error
+                
+        except Exception as e:
+            print(f"Exception occurred... Retrying sending data to Google Sheets {attempt + 1} of 3 attempts.")
+            time.sleep(2)  # Wait before retry
+            gc.collect()  # Force collection
+    
+    return False  # Failed after all attempts
+
+# Memory-optimized ThingSpeak function
 def send_data_to_thingspeak():
     """Send data to ThingSpeak."""
-    if SEND_TO_THINGSPEAK and thingspeak_buffer:
-        if len(thingspeak_buffer) > 1:
-            # Bulk update
-            payload = {
-                'write_api_key': THINGSPEAK_API_KEY,
-                'updates': []
-            }
-            for data in thingspeak_buffer:
-                update = {
-                    'created_at': f"{data['date']} {data['time']} -0500",
-                    'field1': data['soil_temp'],
-                    'field2': data['soil_moisture'],
-                    'field3': data['lux'],
-                    'field4': data['color_temp'],
-                    'field5': data['temp_f'],
-                    'field6': data['humidity']
-                }
-                payload['updates'].append(update)
-
-            try:
-                headers = {'Content-Type': 'application/json'}
-                json_data = json.dumps(payload)
-                response = requests.post(THINGSPEAK_BULK_UPDATE_URL, headers=headers, data=json_data)
-                if response.status_code == 202:
-                    print('Data posted to ThingSpeak (bulk update):', response.text)
-                    thingspeak_buffer.clear()  # Clear the buffer after successful update
-                else:
-                    print(f'Failed to send data to ThingSpeak (bulk update): {response.status_code}, {response.text}')
-            except Exception as e:
-                print('Failed to send data to ThingSpeak (bulk update):', e)
-        else:
-            data = thingspeak_buffer.pop(0)  # Get the first item in the buffer
-            payload = {
-                'api_key': THINGSPEAK_API_KEY,
-                'field1': data['soil_temp'],
-                'field2': data['soil_moisture'],
-                'field3': data['lux'],
-                'field4': data['color_temp'],
-                'field5': data['temp_f'],
-                'field6': data['humidity']
-            }
-            try:
-                response = requests.post(THINGSPEAK_URL, json=payload)
-                if response.status_code == 200:
-                    print('Data posted to ThingSpeak:', response.text)
-                else:
-                    print(f'Failed to send data to ThingSpeak: {response.status_code}, {response.text}')
-            except Exception as e:
-                print('Failed to send data to ThingSpeak:', e)
-
-# Pin definitions
-DHT_PIN = Pin(27)
-DHT_POWER_PIN = Pin(26, Pin.OUT)
-# SEESAW_POWER_PIN = Pin(25, Pin.OUT)
-TCS34725_POWER_PIN = Pin(33, Pin.OUT)
-OLED_POWER_PIN = Pin(32, Pin.OUT)
-TCS34725_LED_PIN = Pin(23, Pin.OUT)  # GPIO 23 for TCS34725 LED control
-
-# Setup GPIO for Buzzer
-BUZZER_GPIO = 13  # Use GPIO 25 for the buzzer
-buzzer = machine.Pin(BUZZER_GPIO, Pin.OUT)
-
-# Initialize separate I2C buses
-i2c_oled = SoftI2C(scl=Pin(22), sda=Pin(21))
-i2c_seesaw = SoftI2C(scl=Pin(16), sda=Pin(17))
-i2c_tcs = SoftI2C(scl=Pin(18), sda=Pin(19))
-
-# Scan I2C buses
-OLED_POWER_PIN.value(1)
-print('Scanning I2C bus for OLED...')
-devices_oled = i2c_oled.scan()
-OLED_POWER_PIN.value(0)
-print('OLED I2C devices:', [hex(device) for device in devices_oled])
-time.sleep(1)
-
-print('Scanning I2C bus for Seesaw...')
-# SEESAW_POWER_PIN.value(1)
-devices_seesaw = i2c_seesaw.scan()
-# SEESAW_POWER_PIN.value(0)
-print('Seesaw I2C devices:', [hex(device) for device in devices_seesaw])
-time.sleep(1)
-
-print('Scanning I2C bus for TCS34725...')
-TCS34725_POWER_PIN.value(1)
-TCS34725_LED_PIN.value(0)  # Start with the LED off
-devices_tcs = i2c_tcs.scan()
-print('TCS34725 I2C devices:', [hex(device) for device in devices_tcs])
-
-# Initialize DHT22 sensor and OLED display
-DHT_POWER_PIN.value(1)
-dht_sensor = DHT22(DHT_PIN)
-DHT_POWER_PIN.value(0)
-
-OLED_POWER_PIN.value(1)
-oled = SSD1306_I2C(128, 64, i2c_oled)
-
-# Ensure the addresses are correct (default addresses used)
-if 0x36 in devices_seesaw:
-    soil_sensor = StemmaSoilSensor(i2c_seesaw)
-else:
-    print("Seesaw sensor not found!")
-    
-if 0x39 in devices_tcs:
-    tcs = TCS34725(i2c_tcs)
-else:
-    print("TCS34725 sensor not found!")
-    
-# # Function to adjust gain and integration time based on Lux value
-# def adjust_tcs_settings(tcs, lux):
-#     print(lux)
-#     if lux > 10000:
-#         integration_time = 50  # Short integration time
-#         gain = 1  # Low gain
-#     elif lux > 1000:
-#         integration_time = 100  # Moderate integration time
-#         gain = 1  # Moderate gain
-#     elif lux > 100:
-#         integration_time = 150  # Long integration time
-#         gain = 4  # High gain
-#     else:
-#         integration_time = 200  # Longest integration time
-#         gain = 16  # Highest gain
-# 
-#     tcs.integration_time(integration_time)
-#     tcs.gain(gain)
-#     print(f'Adjusted TCS34725 settings: Integration Time = {integration_time} ms, Gain = {gain}')
-
-# Function to reinitialize the TCS34725 sensor with retries and initial Lux adjustment
-def reinitialize_tcs_sensor(i2c_tcs, retries=9):
-    for attempt in range(retries):
+    if not SEND_TO_THINGSPEAK or not thingspeak_buffer:
+        return False
+        
+    for attempt in range(3):
         try:
-            tcs = TCS34725(i2c_tcs)
-            tcs.gain(4)
-            tcs.integration_time(150)
-            time.sleep(1)
-            tcs.active(True)
-            tcs.led(False)  # Ensure LED is off
-            time.sleep(1)  # Wait for the sensor to stabilize
-            cct, lux = tcs.read()  # Get initial readings to dynamically adjust Lux values
-            cct, lux = tcs.read()  # Get initial readings to dynamically adjust Lux values
-            print("Intial CCT:",cct)
-            print("Initial Lux:",lux)
+            # Force garbage collection before sending
+            gc.collect()
             
-            cct, lux = tcs.read()  # Get initial readings to dynamically adjust Lux values
-#             adjust_tcs_settings(tcs, lux)  # Adjust settings based on Lux
-            print("2nd CCT:",cct)
-            print("2nd Lux:",lux)
-            time.sleep(1)  # Wait for settings to take effect
-            print(f"TCS34725 sensor initialized on attempt {attempt + 1}")
-            return tcs, cct, lux
+            if len(thingspeak_buffer) > 1:
+                # Handle bulk update with memory considerations
+                bulk_send_thingspeak()
+            else:
+                # Handle single update
+                data = thingspeak_buffer.pop(0)
+                payload = {
+                    'api_key': THINGSPEAK_API_KEY,
+                    'field1': data['co2'],
+                    'field2': data['temp_f'],
+                    'field3': data['humidity']
+                }
+                
+                try:
+                    response = requests.post(THINGSPEAK_URL, json=payload)
+                    if response.status_code == 200:
+                        print('Data posted to ThingSpeak:', response.text)
+                        response.close()
+                        thingspeak_buffer.clear()  # Clear any remaining data
+                        return True
+                    else:
+                        print(f'Failed to send data to ThingSpeak: {response.status_code}')
+                        response.close()
+                except Exception as e:
+                    print('Failed to send data to ThingSpeak:', e)
+            
+            time.sleep(2)  # Wait before retry
+            gc.collect()  # Force collection
+            
         except Exception as e:
-            print(f"Error initializing TCS34725 sensor: {e}, retrying...")
+            print(f"Exception occurred... Retrying sending data to ThingSpeak {attempt + 1} of 3 attempts.")
+            time.sleep(2)  # Wait before retry
+            gc.collect()  # Force collection
+    
+    return False  # Failed after all attempts
+
+# Helper function to handle bulk ThingSpeak updates with memory considerations
+def bulk_send_thingspeak():
+    # Force garbage collection
+    gc.collect()
+    
+    # Prepare payload
+    payload = {
+        'write_api_key': THINGSPEAK_API_KEY,
+        'updates': []
+    }
+    
+    # Add updates to payload
+    for data in thingspeak_buffer:
+        update = {
+            'created_at': f"{data['date']} {data['time']} -0500",
+            'field1': data['co2'],
+            'field2': data['temp_f'],
+            'field3': data['humidity']
+        }
+        payload['updates'].append(update)
+    
+    # Convert to JSON
+    json_data = json.dumps(payload)
+    
+    # Send request
+    try:
+        headers = {'Content-Type': 'application/json'}
+        response = requests.post(THINGSPEAK_BULK_UPDATE_URL, headers=headers, data=json_data)
+        
+        if response.status_code == 202:
+            print('Data posted to ThingSpeak (bulk update):', response.text)
+            thingspeak_buffer.clear()  # Clear the buffer after successful update
+            response.close()
+            return True
+        else:
+            print(f'Failed to send data to ThingSpeak (bulk update): {response.status_code}')
+            response.close()
+            return False
+    except Exception as e:
+        print('Failed to send data to ThingSpeak (bulk update):', e)
+        return False
+    finally:
+        gc.collect()  # Force collection
+
+def get_sensor_reading(sensor, conversion_cycle_time, last_update_sensor):
+    """Get a single sensor reading with a delay equal to the conversion cycle time."""
+    update = False
+    while update == False:
+        time_since_update = time.time() - last_update_sensor
+        print(time_since_update)
+        if time_since_update >= 30:       
+            try:
+                # Check if data is ready
+                if sensor.is_data_ready():
+                    update = True
+                    return sensor.get_meas_data()
+                else:
+                    print("Data not ready.")
+                    update = False
+                    time.sleep(1)
+                    return None
+            except OSError as e:
+                print(f"Error during sensor reading: {e}")
+                update = True
+                return None
+        else:
             time.sleep(1)
-    raise RuntimeError("Failed to initialize TCS34725 sensor after multiple attempts")
+            update = False
+
+led = Pin(2, Pin.OUT)
+led.value(0)  # turn off red LED, doesn't work :L hard soldered in.
+
 def main():
-    # Connect to WiFi
-    connect_wifi(SSID, PASSWORD)
-    count = 0
-    # Main loop
+    # Force garbage collection at start
+    gc.collect()
+    get_system_status(True)
+    
+    reading_count = 0
+    if switch_state_wifi == 0:
+        # Connect to WiFi
+        connect_wifi(SSID, PASSWORD)
+        # Initial time sync
+        get_time_chicago()
+    
+    # Initialize I2C communication with the specified pins and frequency
+    i2c = SoftI2C(scl=Pin(22), sda=Pin(21), freq=400_000)
+    device_address = 0x62
+
+    # Check if the device is present on the I2C bus
+    if not check_device_presence(i2c, device_address):
+        print(f"Device with address {device_address} not found on I2C bus.")
+        return
+
+    print(f"Device with address {device_address} found on I2C bus.")
+    oled_power.value(1)  # Turn on OLED display
+    
+    # Setup SoftI2C for OLED
+    i2c_oled = SoftI2C(scl=Pin(4), sda=Pin(5))
+    
+    # Scan for OLED device
+    print('Scanning for I2C devices...')
+    devices = i2c_oled.scan()
+    if len(devices) == 0:
+        print("No I2C OLED devices found.")
+        OLEDaddress = None
+    else:
+        print('I2C OLED devices found:', len(devices))
+        OLEDaddress = devices[0]  # Assuming the first device found is the OLED
+        for device in devices:
+            print("Device address: ", hex(device))
+
+    # Initialize OLED if found
+    oled = None
+    if OLEDaddress:
+        print("Testing OLED...")
+        oled = SSD1306_I2C(128, 64, i2c_oled)
+        i = 0
+        while i < 5:
+            time.sleep(1)
+            oled_power.value(1)
+            oled.fill(0)
+            oled.text(f"Init: Test {i}", 0, 0)
+            oled.show()
+            time.sleep(1)
+            i = i+1
+            oled_power.value(0)
+        oled_power.value(1)
+        oled.fill(0)
+        if switch_state_calibrate == 0:
+            oled.text(f"CALIBRATION ON", 0, 0)
+        if switch_state_calibrate == 1:
+            oled.text(f"CALIBRATION OFF", 0, 0)
+        if switch_state_wifi == 0:
+            oled.text(f"WIFI ON", 0, 10)
+        if switch_state_wifi == 1:
+            oled.text(f"WIFI OFF", 0, 10) 
+        oled.show()
+        time.sleep(5)  # Reduced from 10 to 5 seconds to save power
+        oled_power.value(0)
+    
+    # Create an I2C adapter and sensor instance
+    adapter = I2cAdapter(i2c)
+    sensor = SCD4xSensirion(adapter)
+    sensor.set_measurement(start=False, single_shot=False) #if looping need to put sensor back into IDLE mode. Sensor can't exec self test if currently reading...
+    
+    # Check if sensor is good to go. Note you may need to power cycle to pass this test. Make sure 5V in.
+    selfTest = False
+    retry_count = 0
+    while selfTest == False and retry_count < 5:  # Added retry limit
+        try:
+            if sensor.exec_self_test():
+                print("Sensor self test shows good to go")
+                selfTest = True
+            else:
+                print("Sensor self test failed!")
+                selfTest = False
+                retry_count += 1
+                time.sleep(1)
+        except Exception as e:
+            print("Exception occurred:", e)
+            retry_count += 1
+            time.sleep(1)
+
+    # Ensure the sensor is in IDLE mode
+    sensor.set_measurement(start=False, single_shot=False)
+
+    # Retrieve and display the sensor ID
+    sensor_id = sensor.get_id()
+    print(f"Sensor ID: {sensor_id[0]:x}:{sensor_id[1]:x}:{sensor_id[2]:x}")
+
+    # Retrieve and display the temperature offset
+    temp_offset = sensor.get_temperature_offset()
+    print(f"Temperature offset: {temp_offset:.6f} F")
+
+    # Set and retrieve the altitude (meters above sea level)
+    altitude = 198
+    retrieved_altitude = sensor.get_altitude()
+    print(f"Desired Altitude: {altitude} m, Retrieved Altitude: {retrieved_altitude} m")
+    if altitude != retrieved_altitude:
+        sensor.set_altitude(altitude)
+        print(f"Altitude set to: {altitude}")
+    
+    # Check if automatic self-calibration is enabled
+    if sensor.is_auto_calibration():
+        print("Automatic self-calibration is ON.")
+    else:
+        print("Automatic self-calibration is OFF.")
+    
+    # Start periodic measurement
+    sensor._low_power_mode = True
+    sensor.set_measurement(start=True, single_shot=False)
+    conversion_cycle_time = sensor.get_conversion_cycle_time()
+    last_update_sensor = time.time()
+    print(f"Low Power Mode: {sensor._low_power_mode}")
+    print(f"Low power periodic measurement started with conversion cycle time: {conversion_cycle_time} ms")
+    print("Periodic measurement started.")
+
+    # Handle calibration mode
+    if switch_state_calibrate == 0:
+        # We want to calibrate it with this chunk if anything...
+        # Start periodic measurement
+        print("Performing sensor calibration in 30 seconds...")
+        print("The sensor will be calibrated over 60 min in fresh air.")
+        time.sleep(30)
+        sensorCycle = 0
+        calibrateMe = True
+
+        # Perform factory reset and reinitialize
+        sensor.perform_factory_reset()
+        print("Factory reset performed.")
+        time.sleep(2)  # Wait for the factory reset to complete
+        
+        # Perform soft reset and reinitialize
+        sensor.soft_reset()
+        time.sleep(1)  # Wait for the reset to complete
+        sensor.set_measurement(start=False, single_shot=False) 
+        time.sleep(1)
+        sensor.set_measurement(start=True, single_shot=False)
+        time.sleep(1)
+        print("Performing soft reset and reinitialization...")
+
+        while sensorCycle < 60:
+            # Force garbage collection in calibration loop
+            gc.collect()
+            
+            conversion_cycle_time = sensor.get_conversion_cycle_time()
+            reading = get_sensor_reading(sensor, conversion_cycle_time, last_update_sensor)
+            if reading:
+                co2, temp, humidity = reading
+                last_update_sensor = time.time()
+                temp_f = temp * 9 / 5 + 32  # Convert to Fahrenheit
+                time.sleep(30)
+                sensorCycle += 1
+                print(f"Continuous Reading: CO2: {co2} ppm, Temperature: {temp_f:.2f} F, Humidity: {humidity:.2f} %")
+                print(f"Sensor Cycled {sensorCycle} times of 60")
+                
+                # Display on OLED during calibration
+                if oled:
+                    oled_power.value(1)
+                    oled.fill(0)
+                    oled.text(f"CALIBRATING", 0, 0)
+                    oled.text(f"Cycle: {sensorCycle}/60", 0, 10)
+                    oled.text(f"CO2: {co2} ppm", 0, 20)
+                    oled.text(f"Temp: {temp_f:.1f}F", 0, 30)
+                    oled.text(f"Hum: {humidity:.1f}%", 0, 40)
+                    oled.show()
+                    time.sleep(5)  # Show for 5 seconds
+                    oled_power.value(0)
+                
+                if sensorCycle == 59:
+                    if calibrateMe == True:
+                        print("Initiating forced recalibration...")
+                        target_co2_concentration = int(426 * 1.15)  # Mauna Loa CO2 = 426.57ppm April 2024 + 15-20% differential for being near/in a major city(Chicago), to int bc need int for low level
+                        correction_value = sensor.force_recalibration(target_co2_concentration)
+                        print(f"Forced recalibration completed with correction value: {correction_value} ppm")
+                        sensor.set_auto_calibration(False)
+                        print(f"Sensor Auto Calibration set to: {sensor.is_auto_calibration()}. Rerun the program after power cycling with the calibration commented out to double check persistence!")
+                        sensor.save_config()
+                        print("Settings saved.")
+            else:
+                # Reset the sensor and reinitialize if an error occurs
+                print("Attempting to reinitialize the sensor...")
+                sensor.set_measurement(start=False, single_shot=False)
+                sensor.set_measurement(start=True, single_shot=False)
+    else:
+        print("Skipping calibration.")
+    
+    # Main monitoring loop
     while True:
         try:
-            count = count +1
-            # Read DHT22 sensor
-            print("Reading DHT22 sensor...")
-            DHT_POWER_PIN.value(1)
-            time.sleep(2)  # Wait for the sensor to stabilize
-            dht_sensor.measure()
-            temp_dht22 = dht_sensor.temperature()
-            humidity = dht_sensor.humidity()
-            temp_fahrenheit = int(temp_dht22 * 9 / 5 + 32)
-            humidity = int(humidity)
-            DHT_POWER_PIN.value(0)
-
-            # Read Seesaw (Soil) sensor if it is found
-            if 'soil_sensor' in locals():
-                print("Reading Seesaw sensor...")
-                soil_temp = soil_sensor.get_temp()
-                soil_temp = int(soil_temp * 9 / 5 + 32)
-                soil_moisture = soil_sensor.get_moisture()
-            else:
-                soil_temp = None
-                soil_moisture = None
-
-            # Reinitialize and read TCS34725 sensor
-            print("Reinitializing and reading TCS34725 sensor...")
-            TCS34725_POWER_PIN.value(1)
-            TCS34725_LED_PIN.value(0)  # Turn off the LED
-            tcs, cct, lux = reinitialize_tcs_sensor(i2c_tcs)
-            time.sleep(1)  # Wait for the sensor to stabilize
-
-            try:
-                raw_data = tcs.read(True)
-                print(f"Raw data: {raw_data}")
-                r, g, b, c = raw_data
-                cct, lux = tcs.read()
-                print(f"RGB: ({r}, {g}, {b}), Clear: {c}, CCT: {cct}, Lux: {lux}")
-                html_rgb_val = tcs.html_rgb(raw_data)
-                html_hex_val = tcs.html_hex(raw_data)
-                print(f"HTML RGB: {html_rgb_val}, HTML Hex: {html_hex_val}")
-            except RuntimeError as e:
-                print("Error reading TCS34725:", e)
-                html_hex_val = "Error"
-                lux = cct = 0
-
-            TCS34725_LED_PIN.value(0)  # Turn off the LED
-            TCS34725_POWER_PIN.value(0)
+            # Check memory status
+            gc.collect()
+            get_system_status(False)
             
-             # Get current date and time
-            current_time = get_time_chicago()
-            date_str = "{:04}-{:02}-{:02}".format(current_time[0], current_time[1], current_time[2])
-            time_str = "{:02}:{:02}:{:02}".format(current_time[3], current_time[4], current_time[5])
+            # Eventually...somewhere...memory will leak. Power Cycle every 6 hours for good measure.
+            if reading_count >= 360:
+                print("Scheduled restart after 360 readings")
+                reset()
+                
+            date_str = None
+            reading = get_sensor_reading(sensor, conversion_cycle_time, last_update_sensor)
+            if reading:
+                co2, temp, humidity = reading
+                last_update_sensor = time.time()
+                temp_f = temp * 9 / 5 + 32
+                print(f"Continuous Reading: CO2: {co2} ppm, Temperature: {temp_f:.2f} F, Humidity: {humidity:.2f} %")
+                get_system_status(True)
+                reading_count = reading_count + 1
+                
+                # Check CO2 level and sound the buzzer if above threshold
+                if co2 > 1500:
+                    print("CO2 level exceeded 1500 ppm. Activating buzzer.")
+                    sound_buzzer()
+                
+                # Handle data transmission if WiFi is enabled
+                if switch_state_wifi == 0:
+                    # Check WiFi connection and reconnect if needed
+                    if not network.WLAN(network.STA_IF).isconnected():
+                        print("WiFi connection lost, reconnecting...")
+                        connect_wifi(SSID, PASSWORD)
+                    
+                    # Get current date and time (with hourly NTP sync)
+                    current_time = get_time_chicago()
+                    date_str = "{:04}-{:02}-{:02}".format(current_time[0], current_time[1], current_time[2])
+                    time_str = "{:02}:{:02}:{:02}".format(current_time[3], current_time[4], current_time[5])
 
-            # Print sensor data to the console
-            print(f'Color: {html_hex_val}')
-            print(f'Lux: {lux}')
-            print(f'CCT: {cct}')
-            print(f'Temp: {temp_fahrenheit} Hum:{humidity}')
-            if soil_temp is not None and soil_moisture is not None:
-                print(f'Soil Temp: {soil_temp} F')
-                print(f'Soil Moisture: {soil_moisture}')
-            # Display data on OLED
-            print("Updating OLED display...")
-            oled.fill(0)
-            if soil_temp is not None:
-                oled.text(f'Soil Temp: {soil_temp}F', 0, 0)
-            if soil_moisture is not None:
-                print("Count: ", count)
-                oled.text(f'Moisture: {soil_moisture}', 0, 10)
-                if count > 60:
-                    count = 0
-                    if soil_moisture < 600:
-                        sound_buzzer()
-                        print("Buzzer sounded")
-            oled.text(f'RGB: {int(html_rgb_val[0])},{int(html_rgb_val[1])},{int(html_rgb_val[2])}', 0, 20)
-            oled.text(f'Lux:{int(lux)}', 0, 30)
-            oled.text(f'CCT:{int(cct)}',0,40)
-            oled.text(f'Temp:{temp_fahrenheit}F Hum:{humidity}%', 0, 50)
-            oled.show()
-            print(' ')
-            # Prepare data for ThingSpeak
-            data = {
-                'soil_temp': soil_temp,
-                'soil_moisture': soil_moisture,
-                'lux': lux,
-                'color_temp': cct,
-                'temp_f': temp_fahrenheit,
-                'humidity': humidity
-            }
-            
-            # Prepare data for ThingSpeak
-            thingspeak_buffer.append(data)
-
-            # Send data to ThingSpeak
-            send_data_to_thingspeak()
-            
-            data = {
-                'date': date_str,
-                'time': time_str,
-                'temp_f': temp_fahrenheit,
-                'humidity': humidity,
-                'lux': lux,
-                'color_temp': cct,
-                'soil_moisture': soil_moisture,
-                'soil_temp': soil_temp,
-                'r': int(html_rgb_val[0]),
-                'g': int(html_rgb_val[1]),
-                'b': int(html_rgb_val[2]),
-                'html': html_hex_val
-            }    
-            # Send data to Google Sheets
-            send_data_to_google_sheets(data)
-
-
-
-            # Wait before the next update
-            time.sleep(45)
-
+                    # Prepare data for sending
+                    data = {
+                        'date': date_str, 
+                        'time': time_str, 
+                        'co2': co2,
+                        'temp_f': temp_f,
+                        'humidity': humidity
+                    }
+                    
+                    # Collect garbage before network operations
+                    gc.collect()
+                    
+                    # Send to Google Sheets
+                    send_data_to_google_sheets(data)
+                    
+                    # Add to ThingSpeak buffer and send
+                    thingspeak_buffer.append(data)
+                    send_data_to_thingspeak()
+                elif switch_state_wifi == 1:
+                    thingspeak_buffer.clear()
+                
+                # OLED Logic - display for a shorter time to save power
+                if oled:
+                    oled_power.value(1)
+                    oled.fill(0)
+                    oled.text(f'Reading: {reading_count}', 0, 0)
+                    if date_str is not None:
+                        oled.text(f'Date: {date_str}', 0, 10)
+                        oled.text(f'Time: {time_str}', 0, 20)
+                    oled.text(f'CO2:{int(co2)}ppm', 0, 30)
+                    oled.text(f'Temp:{temp_f:.2f}F',0,40)
+                    oled.text(f'Hum:{humidity:.2f}%', 0, 50)
+                    oled.show()
+                    time.sleep(10)  # Reduced from 20 to 10 seconds to save power
+                    oled_power.value(0) 
+                
+                # Force garbage collection after all operations
+                gc.collect()
+                
         except Exception as e:
             print("Error occurred:", e)
             time.sleep(5)  # Wait for 5 seconds before retrying
+            gc.collect()  # Force collection after error
+
 if __name__ == '__main__':
-    main()
+    # Initialize garbage collection
+    gc.collect()
+    
+    try:
+        main()
+    except Exception as e:
+        print("Error occurred:", e)
+        time.sleep(5)  # Wait for 5 seconds before retrying
 ```
 
 </details>
