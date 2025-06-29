@@ -232,7 +232,7 @@ Calculator(the same formula as Engineering Toolbox): Defaults: 2 people, 10ft by
     <h1>CO2 Concentration Calculator</h1>
     <form id="co2-form">
         <label for="q">q - Carbon dioxide supplied to the room per person (m<sup>3</sup>/h person):</label>
-        <input type="number" id="q" name="q" value="0.05" step="0.01" required><br><br>
+        <input type="number" id="q" name="q" value="0.01" step="0.01" required><br><br>
 
         <label for="persons">Number of persons in the room:</label>
         <input type="number" id="persons" name="persons" value="2" required><br><br>
