@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Jesse Anderson">
-<meta name="dcterms.date" content="2024-05-31">
+<meta name="dcterms.date" content="2025-07-06">
 
-<title>Jesse Anderson’s Blog - ESP32 Project: Sensor Reliability/Power Efficiency</title>
+<title>Jesse Anderson’s Blog - PMS7003: Or is your air filled with particulate?</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -21,40 +21,6 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
-}
-/* CSS for syntax highlighting */
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -77,9 +43,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
-<script src="../../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
-<link href="../../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
-<link href="../../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -137,9 +100,9 @@ cookieconsent.run({
 
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="Jesse Anderson’s Blog - ESP32 Project: Sensor Reliability/Power Efficiency">
-<meta property="og:description" content="Batteries/BuckBoost/OLEDs">
-<meta property="og:image" content="images/PCB_TOP.jpg">
+<meta property="og:title" content="Jesse Anderson’s Blog - PMS7003: Or is your air filled with particulate?">
+<meta property="og:description" content="">
+<meta property="og:image" content="pm2.5_scale_graphic-color_2.jpg">
 <meta property="og:site_name" content="Jesse Anderson's Blog">
 </head>
 
@@ -194,8 +157,7 @@ cookieconsent.run({
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">ESP32 Project: Sensor Reliability/Power Efficiency</h1>
-            <p class="subtitle lead">Batteries/BuckBoost/OLEDs</p>
+      <h1 class="title">PMS7003: Or is your air filled with particulate?</h1>
                                 <div class="quarto-categories">
                 <div class="quarto-category">ESP32</div>
                 <div class="quarto-category">IoT</div>
@@ -216,7 +178,7 @@ cookieconsent.run({
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">May 31, 2024</p>
+        <p class="date">July 6, 2025</p>
       </div>
     </div>
     
@@ -235,209 +197,222 @@ cookieconsent.run({
 
 
 
-<section id="introduction" class="level3">
-<h3 class="anchored" data-anchor-id="introduction">Introduction</h3>
-<p>After experimentation with the previous project at: <a href="https://jesse-anderson.github.io/Blog/_site/posts/ESP32_Post_1/" class="uri">https://jesse-anderson.github.io/Blog/_site/posts/ESP32_Post_1/</a> , I encountered issues with the DHT11 sensor maintaining reliable contact with the internal breadboard connections. To address this, I acquired some<a href="https://www.amazon.com/dp/B07ZYNWJ1S">Protoboards from ElectroCookie</a> and began the process of soldering the components together. I chose ElectroCookie as they were highly rated on Amazon and apparently the Adafruit Protoboards are corrosion prone. It also helps that the ElectroCookie ones were far cheaper! This post details the steps I took to resolve these issues and enhance the project’s overall performance.</p>
+<p>Image used for thumbnail courtesy of EPA(<a href="https://www.epa.gov/pm-pollution/particulate-matter-pm-basics" class="uri">https://www.epa.gov/pm-pollution/particulate-matter-pm-basics</a>).</p>
+<p><em>Disclaimer: Please note that the information presented in this article is for informational purposes only. It is not intended to serve as health advice, engineering advice, or any form of professional guidance. Readers should consult with qualified professionals for specific health or engineering concerns and should not rely solely on the content of this article for making decisions. The authors and publishers of this article are not responsible for any actions taken based on the information provided herein.</em></p>
+<p>This article is more how to whip up a PM sensor using easily found components than actual health based knowledge beyond some sort of cursory why should I care. I would defer to my substack at <a href="https://jesseandersonresearch.substack.com/" class="uri">https://jesseandersonresearch.substack.com/</a> which will end up as <a href="https://research.jesse-anderson.net/" class="uri">https://research.jesse-anderson.net/</a> as soon as I decide I want to give Substack $50 to change the routing(eventually?) for anything health related. However, what’s the point in knowing how to build something if you don’t know why you’re building it? For that we can do a basic primer as you’ll see below:<br>
+</p>
+<section id="why-particulate-matter-pm-deserves-attention" class="level3">
+<h3 class="anchored" data-anchor-id="why-particulate-matter-pm-deserves-attention">Why Particulate Matter (PM) Deserves Attention</h3>
 </section>
-<section id="soldering-the-components" class="level3">
-<h3 class="anchored" data-anchor-id="soldering-the-components">Soldering the Components</h3>
-<p>Using the same configuration as outlined in the initial ESP32 post, I carefully soldered the components onto the Protoboard. The result was a significant improvement in the consistency of the sensor readings, eliminating the previous contact issues. Below are images of the completed soldering work:</p>
+<section id="what-it-is" class="level3">
+<h3 class="anchored" data-anchor-id="what-it-is">What it is</h3>
 <ul>
-<li>Top View:</li>
+<li><p><strong>PM10</strong> - particles up to 10 µm, mostly from mechanical processes such as road dust and construction.</p></li>
+<li><p><strong>PM2.5</strong> - particles up to 2.5 µm, dominated by combustion sources like vehicles, wildfires and power plants.</p></li>
+<li><p><strong>PM1</strong> - particles up to 1 µm, often secondary aerosols or diesel and wood smoke; they can cross the alveolar membrane, enter the bloodstream and drive systemic inflammation.</p></li>
 </ul>
-<p><a href="images/PCB_TOP.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="images/PCB_TOP.jpg" class="img-fluid"></a></p>
+</section>
+<section id="why-it-is-harmful" class="level3">
+<h3 class="anchored" data-anchor-id="why-it-is-harmful">Why it is harmful</h3>
 <ul>
-<li>Bottom View:</li>
+<li><p>A recent meta-analysis reported an <strong>11 percent rise in cardiovascular mortality for every 10 µg</strong> m⁻³ <strong>long-term increase in PM2.5</strong> exposure [6].</p></li>
+<li><p><strong>PM2.5 now contributes to about 8.1 million premature deaths each year worldwide</strong> - 58 percent from ambient PM2.5 and 38 percent from household air pollution [3]. The report mentioned in the reference is actually really good, with lots of visuals and a pretty easy read!</p></li>
+<li><p>Toxic metals, black carbon and polycyclic aromatic hydrocarbons adsorb onto particulates, adding carcinogenic and oxidative-stress burdens.</p></li>
+<li><p>PM1 is theorized by [13] to cause 13.1% and 15.3% elevated risk of overall and essential hypertension hospitalization respectively.</p></li>
 </ul>
-<p><a href="images/PCB_BOTTOM.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="images/PCB_BOTTOM.jpg" class="img-fluid"></a></p>
 </section>
-<section id="electrical-safety" class="level3">
-<h3 class="anchored" data-anchor-id="electrical-safety">Electrical Safety</h3>
-<p>After completing the soldering, I was concerned about the potential for short circuits if the board was placed on a conductive surface. To mitigate this risk, I checked the conductivity of a glue gun stick I planned to use for insulation. Confident in its suitability, I applied hot glue to the entire bottom of the board. I opted for large, removable globs of glue rather than thin layers to facilitate easy removal if needed. Here is the “final” product after applying the hot glue:</p>
-<p><a href="images/PCB_Glue.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-3"><img src="images/PCB_Glue.jpg" class="img-fluid"></a></p>
-</section>
-<section id="incorporating-the-verter-buck-boost-module" class="level3">
-<h3 class="anchored" data-anchor-id="incorporating-the-verter-buck-boost-module">Incorporating the Verter Buck-Boost Module</h3>
-<p>To extend the operational time of the ESP32 setup, I integrated the Verter buck-boost module from Adafruit along with their 4 AA battery pack. This configuration achieved an approximate runtime of 28.2 hours, which exceeded my expectations. I attribute part of this efficiency to the removable LED socket used for data transmission checks. The green LED was bright enough to disturb sleep in a darkened room, so I removed it during overnight testing. I estimate that it would have run for 20 ish hours with the LED on as that’s what I roughly estimated(the peak sensor reading plus transmission reading on my power bank may have been off….).</p>
-</section>
-<section id="what-is-a-buck-boost-module" class="level3">
-<h3 class="anchored" data-anchor-id="what-is-a-buck-boost-module">What is a Buck-Boost Module</h3>
-<p>A Buck-Boost Module is a type of DC-DC converter that can step up (boost) or step down (buck) an input voltage to a desired output voltage. This functionality is particularly useful in battery-powered projects where the input voltage can vary significantly as the battery discharges. The module ensures that the device receives a stable voltage, enhancing the reliability and efficiency of the system.</p>
-<p>The <a href="https://www.adafruit.com/product/2190">Verter buck-boost module</a> from Adafruit is a versatile power supply solution that can accept input voltages ranging from 3V to 12V and output a consistent 5.2V voltage, making it ideal for various applications. It is equipped with multiple safety features, including over-voltage protection and thermal shutdown, to ensure the safe operation of your electronics. I went with Adafruit over many companies on Amazon as a sensor failing is a disappointment whereas everything on my board being fried is infuriating. The output voltage of the Verter on the USB side is 5.2V and it is far better as a buck converter than a boost converter. Note that it uses a TPS630630 boost converter from TI and the USB connector can output 500mA according to the datasheet. The module overall can output ~1.0+A so if push comes to shove I can always adapt it if I need more current. It has 90+% operating efficiency in some cases and the efficiency graphs are below:</p>
-<p>Efficiency vs.&nbsp;Output Current:</p>
-<p><a href="images/Efficiency_Curves_Verter.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4"><img src="images/Efficiency_Curves_Verter.png" class="img-fluid"></a></p>
-<p>Efficiency vs.&nbsp;Input Voltage Current:</p>
-<p><a href="images/Efficiency_Curves_Verter_5V.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5"><img src="images/Efficiency_Curves_Verter_5V.png" class="img-fluid"></a></p>
-<p>We see that at V_Out = 4.8V and V_Out = 5V we have an efficiency near or above 90% and that’s good enough for me.</p>
-<p>I ensured all voltages were within specification and verified the output using an opened USB cable. Here’s the setup with the Verter and battery pack:</p>
-<p><a href="images/USB_Splice.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-6"><img src="images/USB_Splice.jpg" class="img-fluid"></a></p>
-<p>Once I tested everything it was fairly straightforward to throw some NiMH Ikea batteries at 1.2V 1900mAh and double check the output voltage to make sure I was ok. Moving forward I would definitely opt for Adafruit’s 8 battery pack but 4 batteries works for my purposes for now. Verter + battery pack below, note that there are some screws you gotta tighten down on for your (+)/(-):</p>
-<p><a href="images/Verter_And_Powerpack.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-7"><img src="images/Verter_And_Powerpack.jpg" class="img-fluid"></a></p>
-</section>
-<section id="future-improvements" class="level3">
-<h3 class="anchored" data-anchor-id="future-improvements">Future Improvements</h3>
-<p>Implementing a battery monitoring system would enhance the project’s robustness, allowing for better power management. Additionally, incorporating a solar charging circuit could provide a sustainable power solution by using solar energy during the day to charge the batteries and running the device on battery power at night.</p>
-</section>
-<section id="adding-oleds" class="level3">
-<h3 class="anchored" data-anchor-id="adding-oleds">Adding OLEDs</h3>
-<p>Funny enough this tidbit actually predates the battery pack and Buck Boost Converter, but I felt that stabilizing the circuit and getting battery power working was of far higher importance than slapping a screen in the circuit.</p>
-<p>The OLED display used is a simple 128x32 screen, acquired <a href="https://www.amazon.com/dp/B07D9H83R4">affordably from Amazon</a>. Using the SSD1306 library to interface with the OLED is straightforward. My plan is to create an ESP32 GitHub repository containing all the sensor integrations packaged into a single, comprehensive folder of Python files for ease of use. This approach simplifies the process compared to tracking down and adapting various libraries.</p>
-<p>Below are example circuits using standard SCL and SDA connections on the ESP32, as well as alternative connections by assigning the 14 and 13 pins to SCL and SDA respectively:</p>
-<ul>
-<li>1 OLED:</li>
-</ul>
-<p><a href="images/1_OLED.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-8"><img src="images/1_OLED.jpg" class="img-fluid"></a></p>
-<ul>
-<li>2 OLED:</li>
-</ul>
-<p><a href="images/2_OLED.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-9"><img src="images/2_OLED.jpg" class="img-fluid"></a></p>
-</section>
-<section id="alternative-pin-configuration" class="level3">
-<h3 class="anchored" data-anchor-id="alternative-pin-configuration">Alternative Pin Configuration</h3>
-<p>It’s essential to note that the ESP32 allows for flexible pin assignment for the SDA (Serial Data Line) and SCL (Serial Clock Line). Here’s a table showcasing the alternative pin assignments:</p>
+<section id="what-safe-looks-like-and-how-the-world-actually-measures-up" class="level2">
+<h2 class="anchored" data-anchor-id="what-safe-looks-like-and-how-the-world-actually-measures-up">What “safe” looks like and how the world actually measures up</h2>
+<section id="particulate-matter" class="level3">
+<h3 class="anchored" data-anchor-id="particulate-matter">Particulate matter</h3>
 <table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 24%">
+<col style="width: 35%">
+<col style="width: 20%">
+</colgroup>
 <thead>
 <tr class="header">
-<th>SDA</th>
-<th>SCL</th>
+<th>Metric</th>
+<th>WHO 2021 guideline</th>
+<th>US EPA 2024 NAAQS</th>
+<th><strong>Research-based PM1 target</strong></th>
+<th>Typical real-world figures*</th>
+<th>Health message</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>4</td>
-<td>12</td>
+<td><strong>PM1 annual mean</strong></td>
+<td>-</td>
+<td>-</td>
+<td><strong>2 µg m⁻³</strong> chronic reference concentration [11]</td>
+<td>17.4 ± 2.8 µg m⁻³ cohort mean, Guangzhou 2015-2020 [13],national mean 32.3 → 16.8 µg m-3 from 2014-2018 (satellite maps)[15]</td>
+<td>Ultrafine fraction crosses into blood; risk rises steeply at low levels.</td>
 </tr>
 <tr class="even">
-<td>13</td>
-<td>14</td>
+<td><strong>PM1 24 h mean</strong></td>
+<td>-</td>
+<td>-</td>
+<td><strong>≤ 10 μg m⁻³</strong> based on minimal risk increment from major epidemiological study[12]</td>
+<td>27 µg m⁻³[Indonesia] 13.9µg m⁻³[Taiwan] personal average in microsensor study [14]. Ambient air in Taiwan 20.5µg m⁻³</td>
+<td>Short peaks depress heart-rate variability and trigger arrhythmias.</td>
 </tr>
 <tr class="odd">
-<td>17</td>
-<td>16</td>
+<td><strong>PM2.5 annual mean</strong></td>
+<td>5 µg m⁻³ [1]</td>
+<td>9 µg m⁻³ [2]</td>
+<td>-</td>
+<td>31.3 µg m⁻³ global pop-weighted mean, 2021 [3]</td>
+<td>99% of the world’s population live in places with unhealthy PM2.5 levels.</td>
 </tr>
 <tr class="even">
-<td>18</td>
-<td>17</td>
+<td><strong>PM2.5 24 h mean</strong></td>
+<td>15 µg m⁻³ [1]</td>
+<td>35 µg m⁻³ [2]</td>
+<td>-</td>
+<td>&gt; 100µg m⁻³ during wildfire smoke, 8 Jun 2023 [7]</td>
+<td>Acute spikes drive arrhythmias, asthma and stroke risk.</td>
 </tr>
 <tr class="odd">
-<td>19</td>
-<td>18</td>
+<td><strong>PM10 annual mean</strong></td>
+<td>15 µg m⁻³ [1]</td>
+<td>-</td>
+<td>-</td>
+<td>Remote western deserts often exceed 42 µg m⁻³[16]</td>
+<td>Coarse dust irritates airways and carries microbes.</td>
 </tr>
 <tr class="even">
-<td>23</td>
-<td>19</td>
-</tr>
-<tr class="odd">
-<td>25</td>
-<td>23</td>
-</tr>
-<tr class="even">
-<td>26</td>
-<td>25</td>
-</tr>
-<tr class="odd">
-<td>27</td>
-<td>26</td>
-</tr>
-<tr class="even">
-<td>32</td>
-<td>27</td>
-</tr>
-<tr class="odd">
-<td>33</td>
-<td>32</td>
+<td><strong>PM10 24 h mean</strong></td>
+<td>45 µg m⁻³ [1]</td>
+<td>54 µg m⁻³ [2]</td>
+<td>-</td>
+<td>Dust storms can top 5000+ µg m⁻³[16]</td>
+<td>Triggers emergency warnings.</td>
 </tr>
 </tbody>
 </table>
-<p>Additionally, there are input-only pins: 34, 35, 36, 37, 38, and 39.</p>
 </section>
-<section id="initializing-and-testing-the-i2c-bus" class="level3">
-<h3 class="anchored" data-anchor-id="initializing-and-testing-the-i2c-bus">Initializing and Testing the I2C Bus</h3>
-<p>Ideally one would connect their peripheral then run the following code to ensure that they are getting a reading from their device(change pin numbers!):</p>
-<details>
-<summary>
-Code
-</summary>
-<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="im">from</span> machine <span class="im">import</span> Pin, SoftI2C</span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="im">import</span> time</span>
-<span id="cb1-3"><a href="#cb1-3"></a></span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="co"># Initialize I2C with default pins</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a>i2c <span class="op">=</span> SoftI2C(scl<span class="op">=</span>Pin(<span class="dv">22</span>), sda<span class="op">=</span>Pin(<span class="dv">21</span>))</span>
-<span id="cb1-6"><a href="#cb1-6"></a></span>
-<span id="cb1-7"><a href="#cb1-7"></a><span class="kw">def</span> scan_i2c(i2c):</span>
-<span id="cb1-8"><a href="#cb1-8"></a>    <span class="bu">print</span>(<span class="st">"Scanning I2C bus..."</span>)</span>
-<span id="cb1-9"><a href="#cb1-9"></a>    devices <span class="op">=</span> i2c.scan()</span>
-<span id="cb1-10"><a href="#cb1-10"></a>    <span class="cf">if</span> <span class="bu">len</span>(devices) <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb1-11"><a href="#cb1-11"></a>        <span class="bu">print</span>(<span class="st">"No I2C devices found"</span>)</span>
-<span id="cb1-12"><a href="#cb1-12"></a>    <span class="cf">else</span>:</span>
-<span id="cb1-13"><a href="#cb1-13"></a>        <span class="bu">print</span>(<span class="st">"I2C devices found:"</span>, <span class="bu">len</span>(devices))</span>
-<span id="cb1-14"><a href="#cb1-14"></a>        <span class="cf">for</span> device <span class="kw">in</span> devices:</span>
-<span id="cb1-15"><a href="#cb1-15"></a>            <span class="bu">print</span>(<span class="st">"Decimal address:"</span>, device, <span class="st">" | Hex address:"</span>, <span class="bu">hex</span>(device))</span>
-<span id="cb1-16"><a href="#cb1-16"></a></span>
-<span id="cb1-17"><a href="#cb1-17"></a><span class="cf">while</span> <span class="va">True</span>:</span>
-<span id="cb1-18"><a href="#cb1-18"></a>    scan_i2c(i2c)</span>
-<span id="cb1-19"><a href="#cb1-19"></a>    time.sleep(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<p>Going back to the OLEDs… After we verify that they are connected correctly we can run the following to print:</p>
-<details>
-<summary>
-Code
-</summary>
-<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a><span class="im">from</span> machine <span class="im">import</span> Pin, SoftI2C</span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="im">import</span> ssd1306</span>
-<span id="cb2-3"><a href="#cb2-3"></a><span class="im">from</span> time <span class="im">import</span> sleep</span>
-<span id="cb2-4"><a href="#cb2-4"></a></span>
-<span id="cb2-5"><a href="#cb2-5"></a><span class="co"># ESP32 Pin default</span></span>
-<span id="cb2-6"><a href="#cb2-6"></a>i2c <span class="op">=</span> SoftI2C(scl<span class="op">=</span>Pin(<span class="dv">22</span>), sda<span class="op">=</span>Pin(<span class="dv">21</span>))</span>
-<span id="cb2-7"><a href="#cb2-7"></a></span>
-<span id="cb2-8"><a href="#cb2-8"></a><span class="co"># ESP8266 Pin default</span></span>
-<span id="cb2-9"><a href="#cb2-9"></a><span class="co">#i2c = SoftI2C(scl=Pin(5), sda=Pin(4))</span></span>
-<span id="cb2-10"><a href="#cb2-10"></a></span>
-<span id="cb2-11"><a href="#cb2-11"></a>oled_width <span class="op">=</span> <span class="dv">128</span></span>
-<span id="cb2-12"><a href="#cb2-12"></a>oled_height <span class="op">=</span> <span class="dv">32</span></span>
-<span id="cb2-13"><a href="#cb2-13"></a>oled <span class="op">=</span> ssd1306.SSD1306_I2C(oled_width, oled_height, i2c)</span>
-<span id="cb2-14"><a href="#cb2-14"></a></span>
-<span id="cb2-15"><a href="#cb2-15"></a><span class="co"># Clear the display buffer</span></span>
-<span id="cb2-16"><a href="#cb2-16"></a>oled.fill(<span class="dv">0</span>)</span>
-<span id="cb2-17"><a href="#cb2-17"></a></span>
-<span id="cb2-18"><a href="#cb2-18"></a>oled.text(<span class="st">'Existence is a prison'</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
-<span id="cb2-19"><a href="#cb2-19"></a>oled.text(<span class="st">"prison.I'm bound."</span>, <span class="dv">0</span>, <span class="dv">10</span>)</span>
-<span id="cb2-20"><a href="#cb2-20"></a>oled.text(<span class="st">'to this device'</span>, <span class="dv">0</span>, <span class="dv">20</span>)</span>
-<span id="cb2-21"><a href="#cb2-21"></a></span>
-<span id="cb2-22"><a href="#cb2-22"></a>oled.show()</span>
-<span id="cb2-23"><a href="#cb2-23"></a></span>
-<span id="cb2-24"><a href="#cb2-24"></a><span class="co"># ESP32 Pin assignment </span></span>
-<span id="cb2-25"><a href="#cb2-25"></a>i2c_2 <span class="op">=</span> SoftI2C(scl<span class="op">=</span>Pin(<span class="dv">14</span>), sda<span class="op">=</span>Pin(<span class="dv">13</span>))</span>
-<span id="cb2-26"><a href="#cb2-26"></a></span>
-<span id="cb2-27"><a href="#cb2-27"></a><span class="co"># Clear the display buffer</span></span>
-<span id="cb2-28"><a href="#cb2-28"></a>oled2.fill(<span class="dv">0</span>)</span>
-<span id="cb2-29"><a href="#cb2-29"></a></span>
-<span id="cb2-30"><a href="#cb2-30"></a>oled_width <span class="op">=</span> <span class="dv">128</span></span>
-<span id="cb2-31"><a href="#cb2-31"></a>oled_height <span class="op">=</span> <span class="dv">32</span></span>
-<span id="cb2-32"><a href="#cb2-32"></a>oled2 <span class="op">=</span> ssd1306.SSD1306_I2C(oled_width, oled_height, i2c_2)</span>
-<span id="cb2-33"><a href="#cb2-33"></a></span>
-<span id="cb2-34"><a href="#cb2-34"></a>oled2.text(<span class="st">'Existence is a prison'</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
-<span id="cb2-35"><a href="#cb2-35"></a>oled2.text(<span class="st">"prison.I'm bound."</span>, <span class="dv">0</span>, <span class="dv">10</span>)</span>
-<span id="cb2-36"><a href="#cb2-36"></a>oled2.text(<span class="st">'to this device'</span>, <span class="dv">0</span>, <span class="dv">20</span>)</span>
-<span id="cb2-37"><a href="#cb2-37"></a></span>
-<span id="cb2-38"><a href="#cb2-38"></a>oled2.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
+<section id="gaseous-pollutants-regulated-by-who-and-epa" class="level3">
+<h3 class="anchored" data-anchor-id="gaseous-pollutants-regulated-by-who-and-epa">Gaseous pollutants regulated by WHO and EPA</h3>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 17%">
+<col style="width: 16%">
+<col style="width: 21%">
+<col style="width: 37%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Pollutant &amp; averaging time</th>
+<th>WHO 2021 guideline</th>
+<th>US EPA 2024 NAAQS</th>
+<th>Typical real-world figures</th>
+<th>Quick take</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>O3</strong></td>
+<td><p>60 µg m⁻³ [8hr avg over six months with greatest average O3 conc.][1]</p>
+<p>100 µg m⁻³ [8hr avg]</p></td>
+<td><p>0.054 ppm ≈ 106 µg m⁻³ [8hr] [2]</p>
+<p>0.125ppm ≈ 245 µg m⁻³ [1hr] [unhealthy for sensitive groups][2]</p></td>
+<td><p>Peak-season global value of 60 µg m⁻³ or 31ppb exceeded for 93% of the world population.[8]</p>
+<p>US value: 27 to &lt;39ppb [8]</p></td>
+<td>Photochemical smog worsens in heatwaves. UV + NOx + VOC = :(</td>
+</tr>
+<tr class="even">
+<td><strong>NO2</strong></td>
+<td><p>10 µg m⁻³ [Annual][1]</p>
+<p>25 µg m⁻³ [24 hour][1]</p></td>
+<td>53 ppb ≈ 99.6 µg m⁻³ [1hr][2]</td>
+<td><p>High income countries avg 25.5 µg m⁻³ and 6.5 µg m⁻³ low income [8]</p>
+<p>US value: 13 to 19 µg m⁻³[8]</p></td>
+<td>Traffic pollutant tied to childhood asthma.</td>
+</tr>
+<tr class="odd">
+<td><strong>SO2 24 h mean</strong></td>
+<td>40 µg m⁻³ [24 h][1]</td>
+<td><p>35ppb ≈ 91.7 µg m⁻³ [1hr] [2]</p>
+<p>10ppb ≈ 26.2 µg m⁻³ [1yr] [19]</p></td>
+<td>US national 1hr mean 3 to 13.9 ppb ≈ *** µg m⁻³ 2023[9]</td>
+<td>Coal/oil facilities can emit 10× more SO2 than neighboring industrial plants, with legacy operations releasing millions of pounds annually despite WHO limits[17].</td>
+</tr>
+<tr class="even">
+<td><strong>CO 24 h mean</strong></td>
+<td>4 mg m⁻³ [1]</td>
+<td>4.4ppm ≈ 5.0 mg m⁻³[8hr][2]</td>
+<td><p>Gas-stove-free homes average: ~0.6 - ~6 mg m⁻³ | 0.5 to 5ppm</p>
+<p>Levels near poorly adjusted stoves &gt;30ppm | 34.35 mg m⁻³[10]</p></td>
+<td>Good indoor sensors alert long before legal limits.</td>
+</tr>
+</tbody>
+</table>
+<p>I generally just use the WHO values as a basis, but I’m including the US values as a comparison. Unless stated otherwise I’m taking the ideal values where they exist, if the values correspond to an unhealthy for sensitive groups, etc it will be shown in brackets.</p>
+<p>To dive a bit more into the whole sulfur issue and monitoring lacking(a bunch of missed days…).. The inadequacy of sulfur monitoring becomes starkly apparent during environmental disasters, as demonstrated by a 2022 study of Beaumont, Texas - a city surrounded by major petroleum refineries. When Hurricane Harvey struck in August 2017, the community’s already limited air monitoring network essentially went dark at the worst possible time. With only two monitors covering the entire industrial city, officials shut down equipment for a full week (August 25-September 1) to prevent storm damage, leaving residents without any data on air quality while refineries were in operation. The hydrogen sulfide monitor was particularly unreliable, missing 213 days of data in 2017 alone, with overall data capture rates plummeting to just 39% during the hurricane period. Even when operational, the monitor consistently recorded hydrogen sulfide concentrations above OSHA safety limits at levels residents could smell daily. This case illustrates how monitoring gaps compound during crises: precisely when industrial accidents and emergency shutdowns release the most pollution, communities lose the data needed to assess health risks[18].</p>
+<p>As an aside, OSHA considers Sulfur Dioxide 5ppm or 13 mg m⁻³ to be permissible exposure limit, 10 hr time weighted average 2 ppm for their recommended exposure limit[20]. The values seen above according to the data in the journal article show an average of 0.68ppb in 2017 and an H2S RfC of 1.0 ppb for the general population[21]. This is in contrast to the 0.14ppb value that is cited in the journal. Overall, with the missing sensor days, dated EPA guidelines, and general confusion in interpreting these values it becomes even more critically important to monitor one’s environments for particulate and chemical matter.</p>
+<p><strong>Why include these gases in a DIY station?</strong><br>
+Electrochemical and MOS chips are inexpensive and socket-friendly but drift over months – especially SO2 and O3 cells that consume electrolyte. A modular stack lets you swap a single daughter-board instead of rebuilding the whole monitor, keeps recalibration simple and preserves the data stream. Also note that ionizers and some photocatalytic filters generate ozone as a by-product, so having an O3 channel is prudent. Its pretty cheap to get the boards direct off aliexpress and swap every now and then(the electrochemical ones you can also set to turn on once an hour or so which will greatly prolong life!).</p>
 </section>
-<section id="the-ssd1306-library" class="level3">
-<h3 class="anchored" data-anchor-id="the-ssd1306-library">The SSD1306 Library</h3>
-<p>An OLED works by emitting light from organic compounds that emit light when an electric current is applied. This technology allows for bright, clear displays that are highly efficient and have excellent contrast ratios. OLEDs are used in a variety of applications, from small displays on microcontrollers to large television screens. I direct you to the wikipedia article at: <a href="https://en.wikipedia.org/wiki/OLED" class="uri">https://en.wikipedia.org/wiki/OLED</a> if you want to do a deep dive into materials of construction, operating principle, etc.</p>
-<p>The SSD1306 library is a widely used library for controlling OLED displays based on the SSD1306 driver. This library simplifies the process of communicating with the OLED and provides a set of functions to easily draw text, shapes, and images on the screen. By using the SSD1306 library, developers can quickly integrate OLED displays into their projects without needing to understand the low-level details of the communication protocol.</p>
-<p>Beyond simple text one can draw lines, rectangles, circles, and even bitmaps. This allows for the creation of detailed and informative graphical interfaces provided you have enough pixels.</p>
 </section>
-<section id="future-improvements-1" class="level3">
-<h3 class="anchored" data-anchor-id="future-improvements-1">Future Improvements</h3>
-<p>Several quality of life improvements can further enhance the ESP32 environmental monitor. Implementing a battery monitoring system would provide better power management. Additionally, incorporating a solar charging circuit could offer a sustainable power solution by using solar energy during the day to charge the batteries and running the device on battery power at night. The design of the air intake box, sensor sampling rates, and minimizing power draw would constitute some one off things I’ll need to do, but for right now they aren’t too relevant. In any case, being able to quickly visualize what’s going on with the sensors is cool enough, but having the web interface is far more useful.</p>
+<section id="indoor-versus-outdoor-the-hidden-peaks" class="level2">
+<h2 class="anchored" data-anchor-id="indoor-versus-outdoor-the-hidden-peaks">Indoor versus outdoor – the hidden peaks</h2>
+<ul>
+<li><p><strong>Baseline indoor air</strong> in modern low-emission US homes averages 3–4 µg m⁻³ PM2.5 – roughly half of local outdoor levels [4]. Note that this was a Texas study; I generally get 0/0/0 PM 1/2.5/10 indoors, but I have air purifiers running. 4th of July, Wildfires, and cooking smoke can spike values! I will give the data later on in this article.</p></li>
+<li><p><strong>Cooking on a gas hob(stove, range)</strong> can drive indoor PM2.5 above 100 µg m⁻³, with peaks near 650 µg m⁻³ recorded in UK field tests [5]. Even closed windows may not clear those peaks for hours.</p></li>
+<li><p><strong>Wildfire smoke</strong> regularly pushes outdoor daily means above 100 µg m⁻³[22]; infiltration often delivers 33-76 percent of that burden indoors[23]. Note that the use of a HEPA based portable air cleaner in the second study lead to a reduction of PM2.5 levels during the wildfire by 48-78% with windows closed. Considering that you’re getting 33-76% smoke infiltration that’s significant!</p></li>
+<li><p>Another notable aspect of [23] is testing a DIY Lasko box fan and MERV 13 filter(see Appendix/Supplements). This provided a ~59%(+/-25%SD) effectiveness in reducing indoor PM2.5 levels during wildfire episodes. For ~$30-$50 having a few of these on hand could prove useful. I personally have a bunch of box fans and would just need to go grab some filters.</p></li>
+</ul>
 </section>
-<section id="conclusion" class="level3">
-<h3 class="anchored" data-anchor-id="conclusion">Conclusion</h3>
-<p>Through some careful(haphazard?) soldering I got a reliable temperature/humidity sensor working with a web interface and a fairly large battery capacity. One note for portability: If I ever wanted to remotely log data to Google/etc I would need to set up a hotspot and assign that as an alternative WiFi that tries to connect if the first one isn’t present.</p>
-<p>This post is definitely a bit more stop and go than previous posts owing to the fact that I needed to document this mini project, but also have a fair bit of backlog when it comes to writing. At a later date I may revisit this and clean up the writing. The key focus is being able to reference this in the future for my own personal use.</p>
-<p>Stay tuned for more updates.</p>
+<section id="why-monitor-pm-yourself" class="level2">
+<h2 class="anchored" data-anchor-id="why-monitor-pm-yourself">Why monitor PM yourself</h2>
+<ul>
+<li><p><strong>Regulatory gaps</strong> - government stations provide perhaps one reading per county; your micro-environment can differ wildly near traffic, grills or printers.</p></li>
+<li><p><strong>Short events</strong> - cooking, candles and yard burns create hour-scale spikes invisible in 24-h averages.</p></li>
+<li><p><strong>Personal health optimisation</strong> - live data lets asthmatics, COPD patients and athletes ventilate or mask up before symptoms hit.</p></li>
+<li><p><strong>Community science and advocacy</strong> - crowd-sourced maps have triggered filter giveaways and “clean-air room” programs during wildfire crises.</p></li>
+</ul>
+</section>
+<section id="targets-when-deploying-a-sensor-build" class="level2">
+<h2 class="anchored" data-anchor-id="targets-when-deploying-a-sensor-build">Targets when deploying a sensor build</h2>
+<ul>
+<li><p><strong>Indoor annual goal</strong> - keep PM2.5 below 5 µg m⁻³ and PM1 below 2 µg m⁻³.</p></li>
+<li><p><strong>Ventilation trigger</strong> - alarm or start fans if indoor PM2.5 &gt; 15 µg m⁻³ or PM1 &gt; 10 µg m⁻³ for more than 15 min.</p></li>
+<li><p><strong>Outdoor module siting</strong> - breathing height, at least 2 m from walls and clear of exhaust vents. Refer to sensor documentation for additional details!</p></li>
+</ul>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<ol type="1">
+<li><p>World Health Organization. <em>WHO Global Air Quality Guidelines – Particulate Matter, Ozone, Nitrogen Dioxide, Sulfur Dioxide and Carbon Monoxide</em>. 2021.</p></li>
+<li><p>United States Environmental Protection Agency. <em>National Ambient Air Quality Standards (NAAQS) Table</em>, revised 7 Feb 2024.</p></li>
+<li><p>Health Effects Institute. 2024. State of Global Air 2024. Special Report. Boston, MA:Health Effects Institute.</p></li>
+<li><p>Shah K B et al.&nbsp;Dataset on indoor and outdoor PM2.5 at two South-Texas residences. <em>Data in Brief</em>, 19 Mar 2025.</p></li>
+<li><p>Batty D. “Gas hob can raise indoor air pollution higher than busy UK road.” <em>The Guardian</em>, 7 Mar 2025.</p></li>
+<li><p>Bourdrel, Thomas, et al.&nbsp;“Cardiovascular Effects of Air Pollution.” <em>Archives of Cardiovascular Diseases</em>, vol.&nbsp;110, no. 11, Nov.&nbsp;2017, pp.&nbsp;634–642, www.sciencedirect.com/science/article/pii/S1875213617301304, https://doi.org/10.1016/j.acvd.2017.05.003..</p></li>
+<li><p>Chen, Kai, et al.&nbsp;“Canadian Wildfire Smoke and Asthma Syndrome Emergency Department Visits in New York City.” <em>JAMA</em>, 21 Sept.&nbsp;2023, jamanetwork.com/journals/jama/article-abstract/2809900?resultClick=1, https://doi.org/10.1001/jama.2023.18768.</p></li>
+<li><p>Health Effects Institute. <em>State of Global Air</em> ozone and nitrogen-dioxide fact-sheets, 2025.</p></li>
+<li><p>United States Environmental Protection Agency. <em>Sulfur Dioxide Trends</em>, Air Trends Summary 2023.</p></li>
+<li><p>United States Environmental Protection Agency. <em>Carbon Monoxide</em><strong>’</strong>s Impact on Indoor Air Quality fact-sheet, 2025.</p></li>
+<li><p>Zaitseva N V et al.&nbsp;“On the safe levels of micro-sized particles PM1.0 in ambient air.” <em>Hygiene and Sanitation</em> 103(11):1434-1440, 2024.</p></li>
+<li><p>Chen, Gongbo, et al.&nbsp;“Effects of Ambient PM 1 Air Pollution on Daily Emergency Hospital Visits in China: An Epidemiological Study.” <em>The Lancet Planetary Health</em>, vol.&nbsp;1, no. 6, 1 Sept.&nbsp;2017, pp.&nbsp;e221–e229, https://doi.org/10.1016/s2542-5196(17)30100-6. Accessed 23 Apr.&nbsp;2023.</p></li>
+<li><p>Zhang H et al.&nbsp;“Loundefinedng-term PM1 exposure and hypertension hospitalisation in South China.” <em>Science of the Total Environment</em> 903:167985, 2024.</p></li>
+<li><p>Lung S-C C et al.&nbsp;“Peaks, sources and immediate health impacts of PM2.5 and PM1 exposure in Indonesia and Taiwan with microsensors.” <em>Journal of Exposure Science &amp; Environmental Epidemiology</em> 35:264-277, 2025.</p></li>
+<li><p>Wei, Jing, et al.&nbsp;“Satellite-Derived 1-Km-Resolution PM<sub>1</sub> Concentrations from 2014 to 2018 across China.” <em>Environmental Science &amp; Technology</em>, vol.&nbsp;53, no. 22, 14 Oct.&nbsp;2019, pp.&nbsp;13265–13274, https://doi.org/10.1021/acs.est.9b03258.</p></li>
+<li><p>Argyropoulos, Christos D, et al.&nbsp;“Measurements and Modelling of Particulate Matter Building Ingress during a Severe Dust Storm Event.” <em>Building and Environment</em>, vol.&nbsp;167, 1 Jan.&nbsp;2020, pp.&nbsp;106441–106441, https://doi.org/10.1016/j.buildenv.2019.106441. Accessed 2 May 2024.</p></li>
+<li><p>Daly, M. “A Port Arthur plant is spewing harmful sulfur dioxide. Texas won’t step in.” Houston Public Media, November 2, 2021</p></li>
+<li><p>Adair K, Miller S, Gage Witvliet M. An Exploratory Investigation of Government Air Monitoring Data after Hurricane Harvey. Int J Environ Res Public Health. 2022 May 3;19(9):5559. doi: 10.3390/ijerph19095559. PMID: 35564954; PMCID: PMC9100209.</p></li>
+<li><p>EPA. “NAAQS Table | US EPA.” <em>US EPA</em>, 15 Mar.&nbsp;2023, www.epa.gov/criteria-air-pollutants/naaqs-table.</p></li>
+<li><p>“SULFUR DIOXIDE | Occupational Safety and Health Administration.” <em>Www.osha.gov</em>, www.osha.gov/chemicaldata/549.</p></li>
+<li><p>US. “IRIS Toxicological Review and Summary Documents for Hydrogen Sulfide (External Review Draft) | IRIS | US EPA.” <em>Epa.gov</em>, 2017, iris.epa.gov/document/&amp;deid=29137. Accessed 12 July 2025.</p></li>
+<li><p>May, N.W., Dixon, C.,&nbsp;Jaffe, D.A. (2021). Impact of Wildfire Smoke Events on Indoor Air Quality and Evaluation of a Low-cost Filtration Method. Aerosol Air Qual. Res. 21, 210046. https://doi.org/10.4209/aaqr.210046</p></li>
+<li><p>Xiang, Jianbang, et al.&nbsp;“Field Measurements of PM2.5 Infiltration Factor and Portable Air Cleaner Effectiveness during Wildfire Episodes in US Residences.” <em>Science of the Total Environment</em>, vol.&nbsp;773, June 2021, p.&nbsp;145642, https://doi.org/10.1016/j.scitotenv.2021.145642. Accessed 3 Feb.&nbsp;2022.</p></li>
+</ol>
 
 
 </section>
@@ -1186,31 +1161,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","openEffect":"zoom","loop":false,"selector":".lightbox","descPosition":"bottom"});
-window.onload = () => {
-  lightboxQuarto.on('slide_before_load', (data) => {
-    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
-    const href = trigger.getAttribute('href');
-    if (href !== null) {
-      const imgEl = window.document.querySelector(`a[href="${href}"] img`);
-      if (imgEl !== null) {
-        const srcAttr = imgEl.getAttribute("src");
-        if (srcAttr && srcAttr.startsWith("data:")) {
-          slideConfig.href = srcAttr;
-        }
-      }
-    } 
-  });
-
-  lightboxQuarto.on('slide_after_load', (data) => {
-    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
-    if (window.Quarto?.typesetMath) {
-      window.Quarto.typesetMath(slideNode);
-    }
-  });
-
-};
-          </script>
 
 
 

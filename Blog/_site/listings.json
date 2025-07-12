@@ -1,7 +1,8 @@
 [
   {
-    "listing": "/index.html",
+    "listing": "/archive.html",
     "items": [
+      "/posts/PMS7003/index.html",
       "/posts/SCD41/index.html",
       "/posts/Soldering_ESP32/index.html",
       "/posts/ESP32_Post_1/index.html",
@@ -16,8 +17,9 @@
     ]
   },
   {
-    "listing": "/archive.html",
+    "listing": "/index.html",
     "items": [
+      "/posts/PMS7003/index.html",
       "/posts/SCD41/index.html",
       "/posts/Soldering_ESP32/index.html",
       "/posts/ESP32_Post_1/index.html",
