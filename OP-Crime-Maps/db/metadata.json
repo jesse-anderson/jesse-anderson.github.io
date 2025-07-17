@@ -1,12 +1,12 @@
 {
-  "created": "2025-06-29T01:28:11",
+  "created": "2025-07-17T08:57:13",
   "duckdb_python_version": "1.3.0",
-  "total_records": 12641,
+  "total_records": 12754,
   "data_source": "summary_report.zip",
   "files": {
     "modern_duckdb": {
       "filename": "crime_data.duckdb",
-      "size_mb": 5.51171875,
+      "size_mb": 5.26171875,
       "wasm_compatibility": "good",
       "recommended_for_wasm": true
     },
@@ -18,13 +18,13 @@
     },
     "parquet": {
       "filename": "crimes.parquet",
-      "size_mb": 1.8016138076782227,
+      "size_mb": 1.8187503814697266,
       "wasm_compatibility": "excellent",
       "recommended_for_wasm": true
     },
     "csv": {
       "filename": "crimes.csv",
-      "size_mb": 6.039175987243652,
+      "size_mb": 6.091503143310547,
       "wasm_compatibility": "universal",
       "recommended_for_wasm": false
     }
