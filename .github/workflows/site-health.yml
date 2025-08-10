@@ -1,0 +1,200 @@
+name: Site Health (HTTPS, redirects, cert + Gmail & Telegram alerts)
+
+on:
+  schedule:
+    - cron: "0 15 * * *" # daily at 15:00 UTC (≈ 9am CST / 10am CDT in America/Chicago) "0 * * * *" = hourly!
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: site-health
+  cancel-in-progress: false
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    env:
+      # Domains to check (one per line)
+      DOMAINS: |
+        jesse-anderson.net
+        opcrime.jesse-anderson.net
+        thisisatest.jesse-anderson.net
+      REDIRECT_LIMIT: "10"
+      CERT_WARN_DAYS: "21"
+    steps:
+      - name: Check HTTP/HTTPS behavior (no loops, OK final)
+        id: curlcheck
+        run: |
+          set -euo pipefail
+          bad=0
+          printf "%-35s %-6s %-5s %s\n" "HOST" "CODE" "HOPS" "FINAL_URL"
+          while read -r host; do
+            [ -z "$host" ] && continue
+            out=$(curl -sIL --max-redirs "${REDIRECT_LIMIT}" -o /dev/null -w "%{http_code} %{url_effective} %{num_redirects}" "https://${host}/")
+            code=$(awk '{print $1}' <<<"$out")
+            final=$(awk '{print $2}' <<<"$out")
+            hops=$(awk '{print $3}' <<<"$out")
+            printf "%-35s %-6s %-5s %s\n" "$host" "$code" "$hops" "$final"
+            if [ "$hops" -ge "${REDIRECT_LIMIT}" ]; then
+              echo "::error ::Too many redirects ($hops) for https://${host}/"
+              bad=1
+            fi
+            case "$code" in
+              200|204|301|302|304) : ;;
+              *) echo "::error ::Unexpected final status $code for https://${host}/"; bad=1;;
+            esac
+          done <<< "$DOMAINS"
+          echo "curl_bad=$bad" >> "$GITHUB_OUTPUT"
+
+      - name: Check TLS certificate expiry
+        id: certexp
+        shell: python
+        run: |
+          import socket, ssl, sys, datetime, os
+          warn_days = int(os.environ.get("CERT_WARN_DAYS","21"))
+          domains = [d.strip() for d in os.environ["DOMAINS"].splitlines() if d.strip()]
+          bad = 0
+          for host in domains:
+            ctx = ssl.create_default_context()
+            ctx.check_hostname = True
+            ctx.verify_mode = ssl.CERT_REQUIRED
+            with socket.create_connection((host, 443), timeout=20) as sock:
+              with ctx.wrap_socket(sock, server_hostname=host) as ssock:
+                cert = ssock.getpeercert()
+            exp = datetime.datetime.strptime(cert["notAfter"], "%b %d %H:%M:%S %Y %Z")
+            days = (exp - datetime.datetime.utcnow()).days
+            print(f">>> {host}: cert expires {exp} (~{days} days)")
+            if days < 1:
+              print(f"::error ::{host} certificate expired")
+              bad = 1
+            elif days < warn_days:
+              print(f"::warning ::{host} certificate expires in {days} days")
+          print(f"certexp_bad={bad}", file=open(os.environ["GITHUB_OUTPUT"],"a"))
+
+      - name: Determine overall status
+        id: status
+        run: |
+          set -euo pipefail
+          bad=$(( ${{ steps.curlcheck.outputs.curl_bad }} || ${{ steps.certexp.outputs.certexp_bad }} ))
+          echo "overall_bad=$bad" >> "$GITHUB_OUTPUT"
+
+      - name: Open or update alert Issue (on failure)
+        if: steps.status.outputs.overall_bad == '1'
+        uses: actions/github-script@v7
+        env:
+          ALERT_HANDLE: ${{ secrets.ALERT_HANDLE }}
+        with:
+          script: |
+            const {owner, repo} = context.repo;
+            const title = "🚨 Site health failing";
+            const label = "site-health";
+            const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
+            const body = [
+              "Automated health check failed.",
+              `Run: ${runUrl}`,
+              "",
+              `cc @${process.env.ALERT_HANDLE}`
+            ].join("\n");
+            try { await github.rest.issues.getLabel({owner, repo, name: label}); }
+            catch { await github.rest.issues.createLabel({owner, repo, name: label, color: "B60205"}); }
+            const issues = await github.paginate(github.rest.issues.listForRepo, { owner, repo, state: "open", labels: label });
+            if (issues.length) {
+              await github.rest.issues.createComment({owner, repo, issue_number: issues[0].number, body});
+            } else {
+              await github.rest.issues.create({owner, repo, title, body, labels: [label]});
+            }
+
+      - name: Send alert EMAIL via Gmail SMTP
+        if: steps.status.outputs.overall_bad == '1'
+        shell: python
+        env:
+          GMAIL_USER:     ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASS: ${{ secrets.GMAIL_APP_PASS }}
+          EMAIL_TO:       ${{ secrets.EMAIL_TO }}
+          RUN_URL:        ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          import os, smtplib, ssl
+          from email.message import EmailMessage
+          user = os.environ["GMAIL_USER"]
+          app  = os.environ["GMAIL_APP_PASS"]
+          tos  = [x.strip() for x in os.environ["EMAIL_TO"].split(",") if x.strip()]
+          subj = "🚨 Site health failing"
+          body = f"Automated health check failed for jesse-anderson.net.\nRun: {os.environ['RUN_URL']}\n"
+          msg = EmailMessage()
+          msg["Subject"] = subj
+          msg["From"] = user
+          msg["To"] = ", ".join(tos)
+          msg.set_content(body)
+          with smtplib.SMTP("smtp.gmail.com", 587) as s:
+            s.starttls(context=ssl.create_default_context())
+            s.login(user, app)
+            s.send_message(msg)
+
+      - name: Send alert via Telegram
+        if: steps.status.outputs.overall_bad == '1'
+        env:
+          TG_TOKEN:  ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT:   ${{ secrets.TG_CHAT_ID }}
+          RUN_URL:   ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          msg="🚨 Site health failing for jesse-anderson.net \nRun: ${RUN_URL}"
+          curl -sS -X POST "https://api.telegram.org/bot${TG_TOKEN}/sendMessage" \
+            -d "chat_id=${TG_CHAT}" \
+            -d "text=${msg}"
+
+      - name: Auto-close alert Issue (on recovery)
+        if: steps.status.outputs.overall_bad == '0'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const {owner, repo} = context.repo;
+            const label = "site-health";
+            const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
+            const okBody = ["✅ Automated health check recovered for jesse-anderson.net.", `Run: ${runUrl}`].join("\n");
+            const issues = await github.paginate(github.rest.issues.listForRepo, { owner, repo, state: "open", labels: label });
+            for (const i of issues) {
+              await github.rest.issues.createComment({owner, repo, issue_number: i.number, body: okBody});
+              await github.rest.issues.update({owner, repo, issue_number: i.number, state: "closed"});
+
+      - name: Send recovery EMAIL via Gmail SMTP
+        if: steps.status.outputs.overall_bad == '0'
+        shell: python
+        env:
+          GMAIL_USER:     ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASS: ${{ secrets.GMAIL_APP_PASS }}
+          EMAIL_TO:       ${{ secrets.EMAIL_TO }}
+          RUN_URL:        ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          import os, smtplib, ssl
+          from email.message import EmailMessage
+          user = os.environ["GMAIL_USER"]
+          app  = os.environ["GMAIL_APP_PASS"]
+          tos  = [x.strip() for x in os.environ["EMAIL_TO"].split(",") if x.strip()]
+          subj = "✅ Site health recovered"
+          body = f"All checks passed for jesse-anderson.net.\nRun: {os.environ['RUN_URL']}\n"
+          msg = EmailMessage()
+          msg["Subject"] = subj
+          msg["From"] = user
+          msg["To"] = ", ".join(tos)
+          msg.set_content(body)
+          with smtplib.SMTP("smtp.gmail.com", 587) as s:
+            s.starttls(context=ssl.create_default_context())
+            s.login(user, app)
+            s.send_message(msg)
+
+      - name: Send recovery via Telegram
+        if: steps.status.outputs.overall_bad == '0'
+        env:
+          TG_TOKEN:  ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT:   ${{ secrets.TG_CHAT_ID }}
+          RUN_URL:   ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          msg="✅ Site health recovered for jesse-anderson.net \nRun: ${RUN_URL}"
+          curl -sS -X POST "https://api.telegram.org/bot${TG_TOKEN}/sendMessage" \
+            -d "chat_id=${TG_CHAT}" \
+            -d "text=${msg}"
