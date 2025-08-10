@@ -72,26 +72,45 @@ jobs:
         id: certexp
         shell: python
         run: |
-          import socket, ssl, sys, datetime, os
-          warn_days = int(os.environ.get("CERT_WARN_DAYS","21"))
-          domains = [d.strip() for d in os.environ["DOMAINS"].splitlines() if d.strip()]
-          bad = 0
-          for host in domains:
-            ctx = ssl.create_default_context()
-            ctx.check_hostname = True
-            ctx.verify_mode = ssl.CERT_REQUIRED
-            with socket.create_connection((host, 443), timeout=20) as sock:
-              with ctx.wrap_socket(sock, server_hostname=host) as ssock:
-                cert = ssock.getpeercert()
-            exp = datetime.datetime.strptime(cert["notAfter"], "%b %d %H:%M:%S %Y %Z")
-            days = (exp - datetime.datetime.utcnow()).days
-            print(f">>> {host}: cert expires {exp} (~{days} days)")
-            if days < 1:
-              print(f"::error ::{host} certificate expired")
-              bad = 1
-            elif days < warn_days:
-              print(f"::warning ::{host} certificate expires in {days} days")
-          print(f"certexp_bad={bad}", file=open(os.environ["GITHUB_OUTPUT"],"a"))
+            import os, socket, ssl
+            from datetime import datetime, timezone
+
+            warn_days = int(os.environ.get("CERT_WARN_DAYS","21"))
+            # Trim whitespace/CRs, ignore blank lines
+            domains = [d.strip().strip("\r") for d in os.environ["DOMAINS"].splitlines() if d.strip()]
+            bad = 0
+
+            for host in domains:
+                try:
+                    ctx = ssl.create_default_context()
+                    ctx.check_hostname = True
+                    ctx.verify_mode = ssl.CERT_REQUIRED
+                    with socket.create_connection((host, 443), timeout=20) as sock:
+                        with ctx.wrap_socket(sock, server_hostname=host) as ssock:
+                            cert = ssock.getpeercert()
+                    # notAfter is like "Sep 11 23:45:19 2025 GMT"
+                    exp = datetime.strptime(cert["notAfter"], "%b %d %H:%M:%S %Y %Z").replace(tzinfo=timezone.utc)
+                    days = (exp - datetime.now(timezone.utc)).days
+                    print(f">>> {host}: cert expires {exp} (~{days} days)")
+                    if days < 1:
+                        print(f"::error ::{host} certificate expired")
+                        bad = 1
+                    elif days < warn_days:
+                        print(f"::warning ::{host} certificate expires in {days} days")
+                except (socket.gaierror, socket.timeout) as e:
+                    print(f"::error ::{host} DNS/TCP error: {e}")
+                    bad = 1
+                except ssl.SSLError as e:
+                    print(f"::error ::{host} TLS error: {e}")
+                    bad = 1
+                except Exception as e:
+                    print(f"::error ::{host} unexpected error: {e}")
+                    bad = 1
+
+            # expose status to later steps (so alerts still fire)
+            with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+                fh.write(f"certexp_bad={bad}\n")
+
 
       - name: Determine overall status
         id: status
