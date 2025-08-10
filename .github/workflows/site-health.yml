@@ -2,7 +2,7 @@ name: Site Health (HTTPS, redirects, cert + Gmail & Telegram alerts)
 
 on:
   schedule:
-    - cron: "0 15 * * *" # daily at 15:00 UTC (≈ 9am CST / 10am CDT in America/Chicago) "0 * * * *" = hourly!
+    - cron: "0 */6 * * *" #Every 6 hours #"0 15 * * *" # daily at 15:00 UTC (≈ 9am CST / 10am CDT in America/Chicago) "0 * * * *" = hourly!
   workflow_dispatch:
 
 permissions:
