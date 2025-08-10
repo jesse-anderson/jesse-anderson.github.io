@@ -28,26 +28,45 @@ jobs:
       - name: Check HTTP/HTTPS behavior (no loops, OK final)
         id: curlcheck
         run: |
-          set -euo pipefail
-          bad=0
-          printf "%-35s %-6s %-5s %s\n" "HOST" "CODE" "HOPS" "FINAL_URL"
-          while read -r host; do
+            # -u only (keep unset-var safety), handle errors manually
+            set -u
+            bad=0
+            printf "%-35s %-6s %-5s %s\n" "HOST" "CODE" "HOPS" "FINAL_URL"
+
+            while IFS= read -r raw; do
+            # Strip CRs and whitespace
+            host="${raw//$'\r'/}"
+            host="${host#"${host%%[![:space:]]*}"}"
+            host="${host%"${host##*[![:space:]]}"}"
             [ -z "$host" ] && continue
-            out=$(curl -sIL --max-redirs "${REDIRECT_LIMIT}" -o /dev/null -w "%{http_code} %{url_effective} %{num_redirects}" "https://${host}/")
+
+            # Try the request; don't crash the step on curl error
+            if ! out=$(curl -sIL --max-redirs "${REDIRECT_LIMIT}" \
+                            -o /dev/null -w "%{http_code} %{url_effective} %{num_redirects}" \
+                            "https://${host}/"); then
+                echo "::error ::curl failed for https://${host}/ (exit $?)"
+                bad=1
+                continue
+            fi
+
             code=$(awk '{print $1}' <<<"$out")
             final=$(awk '{print $2}' <<<"$out")
             hops=$(awk '{print $3}' <<<"$out")
             printf "%-35s %-6s %-5s %s\n" "$host" "$code" "$hops" "$final"
+
             if [ "$hops" -ge "${REDIRECT_LIMIT}" ]; then
-              echo "::error ::Too many redirects ($hops) for https://${host}/"
-              bad=1
+                echo "::error ::Too many redirects ($hops) for https://${host}/"
+                bad=1
             fi
             case "$code" in
-              200|204|301|302|304) : ;;
-              *) echo "::error ::Unexpected final status $code for https://${host}/"; bad=1;;
+                200|204|301|302|304) : ;;
+                *) echo "::error ::Unexpected final status $code for https://${host}/"; bad=1;;
             esac
-          done <<< "$DOMAINS"
-          echo "curl_bad=$bad" >> "$GITHUB_OUTPUT"
+            done <<< "$DOMAINS"
+
+            # Export result for later steps
+            echo "curl_bad=$bad" >> "$GITHUB_OUTPUT"
+
 
       - name: Check TLS certificate expiry
         id: certexp
