@@ -118,31 +118,31 @@ jobs:
           bad=$(( ${{ steps.curlcheck.outputs.curl_bad }} || ${{ steps.certexp.outputs.certexp_bad }} ))
           echo "overall_bad=$bad" >> "$GITHUB_OUTPUT"
 
-      - name: Open or update alert Issue (on failure)
-        if: steps.status.outputs.overall_bad == '1'
+      - name: Auto-close alert Issue (robust)
+        if: always()   
         uses: actions/github-script@v7
         env:
-          ALERT_HANDLE: ${{ secrets.ALERT_HANDLE }}
+            OVERALL_BAD: ${{ steps.status.outputs.overall_bad }} ## run even if earlier steps failed; we'll gate on overall_bad below
         with:
-          script: |
-            const {owner, repo} = context.repo;
-            const title = "🚨 Site health failing";
-            const label = "site-health";
-            const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
-            const body = [
-              "Automated health check failed.",
-              `Run: ${runUrl}`,
-              "",
-              `cc @${process.env.ALERT_HANDLE}`
-            ].join("\n");
-            try { await github.rest.issues.getLabel({owner, repo, name: label}); }
-            catch { await github.rest.issues.createLabel({owner, repo, name: label, color: "B60205"}); }
-            const issues = await github.paginate(github.rest.issues.listForRepo, { owner, repo, state: "open", labels: label });
-            if (issues.length) {
-              await github.rest.issues.createComment({owner, repo, issue_number: issues[0].number, body});
-            } else {
-              await github.rest.issues.create({owner, repo, title, body, labels: [label]});
-            }
+            script: |
+                const bad = process.env.OVERALL_BAD || '1';
+                if (bad !== '0') {
+                    core.info('Still failing; not closing issues.');
+                    return;
+                }
+                const {owner, repo} = context.repo;
+                const label = "site-health";
+                const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
+                const issues = await github.paginate(github.rest.issues.listForRepo, {
+                    owner, repo, state: "open", labels: label
+                });
+                for (const i of issues) {
+                    await github.rest.issues.createComment({
+                    owner, repo, issue_number: i.number,
+                    body: `✅ Automated health check recovered.\nRun: ${runUrl}`
+                    });
+                    await github.rest.issues.update({ owner, repo, issue_number: i.number, state: "closed" });
+                }
 
       - name: Send alert EMAIL via Gmail SMTP
         if: steps.status.outputs.overall_bad == '1'
