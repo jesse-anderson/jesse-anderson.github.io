@@ -183,20 +183,6 @@ jobs:
             -d "chat_id=${TG_CHAT}" \
             -d "text=${msg}"
 
-      - name: Auto-close alert Issue (on recovery)
-        if: steps.status.outputs.overall_bad == '0'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const {owner, repo} = context.repo;
-            const label = "site-health";
-            const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
-            const okBody = ["✅ Automated health check recovered for jesse-anderson.net.", `Run: ${runUrl}`].join("\n");
-            const issues = await github.paginate(github.rest.issues.listForRepo, { owner, repo, state: "open", labels: label });
-            for (const i of issues) {
-              await github.rest.issues.createComment({owner, repo, issue_number: i.number, body: okBody});
-              await github.rest.issues.update({owner, repo, issue_number: i.number, state: "closed"});
-
       - name: Send recovery EMAIL via Gmail SMTP
         if: steps.status.outputs.overall_bad == '0'
         shell: python
