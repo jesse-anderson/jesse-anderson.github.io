@@ -828,8 +828,28 @@ async function initializeDuckDB() {
         }
     }
 
+    // Patch leaflet-heat to request a Canvas2D context with willReadFrequently for better getImageData perf
+    (function patchLeafletHeatWillReadFrequently() {
+    if (!window.L || !L.HeatLayer) return;
+
+    const origOnAdd = L.HeatLayer.prototype.onAdd;
+    L.HeatLayer.prototype.onAdd = function (map) {
+        origOnAdd.call(this, map);
+        try {
+        if (this._canvas && this._canvas.getContext) {
+            const ctx = this._canvas.getContext('2d', { willReadFrequently: true });
+            if (ctx && this._heat) {
+            this._heat._ctx = ctx; // swap simpleheat context
+            }
+        }
+        } catch (e) {
+        // safe to ignore if upstream changes
+        console.debug('leaflet-heat willReadFrequently patch skipped:', e);
+        }
+    };
+    })();
+
     // --- Database Loading and Application Initialization ---
-    // (This part remains the same, assuming db_instance is now valid)
     updateLoadStatus(`DuckDB instantiated from ${currentAttemptSource}, fetching database file...`);
     try {
         const dbFilePath = 'db/crime_data.duckdb'; 
@@ -1205,7 +1225,7 @@ async function initializeDuckDB() {
                 currentCrimeData = crimes;
                 
                 // Log performance information to console
-                console.log(`🚀 Query Performance Report:`);
+                console.log(`   Query Performance Report:`);
                 console.log(`   Query time: ${queryTime.toFixed(2)}ms`);
                 console.log(`   Records returned: ${crimes.length.toLocaleString()}`);
                 console.log(`   Query throughput: ${(crimes.length / (queryTime / 1000)).toFixed(0)} records/second`);
@@ -1264,13 +1284,28 @@ async function initializeDuckDB() {
         }
         
         function addCrimesToMap(crimes) {
-            // Create marker cluster group - this needs to be recreated each time to ensure clean state
-            markerClusterGroup = L.markerClusterGroup({
+            const isMobile = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+            // Build cluster options per device
+            const clusterOpts = isMobile
+            ? {
+                showCoverageOnHover: false,
+                maxClusterRadius: 70,          // merge a bit more on mobile to reduce DOM work
+                spiderfyOnMaxZoom: false,      // avoid heavy spiderfy animation on phones
+                disableClusteringAtZoom: 17,
+                chunkedLoading: true,
+                animateAddingMarkers: false     // mobile tweak
+                }
+            : {
                 showCoverageOnHover: false,
                 maxClusterRadius: 50,
                 spiderfyOnMaxZoom: true,
-                chunkedLoading: true
-            });
+                disableClusteringAtZoom: 18,
+                chunkedLoading: true,
+                animateAddingMarkers: true      // desktop keeps animations
+                };
+
+            // Create marker cluster group
+            markerClusterGroup = L.markerClusterGroup(clusterOpts);
             
             // Process each crime record and add to appropriate data structures
             crimes.forEach(crime => {
@@ -1297,37 +1332,51 @@ async function initializeDuckDB() {
                     </details>
                 `;
                 
+                // Device-aware icon options (shadow only on desktop)
+                const iconOpts = isMobile
+                ? {
+                    iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41],
+                    popupAnchor: [1, -34]
+                    // no shadow on mobile
+                    }
+                : {
+                    iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41],
+                    popupAnchor: [1, -34],
+                    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+                    shadowSize: [41, 41]
+                    };
+
                 // Create marker and add to cluster group
                 const marker = L.marker([crime.lat, crime.long], {
-                    icon: L.icon({
-                        iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-                        iconSize: [25, 41],
-                        iconAnchor: [12, 41],
-                        popupAnchor: [1, -34],
-                        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-                        shadowSize: [41, 41]
-                    })
+                icon: L.icon(iconOpts)
                 }).bindPopup(popupContent);
                 
                 markerClusterGroup.addLayer(marker);
                 markers.push(marker);
             });
+
             
+            //Using this isMobile flag to tone down how well the map is displaying heatmaplayer so it isn't
+            //slow af.
             // Create the heatmap layer if we have data
-            if (heatmapData.length > 0) {
-                heatmapLayer = L.heatLayer(heatmapData, {
-                    radius: 20,
-                    blur: 15,
-                    maxZoom: 17
+            heatmapLayer = L.heatLayer(heatmapData, {
+                radius: isMobile ? 14 : 20,
+                blur:   isMobile ? 10 : 15,
+                maxZoom: 17
                 });
-            }
+
             
+
             // Add both layers to the map initially - this ensures they both appear
             if (markerClusterGroup) {
                 markerClusterGroup.addTo(map);
             }
-            if (heatmapLayer) {
-                heatmapLayer.addTo(map);
+            if (heatmapLayer && !isMobile) {
+                heatmapLayer.addTo(map); // keep off by default on mobile, still togglable via control
             }
             
             // Create the layer control with both options
@@ -1343,7 +1392,7 @@ async function initializeDuckDB() {
             // Add layer control only if we have layers to control
             if (Object.keys(overlays).length > 0) {
                 layerControl = L.control.layers(null, overlays, {
-                    collapsed: false,
+                    collapsed: isMobile ? true : false,
                     position: 'topleft'
                 }).addTo(map);
             }
