@@ -16,7 +16,9 @@ concurrency:
 jobs:
   health:
     runs-on: ubuntu-latest
-    env:I was getting alerts every 6 hours no matter what. This now only alerts me when there's an issue and it gets fixed.
+    env: 
+    #I was getting alerts every 6 hours no matter what. 
+    #This now only alerts me when there's an issue and it gets fixed.
       # Domains to check (one per line)
       DOMAINS: |
         jesse-anderson.net
