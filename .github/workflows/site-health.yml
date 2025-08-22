@@ -2,7 +2,7 @@ name: Site Health (HTTPS, redirects, cert + Gmail & Telegram alerts)
 
 on:
   schedule:
-    - cron: "0 */6 * * *" #Every 6 hours #"0 15 * * *" # daily at 15:00 UTC (≈ 9am CST / 10am CDT in America/Chicago) "0 * * * *" = hourly!
+    - cron: "0 */6 * * *" # Every 6 hours
   workflow_dispatch:
 
 permissions:
@@ -16,11 +16,12 @@ concurrency:
 jobs:
   health:
     runs-on: ubuntu-latest
-    env:
+    env:I was getting alerts every 6 hours no matter what. This now only alerts me when there's an issue and it gets fixed.
       # Domains to check (one per line)
       DOMAINS: |
         jesse-anderson.net
         opcrime.jesse-anderson.net
+        thisisafakename.jesse-anderson.net
       REDIRECT_LIMIT: "10"
       CERT_WARN_DAYS: "21"
     steps:
@@ -59,13 +60,12 @@ jobs:
             fi
             case "$code" in
                 200|204|301|302|304) : ;;
-                *) echo "::error ::Unexpected final status $code for https://${host}/"; bad=1;;
+                *) echo "::error ::Unexpected final status $code for https://${host}/"; bad=1 ;;
             esac
             done <<< "$DOMAINS"
 
             # Export result for later steps
             echo "curl_bad=$bad" >> "$GITHUB_OUTPUT"
-
 
       - name: Check TLS certificate expiry
         id: certexp
@@ -110,7 +110,6 @@ jobs:
             with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
                 fh.write(f"certexp_bad={bad}\n")
 
-
       - name: Determine overall status
         id: status
         run: |
@@ -118,34 +117,53 @@ jobs:
           bad=$(( ${{ steps.curlcheck.outputs.curl_bad }} || ${{ steps.certexp.outputs.certexp_bad }} ))
           echo "overall_bad=$bad" >> "$GITHUB_OUTPUT"
 
-      - name: Auto-close alert Issue (robust)
-        if: always()   
+      # NEW: single step that manages the alert Issue and exposes transition signals.
+      - name: Track alert lifecycle (open/close issue & emit outputs)
+        id: alerts
+        if: always()
         uses: actions/github-script@v7
         env:
-            OVERALL_BAD: ${{ steps.status.outputs.overall_bad }} ## run even if earlier steps failed; we'll gate on overall_bad below
+          OVERALL_BAD: ${{ steps.status.outputs.overall_bad }}
         with:
-            script: |
-                const bad = process.env.OVERALL_BAD || '1';
-                if (bad !== '0') {
-                    core.info('Still failing; not closing issues.');
-                    return;
-                }
-                const {owner, repo} = context.repo;
-                const label = "site-health";
-                const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
-                const issues = await github.paginate(github.rest.issues.listForRepo, {
-                    owner, repo, state: "open", labels: label
-                });
-                for (const i of issues) {
-                    await github.rest.issues.createComment({
-                    owner, repo, issue_number: i.number,
-                    body: `✅ Automated health check recovered.\nRun: ${runUrl}`
-                    });
-                    await github.rest.issues.update({ owner, repo, issue_number: i.number, state: "closed" });
-                }
+          script: |
+            const bad = (process.env.OVERALL_BAD || '1') === '1';
+            const { owner, repo } = context.repo;
+            const label = "site-health";
+            const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
 
+            let opened = 0, recovered = 0;
+
+            const openIssues = await github.paginate(github.rest.issues.listForRepo, {
+              owner, repo, state: "open", labels: label
+            });
+
+            if (bad) {
+              if (openIssues.length === 0) {
+                await github.rest.issues.create({
+                  owner, repo,
+                  title: "🚨 Site health failing",
+                  body: `Automated health check is failing.\nRun: ${runUrl}`,
+                  labels: [label]
+                });
+                opened = 1;
+              }
+            } else {
+              for (const i of openIssues) {
+                await github.rest.issues.createComment({
+                  owner, repo, issue_number: i.number,
+                  body: `✅ Automated health check recovered.\nRun: ${runUrl}`
+                });
+                await github.rest.issues.update({ owner, repo, issue_number: i.number, state: "closed" });
+                recovered = 1;
+              }
+            }
+
+            core.setOutput('opened', String(opened));       // 1 only when first failing
+            core.setOutput('recovered', String(recovered)); // 1 only when actually recovered
+
+      # Failure notifications ONLY when we just opened an issue (first failure)
       - name: Send alert EMAIL via Gmail SMTP
-        if: steps.status.outputs.overall_bad == '1'
+        if: steps.alerts.outputs.opened == '1'
         shell: python
         env:
           GMAIL_USER:     ${{ secrets.GMAIL_USER }}
@@ -171,7 +189,7 @@ jobs:
             s.send_message(msg)
 
       - name: Send alert via Telegram
-        if: steps.status.outputs.overall_bad == '1'
+        if: steps.alerts.outputs.opened == '1'
         env:
           TG_TOKEN:  ${{ secrets.TG_BOT_TOKEN }}
           TG_CHAT:   ${{ secrets.TG_CHAT_ID }}
@@ -183,8 +201,9 @@ jobs:
             -d "chat_id=${TG_CHAT}" \
             -d "text=${msg}"
 
+      # Recovery notifications ONLY when we actually closed at least one open alert issue
       - name: Send recovery EMAIL via Gmail SMTP
-        if: steps.status.outputs.overall_bad == '0'
+        if: steps.alerts.outputs.recovered == '1'
         shell: python
         env:
           GMAIL_USER:     ${{ secrets.GMAIL_USER }}
@@ -198,7 +217,7 @@ jobs:
           app  = os.environ["GMAIL_APP_PASS"]
           tos  = [x.strip() for x in os.environ["EMAIL_TO"].split(",") if x.strip()]
           subj = "✅ Site health recovered"
-          body = f"All checks passed for jesse-anderson.net.\nRun: {os.environ['RUN_URL']}\n"
+          body = f"All checks passed again for jesse-anderson.net.\nRun: {os.environ['RUN_URL']}\n"
           msg = EmailMessage()
           msg["Subject"] = subj
           msg["From"] = user
@@ -210,7 +229,7 @@ jobs:
             s.send_message(msg)
 
       - name: Send recovery via Telegram
-        if: steps.status.outputs.overall_bad == '0'
+        if: steps.alerts.outputs.recovered == '1'
         env:
           TG_TOKEN:  ${{ secrets.TG_BOT_TOKEN }}
           TG_CHAT:   ${{ secrets.TG_CHAT_ID }}
