@@ -23,7 +23,6 @@ jobs:
       DOMAINS: |
         jesse-anderson.net
         opcrime.jesse-anderson.net
-        thisisafakename.jesse-anderson.net
       REDIRECT_LIMIT: "10"
       CERT_WARN_DAYS: "21"
     steps:
