@@ -170,3 +170,11 @@ Electrochemical and MOS chips are inexpensive and socket-friendly but drift over
 22. May, N.W., Dixon, C., Jaffe, D.A. (2021). Impact of Wildfire Smoke Events on Indoor Air Quality and Evaluation of a Low-cost Filtration Method. Aerosol Air Qual. Res. 21, 210046. https://doi.org/10.4209/aaqr.210046
 
 23. Xiang, Jianbang, et al. “Field Measurements of PM2.5 Infiltration Factor and Portable Air Cleaner Effectiveness during Wildfire Episodes in US Residences.” *Science of the Total Environment*, vol. 773, June 2021, p. 145642, https://doi.org/10.1016/j.scitotenv.2021.145642. Accessed 3 Feb. 2022.
+
+# Actual Sensor
+
+So, I had originally intended to use a PMS7003, but after writing some C++ and running the PMS7003 against a Sensiron PM sensor I cannot in good faith recommend using the PMS7003. As such, I'll just talk about the Sensiron SPS30(Not to be confused with the SEN5x) which has been calibrated to TSI DustTrak™ DRX 8533 Ambient Mode. It seems to hold up pretty well and is always within 80% of the actual value for PM2.5(a lot better than the randomness reported by PMS7003)\[[Link](https://www.aqmd.gov/docs/default-source/aq-spec/summary/sensirion-sps30---summary-report.pdf?sfvrsn=8)\]. I preferred this one over the SEN5x since it'll report the particle count and average while the 5x gives you humidity/temp/VOC/NOx index. I'd rather have this sensor + a standalone VOC/NOx sensor to decouple failure.
+
+Anyhow, here's some insights below(they will be updated as I measure data):
+
+Soldering fume dissipation over time:\
