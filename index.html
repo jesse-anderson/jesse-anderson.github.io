@@ -62,20 +62,43 @@
             <!-- Hero Section -->
             <section class="hero">
                 <div class="hero-content">
-                    <p class="hero-eyebrow">// ENGINEER</p>
+                    <div class="availability">
+                        <span class="pulse"></span>
+                        Open to opportunities
+                    </div>
+                    
                     <h1 class="hero-title">Data Systems &<br>Automation Engineering</h1>
+                    
                     <p class="hero-subtitle">
-                        Building automation-heavy data systems—pipelines, dashboards, and engineering tooling—that scale reliably and save time.
+                        I build automation-heavy data systems—pipelines, dashboards, and engineering tooling—that scale reliably and save teams real time.
                     </p>
+                    
                     <div class="hero-proof">
                         <div class="proof-item">
-                            <span class="proof-icon">⚡</span>
-                            <span class="proof-text">Automated away thousands of hours of manual work through reliable systems design</span>
+                            <span class="proof-number">500+</span>
+                            <span class="proof-text">hours of manual departmental workflows eliminated annually through automation at UL Solutions</span>
+                        </div>
+                        <div class="proof-item">
+                            <span class="proof-number">7</span>
+                            <span class="proof-text">peer-reviewed publications in microscopy image analysis & computational biology</span>
                         </div>
                     </div>
+                    <p class="currently">
+                        <span class="currently-label">Currently:</span>
+                        Building IoT sensor networks and real-time analytics dashboards for environmental monitoring.
+                    </p>
                     <div class="hero-background">
                         <span class="background-label">Background</span>
-                        <span class="background-text">BS Chemical Engineering → MCS Computer Science (UIUC)</span>
+                        <span class="background-text">BS Chemical Engineering (UIC, 3.8) → MCS Computer Science (UIUC, 4.0)</span>
+                    </div>
+                    
+                    <div class="tech-stack">
+                        <span class="stack-pill">Python</span>
+                        <span class="stack-pill">SQL</span>
+                        <span class="stack-pill">AWS</span>
+                        <span class="stack-pill">Docker</span>
+                        <span class="stack-pill">ESP32</span>
+                        <span class="stack-pill">PyTorch</span>
                     </div>
                 </div>
             </section>
@@ -148,9 +171,12 @@
 
             <!-- Featured Tools Section -->
             <section class="featured-tools">
-                <div class="section-header">
-                    <h2 class="section-title">Featured Engineering Tools</h2>
-                    <p class="section-subtitle">Curated utilities built to solve real problems</p>
+                <div class="section-header section-head-row">
+                    <div>
+                        <h2 class="section-title">Tools I've Built</h2>
+                        <p class="section-subtitle">Engineering calculators and utilities—proof I ship useful things</p>
+                    </div>
+                    <a class="text-link" href="https://tools.jesse-anderson.net/tools.html">View all tools →</a>
                 </div>
                 <div class="tools-grid">
                     <!-- Oral Multi-Dose Simulator -->
@@ -188,9 +214,9 @@
                         <div class="tool-card-header">
                             <div class="tool-icon tool-icon--it">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
-                                    <circle cx="8.5" cy="8.5" r="1.5"/>
-                                    <path d="M21 15l-5-5L5 21"/>
+                                    <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                    <path d="M21 15l-5-5L5 21"></path>
                                 </svg>
                             </div>
                             <span class="tool-tag">AI/ML</span>
@@ -200,9 +226,6 @@
                         <span class="tool-cta">Open Tool →</span>
                     </a>
                 </div>
-                <div class="tools-footer">
-                    <a href="https://tools.jesse-anderson.net/tools.html" class="view-all-link">View all tools →</a>
-                </div>
             </section>
 
             <!-- Latest Writing Section -->
@@ -210,29 +233,30 @@
                 <div class="section-header section-head-row">
                     <div>
                         <h2 class="section-title">Latest Writing</h2>
-                        <p class="section-subtitle">Most recent posts from the blog (auto-populated; degrades gracefully)</p>
+                        <p class="section-subtitle">Technical articles and project documentation</p>
                     </div>
-                    <a class="text-link" href="https://blog.jesse-anderson.net/">View all writing →</a>
+                    <a class="text-link" href="https://blog.jesse-anderson.net">View all writing →</a>
                 </div>
                 <div class="writing">
                     <div id="latestWriting" class="writing-list" aria-live="polite" aria-busy="true">
+                        <!-- Skeleton loading state -->
                         <div class="writing-skeleton">
-                            <div class="sk-line w-60"></div>
+                            <div class="sk-line w-70"></div>
                             <div class="sk-line w-35"></div>
                         </div>
                         <div class="writing-skeleton">
-                            <div class="sk-line w-55"></div>
+                            <div class="sk-line w-60"></div>
                             <div class="sk-line w-30"></div>
                         </div>
                         <div class="writing-skeleton">
-                            <div class="sk-line w-50"></div>
+                            <div class="sk-line w-75"></div>
                             <div class="sk-line w-25"></div>
                         </div>
                     </div>
                     <noscript>
                         <p class="muted">
-                            Latest writing requires JavaScript. You can always browse everything at
-                            <a href="https://blog.jesse-anderson.net/">blog.jesse-anderson.net</a>.
+                            Latest writing requires JavaScript. Browse everything at
+                            <a href="https://blog.jesse-anderson.net">blog.jesse-anderson.net</a>.
                         </p>
                     </noscript>
                 </div>
@@ -242,33 +266,32 @@
             <section class="contact-section">
                 <div class="contact-content">
                     <div class="contact-text">
-                        <h2 class="contact-title">Get in Touch</h2>
+                        <h2 class="contact-title">Let's Talk</h2>
                         <p class="contact-description">
-                            Interested in discussing data systems, automation projects, or engineering opportunities? 
-                            Feel free to reach out.
+                            Interested in data systems, automation, or engineering opportunities?
                         </p>
                         <a href="mailto:jesse@jesse-anderson.net" class="contact-email">jesse@jesse-anderson.net</a>
                     </div>
                     <div class="contact-docs">
                         <a href="files/resume.pdf" class="doc-button" target="_blank">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                                <polyline points="14 2 14 8 20 8"/>
-                                <line x1="16" y1="13" x2="8" y2="13"/>
-                                <line x1="16" y1="17" x2="8" y2="17"/>
-                                <polyline points="10 9 9 9 8 9"/>
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
                             </svg>
-                            <span>Resume (PDF)</span>
+                            <span>Resume</span>
                         </a>
                         <a href="files/CV.pdf" class="doc-button" target="_blank">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                                <polyline points="14 2 14 8 20 8"/>
-                                <line x1="16" y1="13" x2="8" y2="13"/>
-                                <line x1="16" y1="17" x2="8" y2="17"/>
-                                <polyline points="10 9 9 9 8 9"/>
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
                             </svg>
-                            <span>CV (PDF)</span>
+                            <span>Full CV</span>
                         </a>
                     </div>
                 </div>
@@ -284,7 +307,8 @@
                 <div class="footer-right">
                     <a href="mailto:jesse@jesse-anderson.net" class="footer-link">Email</a>
                     <a href="https://github.com/jesse-anderson" class="footer-link" target="_blank">GitHub</a>
-                    <a href="https://linkedin.com/in/jesse-anderson" class="footer-link" target="_blank">LinkedIn</a>
+                    <a href="https://www.linkedin.com/in/jesse-anderson-a7c5/" class="footer-link" target="_blank">LinkedIn</a>
+                    <a href="https://orcid.org/0000-0001-5731-5511" class="footer-link" target="_blank">ORCID</a>
                 </div>
             </div>
         </footer>

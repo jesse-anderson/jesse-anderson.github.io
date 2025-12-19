@@ -267,6 +267,47 @@ main {
     max-width: 720px;
 }
 
+/* Availability Badge */
+.availability {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--accent-tools);
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    padding: 0.4rem 0.9rem 0.4rem 0.7rem;
+    border-radius: 100px;
+    margin-bottom: var(--space-lg);
+}
+
+.pulse {
+    width: 8px;
+    height: 8px;
+    background: var(--accent-tools);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.9); }
+}
+.currently {
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    margin: 0 0 var(--space-xl) 0;
+    padding-left: var(--space-md);
+    border-left: 2px solid var(--accent-primary);
+}
+
+.currently-label {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--text-primary);
+}
 .hero-eyebrow {
     font-family: var(--font-mono);
     font-size: 0.75rem;
@@ -296,18 +337,30 @@ main {
 }
 
 .hero-proof {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
     margin-bottom: var(--space-xl);
 }
 
 .proof-item {
     display: flex;
-    align-items: flex-start;
+    align-items: baseline;
     gap: var(--space-md);
     padding: var(--space-md) var(--space-lg);
     background-color: var(--bg-tertiary);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
     border-left: 3px solid var(--accent-engineering);
+}
+
+.proof-number {
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--accent-engineering);
+    line-height: 1;
+    flex-shrink: 0;
 }
 
 .proof-icon {
@@ -343,6 +396,31 @@ main {
     font-family: var(--font-mono);
     font-size: 0.875rem;
     color: var(--text-secondary);
+}
+
+/* Tech Stack Pills */
+.tech-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    margin-top: var(--space-lg);
+}
+
+.stack-pill {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    padding: 0.3rem 0.75rem;
+    border-radius: 100px;
+    transition: border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.stack-pill:hover {
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
 }
 
 /* ==========================================================================
@@ -1019,6 +1097,11 @@ main {
     .proof-item {
         flex-direction: column;
         gap: var(--space-sm);
+        align-items: flex-start;
+    }
+    
+    .proof-number {
+        font-size: 1.5rem;
     }
     
     .hero-background {
