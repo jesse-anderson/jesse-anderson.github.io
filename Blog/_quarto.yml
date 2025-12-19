@@ -15,7 +15,7 @@ website:
       - about.qmd
       - icon: Folder symlink fill
         text: Portfolio
-        href: https://jesse-anderson.github.io
+        href: https://portfolio.jesse-anderson.net/
       - icon: github
         href: https://github.com/jesse-anderson/
       - icon: linkedin
