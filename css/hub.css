@@ -80,6 +80,44 @@
         --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
     }
 }
+/* Manual theme override */
+[data-theme="light"] {
+    --bg-primary: #fafafa;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #f5f5f5;
+    --bg-card: #ffffff;
+    
+    --text-primary: #1a1a1a;
+    --text-secondary: #4a4a4a;
+    --text-muted: #717171;
+    --text-subtle: #9a9a9a;
+    
+    --border-color: #e5e5e5;
+    --border-hover: #d0d0d0;
+    
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="dark"] {
+    --bg-primary: #0f0f0f;
+    --bg-secondary: #1a1a1a;
+    --bg-tertiary: #141414;
+    --bg-card: #1a1a1a;
+    
+    --text-primary: #f5f5f5;
+    --text-secondary: #b0b0b0;
+    --text-muted: #808080;
+    --text-subtle: #606060;
+    
+    --border-color: #2a2a2a;
+    --border-hover: #3a3a3a;
+    
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
 
 /* ==========================================================================
    Base Styles
@@ -950,6 +988,46 @@ main {
     height: 18px;
 }
 
+/* Theme Toggle */
+.theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.theme-toggle-btn {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 100px;
+    padding: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.theme-toggle-btn:hover {
+    border-color: var(--border-hover);
+    background-color: var(--bg-secondary);
+}
+
+.theme-toggle-btn svg {
+    width: 16px;
+    height: 16px;
+    color: var(--text-secondary);
+}
+
+/* Show appropriate icon based on theme */
+.theme-toggle-btn .icon-sun { display: none; }
+.theme-toggle-btn .icon-moon { display: block; }
+
+[data-theme="dark"] .theme-toggle-btn .icon-sun { display: block; }
+[data-theme="dark"] .theme-toggle-btn .icon-moon { display: none; }
+
 /* ==========================================================================
    Footer
    ========================================================================== */
@@ -990,7 +1068,11 @@ main {
 .footer-link:hover {
     color: var(--text-primary);
 }
-
+.footer-left {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
 /* ==========================================================================
    Animations
    ========================================================================== */
