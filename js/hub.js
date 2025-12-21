@@ -185,7 +185,31 @@
     }
   }
 
+  // Mobile menu toggle functionality
+  function initMobileMenu() {
+    const toggle = $(".mobile-menu-toggle");
+    const mobileNav = $(".mobile-nav");
+    
+    if (!toggle || !mobileNav) return;
+    
+    toggle.addEventListener("click", () => {
+      const isOpen = mobileNav.classList.toggle("active");
+      toggle.classList.toggle("active", isOpen);
+      toggle.setAttribute("aria-expanded", String(isOpen));
+    });
+    
+    // Close menu when clicking a link
+    mobileNav.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", () => {
+        mobileNav.classList.remove("active");
+        toggle.classList.remove("active");
+        toggle.setAttribute("aria-expanded", "false");
+      });
+    });
+  }
+
   window.addEventListener("DOMContentLoaded", () => {
     loadLatestWriting();
+    initMobileMenu();
   });
 })();
