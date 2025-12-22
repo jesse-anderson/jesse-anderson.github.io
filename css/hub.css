@@ -572,6 +572,37 @@ main {
     font-weight: 600;
     color: var(--text-primary);
     margin: 0 0 var(--space-sm) 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+/* Tools count badge - dynamically populated */
+.tools-count-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    min-width: 1.5rem;
+    height: 1.25rem;
+    padding: 0 var(--space-xs);
+    background: var(--accent-tools);
+    color: #fff;
+    border-radius: 999px;
+    animation: badgeFadeIn 0.3s ease;
+}
+
+@keyframes badgeFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 .card-description {

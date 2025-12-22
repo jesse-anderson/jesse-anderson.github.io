@@ -6,6 +6,8 @@
 (function () {
   "use strict";
 
+  const TOOLS_ORIGIN = "https://tools.jesse-anderson.net";
+  const TOOLS_HOME = TOOLS_ORIGIN + "/tools.html";
   const BLOG_ORIGIN = "https://blog.jesse-anderson.net";
   const BLOG_HOME = BLOG_ORIGIN + "/";
 
@@ -18,6 +20,9 @@
     return root.querySelector(sel);
   }
 
+  function $$(sel, root = document) {
+    return root.querySelectorAll(sel);
+  }
   function el(tag, className, text) {
     const node = document.createElement(tag);
     if (className) node.className = className;
@@ -53,6 +58,107 @@
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), ms);
     return { controller, cancel: () => clearTimeout(id) };
+  }
+
+  // ============================================
+  // TOOLS STATS FUNCTIONALITY
+  // ============================================
+
+  /**
+   * Fetches tools.html and extracts tool statistics
+   * @param {string} toolsUrl - URL to tools.html
+   * @returns {Promise<{totalTools: number, categories: Array<{name: string, count: number}>, error?: string}>}
+   */
+  async function getToolsStats(toolsUrl = TOOLS_HOME) {
+    const { controller, cancel } = withTimeout(4500);
+
+    try {
+      const response = await fetch(toolsUrl, {
+        method: "GET",
+        mode: "cors",
+        cache: "no-store",
+        signal: controller.signal
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch tools.html: ${response.status}`);
+      }
+
+      const html = await response.text();
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, "text/html");
+
+      const categories = [];
+      let totalTools = 0;
+
+      const sections = doc.querySelectorAll(".category-section");
+
+      for (const section of sections) {
+        const titleEl = section.querySelector(".category-title");
+        const categoryName = titleEl ? titleEl.textContent.trim() : "Unknown";
+
+        const toolCards = section.querySelectorAll(".tools-grid .tool-card");
+        const toolCount = toolCards.length;
+
+        if (toolCount > 0) {
+          categories.push({
+            name: categoryName,
+            count: toolCount
+          });
+          totalTools += toolCount;
+        }
+      }
+
+      return { totalTools, categories };
+    } catch (err) {
+      console.error("Error fetching tools stats:", err);
+      return { totalTools: 0, categories: [], error: err.message };
+    } finally {
+      cancel();
+    }
+  }
+
+  /**
+   * Updates the UI with tools statistics
+   */
+  async function loadToolsStats() {
+    const stats = await getToolsStats();
+
+    if (stats.error || stats.totalTools === 0) {
+      return; // Silently fail - static content remains as fallback
+    }
+
+    // Update the Tools Hub card examples list with dynamic categories
+    const toolsCard = $(".destination-card--tools");
+    if (toolsCard) {
+      const examplesList = toolsCard.querySelector(".card-examples");
+      if (examplesList && stats.categories.length > 0) {
+        examplesList.innerHTML = "";
+        const topCategories = stats.categories
+          .sort((a, b) => b.count - a.count)
+          .slice(0, 3);
+
+        for (const cat of topCategories) {
+          const li = el("li", "", `${cat.name} (${cat.count})`);
+          examplesList.appendChild(li);
+        }
+      }
+
+      // Add badge showing total tools count
+      const cardTitle = toolsCard.querySelector(".card-title");
+      if (cardTitle && !cardTitle.querySelector(".tools-count-badge")) {
+        const badge = el("span", "tools-count-badge", stats.totalTools.toString());
+        badge.setAttribute("title", `${stats.totalTools} tools available`);
+        cardTitle.appendChild(badge);
+      }
+    }
+
+    // Update "View all tools →" link with count
+    const viewAllLink = $('a.text-link[href*="tools.jesse-anderson.net"]');
+    if (viewAllLink && !viewAllLink.dataset.updated) {
+      viewAllLink.textContent = `View all ${stats.totalTools} tools →`;
+      viewAllLink.dataset.updated = "true";
+    }
   }
 
   function renderFallback(container) {
@@ -244,6 +350,7 @@
   }
   window.addEventListener("DOMContentLoaded", () => {
     loadLatestWriting();
+    loadToolsStats();
     initMobileMenu();
     initThemeToggle();
   });
