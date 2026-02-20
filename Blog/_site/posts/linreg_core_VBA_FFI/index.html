@@ -1,0 +1,2000 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.553">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Jesse Anderson">
+<meta name="dcterms.date" content="2025-07-06">
+
+<title>Jesse Anderson’s Blog - Calling Rust from Excel: Building a Native DLL for VBA</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/cookie-consent/cookie-consent.js"></script>
+<link href="../../site_libs/cookie-consent/cookie-consent.css" rel="stylesheet">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-5CSPYCMY55"></script>
+
+<script type="text/plain" cookie-consent="tracking">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-5CSPYCMY55', { 'anonymize_ip': true});
+</script>
+
+<script type="text/javascript" charset="UTF-8">
+document.addEventListener('DOMContentLoaded', function () {
+cookieconsent.run({
+  "notice_banner_type":"simple",
+  "consent_type":"implied",
+  "palette":"light",
+  "language":"en",
+  "page_load_consent_levels":["strictly-necessary","functionality","tracking","targeting"],
+  "notice_banner_reject_button_hide":false,
+  "preferences_center_close_button_hide":false,
+  "website_name":""
+  ,
+"language":"en"
+  });
+});
+</script> 
+  
+
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="Jesse Anderson’s Blog - Calling Rust from Excel: Building a Native DLL for VBA">
+<meta property="og:image" content="linreg_core_example_workbook.png">
+<meta property="og:site_name" content="Jesse Anderson's Blog">
+</head>
+
+<body class="nav-fixed fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Jesse Anderson’s Blog</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../archive.html"> 
+<span class="menu-text">Archive</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://portfolio.jesse-anderson.net/"> <i class="bi bi-Folder symlink fill" role="img">
+</i> 
+<span class="menu-text">Portfolio</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/jesse-anderson/"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/jesse-anderson-a7c5/"> <i class="bi bi-linkedin" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Calling Rust from Excel: Building a Native DLL for VBA</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">Rust</div>
+                <div class="quarto-category">VBA</div>
+                <div class="quarto-category">Statistics</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Jesse Anderson </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">July 6, 2025</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+
+<section id="calling-rust-from-excel-building-a-native-dll-for-vba" class="level1">
+<h1>Calling Rust from Excel: Building a Native DLL for VBA</h1>
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">1. Introduction</h2>
+<p>If you’ve worked in finance, research, or any domain where data analysis meets institutional inertia, you know that Excel is immovable. Not because it’s the best tool (it often isn’t) but because it’s <em>there</em>, everyone knows it, and the infrastructure built around it spans decades. The models live in workbooks. The reports are formatted in sheets. The business logic is buried in VBA macros that nobody fully understands anymore.</p>
+<p>The problem is that VBA, Excel’s built-in scripting language, was not designed for heavy numerical work. It lacks meaningful typed arrays, has no access to modern numerical libraries, and its performance on anything compute-intensive (matrix operations, iterative solvers, bootstrapped confidence intervals) is genuinely painful. If you need to run a regression on a moderately large dataset, you are either exporting to Python, reaching for an add-in you do not fully trust, or waiting.</p>
+<p>I found myself thinking about this in the course of building <a href="https://github.com/jesse-anderson/linreg-core">linreg-core</a>, a self-contained Rust library for statistical regression. The library covers OLS, Ridge, Lasso, Elastic Net, a full battery of diagnostic tests, prediction intervals, and k-fold cross-validation, all implemented from scratch without external math libraries. I had already compiled it to WebAssembly for browser use. The natural next question was: could I make it callable directly from Excel?</p>
+<p>The answer is yes, and the mechanism is straightforward in principle: Rust compiles to a native Windows DLL, and VBA can call into a DLL via <code>Declare PtrSafe Function</code>. The distance between “straightforward in principle” and “actually working inside a spreadsheet” is where the interesting engineering lives.</p>
+<p>This article is about that distance.</p>
+<hr>
+<section id="why-rust" class="level3">
+<h3 class="anchored" data-anchor-id="why-rust">Why Rust?</h3>
+<p>Several properties make Rust well-suited for this kind of FFI target.</p>
+<p><strong>Performance.</strong> Rust code runs at native speed with no garbage collector pauses. The coordinate descent solver for Lasso, the Householder QR decomposition, the iterative diagnostic tests—these run in microseconds for datasets that would take VBA seconds or longer. When the DLL returns, the answer is already there.</p>
+<p><strong>Memory safety at the boundary.</strong> The FFI boundary between VBA and a DLL is dangerous territory. VBA has no concept of ownership, lifetimes, or destructors. Any memory the DLL allocates and does not free is leaked forever. Any pointer VBA passes incorrectly is a silent crash. Rust’s ownership model forces you to be explicit about these boundaries at design time, and the resulting API makes the safety contract visible rather than implicit.</p>
+<p><strong>Zero-dependency DLL output.</strong> Rust compiles to a <code>.dll</code> with no separate runtime. Drop it in the same folder as the workbook and it works (no Visual C++ redistributable, no Python interpreter, no JVM). This matters because the target users are analysts, not developers. They do not have Visual Studio installed, they likely do not have admin rights to install a runtime package, and they will not troubleshoot a cryptic <code>VCRUNTIME140.dll was not found</code> dialog. The entire value proposition of shipping a DLL collapses the moment there is a hidden prerequisite. Rust’s <code>.cargo/config.toml</code> setting <code>target-feature=+crt-static</code> statically links the C runtime into the DLL itself, so the only remaining dependencies are system DLLs that ship with every Windows installation.</p>
+<hr>
+</section>
+<section id="what-i-built" class="level3">
+<h3 class="anchored" data-anchor-id="what-i-built">What I Built</h3>
+<p><code>linreg-core</code> exposes the following capabilities to VBA through a handle-based C-compatible API:</p>
+<ul>
+<li><strong>OLS and WLS regression:</strong> coefficients, standard errors, t-statistics, p-values, R², adjusted R², F-statistic</li>
+<li><strong>Regularized regression:</strong> Ridge, Lasso, and Elastic Net with optional standardization and configurable lambda paths</li>
+<li><strong>Prediction intervals:</strong> point predictions with individual coverage intervals</li>
+<li><strong>Diagnostic tests:</strong> Breusch-Pagan, White, Jarque-Bera, Shapiro-Wilk, Anderson-Darling, Harvey-Collier, Rainbow, RESET, Durbin-Watson, Breusch-Godfrey</li>
+<li><strong>Influence measures:</strong> Cook’s Distance, DFFITS, DFBETAS</li>
+<li><strong>K-fold cross-validation:</strong> for OLS, Ridge, Lasso, and Elastic Net</li>
+</ul>
+<p>All of it is callable from an Excel spreadsheet with a few lines of VBA.</p>
+<hr>
+</section>
+<section id="the-end-result" class="level3">
+<h3 class="anchored" data-anchor-id="the-end-result">The End Result</h3>
+<p>Here is what the simplest use case looks like from the VBA side:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource vba number-lines code-with-copy"><code class="sourceCode"><span id="cb1-1"><a href="#cb1-1"></a>Dim tbl As Variant</span>
+<span id="cb1-2"><a href="#cb1-2"></a>tbl = LinReg_OLS(Range("B2:B21"), Range("C2:F21"))</span>
+<span id="cb1-3"><a href="#cb1-3"></a>Range("H2").Resize(UBound(tbl, 1) + 1, UBound(tbl, 2) + 1).Value = tbl</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Three lines. The first calls the high-level VBA wrapper with a response range and a predictor matrix range. The second pastes the result into the sheet. What comes back is a formatted table: a header row followed by one row per coefficient containing the term name, coefficient estimate, standard error, t-statistic, and p-value, then a blank separator and four summary rows (R², adjusted R², F-statistic with its p-value, and MSE with n).</p>
+<p>Paste it anywhere in the workbook. Format it however you like. It is just values in cells.</p>
+<p>Getting to those three lines required solving problems in Rust’s build system, Windows calling conventions, 32-bit symbol decoration, and safe cross-language handle management. The rest of this article walks through each of those in turn.</p>
+<hr>
+</section>
+</section>
+<section id="how-vba-calls-a-dll" class="level2">
+<h2 class="anchored" data-anchor-id="how-vba-calls-a-dll">2. How VBA Calls a DLL</h2>
+<p>Before designing anything, it helps to understand exactly what happens at runtime when VBA calls a DLL function. The mechanism is older than Rust by decades, and it is remarkably simple.</p>
+<section id="the-declare-statement" class="level3">
+<h3 class="anchored" data-anchor-id="the-declare-statement">The Declare Statement</h3>
+<p>VBA exposes DLL functions through a <code>Declare</code> statement. Here is the one for <code>LR_OLS</code>:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource vba number-lines code-with-copy"><code class="sourceCode"><span id="cb2-1"><a href="#cb2-1"></a>Private Declare PtrSafe Function LR_OLS Lib "linreg_core_x64.dll" _</span>
+<span id="cb2-2"><a href="#cb2-2"></a>    (ByVal y_ptr As LongPtr, ByVal n As Long, _</span>
+<span id="cb2-3"><a href="#cb2-3"></a>     ByVal x_ptr As LongPtr, ByVal p As Long) As LongPtr</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>VBA’s <code>Declare</code> mechanism resolves function pointers using the Windows loader (<a href="https://learn.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-loadlibraryw"><code>LoadLibrary</code></a> and <a href="https://learn.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-getprocaddress"><code>GetProcAddress</code></a>) internally. When the DLL is not already loaded, VBA will load it by searching for the filename, but that search follows <a href="https://learn.microsoft.com/en-us/windows/win32/dlls/dynamic-link-library-search-order">Windows’ DLL search order</a>, which can find the wrong file if another copy of the DLL exists elsewhere on the system.</p>
+<p>To avoid this, our <code>LinregCore.bas</code> exposes a public <code>LR_Init()</code> sub that explicitly calls <code>LoadLibraryA</code> with the full path before any DLL function is ever invoked. The private DLL declaration uses an <code>Alias "LR_Init"</code> clause (renaming it to <code>LR_InitDLL</code> in VBA) to avoid name collision with the public wrapper sub:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource vba number-lines code-with-copy"><code class="sourceCode"><span id="cb3-1"><a href="#cb3-1"></a>Public Sub LR_Init()</span>
+<span id="cb3-2"><a href="#cb3-2"></a>    #If Win64 Then</span>
+<span id="cb3-3"><a href="#cb3-3"></a>        LoadLibraryA ThisWorkbook.Path &amp; "\linreg_core_x64.dll"</span>
+<span id="cb3-4"><a href="#cb3-4"></a>    #Else</span>
+<span id="cb3-5"><a href="#cb3-5"></a>        LoadLibraryA ThisWorkbook.Path &amp; "\linreg_core_x86.dll"</span>
+<span id="cb3-6"><a href="#cb3-6"></a>    #End If</span>
+<span id="cb3-7"><a href="#cb3-7"></a>End Sub</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This should be called from <code>Workbook_Open</code> so the correct DLL is pinned in the process before anything else runs (the user wires this up once in the <code>ThisWorkbook</code> module). From that point on, <code>GetProcAddress</code> resolves <code>"LR_OLS"</code> to a function pointer and every subsequent call goes through it directly. The DLL does not need to know anything about VBA, COM, or the Excel object model. It only needs to export a symbol with the right name and a C-compatible calling convention.</p>
+<p><code>PtrSafe</code> was introduced in VBA7 (Office 2010) to indicate that a declaration is safe to run under 64-bit Office. Any <code>Declare</code> statement in a modern workbook should use it. The older <code>Declare Function</code> form (without <code>PtrSafe</code>) still compiles on 32-bit VBA but is not allowed in 64-bit VBA. See the <a href="https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/declare-statement">Microsoft Declare statement reference</a> for the full syntax.</p>
+</section>
+<section id="calling-conventions" class="level3">
+<h3 class="anchored" data-anchor-id="calling-conventions">Calling Conventions</h3>
+<p>A calling convention defines two things: how arguments are placed on the stack (or in registers), and who is responsible for cleaning the stack up afterward (the caller or the callee). Getting this wrong does not produce a compile error. It produces a crash, or worse, silent data corruption.</p>
+<p>On Windows, the two conventions that matter here are <code>cdecl</code> (caller cleans up) and <code>stdcall</code> (callee cleans up). Rust functions without an explicit <code>extern</code> declaration use the Rust ABI, which is unstable and not callable from C at all. To export a C-callable function you must write <code>extern "C"</code>, which gives you <code>cdecl</code>, but that is wrong for 32-bit Windows, where VBA expects <code>stdcall</code>. Using <code>extern "system"</code> in Rust resolves this cleanly: on 32-bit Windows it maps to <code>stdcall</code>; on 64-bit Windows it maps to the x64 ABI, which has only one calling convention and makes the cdecl/stdcall distinction irrelevant. See the <a href="https://learn.microsoft.com/en-us/cpp/cpp/calling-conventions">Microsoft calling conventions reference</a> for the low-level details, and the <a href="https://doc.rust-lang.org/reference/items/external-blocks.html">Rust reference on extern ABI strings</a> for how Rust maps <code>"system"</code> per platform.</p>
+<p>All exported functions in this library use <code>extern "system"</code>:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource rust number-lines code-with-copy"><code class="sourceCode rust"><span id="cb4-1"><a href="#cb4-1"></a><span class="at">#[</span>no_mangle<span class="at">]</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="kw">pub</span> <span class="kw">extern</span> <span class="st">"system"</span> <span class="kw">fn</span> LR_OLS(</span>
+<span id="cb4-3"><a href="#cb4-3"></a>    y_ptr<span class="op">:</span> <span class="op">*</span><span class="kw">const</span> <span class="dt">f64</span><span class="op">,</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a>    n<span class="op">:</span> <span class="dt">i32</span><span class="op">,</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a>    x_ptr<span class="op">:</span> <span class="op">*</span><span class="kw">const</span> <span class="dt">f64</span><span class="op">,</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a>    p<span class="op">:</span> <span class="dt">i32</span><span class="op">,</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a>) <span class="op">-&gt;</span> <span class="dt">usize</span> <span class="op">{</span> <span class="op">...</span> <span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>#[no_mangle]</code> tells the Rust compiler to export the symbol with the exact name written in source, suppressing Rust’s normal name mangling. Without it, the linker would emit something unrecognizable (Rust’s legacy scheme produces Itanium-style names like <code>_ZN11linreg_core3ffi3ols6LR_OLS17h&lt;hash&gt;E</code>, and the current v0 scheme—default since Rust 1.56, standardized in <a href="https://rust-lang.github.io/rfcs/2603-rust-symbol-name-mangling-v0.html">RFC 2603</a>—produces an entirely different format starting with <code>_R</code>). Either way, <code>GetProcAddress("LR_OLS")</code> would fail silently. The <a href="https://doc.rust-lang.org/nomicon/ffi.html">Rust Nomicon’s FFI chapter</a> covers <code>#[no_mangle]</code> and the full set of FFI considerations in depth.</p>
+</section>
+<section id="types-that-cross-cleanly" class="level3">
+<h3 class="anchored" data-anchor-id="types-that-cross-cleanly">Types That Cross Cleanly</h3>
+<p>The FFI boundary only understands the C type system. The following types transfer without any conversion on both 32-bit and 64-bit Windows:</p>
+<table class="table">
+<colgroup>
+<col style="width: 26%">
+<col style="width: 29%">
+<col style="width: 22%">
+<col style="width: 22%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>VBA type</th>
+<th>Rust type</th>
+<th>Size</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>Double</code></td>
+<td><code>f64</code></td>
+<td>8 bytes</td>
+<td>IEEE 754 double (identical layout on both sides)</td>
+</tr>
+<tr class="even">
+<td><code>Long</code></td>
+<td><code>i32</code></td>
+<td>4 bytes</td>
+<td>VBA <code>Long</code> is <strong>always</strong> 32 bits, even on 64-bit Office</td>
+</tr>
+<tr class="odd">
+<td><code>LongLong</code></td>
+<td><code>i64</code></td>
+<td>8 bytes</td>
+<td>VBA7 (64-bit Office) only</td>
+</tr>
+<tr class="even">
+<td><code>LongPtr</code></td>
+<td><code>usize</code></td>
+<td>4 or 8 bytes</td>
+<td>Platform-width integer; used for handles and raw pointers. VBA7-only type.</td>
+</tr>
+<tr class="odd">
+<td><code>Byte</code></td>
+<td><code>u8</code></td>
+<td>1 byte</td>
+<td>Useful for byte buffers (e.g.&nbsp;string output)</td>
+</tr>
+</tbody>
+</table>
+<p>A few things worth noting:</p>
+<ul>
+<li><strong>VBA <code>Long</code> is always 32 bits.</strong> This trips up cross-platform C/C++ programmers: on 64-bit Linux and macOS (LP64 data model), C <code>long</code> is 64 bits, but on 64-bit Windows (LLP64 data model) <code>long</code> remains 32 bits, same as VBA. In Rust, map VBA <code>Long</code> to <code>i32</code>, not <code>i64</code> and not <code>isize</code>.</li>
+<li><strong><code>LongPtr</code> is the idiomatic VBA type for raw pointers and opaque handles.</strong> It compiles as <code>Long</code> (32-bit) under 32-bit Office and <code>LongLong</code> (64-bit) under 64-bit Office, matching Rust’s <code>usize</code> on both targets. This is how we pass handles out of the DLL and how VBA passes array pointers in. Note that <code>LongPtr</code> is only available in VBA7 (Office 2010+), which is why all high-level wrapper functions in this library require VBA7.</li>
+<li><strong>VBA has no unsigned integer type.</strong> Boolean flags are passed as <code>Long</code> (i32) with 0 = false and 1 = true.</li>
+</ul>
+<p>To pass an array of doubles to the DLL, VBA uses <a href="https://www.oreilly.com/library/view/vb-shell-programming/1565926706/apbs02.html"><code>VarPtr()</code></a> to obtain the address of the first element:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource vba number-lines code-with-copy"><code class="sourceCode"><span id="cb5-1"><a href="#cb5-1"></a>Dim y(19)  As Double          ' response vector, n=20</span>
+<span id="cb5-2"><a href="#cb5-2"></a>Dim x(79)  As Double          ' flat array for predictor matrix, n=20 × p=4 = 80 elements (row-major)</span>
+<span id="cb5-3"><a href="#cb5-3"></a>' ... fill y and x ...</span>
+<span id="cb5-4"><a href="#cb5-4"></a>Dim h As LongPtr</span>
+<span id="cb5-5"><a href="#cb5-5"></a>h = LR_OLS(VarPtr(y(0)), 20, VarPtr(x(0)), 4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>On the Rust side, that <code>LongPtr</code> arrives as <code>*const f64</code>. Rust reconstructs a slice with <code>std::slice::from_raw_parts(y_ptr, n)</code> and immediately copies it into a <code>Vec&lt;f64&gt;</code>. The memory is owned by VBA for the lifetime of the call; copying it before returning ensures Rust never holds a pointer into VBA-managed memory after the function exits.</p>
+<p>For string output, the pattern is a caller-allocated byte buffer (the same convention used throughout the Win32 API):</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode numberSource vba number-lines code-with-copy"><code class="sourceCode"><span id="cb6-1"><a href="#cb6-1"></a>' VBA: caller allocates a 512-byte buffer, passes pointer + capacity</span>
+<span id="cb6-2"><a href="#cb6-2"></a>Dim buf(0 To 511) As Byte</span>
+<span id="cb6-3"><a href="#cb6-3"></a>Dim written As Long</span>
+<span id="cb6-4"><a href="#cb6-4"></a>written = LR_GetLastError(VarPtr(buf(0)), 512)</span>
+<span id="cb6-5"><a href="#cb6-5"></a>' Use `written` (not the buffer size) as the Left$ length.</span>
+<span id="cb6-6"><a href="#cb6-6"></a>' StrConv converts the whole byte array including trailing zeros;</span>
+<span id="cb6-7"><a href="#cb6-7"></a>' Left$(…, written) trims exactly at the end of the message.</span>
+<span id="cb6-8"><a href="#cb6-8"></a>Dim msg As String</span>
+<span id="cb6-9"><a href="#cb6-9"></a>If written &gt; 0 Then msg = Left$(StrConv(buf, vbUnicode), written)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode numberSource rust number-lines code-with-copy"><code class="sourceCode rust"><span id="cb7-1"><a href="#cb7-1"></a><span class="co">// Rust: writes a null-terminated byte string into the caller's buffer</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="co">// (ASCII-safe; VBA decodes via StrConv with the ANSI codepage).</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="co">// Returns the number of bytes written (not counting the null terminator)</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a><span class="at">#[</span>no_mangle<span class="at">]</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a><span class="kw">pub</span> <span class="kw">extern</span> <span class="st">"system"</span> <span class="kw">fn</span> LR_GetLastError(out_ptr<span class="op">:</span> <span class="op">*</span><span class="kw">mut</span> <span class="dt">u8</span><span class="op">,</span> out_len<span class="op">:</span> <span class="dt">i32</span>) <span class="op">-&gt;</span> <span class="dt">i32</span> <span class="op">{</span></span>
+<span id="cb7-6"><a href="#cb7-6"></a>    <span class="co">// ... copies bytes, null-terminates, returns count written</span></span>
+<span id="cb7-7"><a href="#cb7-7"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>VBA allocates the buffer and passes its address. Rust writes into it and null-terminates. The return value tells VBA exactly how many bytes were written, which is what <code>Left$</code> uses (passing the buffer capacity instead would include null bytes and garbage for any message shorter than the buffer). Neither side frees the other’s memory.</p>
+</section>
+<section id="what-cannot-cross" class="level3">
+<h3 class="anchored" data-anchor-id="what-cannot-cross">What Cannot Cross</h3>
+<p>Several Rust types are fundamentally incompatible with VBA:</p>
+<ul>
+<li><strong><code>String</code> and <code>&amp;str</code>:</strong> Rust strings are UTF-8 byte slices with length metadata stored on the stack alongside the pointer. They have no stable C ABI. Passing a Rust <code>String</code> across the boundary hands VBA a pointer to internal Rust heap memory it cannot interpret and must never free.</li>
+<li><strong><code>Vec&lt;T&gt;</code>:</strong> A <code>Vec</code> is a (pointer, length, capacity) triple, and only the Rust allocator knows how to free it. Handing a <code>Vec</code> to VBA would either leak memory or cause a double-free when Rust drops it.</li>
+<li><strong><code>Box&lt;T&gt;</code> and any owned heap value:</strong> Same problem. Ownership semantics end at the FFI boundary.</li>
+<li><strong>References (<code>&amp;T</code>, <code>&amp;mut T</code>):</strong> At runtime a Rust reference is just a pointer, but borrow-checker guarantees do not extend into VBA. If VBA caches a pointer past the duration of the call, there is nothing preventing it from reading freed memory.</li>
+<li><strong>Enums with payloads (<code>Result</code>, <code>Option</code>, non-<code>repr(C)</code> enums):</strong> These have Rust-specific discriminant layouts that are not guaranteed to be stable or C-compatible without explicit <code>#[repr(C)]</code>.</li>
+</ul>
+<p>The rule at the boundary: <strong>everything is either a scalar or a raw pointer, and ownership must be explicit</strong>. If Rust allocates it, Rust frees it. If VBA allocates it, the DLL only writes into it and never frees it. This discipline is what makes the design safe, and it points directly toward the handle-based API design covered in Section 4.</p>
+<hr>
+</section>
+</section>
+<section id="the-32-bit-problem-stdcall-name-decoration" class="level2">
+<h2 class="anchored" data-anchor-id="the-32-bit-problem-stdcall-name-decoration">3. The 32-bit Problem: Stdcall Name Decoration</h2>
+<p>Everything in Section 2 is true and sufficient (for 64-bit Office). On 32-bit Office—still common in enterprise environments where IT standardized on 32-bit Office years ago and never changed—there is an additional problem that is entirely invisible until you try to call a function and VBA raises <a href="https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/specified-dll-function-not-found-error-453">runtime error 453</a>: <strong>Specified DLL function not found</strong>.</p>
+<p>The DLL is loaded. The function exists. But VBA cannot find it. The reason is stdcall name decoration.</p>
+<section id="what-decoration-means" class="level3">
+<h3 class="anchored" data-anchor-id="what-decoration-means">What Decoration Means</h3>
+<p>On x86 Windows, the MSVC linker applies a specific decoration to any function exported with the stdcall calling convention. The exported symbol name becomes:</p>
+<pre><code>_FunctionName@N</code></pre>
+<p>where <code>N</code> is the total number of bytes those arguments occupy on the stack. For <code>LR_OLS</code>, which takes two pointers and two <code>i32</code> values (each 4 bytes on a 32-bit target):</p>
+<pre><code>_LR_OLS@16      ; 4 + 4 + 4 + 4 = 16 bytes</code></pre>
+<p>A simpler getter like <code>LR_GetRSquared</code>, which takes one <code>usize</code> handle (4 bytes on x86):</p>
+<pre><code>_LR_GetRSquared@4</code></pre>
+<p>A vector getter like <code>LR_GetCoefficients(handle: usize, out_ptr: *mut f64, out_len: i32)</code>:</p>
+<pre><code>_LR_GetCoefficients@12   ; 4 + 4 + 4 = 12 bytes</code></pre>
+<p>Every exported symbol gets this treatment. The linker is doing what the ABI requires: encoding the stack cleanup size into the symbol name so that mismatched calling conventions can be caught at link time in C programs. That is genuinely useful in C, but it is fatal for VBA. The <a href="https://learn.microsoft.com/en-us/cpp/build/reference/exports">MSVC EXPORTS documentation</a> confirms this decoration rule for stdcall functions.</p>
+</section>
+<section id="why-vba-cannot-find-the-symbol" class="level3">
+<h3 class="anchored" data-anchor-id="why-vba-cannot-find-the-symbol">Why VBA Cannot Find the Symbol</h3>
+<p>VBA’s <code>Declare</code> statement specifies a plain name:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode numberSource vba number-lines code-with-copy"><code class="sourceCode"><span id="cb12-1"><a href="#cb12-1"></a>Private Declare PtrSafe Function LR_OLS Lib "linreg_core_x86.dll" ...</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>At runtime, VBA calls <code>GetProcAddress(hDLL, "LR_OLS")</code>. The DLL exports <code>"_LR_OLS@16"</code>. Those two strings do not match. <code>GetProcAddress</code> returns <code>NULL</code>. VBA raises runtime error 453 (“Specified DLL function not found”) the first time you call the function.</p>
+<p>This does not fail at module load time. The workbook opens normally, the <code>Declare</code> statement compiles without complaint, and everything appears fine—until someone actually clicks the button.</p>
+<p>Critically, <code>#[no_mangle]</code> does not help here. <code>#[no_mangle]</code> suppresses Rust’s own name mangling, but the stdcall decoration is applied afterward by the MSVC linker as a separate step. The two mechanisms are independent. You need both <code>#[no_mangle]</code> (to stop Rust) and a <code>.def</code> file (to stop the linker).</p>
+</section>
+<section id="the-solution-a-module-definition-file" class="level3">
+<h3 class="anchored" data-anchor-id="the-solution-a-module-definition-file">The Solution: A Module Definition File</h3>
+<p>A <a href="https://learn.microsoft.com/en-us/cpp/build/reference/module-definition-dot-def-files">module definition file</a> (<code>.def</code>) is a plain-text file passed to the MSVC linker that controls DLL exports. When a symbol is listed in the <code>EXPORTS</code> section by its plain name, the linker exports it under that name regardless of its internal decorated form.</p>
+<p>The <code>linreg_core.def</code> file for this library looks like this (abbreviated):</p>
+<pre><code>LIBRARY linreg_core
+EXPORTS
+    LR_Free
+    LR_GetLastError
+    LR_OLS
+    LR_GetRSquared
+    LR_GetCoefficients
+    ; ... all other exported symbols ...</code></pre>
+<p>With this file present, the linker maps <code>_LR_OLS@16</code> internally but publishes it in the DLL’s export table as <code>LR_OLS</code>. <code>GetProcAddress("LR_OLS")</code> now succeeds. The VBA <code>Declare</code> statement works.</p>
+<p>The <code>.def</code> file must list every symbol that VBA will call. If a function is added to the Rust FFI layer but not added to the <code>.def</code> file, the 32-bit build will silently revert to the decorated name and that function will fail with error 453 at runtime. Keeping the two files synchronized is one of the maintenance costs of supporting 32-bit Office.</p>
+</section>
+<section id="automating-it-with-build.rs" class="level3">
+<h3 class="anchored" data-anchor-id="automating-it-with-build.rs">Automating It with build.rs</h3>
+<p>Passing the <code>.def</code> file manually on every build is error-prone, and it should only be passed for 32-bit Windows MSVC targets (since 64-bit targets do not need it). Cargo’s build script (<code>build.rs</code>) handles this automatically:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode numberSource rust number-lines code-with-copy"><code class="sourceCode rust"><span id="cb14-1"><a href="#cb14-1"></a><span class="kw">fn</span> main() <span class="op">{</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a>    <span class="co">// Only relevant for the ffi (DLL) build.</span></span>
+<span id="cb14-3"><a href="#cb14-3"></a>    <span class="cf">if</span> <span class="pp">std::env::</span>var(<span class="st">"CARGO_FEATURE_FFI"</span>)<span class="op">.</span>is_err() <span class="op">{</span></span>
+<span id="cb14-4"><a href="#cb14-4"></a>        <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb14-5"><a href="#cb14-5"></a>    <span class="op">}</span></span>
+<span id="cb14-6"><a href="#cb14-6"></a></span>
+<span id="cb14-7"><a href="#cb14-7"></a>    <span class="kw">let</span> arch <span class="op">=</span> <span class="pp">std::env::</span>var(<span class="st">"CARGO_CFG_TARGET_ARCH"</span>)<span class="op">.</span>unwrap_or_default()<span class="op">;</span></span>
+<span id="cb14-8"><a href="#cb14-8"></a>    <span class="kw">let</span> os   <span class="op">=</span> <span class="pp">std::env::</span>var(<span class="st">"CARGO_CFG_TARGET_OS"</span>)<span class="op">.</span>unwrap_or_default()<span class="op">;</span></span>
+<span id="cb14-9"><a href="#cb14-9"></a>    <span class="kw">let</span> env  <span class="op">=</span> <span class="pp">std::env::</span>var(<span class="st">"CARGO_CFG_TARGET_ENV"</span>)<span class="op">.</span>unwrap_or_default()<span class="op">;</span></span>
+<span id="cb14-10"><a href="#cb14-10"></a></span>
+<span id="cb14-11"><a href="#cb14-11"></a>    <span class="cf">if</span> arch <span class="op">==</span> <span class="st">"x86"</span> <span class="op">&amp;&amp;</span> os <span class="op">==</span> <span class="st">"windows"</span> <span class="op">&amp;&amp;</span> env <span class="op">==</span> <span class="st">"msvc"</span> <span class="op">{</span></span>
+<span id="cb14-12"><a href="#cb14-12"></a>        <span class="kw">let</span> manifest <span class="op">=</span> <span class="pp">std::env::</span>var(<span class="st">"CARGO_MANIFEST_DIR"</span>)<span class="op">.</span>unwrap()<span class="op">;</span></span>
+<span id="cb14-13"><a href="#cb14-13"></a>        <span class="pp">println!</span>(<span class="st">"cargo:rustc-cdylib-link-arg=/DEF:{manifest}/linreg_core.def"</span>)<span class="op">;</span></span>
+<span id="cb14-14"><a href="#cb14-14"></a>    <span class="op">}</span></span>
+<span id="cb14-15"><a href="#cb14-15"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>A few things worth unpacking:</p>
+<ul>
+<li><strong><code>CARGO_FEATURE_FFI</code>:</strong> Cargo sets an environment variable for each enabled feature. Checking for this means the <code>.def</code> logic only runs when building the DLL (<code>--features ffi</code>), not during regular <code>cargo test</code> or WASM builds.</li>
+<li><strong><code>CARGO_CFG_TARGET_ARCH</code> / <code>_OS</code> / <code>_ENV</code>:</strong> These give the <em>target</em> triple components at build time, not the host machine. This is what lets the same <code>build.rs</code> work correctly when cross-compiling.</li>
+<li><strong><code>cargo:rustc-cdylib-link-arg</code>:</strong> This <code>println!</code> directive tells Cargo to pass <code>/DEF:&lt;path&gt;</code> to the linker, but only for <code>cdylib</code> link steps. It has no effect on <code>rlib</code> builds or WASM compilation, so it does not pollute those targets. See the <a href="https://doc.rust-lang.org/cargo/reference/build-scripts.html">Cargo build script reference</a> for the full set of supported instructions.</li>
+</ul>
+<p>The result: <code>cargo build --release --target i686-pc-windows-msvc --features ffi</code> automatically produces a correctly built 32-bit DLL with plain undecorated export names, and <code>cargo build --release --target x86_64-pc-windows-msvc --features ffi</code> produces a 64-bit DLL without the <code>.def</code> file involved at all.</p>
+</section>
+<section id="why-64-bit-doesnt-have-this-problem" class="level3">
+<h3 class="anchored" data-anchor-id="why-64-bit-doesnt-have-this-problem">Why 64-bit Doesn’t Have This Problem</h3>
+<p>On x86_64 Windows, Microsoft defined a single unified calling convention for the platform. There is no <code>cdecl</code> vs <code>stdcall</code> distinction; all functions use the <a href="https://learn.microsoft.com/en-us/cpp/build/x64-calling-convention">Microsoft x64 ABI</a>. Because there is only one convention, there is no need to encode stack cleanup size into the symbol name. Exported symbols are emitted with their plain names: <code>LR_OLS</code>, <code>LR_GetRSquared</code>, exactly as written with <code>#[no_mangle]</code>. The <code>.def</code> file is unnecessary.</p>
+<p>This asymmetry is why the <code>build.rs</code> guard exists. The 64-bit build is simpler by design; the 32-bit build carries a compatibility cost that is entirely a consequence of the older ABI.</p>
+<hr>
+</section>
+</section>
+<section id="designing-a-safe-api-across-the-boundary" class="level2">
+<h2 class="anchored" data-anchor-id="designing-a-safe-api-across-the-boundary">4. Designing a Safe API Across the Boundary</h2>
+<p>Sections 2 and 3 covered the mechanical problems (how VBA finds symbols, how calling conventions work, how to strip name decoration). This section is about the design problem: given that VBA cannot participate in Rust’s ownership model at all, how do you hand results back to a caller that has no concept of destructors?</p>
+<section id="the-core-constraint" class="level3">
+<h3 class="anchored" data-anchor-id="the-core-constraint">The Core Constraint</h3>
+<p>VBA is a single-threaded scripting environment with automatic memory management via COM reference counting (when an object variable goes out of scope or is set to <code>Nothing</code>, <code>IUnknown::Release</code> is called and the object is destroyed deterministically when its count reaches zero). From VBA’s perspective, every value it holds is either a scalar, a COM object, or an array. It has no <code>free()</code>, no <code>drop()</code>, no RAII. When VBA receives a value from a DLL function, it has no mechanism to run cleanup code when that value goes out of scope.</p>
+<p>This rules out any design where the DLL allocates memory and hands ownership across the boundary. If the DLL returns a pointer to a heap-allocated <code>RegressionOutput</code> struct, VBA has no way to free it. If the DLL returns a heap-allocated string, same problem. The boundary enforces a strict rule: <strong>Rust owns everything on the Rust side, and VBA never takes ownership of anything.</strong></p>
+</section>
+<section id="the-handle-pattern" class="level3">
+<h3 class="anchored" data-anchor-id="the-handle-pattern">The Handle Pattern</h3>
+<p>The solution is one of the oldest patterns in systems programming: an opaque integer handle that stands in for the actual object. <a href="https://www.sqlite.org/c3ref/open.html">SQLite</a> uses it (<code>sqlite3*</code> handles for database connections), <a href="https://docs.openssl.org/3.4/man3/SSL_new/">OpenSSL</a> uses it (<code>SSL*</code> and <code>SSL_CTX*</code> handles for TLS state), and the Windows API is built almost entirely on it (<code>HANDLE</code>, <code>HWND</code>, <code>HKEY</code>). The caller receives an integer that means nothing by itself; it is just a key that the library uses to look up the real data on its side of the boundary.</p>
+<p>Our implementation uses <code>usize</code> as the handle type, which is an unsigned integer with platform-native width (32 bits on x86, 64 bits on x64). Two values are special:</p>
+<ul>
+<li><strong>0</strong> always means an error occurred. VBA checks <code>If h = 0 Then</code> immediately after every fit call.</li>
+<li><strong>Any value ≥ 1</strong> is a valid handle that can be passed to getter functions.</li>
+</ul>
+<p>This is intentionally simpler than SQLite’s pointer-based handles. VBA cannot dereference a <code>usize</code> or accidentally corrupt it. It can only pass it back, which is exactly the behavior we want.</p>
+</section>
+<section id="the-handle-store" class="level3">
+<h3 class="anchored" data-anchor-id="the-handle-store">The Handle Store</h3>
+<p>All live results are kept in a single global <code>HashMap</code> behind a <code>Mutex</code>, initialized lazily via <code>OnceLock</code>:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode numberSource rust number-lines code-with-copy"><code class="sourceCode rust"><span id="cb15-1"><a href="#cb15-1"></a><span class="kw">static</span> NEXT_ID<span class="op">:</span> AtomicUsize <span class="op">=</span> <span class="pp">AtomicUsize::</span>new(<span class="dv">1</span>)<span class="op">;</span></span>
+<span id="cb15-2"><a href="#cb15-2"></a><span class="kw">static</span> STORE<span class="op">:</span> OnceLock<span class="op">&lt;</span>Mutex<span class="op">&lt;</span>HashMap<span class="op">&lt;</span><span class="dt">usize</span><span class="op">,</span> FitResult<span class="op">&gt;&gt;&gt;</span> <span class="op">=</span> <span class="pp">OnceLock::</span>new()<span class="op">;</span></span>
+<span id="cb15-3"><a href="#cb15-3"></a></span>
+<span id="cb15-4"><a href="#cb15-4"></a><span class="kw">pub</span> <span class="kw">fn</span> insert(result<span class="op">:</span> FitResult) <span class="op">-&gt;</span> <span class="dt">usize</span> <span class="op">{</span></span>
+<span id="cb15-5"><a href="#cb15-5"></a>    <span class="kw">let</span> id <span class="op">=</span> NEXT_ID<span class="op">.</span>fetch_add(<span class="dv">1</span><span class="op">,</span> <span class="pp">Ordering::</span>Relaxed)<span class="op">;</span></span>
+<span id="cb15-6"><a href="#cb15-6"></a>    store()<span class="op">.</span>lock()<span class="op">.</span>unwrap()<span class="op">.</span>insert(id<span class="op">,</span> result)<span class="op">;</span></span>
+<span id="cb15-7"><a href="#cb15-7"></a>    id</span>
+<span id="cb15-8"><a href="#cb15-8"></a><span class="op">}</span></span>
+<span id="cb15-9"><a href="#cb15-9"></a></span>
+<span id="cb15-10"><a href="#cb15-10"></a><span class="kw">pub</span> <span class="kw">fn</span> with<span class="op">&lt;</span>T<span class="op">&gt;</span>(id<span class="op">:</span> <span class="dt">usize</span><span class="op">,</span> f<span class="op">:</span> <span class="kw">impl</span> <span class="bu">FnOnce</span>(<span class="op">&amp;</span>FitResult) <span class="op">-&gt;</span> T) <span class="op">-&gt;</span> <span class="dt">Option</span><span class="op">&lt;</span>T<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb15-11"><a href="#cb15-11"></a>    <span class="kw">let</span> guard <span class="op">=</span> store()<span class="op">.</span>lock()<span class="op">.</span>unwrap()<span class="op">;</span></span>
+<span id="cb15-12"><a href="#cb15-12"></a>    guard<span class="op">.</span>get(<span class="op">&amp;</span>id)<span class="op">.</span>map(f)</span>
+<span id="cb15-13"><a href="#cb15-13"></a><span class="op">}</span></span>
+<span id="cb15-14"><a href="#cb15-14"></a></span>
+<span id="cb15-15"><a href="#cb15-15"></a><span class="kw">pub</span> <span class="kw">fn</span> remove(id<span class="op">:</span> <span class="dt">usize</span>) <span class="op">{</span></span>
+<span id="cb15-16"><a href="#cb15-16"></a>    store()<span class="op">.</span>lock()<span class="op">.</span>unwrap()<span class="op">.</span>remove(<span class="op">&amp;</span>id)<span class="op">;</span></span>
+<span id="cb15-17"><a href="#cb15-17"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>A few design decisions worth calling out:</p>
+<p><strong><code>AtomicUsize</code> for ID generation.</strong> <code>fetch_add</code> returns the old value and increments atomically. Since <code>NEXT_ID</code> starts at 1, the first handle issued is 1 (0 is permanently reserved as the error sentinel). On 64-bit targets this never overflows in practice (issuing one handle per microsecond would run for over 500,000 years); on 32-bit targets the counter wraps at ~4 billion, which is unreachable in a normal VBA session but worth noting.</p>
+<p><strong><code>OnceLock</code> for lazy initialization.</strong> The <code>HashMap</code> is not constructed at program startup but on the first call to <code>store()</code>. <code>OnceLock</code> provides thread-safe, exactly-once initialization: the first thread to call <code>get_or_init</code> runs the initializer, and any other threads that arrive concurrently block until it completes. After initialization, <code>get()</code> is a plain atomic load with no blocking. The post-init read path is wait-free; the initialization path itself is not.</p>
+<p><strong><code>Mutex</code> for thread safety.</strong> VBA itself is single-threaded, but the DLL may theoretically be called from Excel’s automation object model or from a background thread in a host process. The <code>Mutex</code> ensures the <code>HashMap</code> is never accessed concurrently from multiple threads.</p>
+<p><strong><code>with()</code> holds the lock during the closure.</strong> The getter pattern takes a <code>FnOnce(&amp;FitResult)</code> closure rather than returning a cloned value. This means the lock is held while the getter reads from the stored result, then released. No data escapes the lock.</p>
+<p><strong><code>remove()</code> is idempotent.</strong> Calling <code>LR_Free</code> on an already-freed or nonexistent handle does nothing (<code>HashMap::remove</code> on a missing key is a no-op). This makes double-free safe from VBA.</p>
+</section>
+<section id="the-fitresult-enum" class="level3">
+<h3 class="anchored" data-anchor-id="the-fitresult-enum">The FitResult Enum</h3>
+<p>Every result variant (OLS, Ridge, Lasso, Elastic Net, WLS, diagnostics, prediction intervals, vectors, matrices, and cross-validation) is stored as a single <code>FitResult</code> enum:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode numberSource rust number-lines code-with-copy"><code class="sourceCode rust"><span id="cb16-1"><a href="#cb16-1"></a><span class="kw">pub</span> <span class="kw">enum</span> FitResult <span class="op">{</span></span>
+<span id="cb16-2"><a href="#cb16-2"></a>    Ols(RegressionOutput)<span class="op">,</span></span>
+<span id="cb16-3"><a href="#cb16-3"></a>    Ridge(RidgeFit)<span class="op">,</span></span>
+<span id="cb16-4"><a href="#cb16-4"></a>    Lasso(LassoFit)<span class="op">,</span></span>
+<span id="cb16-5"><a href="#cb16-5"></a>    ElasticNet(ElasticNetFit)<span class="op">,</span></span>
+<span id="cb16-6"><a href="#cb16-6"></a>    Wls(WlsFit)<span class="op">,</span></span>
+<span id="cb16-7"><a href="#cb16-7"></a>    Diagnostic(DiagnosticResult)<span class="op">,</span></span>
+<span id="cb16-8"><a href="#cb16-8"></a>    PredictionInterval(PredictionIntervalOutput)<span class="op">,</span></span>
+<span id="cb16-9"><a href="#cb16-9"></a>    Vector(<span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">f64</span><span class="op">&gt;</span>)<span class="op">,</span></span>
+<span id="cb16-10"><a href="#cb16-10"></a>    Matrix <span class="op">{</span> data<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">f64</span><span class="op">&gt;,</span> rows<span class="op">:</span> <span class="dt">usize</span><span class="op">,</span> cols<span class="op">:</span> <span class="dt">usize</span> <span class="op">},</span></span>
+<span id="cb16-11"><a href="#cb16-11"></a>    CV(CVResult)<span class="op">,</span></span>
+<span id="cb16-12"><a href="#cb16-12"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The shared getter functions (<code>LR_GetRSquared</code>, <code>LR_GetCoefficients</code>, etc.) match on this enum to serve the relevant variant. A handle pointing to a <code>Diagnostic</code> result will return <code>f64::NAN</code> from <code>LR_GetRSquared</code> (the getter falls through to a wildcard arm) rather than crashing. This makes the API robust to mismatched handle/getter pairs.</p>
+<p>The lifecycle looks like this from VBA’s perspective:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode numberSource vba number-lines code-with-copy"><code class="sourceCode"><span id="cb17-1"><a href="#cb17-1"></a>' 1. Fit: Rust stores the result, VBA receives an integer key</span>
+<span id="cb17-2"><a href="#cb17-2"></a>Dim h As LongPtr</span>
+<span id="cb17-3"><a href="#cb17-3"></a>h = LR_OLS(VarPtr(y(0)), n, VarPtr(x(0)), p)</span>
+<span id="cb17-4"><a href="#cb17-4"></a>If h = 0 Then MsgBox GetLastErrorMsg() : Exit Sub</span>
+<span id="cb17-5"><a href="#cb17-5"></a></span>
+<span id="cb17-6"><a href="#cb17-6"></a>' 2. Query: VBA passes the key back; Rust looks up and reads the result</span>
+<span id="cb17-7"><a href="#cb17-7"></a>Dim r2 As Double</span>
+<span id="cb17-8"><a href="#cb17-8"></a>r2 = LR_GetRSquared(h)</span>
+<span id="cb17-9"><a href="#cb17-9"></a></span>
+<span id="cb17-10"><a href="#cb17-10"></a>' 3. Free: Rust removes the HashMap entry; Drop runs automatically</span>
+<span id="cb17-11"><a href="#cb17-11"></a>LR_Free h</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Rust’s <code>Drop</code> trait handles cleanup of the stored value automatically when <code>remove()</code> evicts it from the <code>HashMap</code>. VBA never touches the actual memory.</p>
+</section>
+<section id="error-handling" class="level3">
+<h3 class="anchored" data-anchor-id="error-handling">Error Handling</h3>
+<p>When a fit function fails (invalid inputs, singular matrix, convergence failure), it returns 0 and stores a diagnostic message in a thread-local string:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode numberSource rust number-lines code-with-copy"><code class="sourceCode rust"><span id="cb18-1"><a href="#cb18-1"></a><span class="pp">thread_local!</span> <span class="op">{</span></span>
+<span id="cb18-2"><a href="#cb18-2"></a>    <span class="kw">static</span> LAST_ERROR<span class="op">:</span> RefCell<span class="op">&lt;</span><span class="dt">String</span><span class="op">&gt;</span> <span class="op">=</span> <span class="pp">RefCell::</span>new(<span class="dt">String</span><span class="pp">::</span>new())<span class="op">;</span></span>
+<span id="cb18-3"><a href="#cb18-3"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>VBA retrieves it via the byte-buffer pattern from Section 2:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode numberSource vba number-lines code-with-copy"><code class="sourceCode"><span id="cb19-1"><a href="#cb19-1"></a>If h = 0 Then</span>
+<span id="cb19-2"><a href="#cb19-2"></a>    MsgBox GetLastErrorMsg()  ' reads LR_GetLastError into a string</span>
+<span id="cb19-3"><a href="#cb19-3"></a>    Exit Sub</span>
+<span id="cb19-4"><a href="#cb19-4"></a>End If</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Using a thread-local rather than a global <code>Mutex&lt;String&gt;</code> is the right choice for three reasons. First, thread-locals require no atomic operations or kernel primitives (access is as cheap as a pointer dereference). Second, the error slot is per-thread: if the DLL is ever called from two threads concurrently, each caller has its own independent last-error string rather than a shared one that one thread could overwrite before the other retrieves it. Third, <code>Mutex::lock()</code> returns an <code>Err</code> if the mutex is poisoned (another thread panicked while holding it), requiring an <code>unwrap()</code> that can itself panic; <code>RefCell</code> has no such failure mode in a single-threaded context.</p>
+</section>
+<section id="why-not-return-json-strings" class="level3">
+<h3 class="anchored" data-anchor-id="why-not-return-json-strings">Why Not Return JSON Strings?</h3>
+<p>The WASM version of this library does exactly that (every function returns a JSON string, and the JavaScript caller uses <code>JSON.parse()</code>). That works well in a browser context because JavaScript has native JSON support and string handling built into the language.</p>
+<p>VBA has neither. There is no <code>JSON.parse()</code> in VBA. Parsing a JSON string from a DLL would require either bundling a COM JSON library, implementing a custom parser, or calling out to <code>ScriptControl</code> (none of which belong in what should be a simple numerical call). Beyond the parsing problem, returning a string from the DLL brings back the ownership problem: a heap-allocated string on the Rust side cannot be freed by VBA, and the byte-buffer pattern (caller allocates, DLL writes) only works for fixed-size or bounded output.</p>
+<p>The handle-plus-getter approach solves both. Each getter is one typed function call that returns a scalar or writes into a caller-allocated buffer. No parsing, no allocation on the Rust side that VBA must manage, and no COM dependency. VBA assembles the table it needs by calling exactly the getters it wants and ignoring the rest.</p>
+<hr>
+</section>
+</section>
+<section id="the-internal-type-system" class="level2">
+<h2 class="anchored" data-anchor-id="the-internal-type-system">5. The Internal Type System</h2>
+<p>Section 4 introduced the <code>FitResult</code> enum and the single-<code>HashMap</code> store. The enum has ten variants: <code>Ols</code>, <code>Ridge</code>, <code>Lasso</code>, <code>ElasticNet</code>, <code>Wls</code>, <code>Diagnostic</code>, <code>PredictionInterval</code>, <code>Vector</code>, <code>Matrix</code>, and <code>CV</code>. That variety creates an API design problem: different variants expose different fields. OLS has an F-statistic; Ridge has an effective degrees-of-freedom value; Lasso has a nonzero-coefficient count; a DFBETAS result is a matrix. How do you expose all of this through a typed C API without creating a getter for every field of every type?</p>
+<p>The answer is a three-tier getter taxonomy.</p>
+<section id="tier-1-shared-scalar-getters" class="level3">
+<h3 class="anchored" data-anchor-id="tier-1-shared-scalar-getters">Tier 1: Shared Scalar Getters</h3>
+<p>The first tier covers fields that exist on most regression variants. A getter like <code>LR_GetRSquared</code> handles OLS, Ridge, Lasso, Elastic Net, and WLS with a single match:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode numberSource rust number-lines code-with-copy"><code class="sourceCode rust"><span id="cb20-1"><a href="#cb20-1"></a><span class="at">#[</span>no_mangle<span class="at">]</span></span>
+<span id="cb20-2"><a href="#cb20-2"></a><span class="kw">pub</span> <span class="kw">extern</span> <span class="st">"system"</span> <span class="kw">fn</span> LR_GetRSquared(handle<span class="op">:</span> <span class="dt">usize</span>) <span class="op">-&gt;</span> <span class="dt">f64</span> <span class="op">{</span></span>
+<span id="cb20-3"><a href="#cb20-3"></a>    with(handle<span class="op">,</span> <span class="op">|</span>r<span class="op">|</span> <span class="cf">match</span> r <span class="op">{</span></span>
+<span id="cb20-4"><a href="#cb20-4"></a>        <span class="pp">FitResult::</span>Ols(o)        <span class="op">=&gt;</span> o<span class="op">.</span>r_squared<span class="op">,</span></span>
+<span id="cb20-5"><a href="#cb20-5"></a>        <span class="pp">FitResult::</span>Ridge(r)      <span class="op">=&gt;</span> r<span class="op">.</span>r_squared<span class="op">,</span></span>
+<span id="cb20-6"><a href="#cb20-6"></a>        <span class="pp">FitResult::</span>Lasso(l)      <span class="op">=&gt;</span> l<span class="op">.</span>r_squared<span class="op">,</span></span>
+<span id="cb20-7"><a href="#cb20-7"></a>        <span class="pp">FitResult::</span>ElasticNet(e) <span class="op">=&gt;</span> e<span class="op">.</span>r_squared<span class="op">,</span></span>
+<span id="cb20-8"><a href="#cb20-8"></a>        <span class="pp">FitResult::</span>Wls(w)        <span class="op">=&gt;</span> w<span class="op">.</span>r_squared<span class="op">,</span></span>
+<span id="cb20-9"><a href="#cb20-9"></a>        _                        <span class="op">=&gt;</span> <span class="dt">f64</span><span class="pp">::</span><span class="cn">NAN</span><span class="op">,</span></span>
+<span id="cb20-10"><a href="#cb20-10"></a>    <span class="op">}</span>)</span>
+<span id="cb20-11"><a href="#cb20-11"></a>    <span class="op">.</span>unwrap_or(<span class="dt">f64</span><span class="pp">::</span><span class="cn">NAN</span>)</span>
+<span id="cb20-12"><a href="#cb20-12"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The wildcard arm returns <code>f64::NAN</code> for any variant that doesn’t have R². Passing a diagnostic handle to <code>LR_GetRSquared</code> returns NAN, silently and safely, rather than crashing. <code>f64::NAN</code> is the universal “not applicable” sentinel for <code>f64</code> getters throughout the API. Integer getters use -1:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode numberSource rust number-lines code-with-copy"><code class="sourceCode rust"><span id="cb21-1"><a href="#cb21-1"></a><span class="at">#[</span>no_mangle<span class="at">]</span></span>
+<span id="cb21-2"><a href="#cb21-2"></a><span class="kw">pub</span> <span class="kw">extern</span> <span class="st">"system"</span> <span class="kw">fn</span> LR_GetNumCoefficients(handle<span class="op">:</span> <span class="dt">usize</span>) <span class="op">-&gt;</span> <span class="dt">i32</span> <span class="op">{</span></span>
+<span id="cb21-3"><a href="#cb21-3"></a>    with(handle<span class="op">,</span> <span class="op">|</span>r<span class="op">|</span> <span class="cf">match</span> r <span class="op">{</span></span>
+<span id="cb21-4"><a href="#cb21-4"></a>        <span class="pp">FitResult::</span>Ols(o)        <span class="op">=&gt;</span> o<span class="op">.</span>coefficients<span class="op">.</span>len() <span class="kw">as</span> <span class="dt">i32</span><span class="op">,</span></span>
+<span id="cb21-5"><a href="#cb21-5"></a>        <span class="pp">FitResult::</span>Wls(w)        <span class="op">=&gt;</span> w<span class="op">.</span>coefficients<span class="op">.</span>len() <span class="kw">as</span> <span class="dt">i32</span><span class="op">,</span></span>
+<span id="cb21-6"><a href="#cb21-6"></a>        <span class="pp">FitResult::</span>Ridge(r)      <span class="op">=&gt;</span> r<span class="op">.</span>coefficients<span class="op">.</span>len() <span class="kw">as</span> <span class="dt">i32</span><span class="op">,</span></span>
+<span id="cb21-7"><a href="#cb21-7"></a>        <span class="pp">FitResult::</span>Lasso(l)      <span class="op">=&gt;</span> l<span class="op">.</span>coefficients<span class="op">.</span>len() <span class="kw">as</span> <span class="dt">i32</span><span class="op">,</span></span>
+<span id="cb21-8"><a href="#cb21-8"></a>        <span class="pp">FitResult::</span>ElasticNet(e) <span class="op">=&gt;</span> e<span class="op">.</span>coefficients<span class="op">.</span>len() <span class="kw">as</span> <span class="dt">i32</span><span class="op">,</span></span>
+<span id="cb21-9"><a href="#cb21-9"></a>        _                        <span class="op">=&gt;</span> <span class="op">-</span><span class="dv">1</span><span class="op">,</span></span>
+<span id="cb21-10"><a href="#cb21-10"></a>    <span class="op">}</span>)</span>
+<span id="cb21-11"><a href="#cb21-11"></a>    <span class="op">.</span>unwrap_or(<span class="op">-</span><span class="dv">1</span>)</span>
+<span id="cb21-12"><a href="#cb21-12"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The same pattern appears in <code>LR_GetAdjRSquared</code>, <code>LR_GetMSE</code>, <code>LR_GetFStatistic</code>, <code>LR_GetFPValue</code>, and <code>LR_GetNumObservations</code>. Each covers the variants where the field makes sense and falls back to NAN or -1 everywhere else. Coverage is not uniform across all five: <code>LR_GetMSE</code> matches all five regression variants (OLS, Ridge, Lasso, Elastic Net, WLS), while <code>LR_GetFStatistic</code> and <code>LR_GetFPValue</code> match only OLS and WLS—regularized models do not produce a classical F-test.</p>
+</section>
+<section id="the-coefficient-layout-asymmetry" class="level3">
+<h3 class="anchored" data-anchor-id="the-coefficient-layout-asymmetry">The Coefficient Layout Asymmetry</h3>
+<p>There is one deliberate inconsistency between OLS/WLS and the regularized models that any caller needs to know: where the intercept lives.</p>
+<p>For OLS and WLS, <code>coefficients</code> includes the intercept as its first element: <code>[β₀, β₁, ..., βₖ]</code>. <code>LR_GetNumCoefficients</code> returns k+1 and <code>LR_GetCoefficients</code> copies k+1 values.</p>
+<p>For Ridge, Lasso, and Elastic Net, <code>coefficients</code> contains only the slopes. The intercept is stored in a dedicated field and is retrieved via <code>LR_GetIntercept</code>. <code>LR_GetNumCoefficients</code> returns k and <code>LR_GetCoefficients</code> copies k values.</p>
+<p><code>LR_GetIntercept</code> is available for OLS and all three regularized models, but <strong>not</strong> for WLS (a WLS handle falls through to the wildcard arm and returns NAN). For OLS, <code>LR_GetIntercept</code> returns <code>coefficients[0]</code>; for Ridge, Lasso, and Elastic Net it returns the dedicated intercept field. For WLS, retrieve the intercept from <code>LR_GetCoefficients</code> (element zero, since WLS coefficients also include the intercept as the first element).</p>
+</section>
+<section id="tier-1b-shared-vector-getters-and-copy_doubles" class="level3">
+<h3 class="anchored" data-anchor-id="tier-1b-shared-vector-getters-and-copy_doubles">Tier 1b: Shared Vector Getters and <code>copy_doubles</code></h3>
+<p>The six vector getters (coefficients, standard errors, t-statistics, p-values, residuals, and fitted values) all use the same caller-allocates-buffer pattern. A private helper eliminates the repetition. Coverage varies: <code>LR_GetCoefficients</code>, <code>LR_GetResiduals</code>, and <code>LR_GetFittedValues</code> work across all five regression types; <code>LR_GetStdErrors</code>, <code>LR_GetTStats</code>, and <code>LR_GetPValues</code> match only OLS and WLS and return -1 for regularized handles (regularized models do not produce per-coefficient standard errors or t-statistics).</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode numberSource rust number-lines code-with-copy"><code class="sourceCode rust"><span id="cb22-1"><a href="#cb22-1"></a><span class="kw">unsafe</span> <span class="kw">fn</span> copy_doubles(src<span class="op">:</span> <span class="op">&amp;</span>[<span class="dt">f64</span>]<span class="op">,</span> out_ptr<span class="op">:</span> <span class="op">*</span><span class="kw">mut</span> <span class="dt">f64</span><span class="op">,</span> out_len<span class="op">:</span> <span class="dt">i32</span>) <span class="op">-&gt;</span> <span class="dt">i32</span> <span class="op">{</span></span>
+<span id="cb22-2"><a href="#cb22-2"></a>    <span class="cf">if</span> out_ptr<span class="op">.</span>is_null() <span class="op">||</span> out_len <span class="op">&lt;</span> <span class="dv">0</span> <span class="op">{</span></span>
+<span id="cb22-3"><a href="#cb22-3"></a>        <span class="cf">return</span> <span class="op">-</span><span class="dv">1</span><span class="op">;</span></span>
+<span id="cb22-4"><a href="#cb22-4"></a>    <span class="op">}</span></span>
+<span id="cb22-5"><a href="#cb22-5"></a>    <span class="kw">let</span> count <span class="op">=</span> src<span class="op">.</span>len()<span class="op">.</span>min(out_len <span class="kw">as</span> <span class="dt">usize</span>)<span class="op">;</span></span>
+<span id="cb22-6"><a href="#cb22-6"></a>    <span class="kw">let</span> dst <span class="op">=</span> <span class="kw">unsafe</span> <span class="op">{</span> <span class="pp">slice::</span>from_raw_parts_mut(out_ptr<span class="op">,</span> count) <span class="op">};</span></span>
+<span id="cb22-7"><a href="#cb22-7"></a>    dst<span class="op">.</span>copy_from_slice(<span class="op">&amp;</span>src[<span class="op">..</span>count])<span class="op">;</span></span>
+<span id="cb22-8"><a href="#cb22-8"></a>    count <span class="kw">as</span> <span class="dt">i32</span></span>
+<span id="cb22-9"><a href="#cb22-9"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>VBA allocates the buffer, passes <code>VarPtr(arr(0))</code> and the element count, and <code>copy_doubles</code> fills it. The return value is the count actually written (if it is less than what the caller expected, the buffer was undersized). The caller detects the mismatch by comparing the return value to the expected count rather than getting a silent truncation.</p>
+<p>A typical VBA read sequence looks like this:</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode numberSource vba number-lines code-with-copy"><code class="sourceCode"><span id="cb23-1"><a href="#cb23-1"></a>Dim nCoef As Long</span>
+<span id="cb23-2"><a href="#cb23-2"></a>nCoef = LR_GetNumCoefficients(h)       ' query how many to expect</span>
+<span id="cb23-3"><a href="#cb23-3"></a>Dim coefs() As Double</span>
+<span id="cb23-4"><a href="#cb23-4"></a>ReDim coefs(0 To nCoef - 1)</span>
+<span id="cb23-5"><a href="#cb23-5"></a>Dim written As Long</span>
+<span id="cb23-6"><a href="#cb23-6"></a>written = LR_GetCoefficients(h, VarPtr(coefs(0)), nCoef)</span>
+<span id="cb23-7"><a href="#cb23-7"></a>' written = nCoef on success; -1 if handle holds wrong result type</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="tier-2-type-specific-getters" class="level3">
+<h3 class="anchored" data-anchor-id="tier-2-type-specific-getters">Tier 2: Type-Specific Getters</h3>
+<p>Some fields only exist on one or two variants and do not make sense as shared getters.</p>
+<p><strong>Regularized-specific:</strong> - <code>LR_GetIntercept</code>: dedicated intercept for Ridge, Lasso, Elastic Net; <code>coefficients[0]</code> for OLS - <code>LR_GetDF</code>: effective degrees of freedom for Ridge; residual df for OLS; NAN for others - <code>LR_GetNNonzero</code>: count of non-zero slopes for Lasso and Elastic Net; -1 for others - <code>LR_GetConverged</code>: 1 if coordinate descent converged, 0 if not, -1 for non-iterative models</p>
+<p><strong>Diagnostic-specific:</strong></p>
+<p>The <code>DiagnosticResult</code> struct stored in the <code>Diagnostic</code> variant holds four fields:</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode numberSource rust number-lines code-with-copy"><code class="sourceCode rust"><span id="cb24-1"><a href="#cb24-1"></a><span class="kw">pub</span> <span class="kw">struct</span> DiagnosticResult <span class="op">{</span></span>
+<span id="cb24-2"><a href="#cb24-2"></a>    <span class="kw">pub</span> statistic<span class="op">:</span>       <span class="dt">f64</span><span class="op">,</span>  <span class="co">// primary test statistic</span></span>
+<span id="cb24-3"><a href="#cb24-3"></a>    <span class="kw">pub</span> p_value<span class="op">:</span>         <span class="dt">f64</span><span class="op">,</span>  <span class="co">// two-tailed p-value, or NAN if not produced</span></span>
+<span id="cb24-4"><a href="#cb24-4"></a>    <span class="kw">pub</span> df<span class="op">:</span>              <span class="dt">f64</span><span class="op">,</span>  <span class="co">// degrees of freedom (BG lag order; 0.0 if not applicable)</span></span>
+<span id="cb24-5"><a href="#cb24-5"></a>    <span class="kw">pub</span> autocorrelation<span class="op">:</span> <span class="dt">f64</span><span class="op">,</span>  <span class="co">// ρ ≈ 1 − DW/2 for Durbin-Watson; 0.0 otherwise</span></span>
+<span id="cb24-6"><a href="#cb24-6"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Four getters expose it: <code>LR_GetStatistic</code>, <code>LR_GetPValue</code>, <code>LR_GetTestDF</code>, and <code>LR_GetAutocorrelation</code>. Every diagnostic fit function (Breusch-Pagan, Jarque-Bera, Shapiro-Wilk, Anderson-Darling, Harvey-Collier, White, Rainbow, RESET, Durbin-Watson, Breusch-Godfrey) returns a <code>Diagnostic</code> handle that these four getters can read.</p>
+<p>Two tests use non-default fields. <strong>Breusch-Godfrey</strong> populates <code>df</code> with the lag-order degrees of freedom (the test’s chi-squared statistic has <code>lag_order</code> degrees of freedom); all other tests store 0.0 there. <strong>Durbin-Watson</strong> does not produce a single p-value (the classical DW table approach provides upper and lower bounds, not a point p-value). The FFI layer stores NAN in the <code>p_value</code> field and the estimated autocorrelation ρ ≈ 1 − DW/2 in the <code>autocorrelation</code> field. Callers who want the implied autocorrelation coefficient read the <code>autocorrelation</code> field:</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode numberSource vba number-lines code-with-copy"><code class="sourceCode"><span id="cb25-1"><a href="#cb25-1"></a>Dim hDW As LongPtr</span>
+<span id="cb25-2"><a href="#cb25-2"></a>hDW = LR_DurbinWatson(VarPtr(y(0)), n, VarPtr(x(0)), p)</span>
+<span id="cb25-3"><a href="#cb25-3"></a>Dim dw  As Double : dw  = LR_GetStatistic(hDW)        ' e.g. 1.92</span>
+<span id="cb25-4"><a href="#cb25-4"></a>Dim rho As Double : rho = LR_GetAutocorrelation(hDW)  ' ρ ≈ 1 − DW/2</span>
+<span id="cb25-5"><a href="#cb25-5"></a>LR_Free hDW</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="tier-3-generic-container-getters" class="level3">
+<h3 class="anchored" data-anchor-id="tier-3-generic-container-getters">Tier 3: Generic Container Getters</h3>
+<p>Not every result fits a named-field model. Cook’s distances, DFFITS values, VIF values, and lambda sequences are all plain float arrays (not named statistics, just n or p numbers). Rather than creating a dedicated result type for each, these are stored in the <code>Vector</code> and <code>Matrix</code> variants and retrieved via five generic getters: <code>LR_GetVectorLength</code>, <code>LR_GetVector</code>, <code>LR_GetMatrixRows</code>, <code>LR_GetMatrixCols</code>, and <code>LR_GetMatrix</code>.</p>
+<p>The vector case is straightforward:</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode numberSource vba number-lines code-with-copy"><code class="sourceCode"><span id="cb26-1"><a href="#cb26-1"></a>' Read Cook's distances</span>
+<span id="cb26-2"><a href="#cb26-2"></a>Dim hCD As LongPtr</span>
+<span id="cb26-3"><a href="#cb26-3"></a>hCD = LR_CooksDistance(VarPtr(y(0)), n, VarPtr(x(0)), p)</span>
+<span id="cb26-4"><a href="#cb26-4"></a>If hCD = 0 Then MsgBox GetLastErrorMsg() : Exit Sub</span>
+<span id="cb26-5"><a href="#cb26-5"></a></span>
+<span id="cb26-6"><a href="#cb26-6"></a>Dim nVals As Long</span>
+<span id="cb26-7"><a href="#cb26-7"></a>nVals = LR_GetVectorLength(hCD)        ' = n observations</span>
+<span id="cb26-8"><a href="#cb26-8"></a></span>
+<span id="cb26-9"><a href="#cb26-9"></a>Dim cooks() As Double</span>
+<span id="cb26-10"><a href="#cb26-10"></a>ReDim cooks(0 To nVals - 1)</span>
+<span id="cb26-11"><a href="#cb26-11"></a>LR_GetVector hCD, VarPtr(cooks(0)), nVals</span>
+<span id="cb26-12"><a href="#cb26-12"></a>LR_Free hCD</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The same three-call pattern (length, allocate, read) works for DFFITS, VIF, and the lambda path.</p>
+<p>DFBETAS is the one genuinely two-dimensional result: each of the n observations has a standardized influence value for each of the k+1 coefficients (intercept plus slopes). The result is stored as <code>FitResult::Matrix</code> with shape (n rows × (k+1) cols) in row-major order (element [i][j] is at <code>data[i * cols + j]</code>). The caller queries dimensions first, pre-allocates a flat buffer of <code>rows × cols</code> doubles, and reads the whole thing in a single call:</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode numberSource vba number-lines code-with-copy"><code class="sourceCode"><span id="cb27-1"><a href="#cb27-1"></a>' Read DFBETAS matrix</span>
+<span id="cb27-2"><a href="#cb27-2"></a>Dim hDF As LongPtr</span>
+<span id="cb27-3"><a href="#cb27-3"></a>hDF = LR_DFBETAS(VarPtr(y(0)), n, VarPtr(x(0)), p)</span>
+<span id="cb27-4"><a href="#cb27-4"></a>If hDF = 0 Then MsgBox GetLastErrorMsg() : Exit Sub</span>
+<span id="cb27-5"><a href="#cb27-5"></a></span>
+<span id="cb27-6"><a href="#cb27-6"></a>Dim nRows As Long, nCols As Long</span>
+<span id="cb27-7"><a href="#cb27-7"></a>nRows = LR_GetMatrixRows(hDF)          ' = n observations</span>
+<span id="cb27-8"><a href="#cb27-8"></a>nCols = LR_GetMatrixCols(hDF)          ' = k+1 coefficients (incl. intercept)</span>
+<span id="cb27-9"><a href="#cb27-9"></a></span>
+<span id="cb27-10"><a href="#cb27-10"></a>Dim buf() As Double</span>
+<span id="cb27-11"><a href="#cb27-11"></a>ReDim buf(0 To nRows * nCols - 1)     ' flat row-major buffer</span>
+<span id="cb27-12"><a href="#cb27-12"></a>LR_GetMatrix hDF, VarPtr(buf(0)), nRows * nCols</span>
+<span id="cb27-13"><a href="#cb27-13"></a>LR_Free hDF</span>
+<span id="cb27-14"><a href="#cb27-14"></a></span>
+<span id="cb27-15"><a href="#cb27-15"></a>' Element [i, j] is at buf(i * nCols + j)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Row-major layout was chosen because the index arithmetic (<code>i * nCols + j</code>) is unambiguous regardless of the caller’s own internal storage conventions. The VBA high-level wrapper reshapes this flat buffer into a 2D VBA array for presentation, but the DLL itself only ever deals in flat buffers.</p>
+<p>The <code>Vector</code> and <code>Matrix</code> variants exist precisely because the type system cannot anticipate every combination. Once the generic getters were written, every new analysis type that stores its result as a flat array or matrix gets them for free (Cook’s distances, DFFITS, VIF, DFBETAS, and lambda paths all share the same five getter functions with no new DLL exports required).</p>
+<hr>
+</section>
+</section>
+<section id="building-for-both-architectures" class="level2">
+<h2 class="anchored" data-anchor-id="building-for-both-architectures">6. Building for Both Architectures</h2>
+<p>Sections 3 and 4 covered the <em>why</em> of the dual-architecture support (stdcall decoration on 32-bit and the handle store design). This section covers the <em>how</em>: the exact build setup, commands, and file placement that produce the two DLLs.</p>
+<section id="prerequisites" class="level3">
+<h3 class="anchored" data-anchor-id="prerequisites">Prerequisites</h3>
+<p>You need two things that are not part of the default Rust installation.</p>
+<p><strong>The 32-bit MSVC target for Rust.</strong> On a 64-bit Windows machine, the default Rust target is <code>x86_64-pc-windows-msvc</code>. The 32-bit target must be added explicitly:</p>
+<pre><code>rustup target add i686-pc-windows-msvc</code></pre>
+<p><strong>The 32-bit MSVC linker and libraries.</strong> The Rust toolchain provides the compiler, but it delegates to the MSVC linker (<code>link.exe</code>) for the final link step. A standard “Desktop development with C++” install via <a href="https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022">Visual Studio Build Tools</a> covers both architectures. If you have Visual Studio installed but 32-bit builds fail with <code>error: linker 'link.exe' not found</code>, open the Visual Studio Installer and ensure “MSVC v14x – VS 2022 C++ x86/x64 build tools” is checked under the “Desktop development with C++” workload.</p>
+</section>
+<section id="the-ffi-feature-gate" class="level3">
+<h3 class="anchored" data-anchor-id="the-ffi-feature-gate">The <code>ffi</code> Feature Gate</h3>
+<p>The FFI layer is not compiled by default. Looking at <code>Cargo.toml</code>:</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode numberSource toml number-lines code-with-copy"><code class="sourceCode toml"><span id="cb29-1"><a href="#cb29-1"></a><span class="kw">[features]</span></span>
+<span id="cb29-2"><a href="#cb29-2"></a><span class="dt">default</span> <span class="op">=</span> <span class="op">[</span><span class="st">"wasm"</span><span class="op">]</span></span>
+<span id="cb29-3"><a href="#cb29-3"></a><span class="dt">wasm</span>    <span class="op">=</span> <span class="op">[</span><span class="st">"dep:wasm-bindgen"</span><span class="op">,</span> <span class="st">"dep:web-sys"</span><span class="op">,</span> <span class="st">"dep:js-sys"</span><span class="op">,</span> <span class="st">"dep:csv"</span><span class="op">,</span> <span class="st">"getrandom/js"</span><span class="op">]</span></span>
+<span id="cb29-4"><a href="#cb29-4"></a><span class="dt">python</span>  <span class="op">=</span> <span class="op">[</span><span class="st">"pyo3"</span><span class="op">,</span> <span class="st">"numpy"</span><span class="op">]</span></span>
+<span id="cb29-5"><a href="#cb29-5"></a><span class="dt">numpy</span>   <span class="op">=</span> <span class="op">[</span><span class="st">"dep:numpy"</span><span class="op">]</span></span>
+<span id="cb29-6"><a href="#cb29-6"></a><span class="dt">validation</span> <span class="op">=</span> <span class="op">[]</span></span>
+<span id="cb29-7"><a href="#cb29-7"></a><span class="dt">ffi</span>     <span class="op">=</span> <span class="op">[]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The entire <code>src/ffi/</code> module tree is gated behind <code>#[cfg(feature = "ffi")]</code> in <code>src/lib.rs</code>. A plain <code>cargo build</code> produces the WASM-capable library without any FFI code. This keeps the FFI bindings from contaminating normal library builds, test runs, or crates.io publishing. The <code>ffi</code> feature has no dependencies of its own (it is a pure compilation gate).</p>
+</section>
+<section id="build-commands" class="level3">
+<h3 class="anchored" data-anchor-id="build-commands">Build Commands</h3>
+<div class="sourceCode" id="cb30"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1"></a><span class="co"># 64-bit DLL for 64-bit Excel</span></span>
+<span id="cb30-2"><a href="#cb30-2"></a><span class="ex">cargo</span> build <span class="at">--release</span> <span class="at">--target</span> x86_64-pc-windows-msvc <span class="at">--features</span> ffi</span>
+<span id="cb30-3"><a href="#cb30-3"></a></span>
+<span id="cb30-4"><a href="#cb30-4"></a><span class="co"># 32-bit DLL for 32-bit Excel</span></span>
+<span id="cb30-5"><a href="#cb30-5"></a><span class="ex">cargo</span> build <span class="at">--release</span> <span class="at">--target</span> i686-pc-windows-msvc <span class="at">--features</span> ffi</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Both commands pick up <code>.cargo/config.toml</code> automatically, which applies <code>target-feature=+crt-static</code> to each target:</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode numberSource toml number-lines code-with-copy"><code class="sourceCode toml"><span id="cb31-1"><a href="#cb31-1"></a><span class="kw">[target.x86_64-pc-windows-msvc]</span></span>
+<span id="cb31-2"><a href="#cb31-2"></a><span class="dt">rustflags</span> <span class="op">=</span> <span class="op">[</span><span class="st">"-C"</span><span class="op">,</span> <span class="st">"target-feature=+crt-static"</span><span class="op">]</span></span>
+<span id="cb31-3"><a href="#cb31-3"></a></span>
+<span id="cb31-4"><a href="#cb31-4"></a><span class="kw">[target.i686-pc-windows-msvc]</span></span>
+<span id="cb31-5"><a href="#cb31-5"></a><span class="dt">rustflags</span> <span class="op">=</span> <span class="op">[</span><span class="st">"-C"</span><span class="op">,</span> <span class="st">"target-feature=+crt-static"</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This statically links the C runtime into each DLL, eliminating the Visual C++ Redistributable dependency discussed in Section 1. The remaining DLL dependencies should be limited to system components that ship with every Windows installation (typically <code>KERNEL32.dll</code>, <code>ntdll.dll</code>, and a few CRT-related API sets), though the exact list varies by Rust toolchain version (verify with <code>dumpbin /dependents</code> on the final binary).</p>
+<p>The 32-bit build also triggers the <code>.def</code> file path in <code>build.rs</code> (Section 3 covers that mechanism). The 64-bit build skips it.</p>
+<p>The release profile in <code>Cargo.toml</code> applies to both:</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode numberSource toml number-lines code-with-copy"><code class="sourceCode toml"><span id="cb32-1"><a href="#cb32-1"></a><span class="kw">[profile.release]</span></span>
+<span id="cb32-2"><a href="#cb32-2"></a><span class="dt">opt-level</span> <span class="op">=</span> <span class="dv">3</span></span>
+<span id="cb32-3"><a href="#cb32-3"></a><span class="dt">lto</span> <span class="op">=</span> <span class="cn">true</span></span>
+<span id="cb32-4"><a href="#cb32-4"></a><span class="dt">codegen-units</span> <span class="op">=</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>lto = true</code> enables link-time optimization across the entire crate, which is particularly effective for a library like this where the hot path (QR decomposition, coordinate descent) consists of tightly coupled inner loops. <code>codegen-units = 1</code> trades parallel compilation for a single monolithic code unit that the backend can optimize more aggressively. For a DLL that will be called from a slow-iteration environment like VBA, squeezing out every nanosecond is worth the longer build time.</p>
+</section>
+<section id="output-paths-and-renaming" class="level3">
+<h3 class="anchored" data-anchor-id="output-paths-and-renaming">Output Paths and Renaming</h3>
+<p>Cargo names the output after the package: since the package is <code>linreg-core</code>, both builds produce <code>linreg_core.dll</code>. The target subdirectory differs:</p>
+<pre><code>target/x86_64-pc-windows-msvc/release/linreg_core.dll   ← 64-bit build
+target/i686-pc-windows-msvc/release/linreg_core.dll     ← 32-bit build</code></pre>
+<p>Since both need to coexist in the same folder as the workbook, they require different filenames. There is no automated rename step (copy each DLL manually and rename):</p>
+<pre><code>linreg_core.dll  -&gt;  linreg_core_x64.dll   (from x86_64 output)
+linreg_core.dll  -&gt;  linreg_core_x86.dll   (from i686 output)</code></pre>
+<p>These names are what the <code>Declare</code> statements in <code>LinregCore.bas</code> expect, and what <code>LR_Init()</code> loads via <code>LoadLibraryA</code> using a <code>#If Win64</code> branch. The naming is a convention, not enforced by anything in the build system (if you rename the files differently, you must update the VBA declarations to match).</p>
+</section>
+<section id="dll-placement" class="level3">
+<h3 class="anchored" data-anchor-id="dll-placement">DLL Placement</h3>
+<p>The VBA wrapper’s <code>LR_Init()</code> constructs the DLL path as <code>ThisWorkbook.Path &amp; "\linreg_core_x64.dll"</code>. <code>ThisWorkbook.Path</code> resolves to the directory containing the <code>.xlsm</code> file at runtime, so the DLLs must live in the same folder as the workbook:</p>
+<pre><code>VBA_Example/
+├── linreg_core_example_workbook.xlsm
+├── linreg_core_x64.dll
+├── linreg_core_x86.dll
+├── LinregCore.bas          ← VBA module source (exported for version control)
+└── ExampleMacros.bas       ← VBA module source (exported for version control)</code></pre>
+<p>Both DLLs are present in the same folder. The <code>#If Win64</code> branch in <code>LR_Init()</code> selects the right one at runtime depending on the Office bitness. A 64-bit Excel process ignores <code>linreg_core_x86.dll</code> entirely; a 32-bit process ignores the x64 build. Either DLL being absent is not an error unless someone tries to run under that bitness.</p>
+<p>This placement constraint (DLL in the same directory as the workbook) is the simplest arrangement that satisfies <code>ThisWorkbook.Path</code>. It also means distributing the tool is straightforward: zip the workbook and both DLLs together, and it works anywhere the zip is extracted without registry entries, installer scripts, or PATH manipulation.</p>
+<hr>
+</section>
+</section>
+<section id="the-vba-wrapper-layer" class="level2">
+<h2 class="anchored" data-anchor-id="the-vba-wrapper-layer">7. The VBA Wrapper Layer</h2>
+<p>Everything covered so far has been Rust. This section is about the VBA that sits in front of it (the code that an Excel user or VBA developer actually calls). <code>LinregCore.bas</code> is organized into two distinct layers: a set of raw <code>Declare</code> statements that expose the DLL symbols directly, and a set of public wrapper functions that hide all handle management and present clean, Excel-native results.</p>
+<section id="the-declaration-layer" class="level3">
+<h3 class="anchored" data-anchor-id="the-declaration-layer">The Declaration Layer</h3>
+<p>The DLL is declared once per exported symbol, twice over (once for 64-bit Office and once for 32-bit). A compile-time <code>#If VBA7 Then / #If Win64 Then</code> structure handles both:</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode numberSource vba number-lines code-with-copy"><code class="sourceCode"><span id="cb36-1"><a href="#cb36-1"></a>#If VBA7 Then</span>
+<span id="cb36-2"><a href="#cb36-2"></a></span>
+<span id="cb36-3"><a href="#cb36-3"></a>    #If Win64 Then</span>
+<span id="cb36-4"><a href="#cb36-4"></a>        ' 64-bit Office: linreg_core_x64.dll, LongPtr = 8 bytes</span>
+<span id="cb36-5"><a href="#cb36-5"></a>        Private Declare PtrSafe Function LR_OLS Lib "linreg_core_x64.dll" _</span>
+<span id="cb36-6"><a href="#cb36-6"></a>            (ByVal y_ptr As LongPtr, ByVal n As Long, _</span>
+<span id="cb36-7"><a href="#cb36-7"></a>             ByVal x_ptr As LongPtr, ByVal p As Long) As LongPtr</span>
+<span id="cb36-8"><a href="#cb36-8"></a>        ' ... ~50 more declarations ...</span>
+<span id="cb36-9"><a href="#cb36-9"></a></span>
+<span id="cb36-10"><a href="#cb36-10"></a>    #Else</span>
+<span id="cb36-11"><a href="#cb36-11"></a>        ' 32-bit Office: linreg_core_x86.dll, LongPtr = 4 bytes</span>
+<span id="cb36-12"><a href="#cb36-12"></a>        Private Declare PtrSafe Function LR_OLS Lib "linreg_core_x86.dll" _</span>
+<span id="cb36-13"><a href="#cb36-13"></a>            (ByVal y_ptr As LongPtr, ByVal n As Long, _</span>
+<span id="cb36-14"><a href="#cb36-14"></a>             ByVal x_ptr As LongPtr, ByVal p As Long) As LongPtr</span>
+<span id="cb36-15"><a href="#cb36-15"></a>        ' ... ~50 more declarations ...</span>
+<span id="cb36-16"><a href="#cb36-16"></a></span>
+<span id="cb36-17"><a href="#cb36-17"></a>    #End If</span>
+<span id="cb36-18"><a href="#cb36-18"></a></span>
+<span id="cb36-19"><a href="#cb36-19"></a>#Else</span>
+<span id="cb36-20"><a href="#cb36-20"></a>    ' Pre-VBA7 (Office 2007 and earlier): no PtrSafe, Long instead of LongPtr</span>
+<span id="cb36-21"><a href="#cb36-21"></a>    Private Declare Function LR_OLS Lib "linreg_core_x86.dll" _</span>
+<span id="cb36-22"><a href="#cb36-22"></a>        (ByVal y_ptr As Long, ByVal n As Long, _</span>
+<span id="cb36-23"><a href="#cb36-23"></a>         ByVal x_ptr As Long, ByVal p As Long) As Long</span>
+<span id="cb36-24"><a href="#cb36-24"></a>    ' ... 32-bit declarations only ...</span>
+<span id="cb36-25"><a href="#cb36-25"></a></span>
+<span id="cb36-26"><a href="#cb36-26"></a>#End If</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>PtrSafe</code> is a VBA7 keyword that marks a <code>Declare</code> statement as safe for 64-bit Office. The outer <code>#If VBA7 Then</code> gate is what makes the file open without a compilation error in Office 2007. The inner <code>#If Win64 Then</code> selects the right DLL filename and uses <code>LongPtr</code> (which VBA compiles as <code>Long</code> (32-bit) under 32-bit Office and <code>LongLong</code> (64-bit) under 64-bit Office) to keep the same source compiling correctly on both. The pre-VBA7 <code>#Else</code> block supports 32-bit-only environments where <code>PtrSafe</code> and <code>LongPtr</code> do not exist; the high-level wrapper functions are all guarded by <code>#If VBA7 Then</code> and are unavailable there.</p>
+<p>There is one naming trick worth calling out. The DLL exports a function called <code>LR_Init</code> (which just returns 1 to confirm the DLL loaded). If you declared it directly as <code>LR_Init</code> in VBA, it would collide with the public <code>LR_Init()</code> sub that calls <code>LoadLibraryA</code>. The solution is an <code>Alias</code> clause:</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode numberSource vba number-lines code-with-copy"><code class="sourceCode"><span id="cb37-1"><a href="#cb37-1"></a>' Inside the #If Win64 Then branch (64-bit Office):</span>
+<span id="cb37-2"><a href="#cb37-2"></a>Private Declare PtrSafe Function LR_InitDLL Lib "linreg_core_x64.dll" _</span>
+<span id="cb37-3"><a href="#cb37-3"></a>    Alias "LR_Init" () As Long</span>
+<span id="cb37-4"><a href="#cb37-4"></a></span>
+<span id="cb37-5"><a href="#cb37-5"></a>' Inside the #Else branch (32-bit Office):</span>
+<span id="cb37-6"><a href="#cb37-6"></a>Private Declare PtrSafe Function LR_InitDLL Lib "linreg_core_x86.dll" _</span>
+<span id="cb37-7"><a href="#cb37-7"></a>    Alias "LR_Init" () As Long</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>VBA calls the function as <code>LR_InitDLL</code>; the DLL sees it as <code>LR_Init</code>. The two names live in separate namespaces (the VBA name is the one VBA code uses, and the alias is the symbol name that <code>GetProcAddress</code> resolves). Both branches use the same alias; only the <code>Lib</code> filename differs.</p>
+</section>
+<section id="private-helpers" class="level3">
+<h3 class="anchored" data-anchor-id="private-helpers">Private Helpers</h3>
+<p>Three private functions do the mechanical work that every wrapper needs.</p>
+<p><strong><code>RangeToDoubleArray</code></strong> converts a single-column (or single-row) <code>Range</code> into a 0-based <code>Double()</code> array, reading cells in worksheet order. This is what converts the VBA <code>Range("B2:B21")</code> into a pointer-ready native array.</p>
+<p><strong><code>RangeToMatrix</code></strong> converts a multi-column <code>Range</code> into a flat 0-based <code>Double()</code> in row-major order (row 1 col 1, row 1 col 2, …, row 2 col 1, and so on). This matches the layout the DLL expects for the predictor matrix <code>x_ptr</code>.</p>
+<p><strong><code>GetLastErrorMsg</code></strong> wraps the byte-buffer call from Section 2:</p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode numberSource vba number-lines code-with-copy"><code class="sourceCode"><span id="cb38-1"><a href="#cb38-1"></a>Private Function GetLastErrorMsg() As String</span>
+<span id="cb38-2"><a href="#cb38-2"></a>    Dim buf(0 To 511) As Byte</span>
+<span id="cb38-3"><a href="#cb38-3"></a>    Dim written As Long</span>
+<span id="cb38-4"><a href="#cb38-4"></a>    written = LR_GetLastError(VarPtr(buf(0)), 512)</span>
+<span id="cb38-5"><a href="#cb38-5"></a>    If written &gt; 0 Then</span>
+<span id="cb38-6"><a href="#cb38-6"></a>        GetLastErrorMsg = Left$(StrConv(buf, vbUnicode), written)</span>
+<span id="cb38-7"><a href="#cb38-7"></a>    Else</span>
+<span id="cb38-8"><a href="#cb38-8"></a>        GetLastErrorMsg = "(unknown error)"</span>
+<span id="cb38-9"><a href="#cb38-9"></a>    End If</span>
+<span id="cb38-10"><a href="#cb38-10"></a>End Function</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong><code>DiagResult</code></strong> is a shared helper for all diagnostic test handles. Given a handle (0 on failure, ≥1 on success), it queries the three standard getters and returns a three-element Variant array:</p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode numberSource vba number-lines code-with-copy"><code class="sourceCode"><span id="cb39-1"><a href="#cb39-1"></a>Private Function DiagResult(h As LongPtr) As Variant</span>
+<span id="cb39-2"><a href="#cb39-2"></a>    If h = 0 Then</span>
+<span id="cb39-3"><a href="#cb39-3"></a>        DiagResult = Array(GetLastErrorMsg())</span>
+<span id="cb39-4"><a href="#cb39-4"></a>        Exit Function</span>
+<span id="cb39-5"><a href="#cb39-5"></a>    End If</span>
+<span id="cb39-6"><a href="#cb39-6"></a>    Dim result(0 To 2) As Variant</span>
+<span id="cb39-7"><a href="#cb39-7"></a>    result(0) = LR_GetStatistic(h)</span>
+<span id="cb39-8"><a href="#cb39-8"></a>    result(1) = LR_GetPValue(h)</span>
+<span id="cb39-9"><a href="#cb39-9"></a>    result(2) = LR_GetTestDF(h)</span>
+<span id="cb39-10"><a href="#cb39-10"></a>    LR_Free h</span>
+<span id="cb39-11"><a href="#cb39-11"></a>    DiagResult = result</span>
+<span id="cb39-12"><a href="#cb39-12"></a>End Function</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="the-wrapper-pattern-linreg_ols" class="level3">
+<h3 class="anchored" data-anchor-id="the-wrapper-pattern-linreg_ols">The Wrapper Pattern: <code>LinReg_OLS</code></h3>
+<p><code>LinReg_OLS</code> is the clearest illustration of the full wrapper pattern. In condensed form:</p>
+<div class="sourceCode" id="cb40"><pre class="sourceCode numberSource vba number-lines code-with-copy"><code class="sourceCode"><span id="cb40-1"><a href="#cb40-1"></a>Public Function LinReg_OLS(yRange As Range, xRange As Range) As Variant</span>
+<span id="cb40-2"><a href="#cb40-2"></a>    ' 1. Convert Excel ranges to flat native arrays</span>
+<span id="cb40-3"><a href="#cb40-3"></a>    Dim y() As Double, X() As Double</span>
+<span id="cb40-4"><a href="#cb40-4"></a>    Dim n As Long, p As Long</span>
+<span id="cb40-5"><a href="#cb40-5"></a>    n = yRange.Cells.Count</span>
+<span id="cb40-6"><a href="#cb40-6"></a>    p = xRange.Columns.Count</span>
+<span id="cb40-7"><a href="#cb40-7"></a>    y = RangeToDoubleArray(yRange)</span>
+<span id="cb40-8"><a href="#cb40-8"></a>    X = RangeToMatrix(xRange)</span>
+<span id="cb40-9"><a href="#cb40-9"></a></span>
+<span id="cb40-10"><a href="#cb40-10"></a>    ' 2. Call the DLL fit function</span>
+<span id="cb40-11"><a href="#cb40-11"></a>    Dim h As LongPtr</span>
+<span id="cb40-12"><a href="#cb40-12"></a>    h = LR_OLS(VarPtr(y(0)), CLng(n), VarPtr(X(0)), CLng(p))</span>
+<span id="cb40-13"><a href="#cb40-13"></a>    If h = 0 Then</span>
+<span id="cb40-14"><a href="#cb40-14"></a>        LinReg_OLS = Array(GetLastErrorMsg())</span>
+<span id="cb40-15"><a href="#cb40-15"></a>        Exit Function</span>
+<span id="cb40-16"><a href="#cb40-16"></a>    End If</span>
+<span id="cb40-17"><a href="#cb40-17"></a></span>
+<span id="cb40-18"><a href="#cb40-18"></a>    ' 3. Query all getters into local VBA variables</span>
+<span id="cb40-19"><a href="#cb40-19"></a>    Dim k As Long</span>
+<span id="cb40-20"><a href="#cb40-20"></a>    k = LR_GetNumCoefficients(h)        ' intercept + p slopes</span>
+<span id="cb40-21"><a href="#cb40-21"></a>    Dim coefs() As Double, ses() As Double</span>
+<span id="cb40-22"><a href="#cb40-22"></a>    Dim tstats() As Double, pvals() As Double</span>
+<span id="cb40-23"><a href="#cb40-23"></a>    ReDim coefs(0 To k - 1)</span>
+<span id="cb40-24"><a href="#cb40-24"></a>    ReDim ses(0 To k - 1)</span>
+<span id="cb40-25"><a href="#cb40-25"></a>    ReDim tstats(0 To k - 1)</span>
+<span id="cb40-26"><a href="#cb40-26"></a>    ReDim pvals(0 To k - 1)</span>
+<span id="cb40-27"><a href="#cb40-27"></a>    LR_GetCoefficients h, VarPtr(coefs(0)), k</span>
+<span id="cb40-28"><a href="#cb40-28"></a>    LR_GetStdErrors    h, VarPtr(ses(0)),   k</span>
+<span id="cb40-29"><a href="#cb40-29"></a>    LR_GetTStats       h, VarPtr(tstats(0)), k</span>
+<span id="cb40-30"><a href="#cb40-30"></a>    LR_GetPValues      h, VarPtr(pvals(0)),  k</span>
+<span id="cb40-31"><a href="#cb40-31"></a>    ' ... scalar getters (r2, adjr2, fstat, fp, mse) similarly ...</span>
+<span id="cb40-32"><a href="#cb40-32"></a></span>
+<span id="cb40-33"><a href="#cb40-33"></a>    ' 4. Free the handle (all data is now in VBA-owned variables)</span>
+<span id="cb40-34"><a href="#cb40-34"></a>    LR_Free h</span>
+<span id="cb40-35"><a href="#cb40-35"></a></span>
+<span id="cb40-36"><a href="#cb40-36"></a>    ' 5. Build a 2D Variant result array</span>
+<span id="cb40-37"><a href="#cb40-37"></a>    Dim result() As Variant</span>
+<span id="cb40-38"><a href="#cb40-38"></a>    ReDim result(0 To k + 5, 0 To 4)   ' (k+6) rows × 5 columns</span>
+<span id="cb40-39"><a href="#cb40-39"></a>    result(0, 0) = "Term"</span>
+<span id="cb40-40"><a href="#cb40-40"></a>    result(0, 1) = "Coefficient"</span>
+<span id="cb40-41"><a href="#cb40-41"></a>    result(0, 2) = "Std Error"</span>
+<span id="cb40-42"><a href="#cb40-42"></a>    result(0, 3) = "t Stat"</span>
+<span id="cb40-43"><a href="#cb40-43"></a>    result(0, 4) = "p-Value"</span>
+<span id="cb40-44"><a href="#cb40-44"></a>    ' ... populate coefficient rows and summary rows ...</span>
+<span id="cb40-45"><a href="#cb40-45"></a>    LinReg_OLS = result</span>
+<span id="cb40-46"><a href="#cb40-46"></a>End Function</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The step ordering matters. <code>LR_Free h</code> is called at step 4 (after all getter calls have already copied the Rust data into VBA-owned <code>Double()</code> arrays). The handle is released while those values are still live in VBA’s stack frame; the 2D result table is assembled from local VBA variables, not from the DLL. This means there is no window where the result table is being built while the handle is still open; the handle lifetime is as short as possible.</p>
+<p>The complete return table for <code>LinReg_OLS</code> is a <code>(k+6) × 5</code> array where k is the total number of coefficients including the intercept:</p>
+<table class="table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Row</th>
+<th>Col 0</th>
+<th>Col 1</th>
+<th>Col 2</th>
+<th>Col 3</th>
+<th>Col 4</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td><code>"Term"</code></td>
+<td><code>"Coefficient"</code></td>
+<td><code>"Std Error"</code></td>
+<td><code>"t Stat"</code></td>
+<td><code>"p-Value"</code></td>
+</tr>
+<tr class="even">
+<td>1..k</td>
+<td>term name</td>
+<td>coefficient</td>
+<td>std error</td>
+<td>t-stat</td>
+<td>p-value</td>
+</tr>
+<tr class="odd">
+<td>k+1</td>
+<td><em>(blank)</em></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>k+2</td>
+<td><code>"R-squared"</code></td>
+<td>value</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>k+3</td>
+<td><code>"Adj R-squared"</code></td>
+<td>value</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>k+4</td>
+<td><code>"F-stat"</code></td>
+<td>value</td>
+<td><code>"p(F)"</code></td>
+<td>value</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>k+5</td>
+<td><code>"MSE"</code></td>
+<td>value</td>
+<td><code>"n"</code></td>
+<td>n</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>The caller pastes it with a single <code>Range.Value</code> assignment:</p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode numberSource vba number-lines code-with-copy"><code class="sourceCode"><span id="cb41-1"><a href="#cb41-1"></a>Dim tbl As Variant</span>
+<span id="cb41-2"><a href="#cb41-2"></a>tbl = LinReg_OLS(Range("B2:B21"), Range("C2:F21"))</span>
+<span id="cb41-3"><a href="#cb41-3"></a>Range("H2").Resize(UBound(tbl, 1) + 1, UBound(tbl, 2) + 1).Value = tbl</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>UBound(tbl, 1) + 1</code> gives the row count (the array is 0-based so <code>UBound</code> = last index = rows - 1); <code>Resize</code> expands the single-cell anchor to exactly the right dimensions before assigning.</p>
+</section>
+<section id="error-handling-convention" class="level3">
+<h3 class="anchored" data-anchor-id="error-handling-convention">Error Handling Convention</h3>
+<p>Every wrapper follows the same error contract: on failure, return a single-element 0-based array containing the error message string. The check in the header comment captures it:</p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode numberSource vba number-lines code-with-copy"><code class="sourceCode"><span id="cb42-1"><a href="#cb42-1"></a>' If IsArray(result) And UBound(result) = 0 Then ' error occurred</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>A 1D array with <code>UBound = 0</code> is the distinguishing signature: normal OLS results are always 2D (which <code>UBound(result, 2)</code> would succeed on), so any 1D single-element return is an error. The <code>PasteResult</code> helper in <code>ExampleMacros.bas</code> implements this check before pasting, printing the error message into the output cell rather than crashing.</p>
+<p>The convention avoids any VBA error-handling machinery (<code>On Error GoTo</code>) in the caller. The wrapper catches the failure at the DLL boundary, packages the message, and returns it as data. The caller decides what to do with it.</p>
+</section>
+<section id="diagnostic-wrappers" class="level3">
+<h3 class="anchored" data-anchor-id="diagnostic-wrappers">Diagnostic Wrappers</h3>
+<p>All ten diagnostic wrappers except Durbin-Watson share the same boilerplate (range-to-array conversion) and reduce the actual DLL call to a single <code>DiagResult</code> delegation:</p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode numberSource vba number-lines code-with-copy"><code class="sourceCode"><span id="cb43-1"><a href="#cb43-1"></a>Public Function LinReg_BreuschPagan(yRange As Range, xRange As Range) As Variant</span>
+<span id="cb43-2"><a href="#cb43-2"></a>    Dim y() As Double, X() As Double</span>
+<span id="cb43-3"><a href="#cb43-3"></a>    Dim n As Long, p As Long</span>
+<span id="cb43-4"><a href="#cb43-4"></a>    n = yRange.Cells.Count : p = xRange.Columns.Count</span>
+<span id="cb43-5"><a href="#cb43-5"></a>    y = RangeToDoubleArray(yRange) : X = RangeToMatrix(xRange)</span>
+<span id="cb43-6"><a href="#cb43-6"></a>    LinReg_BreuschPagan = DiagResult( _</span>
+<span id="cb43-7"><a href="#cb43-7"></a>        LR_BreuschPagan(VarPtr(y(0)), CLng(n), VarPtr(X(0)), CLng(p)))</span>
+<span id="cb43-8"><a href="#cb43-8"></a>End Function</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>DiagResult</code> receives the handle directly as an argument (it handles the h=0 check, queries the three getters, calls <code>LR_Free</code>, and returns <code>{statistic, p-value, df}</code>). The wrapper itself never touches a handle.</p>
+<p><code>LinReg_DurbinWatson</code> is the one exception. Because DW has no p-value, it bypasses <code>DiagResult</code> and calls <code>LR_GetAutocorrelation</code> instead of <code>LR_GetPValue</code> for the second element, placing <code>""</code> in the third:</p>
+<div class="sourceCode" id="cb44"><pre class="sourceCode numberSource vba number-lines code-with-copy"><code class="sourceCode"><span id="cb44-1"><a href="#cb44-1"></a>result(0) = LR_GetStatistic(h)</span>
+<span id="cb44-2"><a href="#cb44-2"></a>result(1) = LR_GetAutocorrelation(h)   ' ρ ≈ 1 − DW/2</span>
+<span id="cb44-3"><a href="#cb44-3"></a>result(2) = ""                          ' no df for DW</span>
+<span id="cb44-4"><a href="#cb44-4"></a>LR_Free h</span>
+<span id="cb44-5"><a href="#cb44-5"></a>LinReg_DurbinWatson = result</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>All ten wrappers return the same outer shape (a 3-element Variant array), so the caller code that handles their output is uniform regardless of which test it came from. Note, however, that the semantics of element 1 differ: for Durbin-Watson it contains the estimated autocorrelation ρ, while for all other diagnostics it contains the p-value. Callers that iterate over diagnostic results programmatically should account for this.</p>
+</section>
+<section id="setupworkbook" class="level3">
+<h3 class="anchored" data-anchor-id="setupworkbook">SetupWorkbook</h3>
+<p><code>ExampleMacros.bas</code> exists purely to demonstrate the library inside Excel. Its central function, <code>SetupWorkbook</code>, creates four sheets from scratch:</p>
+<ul>
+<li><strong>OLS Example:</strong> loads the first 20 rows of the <code>mtcars</code> dataset (mpg, cyl, disp, hp, wt) with two buttons: “Run OLS” and “Prediction Intervals”</li>
+<li><strong>Diagnostics:</strong> a single “Run All Diagnostics” button that runs all ten diagnostic tests and writes a formatted results table</li>
+<li><strong>Regularized:</strong> two editable yellow input cells for Lambda and Alpha, with buttons for Ridge, Lasso, and Elastic Net</li>
+<li><strong>Instructions:</strong> a text-based guide generated programmatically, including a live call to <code>LinReg_Version()</code> to embed the current DLL version string</li>
+</ul>
+<p><code>SetupWorkbook</code> is designed to be run once from the VBA editor after importing the two <code>.bas</code> files. After that, everything is driven by button clicks. The macro disables screen updating, calls four private setup subs, activates the OLS sheet, re-enables screen updating, and shows a completion dialog; a routine any VBA developer would recognize as standard workbook initialization boilerplate.</p>
+<hr>
+</section>
+</section>
+<section id="lessons-learned" class="level2">
+<h2 class="anchored" data-anchor-id="lessons-learned">8. Lessons Learned</h2>
+<p>Every section so far has described the design as it exists today (clean, layered, working). This section is about what went wrong on the way there, and the non-obvious failure modes that are still latent in any project built this way.</p>
+<section id="handle-leaks-are-silent-and-cumulative" class="level3">
+<h3 class="anchored" data-anchor-id="handle-leaks-are-silent-and-cumulative">Handle Leaks Are Silent and Cumulative</h3>
+<p>The handle store described in Section 4 is a global <code>HashMap</code> behind a <code>Mutex</code>. Every call to a fit function (<code>LR_OLS</code>, <code>LR_Ridge</code>, <code>LR_BreuschPagan</code>, and so on) inserts a new entry. Every call to <code>LR_Free</code> removes one. If the caller forgets <code>LR_Free</code>, the entry stays in the map for the lifetime of the DLL (which, in Excel, means until the user closes the workbook or quits the application).</p>
+<p>In VBA’s linear execution model, this is easy to get wrong. There is no <code>try</code>/<code>finally</code> block in VBA. If a wrapper function calls <code>LR_OLS</code>, receives a valid handle, and then hits a runtime error before reaching <code>LR_Free</code>, the handle leaks. The memory is not large per call (a single <code>RegressionOutput</code> is a few kilobytes), but a macro that runs a diagnostic battery across dozens of datasets in a loop can accumulate thousands of orphaned entries in a long session.</p>
+<p>The insidious part is that nothing fails. The DLL does not slow down. VBA does not raise an error. The <code>HashMap</code> grows quietly. The only symptom is gradually increasing memory consumption in the Excel process, which the user will attribute to Excel being Excel.</p>
+<p>The VBA wrappers in <code>LinregCore.bas</code> mitigate this by design: each high-level function calls <code>LR_Free</code> before returning, and the handle never escapes the function’s scope. But anyone writing custom VBA code against the raw <code>Declare</code> layer (skipping the wrappers) must enforce this discipline manually. There is no mechanism on the Rust side to detect or warn about leaked handles, because the DLL has no way to know whether VBA intends to call <code>LR_Free</code> later or has simply forgotten.</p>
+<p>One safety property does hold: double-free is harmless. <code>LR_Free</code> calls <code>HashMap::remove</code>, which is a no-op on a missing key. The test suite validates this explicitly:</p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode numberSource rust number-lines code-with-copy"><code class="sourceCode rust"><span id="cb45-1"><a href="#cb45-1"></a><span class="at">#[</span>test<span class="at">]</span></span>
+<span id="cb45-2"><a href="#cb45-2"></a><span class="kw">fn</span> test_ols_double_free_is_safe() <span class="op">{</span></span>
+<span id="cb45-3"><a href="#cb45-3"></a>    <span class="kw">let</span> (y<span class="op">,</span> x) <span class="op">=</span> simple_linear_data()<span class="op">;</span></span>
+<span id="cb45-4"><a href="#cb45-4"></a>    <span class="kw">let</span> x_matrix <span class="op">=</span> columns_to_row_major(<span class="op">&amp;</span>[x])<span class="op">;</span></span>
+<span id="cb45-5"><a href="#cb45-5"></a></span>
+<span id="cb45-6"><a href="#cb45-6"></a>    <span class="kw">let</span> handle <span class="op">=</span> <span class="kw">unsafe</span> <span class="op">{</span> LR_OLS(y<span class="op">.</span>as_ptr()<span class="op">,</span> y<span class="op">.</span>len() <span class="kw">as</span> <span class="dt">i32</span><span class="op">,</span> x_matrix<span class="op">.</span>as_ptr()<span class="op">,</span> <span class="dv">1</span>) <span class="op">};</span></span>
+<span id="cb45-7"><a href="#cb45-7"></a>    <span class="pp">assert_ne!</span>(handle<span class="op">,</span> <span class="dv">0</span>)<span class="op">;</span></span>
+<span id="cb45-8"><a href="#cb45-8"></a></span>
+<span id="cb45-9"><a href="#cb45-9"></a>    <span class="kw">unsafe</span> <span class="op">{</span></span>
+<span id="cb45-10"><a href="#cb45-10"></a>        LR_Free(handle)<span class="op">;</span></span>
+<span id="cb45-11"><a href="#cb45-11"></a>        LR_Free(handle)<span class="op">;</span> <span class="co">// Should not crash</span></span>
+<span id="cb45-12"><a href="#cb45-12"></a>    <span class="op">}</span></span>
+<span id="cb45-13"><a href="#cb45-13"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This means that calling <code>LR_Free</code> defensively (even when you are not sure whether the handle was already freed) is always safe. The cost is a single <code>HashMap</code> lookup that finds nothing. In a language without destructors, “safe to call twice” is a meaningful property.</p>
+</section>
+<section id="byval-vs-byref-the-silent-crash" class="level3">
+<h3 class="anchored" data-anchor-id="byval-vs-byref-the-silent-crash">ByVal vs ByRef: The Silent Crash</h3>
+<p>Every parameter in every <code>Declare</code> statement in <code>LinregCore.bas</code> uses <code>ByVal</code>. This is not VBA’s default (VBA defaults to <code>ByRef</code> when neither keyword is specified). Getting this wrong does not produce a compile error. It produces a crash, or worse, silently wrong results.</p>
+<p>The reason is straightforward. When VBA passes a <code>LongPtr</code> argument <code>ByVal</code>, the DLL receives the value itself (the integer handle, or the pointer obtained from <code>VarPtr()</code>). When VBA passes it <code>ByRef</code>, the DLL receives a pointer <em>to</em> that value (the address of the VBA variable that holds the handle, not the handle itself). On the Rust side, <code>y_ptr: *const f64</code> now points to a location on VBA’s stack frame that contains a pointer, not an array of doubles. <code>slice::from_raw_parts(y_ptr, n)</code> treats this stack address as the base of a contiguous <code>f64</code> array: element 0 is the pointer value reinterpreted as a floating-point number, element 1 is whatever 8 bytes follow on VBA’s stack (a return address, another local variable, a frame pointer), also reinterpreted as a double, and so on for all <code>n</code> elements. The result is an access violation if the read extends past mapped memory, or silently corrupt data if it does not.</p>
+<p>Consider this incorrect declaration:</p>
+<div class="sourceCode" id="cb46"><pre class="sourceCode numberSource vba number-lines code-with-copy"><code class="sourceCode"><span id="cb46-1"><a href="#cb46-1"></a>' WRONG: ByRef is the default when omitted</span>
+<span id="cb46-2"><a href="#cb46-2"></a>Private Declare PtrSafe Function LR_OLS Lib "linreg_core_x64.dll" _</span>
+<span id="cb46-3"><a href="#cb46-3"></a>    (y_ptr As LongPtr, n As Long, x_ptr As LongPtr, p As Long) As LongPtr</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Compared to the correct version:</p>
+<div class="sourceCode" id="cb47"><pre class="sourceCode numberSource vba number-lines code-with-copy"><code class="sourceCode"><span id="cb47-1"><a href="#cb47-1"></a>' CORRECT: every parameter is explicitly ByVal</span>
+<span id="cb47-2"><a href="#cb47-2"></a>Private Declare PtrSafe Function LR_OLS Lib "linreg_core_x64.dll" _</span>
+<span id="cb47-3"><a href="#cb47-3"></a>    (ByVal y_ptr As LongPtr, ByVal n As Long, _</span>
+<span id="cb47-4"><a href="#cb47-4"></a>     ByVal x_ptr As LongPtr, ByVal p As Long) As LongPtr</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The two look almost identical. The difference is four keywords. The consequence is the difference between working code and an unrecoverable crash with no diagnostic information. VBA does not warn you. The Rust compiler cannot help (it sees a <code>*const f64</code> either way).</p>
+<p>This also extends to scalar parameters. If <code>n As Long</code> is passed <code>ByRef</code>, the DLL receives the address of <code>n</code> (a 4-byte or 8-byte pointer) and interprets it as a 32-bit integer. On 64-bit Office, that pointer might be <code>0x00007FF6A1B0</code> (a 48-bit value), which when truncated to <code>i32</code> yields a nonsensical observation count. The regression runs with a garbage <code>n</code>, reads past the end of the actual array, and either crashes or returns meaningless results.</p>
+<p>The rule is absolute: <strong>every parameter in a <code>Declare</code> statement for a C-compatible DLL must be <code>ByVal</code></strong>, unless you are deliberately passing a pointer-to-pointer (which this API never does). This is the single most common cause of FFI failures in VBA, and it is entirely preventable by treating <code>ByVal</code> as mandatory syntax rather than optional annotation.</p>
+</section>
+<section id="the-32-bit-.def-file-discovery" class="level3">
+<h3 class="anchored" data-anchor-id="the-32-bit-.def-file-discovery">The 32-bit .def File Discovery</h3>
+<p>Section 3 covered the <code>.def</code> file solution in technical detail. What it did not cover is how long it took to find the problem.</p>
+<p>The 64-bit build worked immediately. The <code>Declare</code> statements resolved, the DLL loaded, regression results came back correct. The natural next step was to build the 32-bit DLL for the substantial population of enterprise users still running 32-bit Office. The build succeeded. The DLL appeared in the output directory. The file was the right size. <code>LR_Init()</code> confirmed the DLL loaded into the process.</p>
+<p>Then every subsequent call failed with runtime error 453: “Specified DLL function not found.”</p>
+<p>The DLL was loaded. The function existed (<code>dumpbin /exports</code> showed it in the export table). But the name in the export table was <code>_LR_OLS@16</code>, not <code>LR_OLS</code>. VBA was searching for the plain name and finding nothing.</p>
+<p>The debugging sequence went roughly like this:</p>
+<ol type="1">
+<li>Verify the DLL is loaded (<code>LoadLibraryA</code> succeeded; confirmed).</li>
+<li>Verify the function name is correct in the <code>Declare</code> statement (it was).</li>
+<li>Verify <code>#[no_mangle]</code> is present on the Rust export (it was).</li>
+<li>Suspect a calling convention mismatch (switch from <code>extern "system"</code> to <code>extern "C"</code>). This changes the calling convention from <code>stdcall</code> to <code>cdecl</code> on 32-bit, which removes the decoration, but now VBA crashes on every call because VBA expects <code>stdcall</code> on x86 and the stack cleanup is wrong.</li>
+<li>Switch back to <code>extern "system"</code> and inspect the export table with <code>dumpbin /exports linreg_core.dll</code>. See <code>_LR_OLS@16</code>. Realize the decoration is applied by the MSVC linker <em>after</em> Rust’s <code>#[no_mangle]</code> has already done its work.</li>
+<li>Find the <code>.def</code> file solution in the MSVC linker documentation.</li>
+</ol>
+<p>Steps 1 through 4 took the better part of an afternoon. The root cause (that <code>#[no_mangle]</code> and stdcall decoration are independent mechanisms applied at different stages) is obvious in retrospect but invisible when you are staring at a function that clearly exists and clearly cannot be found.</p>
+<p>The lesson is specific: <strong>if a 32-bit Windows DLL export cannot be found by <code>GetProcAddress</code> despite the function being present, inspect the export table with <code>dumpbin /exports</code> and look for name decoration.</strong> The fix is a <code>.def</code> file. The <code>build.rs</code> script described in Section 3 automates it so the problem never recurs.</p>
+</section>
+<section id="testing-ffi-without-excel" class="level3">
+<h3 class="anchored" data-anchor-id="testing-ffi-without-excel">Testing FFI Without Excel</h3>
+<p>The most counterintuitive part of this project is that the FFI layer has a comprehensive test suite that never opens Excel.</p>
+<p>The exported functions (<code>LR_OLS</code>, <code>LR_GetRSquared</code>, <code>LR_Free</code>, and the rest) are <code>pub extern "system" fn</code> items defined in Rust modules under <code>src/ffi/</code>. They are exported as DLL symbols when compiled as a <code>cdylib</code>, but within the same crate they are also ordinary Rust functions that can be called directly in <code>unsafe</code> blocks. The test suite in <code>tests/ffi/</code> does exactly this:</p>
+<div class="sourceCode" id="cb48"><pre class="sourceCode numberSource rust number-lines code-with-copy"><code class="sourceCode rust"><span id="cb48-1"><a href="#cb48-1"></a><span class="at">#[</span>test<span class="at">]</span></span>
+<span id="cb48-2"><a href="#cb48-2"></a><span class="kw">fn</span> test_ols_simple_linear_regression() <span class="op">{</span></span>
+<span id="cb48-3"><a href="#cb48-3"></a>    <span class="kw">let</span> (y<span class="op">,</span> x) <span class="op">=</span> simple_linear_data()<span class="op">;</span></span>
+<span id="cb48-4"><a href="#cb48-4"></a>    <span class="kw">let</span> x_matrix <span class="op">=</span> columns_to_row_major(<span class="op">&amp;</span>[x])<span class="op">;</span></span>
+<span id="cb48-5"><a href="#cb48-5"></a></span>
+<span id="cb48-6"><a href="#cb48-6"></a>    <span class="kw">let</span> handle <span class="op">=</span> <span class="kw">unsafe</span> <span class="op">{</span> LR_OLS(y<span class="op">.</span>as_ptr()<span class="op">,</span> y<span class="op">.</span>len() <span class="kw">as</span> <span class="dt">i32</span><span class="op">,</span> x_matrix<span class="op">.</span>as_ptr()<span class="op">,</span> <span class="dv">1</span>) <span class="op">};</span></span>
+<span id="cb48-7"><a href="#cb48-7"></a>    <span class="kw">let</span> _guard <span class="op">=</span> <span class="pp">HandleGuard::</span>new(handle)<span class="op">;</span></span>
+<span id="cb48-8"><a href="#cb48-8"></a></span>
+<span id="cb48-9"><a href="#cb48-9"></a>    <span class="kw">let</span> r2 <span class="op">=</span> <span class="kw">unsafe</span> <span class="op">{</span> LR_GetRSquared(handle) <span class="op">};</span></span>
+<span id="cb48-10"><a href="#cb48-10"></a>    <span class="pp">assert!</span>(r2 <span class="op">&gt;</span> <span class="dv">0.99</span><span class="op">,</span> <span class="st">"R² should be &gt; 0.99 for linear data, got {}"</span><span class="op">,</span> r2)<span class="op">;</span></span>
+<span id="cb48-11"><a href="#cb48-11"></a></span>
+<span id="cb48-12"><a href="#cb48-12"></a>    <span class="kw">let</span> n_coef <span class="op">=</span> <span class="kw">unsafe</span> <span class="op">{</span> LR_GetNumCoefficients(handle) <span class="op">}</span> <span class="kw">as</span> <span class="dt">usize</span><span class="op">;</span></span>
+<span id="cb48-13"><a href="#cb48-13"></a>    <span class="pp">assert_eq!</span>(n_coef<span class="op">,</span> <span class="dv">2</span><span class="op">,</span> <span class="st">"Should have 2 coefficients (intercept + slope)"</span>)<span class="op">;</span></span>
+<span id="cb48-14"><a href="#cb48-14"></a></span>
+<span id="cb48-15"><a href="#cb48-15"></a>    <span class="kw">let</span> <span class="kw">mut</span> coefs <span class="op">=</span> <span class="pp">vec!</span>[<span class="dv">0.0f64</span><span class="op">;</span> n_coef]<span class="op">;</span></span>
+<span id="cb48-16"><a href="#cb48-16"></a>    <span class="kw">unsafe</span> <span class="op">{</span> LR_GetCoefficients(handle<span class="op">,</span> coefs<span class="op">.</span>as_mut_ptr()<span class="op">,</span> n_coef <span class="kw">as</span> <span class="dt">i32</span>) <span class="op">};</span></span>
+<span id="cb48-17"><a href="#cb48-17"></a></span>
+<span id="cb48-18"><a href="#cb48-18"></a>    <span class="pp">assert!</span>((coefs[<span class="dv">0</span>] <span class="op">-</span> <span class="dv">2.0</span>)<span class="op">.</span>abs() <span class="op">&lt;</span> <span class="dv">0.1</span><span class="op">,</span> <span class="st">"Intercept should be ~2.0, got {}"</span><span class="op">,</span> coefs[<span class="dv">0</span>])<span class="op">;</span></span>
+<span id="cb48-19"><a href="#cb48-19"></a>    <span class="pp">assert!</span>((coefs[<span class="dv">1</span>] <span class="op">-</span> <span class="dv">3.0</span>)<span class="op">.</span>abs() <span class="op">&lt;</span> <span class="dv">0.1</span><span class="op">,</span> <span class="st">"Slope should be ~3.0, got {}"</span><span class="op">,</span> coefs[<span class="dv">1</span>])<span class="op">;</span></span>
+<span id="cb48-20"><a href="#cb48-20"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This test calls the same functions that VBA calls, with the same argument layout (raw pointers, integer sizes, scalar returns, buffer-fill getters). The only difference is that VBA obtains pointers via <code>VarPtr()</code> and the Rust test obtains them via <code>.as_ptr()</code>. The function entry point is identical.</p>
+<p>The test infrastructure provides a <code>HandleGuard</code> (an RAII wrapper that calls <code>LR_Free</code> in its <code>Drop</code> implementation):</p>
+<div class="sourceCode" id="cb49"><pre class="sourceCode numberSource rust number-lines code-with-copy"><code class="sourceCode rust"><span id="cb49-1"><a href="#cb49-1"></a><span class="kw">pub</span> <span class="kw">struct</span> HandleGuard <span class="op">{</span></span>
+<span id="cb49-2"><a href="#cb49-2"></a>    <span class="kw">pub</span> handle<span class="op">:</span> <span class="dt">usize</span><span class="op">,</span></span>
+<span id="cb49-3"><a href="#cb49-3"></a><span class="op">}</span></span>
+<span id="cb49-4"><a href="#cb49-4"></a></span>
+<span id="cb49-5"><a href="#cb49-5"></a><span class="kw">impl</span> HandleGuard <span class="op">{</span></span>
+<span id="cb49-6"><a href="#cb49-6"></a>    <span class="kw">pub</span> <span class="kw">fn</span> new(handle<span class="op">:</span> <span class="dt">usize</span>) <span class="op">-&gt;</span> <span class="dt">Option</span><span class="op">&lt;</span><span class="dt">Self</span><span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb49-7"><a href="#cb49-7"></a>        <span class="cf">if</span> handle <span class="op">!=</span> <span class="dv">0</span> <span class="op">{</span> <span class="cn">Some</span>(<span class="dt">Self</span> <span class="op">{</span> handle <span class="op">}</span>) <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span> <span class="cn">None</span> <span class="op">}</span></span>
+<span id="cb49-8"><a href="#cb49-8"></a>    <span class="op">}</span></span>
+<span id="cb49-9"><a href="#cb49-9"></a><span class="op">}</span></span>
+<span id="cb49-10"><a href="#cb49-10"></a></span>
+<span id="cb49-11"><a href="#cb49-11"></a><span class="kw">impl</span> <span class="bu">Drop</span> <span class="cf">for</span> HandleGuard <span class="op">{</span></span>
+<span id="cb49-12"><a href="#cb49-12"></a>    <span class="kw">fn</span> drop(<span class="op">&amp;</span><span class="kw">mut</span> <span class="kw">self</span>) <span class="op">{</span></span>
+<span id="cb49-13"><a href="#cb49-13"></a>        <span class="kw">unsafe</span> <span class="op">{</span> LR_Free(<span class="kw">self</span><span class="op">.</span>handle)<span class="op">;</span> <span class="op">}</span></span>
+<span id="cb49-14"><a href="#cb49-14"></a>    <span class="op">}</span></span>
+<span id="cb49-15"><a href="#cb49-15"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>HandleGuard</code> solves the problem that VBA cannot: deterministic cleanup regardless of how the test exits. If an assertion fails mid-test, Rust unwinds the stack, <code>_guard</code> is dropped, and <code>LR_Free</code> runs. No handle leaks in the test suite. This is the RAII discipline that VBA does not have, and it is precisely why the Rust tests can exercise the full handle lifecycle under failure conditions without any risk of the global store accumulating orphaned entries across test runs.</p>
+<p>The helper <code>columns_to_row_major</code> mirrors what VBA’s <code>RangeToMatrix</code> does (it takes column vectors (the natural representation in Rust) and interleaves them into the flat row-major layout the DLL expects):</p>
+<div class="sourceCode" id="cb50"><pre class="sourceCode numberSource rust number-lines code-with-copy"><code class="sourceCode rust"><span id="cb50-1"><a href="#cb50-1"></a><span class="kw">pub</span> <span class="kw">fn</span> columns_to_row_major(columns<span class="op">:</span> <span class="op">&amp;</span>[<span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">f64</span><span class="op">&gt;</span>]) <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">f64</span><span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb50-2"><a href="#cb50-2"></a>    <span class="kw">let</span> n <span class="op">=</span> columns<span class="op">.</span>first()<span class="op">.</span>map(<span class="op">|</span>c<span class="op">|</span> c<span class="op">.</span>len())<span class="op">.</span>unwrap_or(<span class="dv">0</span>)<span class="op">;</span></span>
+<span id="cb50-3"><a href="#cb50-3"></a>    <span class="kw">let</span> p <span class="op">=</span> columns<span class="op">.</span>len()<span class="op">;</span></span>
+<span id="cb50-4"><a href="#cb50-4"></a>    <span class="kw">let</span> <span class="kw">mut</span> result <span class="op">=</span> <span class="dt">Vec</span><span class="pp">::</span>with_capacity(n <span class="op">*</span> p)<span class="op">;</span></span>
+<span id="cb50-5"><a href="#cb50-5"></a>    <span class="cf">for</span> row <span class="kw">in</span> <span class="dv">0</span><span class="op">..</span>n <span class="op">{</span></span>
+<span id="cb50-6"><a href="#cb50-6"></a>        <span class="cf">for</span> col <span class="kw">in</span> <span class="dv">0</span><span class="op">..</span>p <span class="op">{</span></span>
+<span id="cb50-7"><a href="#cb50-7"></a>            result<span class="op">.</span>push(columns[col][row])<span class="op">;</span></span>
+<span id="cb50-8"><a href="#cb50-8"></a>        <span class="op">}</span></span>
+<span id="cb50-9"><a href="#cb50-9"></a>    <span class="op">}</span></span>
+<span id="cb50-10"><a href="#cb50-10"></a>    result</span>
+<span id="cb50-11"><a href="#cb50-11"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Getting this layout wrong (passing column-major data where row-major is expected) does not crash. It produces a valid regression on scrambled data. The coefficients come back, R² looks plausible, and nothing signals that every predictor has been assigned the wrong column’s values. This is why the test suite includes known-answer tests with manually verified coefficients: not just “R² &gt; 0.99” but “intercept ≈ 2.0 and slope ≈ 3.0” for <code>y = 2 + 3x</code> data.</p>
+<p>The FFI test suite (<code>tests/ffi/</code>) runs with a single command:</p>
+<div class="sourceCode" id="cb51"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb51-1"><a href="#cb51-1"></a><span class="ex">cargo</span> test <span class="at">--features</span> ffi</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>It covers OLS, Ridge, Lasso, Elastic Net, all ten diagnostic tests, prediction intervals, cross-validation, influence measures, error handling, double-free safety, and invalid-handle behavior (all without Excel installed). The iteration cycle is seconds, not “rebuild the DLL, copy it to the workbook folder, open Excel, run the macro, check the cells.”</p>
+<p>The broader lesson is that an FFI layer should be designed so that the exported functions are testable from the source language. If the only way to test your DLL is to load it into the target host (Excel, Unity, LabVIEW, whatever), your feedback loop is measured in minutes and your test coverage will be whatever you had the patience to click through manually. If the exports are also callable as native functions within the crate, your feedback loop is <code>cargo test</code> and your coverage is whatever you can write an assertion for.</p>
+<hr>
+</section>
+</section>
+<section id="is-it-worth-it" class="level2">
+<h2 class="anchored" data-anchor-id="is-it-worth-it">9. Is It Worth It?</h2>
+<p>The result of all this engineering is that an Excel user (someone who has never heard of Rust, does not have Python installed, and does not have admin rights on their machine) can run an OLS regression, a Lasso regularization path, a Breusch-Pagan heteroscedasticity test, or a k-fold cross-validation from a single button click in a spreadsheet. The output lands in cells. No installation, no configuration, no external process. The DLL and the workbook travel together as two files in a folder.</p>
+<p>The cost was a handle-based C API, stdcall decoration stripping for 32-bit targets, duplicated <code>Declare</code> statements across two architectures, and a <code>.def</code> file with 65 entries. The question is whether that cost was justified, and whether any simpler path would have delivered the same result.</p>
+<section id="when-this-approach-makes-sense" class="level3">
+<h3 class="anchored" data-anchor-id="when-this-approach-makes-sense">When This Approach Makes Sense</h3>
+<p>The approach makes sense under a specific set of conditions that happen to be common in institutional environments:</p>
+<ol type="1">
+<li><p><strong>The users will not leave Excel.</strong> Not “prefer not to” (they <em>will not</em>). The workbook is the deliverable. The model, the data, the formatting, and the output all live in one <code>.xlsm</code> file that gets emailed, reviewed, and archived. Asking these users to export to Python, open a terminal, and run a script is asking them to change their workflow. That request will be ignored.</p></li>
+<li><p><strong>The computation is non-trivial.</strong> A simple linear regression with 20 observations does not justify a DLL. But iterative solvers (Lasso coordinate descent, Elastic Net regularization paths across 100 lambda values), prediction intervals with matrix inversion, or a full battery of diagnostic tests across dozens of datasets; these are workloads where native performance is the difference between sub-second response and a frozen spreadsheet. The DLL returns before VBA can even redraw the screen.</p></li>
+<li><p><strong>The deployment must be zero-install.</strong> The target machine has Excel and nothing else. No Python, no R, no admin rights, no package manager. Dropping two files (a <code>.xlsm</code> and a <code>.dll</code>) next to each other in a folder and having it work is a feature that no scripting-language integration can match.</p></li>
+<li><p><strong>The numerical work is complex enough to deserve a real implementation.</strong> If you need a single linear regression, Excel’s built-in <code>LINEST</code> or the Analysis ToolPak will do. If you need Ridge, Lasso, Elastic Net, ten diagnostic tests, prediction intervals, influence measures, and cross-validation (with validated output that matches R and Python), you need a library, and that library needs to live somewhere the user can reach it.</p></li>
+</ol>
+<p>When all four conditions hold simultaneously, a native DLL is the right answer. When any one of them does not hold, a simpler alternative is probably better.</p>
+</section>
+<section id="the-alternatives" class="level3">
+<h3 class="anchored" data-anchor-id="the-alternatives">The Alternatives</h3>
+<p><strong>COM automation.</strong> The “proper” way to extend VBA is to build a COM server (a registered DLL or EXE that exposes objects via <code>IDispatch</code>). VBA calls it with <code>CreateObject("MyLib.MyClass")</code> and gets an object with methods and properties, complete with IntelliSense in the VBA editor. COM is deeply integrated into Office and is the mechanism behind major professional add-ins (Bloomberg’s Excel integration, Reuters Eikon, and most institutional trading and risk platforms expose their APIs through COM automation).</p>
+<p>The problem is building one. COM requires implementing <code>IUnknown</code> and <code>IDispatch</code> interfaces, registering the server in the Windows registry (which requires admin rights), managing class factories, and handling apartment threading. Rust has no native COM support. The <a href="https://crates.io/crates/windows"><code>windows</code></a> crate provides COM bindings, but implementing a COM server from scratch (as opposed to consuming one) is a substantial undertaking that would dwarf the statistical library itself. And registration means the DLL cannot be deployed by simply dropping it in a folder; it must be installed. For an internal tool distributed by email, that is a dealbreaker.</p>
+<p><strong>XLL add-ins.</strong> An XLL is a DLL that implements the <a href="https://learn.microsoft.com/en-us/office/client-developer/excel/excel-xll-sdk-api-function-reference">Excel C API</a>; a set of callback functions (<code>xlcall32</code>) that let native code register worksheet functions, manipulate cells, and interact with Excel’s calculation engine. XLL functions appear in Excel’s function wizard alongside <code>SUM</code> and <code>VLOOKUP</code>. This is the highest-performance integration path and is what commercial add-in vendors use.</p>
+<p>The cost is complexity. The Excel C API communicates via <code>XLOPER12</code> (a tagged union type that represents every possible Excel value: number, string, array, error, reference, missing). Marshaling data in and out of <code>XLOPER12</code> structures is tedious and error-prone. The API is documented primarily through the <a href="https://learn.microsoft.com/en-us/office/client-developer/excel/developing-excel-xlls">Excel XLL SDK</a>, which assumes C or C++ and has not been significantly updated since Excel 2010. Building an XLL from Rust is possible but requires either writing a C shim layer or implementing the <code>XLOPER12</code> interface in Rust from scratch. The result would be a worksheet-function add-in, not a VBA-callable library (XLL functions are designed for cell formulas, not macro procedures), though <a href="https://learn.microsoft.com/en-us/office/client-developer/excel/calling-into-excel-from-the-dll-or-xll">workarounds exist</a>.</p>
+<p>For this project (where the goal is a VBA-callable library, not worksheet functions), the XLL path adds marshaling complexity for a feature (formula-bar integration) that is not needed.</p>
+<p><strong>Python via xlwings.</strong> <a href="https://www.xlwings.org/">xlwings</a> lets VBA call Python functions through a COM bridge. You write a Python function, decorate it with <code>@xw.func</code>, and call it from a VBA macro or directly from a cell formula. The Python function runs in a separate process and returns results to Excel.</p>
+<p>For a library that already has <a href="https://github.com/jesse-anderson/linreg-core">Python bindings</a> (via PyO3), this seems like the natural path: call the Python package from Excel, no DLL needed. But it reintroduces the dependency that the DLL approach eliminates (a working Python installation). The user needs Python 3.x, <code>pip install xlwings linreg-core</code>, and a configured <code>xlwings.conf</code>—all before the workbook opens. On a locked-down corporate machine without admin rights, this is often not possible. Even where it is possible, the xlwings bridge adds process-startup latency (the first call launches a Python interpreter) and cross-process data serialization overhead. For interactive use with small datasets the overhead is negligible; for batch processing or large matrices it becomes noticeable.</p>
+<p>xlwings is the right choice when the users already have Python and the goal is rapid prototyping. It is not the right choice when the goal is a self-contained, zero-dependency deliverable.</p>
+</section>
+<section id="why-it-was-worth-it-here" class="level3">
+<h3 class="anchored" data-anchor-id="why-it-was-worth-it-here">Why It Was Worth It Here</h3>
+<p>The cost calculus for this project was different from a greenfield DLL effort, and this is the key point the alternatives comparison obscures: <strong>the library already existed.</strong> <code>linreg-core</code> was already built, already tested against R and Python reference implementations across 20 datasets, and already compiled to WebAssembly for browser use. The core Rust code (the QR decomposition, the coordinate descent solver, the distribution functions, every diagnostic test) did not need to change. The FFI layer was additive: 9 new files in <code>src/ffi/</code>, a <code>.def</code> file, a <code>build.rs</code> guard, and a VBA module. The core library’s <code>Cargo.toml</code> gained a single feature flag (<code>ffi = []</code>) with no new dependencies.</p>
+<p>That is a fundamentally different question from “should I write a statistical library in Rust so that VBA can call it?” The answer to that question is almost certainly no (the effort would not justify the audience). But “should I spend a day adding an FFI layer to a library I already have, to reach users who cannot be reached any other way?” has a different answer. The marginal cost of the DLL was small relative to the sunk cost of the library. The marginal value (making validated statistical methods available inside Excel without any installation) was concrete and immediate.</p>
+<p>This is the real lesson: the native DLL approach is not a general-purpose strategy for extending Excel. It is a <em>distribution mechanism</em> for an existing asset. The library earns its keep across multiple targets (native Rust, WebAssembly, Python via PyO3, and now VBA via FFI). The VBA surface is one more compilation target, not the reason the library exists.</p>
+</section>
+<section id="the-maintenance-burden" class="level3">
+<h3 class="anchored" data-anchor-id="the-maintenance-burden">The Maintenance Burden</h3>
+<p>The honest cost of the native DLL approach is not in the initial build. It is in the ongoing synchronization between four parallel surfaces that must stay in lockstep:</p>
+<ol type="1">
+<li><p><strong>Rust FFI functions:</strong> 65 <code>pub extern "system" fn</code> items across six files in <code>src/ffi/</code> (four are generated by a <code>diag_fn!</code> macro). This is the source of truth. Every exported function is defined here with its exact signature, calling convention, and <code>#[no_mangle]</code> attribute.</p></li>
+<li><p><strong>The <code>.def</code> file:</strong> 65 entries in <code>linreg_core.def</code>, each one a plain symbol name that the MSVC linker uses to strip stdcall decoration on 32-bit builds. Every function in surface 1 must appear here, or the 32-bit DLL will silently export a decorated name that VBA cannot find.</p></li>
+<li><p><strong>VBA <code>Declare</code> statements:</strong> approximately 130 lines in <code>LinregCore.bas</code>, split across a <code>#If Win64 Then</code> branch (64-bit, ~65 declarations) and a <code>#Else</code> branch (32-bit, ~65 declarations). Each declaration must match the Rust signature exactly: parameter count, parameter order, <code>ByVal</code> on every parameter, correct types (<code>LongPtr</code> for pointers, <code>Long</code> for <code>i32</code>, <code>Double</code> for <code>f64</code>), and the correct DLL filename for the architecture.</p></li>
+<li><p><strong>VBA wrapper functions:</strong> 26 public functions that hide handle management and return Excel-native arrays. Each wrapper must call the right DLL functions in the right order, free the handle on every code path, and format the output correctly.</p></li>
+</ol>
+<p>Adding a single new feature (say, a new diagnostic test) requires changes in all four surfaces: a Rust function, a <code>.def</code> entry, two <code>Declare</code> statements (one per architecture), and a wrapper function. Forgetting any one of them produces a failure that manifests differently depending on which surface was missed:</p>
+<table class="table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Forgotten surface</th>
+<th>Symptom</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>.def</code> entry</td>
+<td>Works on 64-bit, runtime error 453 on 32-bit</td>
+</tr>
+<tr class="even">
+<td><code>Declare</code> statement</td>
+<td>Compile error in VBA (undeclared function)</td>
+</tr>
+<tr class="odd">
+<td><code>ByVal</code> keyword</td>
+<td>Silent crash or corrupt results</td>
+</tr>
+<tr class="even">
+<td><code>LR_Free</code> in wrapper</td>
+<td>No immediate symptom; slow memory leak over long sessions</td>
+</tr>
+</tbody>
+</table>
+<p>None of these failures is caught by <code>cargo test</code>. The Rust test suite validates the FFI layer’s correctness but cannot validate VBA’s declarations or the <code>.def</code> file’s completeness. The 32-bit <code>.def</code> issue in particular is invisible until someone actually runs the 32-bit DLL (and since most development happens on 64-bit machines, it is the easiest to miss).</p>
+<p>This is the real cost: not the initial engineering, but the discipline required to keep four representations of the same API consistent across every change. The total is manageable (it took roughly a day to build the FFI layer and the VBA wrappers once the core library existed), but it does not amortize. Every new export carries the same four-surface cost as the first one.</p>
+<p>Whether that cost is justified depends on the audience. For a tool used by a handful of analysts on a trading desk who will never install Python, it is a bargain. For a tool whose users are comfortable with a Jupyter notebook, it is unnecessary overhead. The approach does not generalize (it solves a specific distribution problem for a specific class of user), and that specificity is precisely what makes it work.</p>
+<hr>
+</section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">10. Conclusion</h2>
+<p>The architecture, end to end, is four layers:</p>
+<ol type="1">
+<li><p><strong>Rust core:</strong> OLS, Ridge, Lasso, Elastic Net, diagnostic tests, prediction intervals, cross-validation. Custom linear algebra, custom distribution functions, no external math dependencies. This layer knows nothing about VBA, Excel, or Windows calling conventions. It is the same code that compiles to WebAssembly and links into the Python bindings.</p></li>
+<li><p><strong>Handle-based FFI layer:</strong> 65 <code>extern "system"</code> functions that wrap the core. Each computation stores its result in a global <code>HashMap&lt;usize, FitResult&gt;</code> behind a <code>Mutex</code> and returns an opaque integer handle. Callers retrieve individual values through typed getter functions (<code>LR_GetRSquared</code>, <code>LR_GetCoefficients</code>, <code>LR_GetPValue</code>) and release the handle with <code>LR_Free</code>. Errors go to a thread-local string buffer, retrieved via <code>LR_GetLastError</code>. The pattern is the same one used by SQLite, OpenSSL, and every other C library that hands opaque pointers to callers who cannot manage memory.</p></li>
+<li><p><strong>VBA declarations:</strong> <code>Declare PtrSafe Function</code> statements that map each exported symbol to a VBA-callable function, with <code>#If Win64</code> branching between the 64-bit and 32-bit DLLs. These are the contract: parameter types, calling convention, and DLL filename, all specified exactly once.</p></li>
+<li><p><strong>VBA wrappers:</strong> High-level functions like <code>LinReg_OLS</code> and <code>LinReg_Ridge</code> that accept Excel <code>Range</code> objects, marshal the data into flat arrays, call the DLL, extract the results, free the handle, and return a 2D <code>Variant</code> array that pastes directly into a worksheet. Three lines of VBA to get a coefficient table.</p></li>
+</ol>
+<p>That is the full path from a cell reference to a regression result: <code>Range</code> -&gt; <code>RangeToDoubleArray</code> / <code>RangeToMatrix</code> -&gt; pointer -&gt; DLL -&gt; Rust core -&gt; <code>FitResult</code> -&gt; handle -&gt; getter -&gt; <code>Variant</code> array -&gt; cells. Every layer has exactly one responsibility, and the boundaries between them are C-compatible scalars and pointers (the smallest possible interface that both sides can agree on).</p>
+<section id="the-broader-pattern" class="level3">
+<h3 class="anchored" data-anchor-id="the-broader-pattern">The Broader Pattern</h3>
+<p>The handle pattern at the center of this architecture is not specific to VBA. Any caller that cannot manage Rust-owned memory (anything without destructors, move semantics, or reference counting) can use it. The caller gets an integer. The callee owns the data. The contract is: call the getter while the handle is live, then free it when you are done.</p>
+<p>This means the same FFI layer, with no modifications, could be called from:</p>
+<ul>
+<li><strong>Delphi/Free Pascal:</strong> <code>function LR_OLS(...): NativeUInt; stdcall; external 'linreg_core_x64.dll';</code></li>
+<li><strong>C / C++:</strong> <code>uintptr_t __stdcall LR_OLS(...);</code> (matching Rust’s <code>extern "system"</code>, which is <code>stdcall</code> on Windows)</li>
+<li><strong>C#:</strong> <code>[DllImport("linreg_core_x64.dll")] static extern IntPtr LR_OLS(...);</code></li>
+<li><strong>Legacy FORTRAN, LabVIEW, AutoIt, MATLAB MEX:</strong> anything that can call a Windows DLL by symbol name</li>
+</ul>
+<p>The <code>.def</code> file handles 32-bit decoration for all of them, not just VBA. The handle store does not care who is calling <code>LR_Free</code>. The error buffer does not care who is reading it. The entire FFI surface is caller-agnostic by construction, because the interface is C; and C is the lingua franca of cross-language interoperability on every platform.</p>
+<p>If you have a Rust library that does real work (numerical, cryptographic, parsing, anything compute-intensive) and you have users stuck in an environment that cannot run Rust natively, the handle pattern is the way to bridge that gap. The initial design cost is a few hundred lines of <code>unsafe</code> wrappers and a store. The per-function cost is mechanical: write the <code>extern "system"</code> function, add the <code>.def</code> entry, write the caller-side declaration. It is tedious but not complex, and it scales linearly.</p>
+</section>
+<section id="final-thoughts" class="level3">
+<h3 class="anchored" data-anchor-id="final-thoughts">Final Thoughts</h3>
+<p>This project started with a practical question: could I make a Rust regression library callable from an Excel spreadsheet without requiring the user to install anything? The answer turned out to be yes, and the engineering required to get there (calling conventions, symbol decoration, handle management, buffer protocols, architecture-conditional linking) was more interesting than I expected.</p>
+<p>The result is a single DLL that drops into a folder next to a workbook. An analyst opens the workbook, runs <code>LR_Init</code>, and calls <code>LinReg_OLS</code> from a macro. No Python, no R, no admin rights, no internet connection. The statistical methods behind the call are the same ones validated against R and Python across 20 datasets. The analyst does not need to know that. They just need the coefficients to appear in the right cells.</p>
+<p>If you want to try it, the full source is at <a href="https://github.com/jesse-anderson/linreg-core">github.com/jesse-anderson/linreg-core</a>. The FFI layer is behind the <code>ffi</code> feature flag. The VBA module and example workbook are in <code>VBA_Example/</code>. Build instructions for both 64-bit and 32-bit targets are in the repository README.</p>
+</section>
+</section>
+<section id="the-inspiration-for-this-came-from-a-chemical-engineering-professor-who-built-a-process-simulator-in-excel-with-the-heavy-computation-hidden-in-a-dll.-it-always-seemed-like-magic.-this-project-was-my-attempt-to-pull-back-that-curtain-using-rust-and-to-document-something-that-isnt-widely-discussed.-the-reality-is-that-vba-is-still-what-many-engineers-get-stuck-with-in-industry-regardless-of-whether-we-would-prefer-something-more-modern." class="level2">
+<h2 class="anchored" data-anchor-id="the-inspiration-for-this-came-from-a-chemical-engineering-professor-who-built-a-process-simulator-in-excel-with-the-heavy-computation-hidden-in-a-dll.-it-always-seemed-like-magic.-this-project-was-my-attempt-to-pull-back-that-curtain-using-rust-and-to-document-something-that-isnt-widely-discussed.-the-reality-is-that-vba-is-still-what-many-engineers-get-stuck-with-in-industry-regardless-of-whether-we-would-prefer-something-more-modern.">The inspiration for this came from a Chemical Engineering professor who built a process simulator in Excel with the heavy computation hidden in a DLL. It always seemed like magic. This project was my attempt to pull back that curtain using Rust, and to document something that isn’t widely discussed. The reality is that VBA is still what many engineers get stuck with in industry, regardless of whether we would prefer something more modern.</h2>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+
+
+
+
+
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Support Page</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+
+        .centered-text {
+
+            text-align: center; /* Centers text for elements with this class */
+
+        }
+
+        .centered-content {
+
+            display: flex; /* Uses Flexbox for layout */
+
+            justify-content: center; /* Horizontally centers the content within the container */
+
+            align-items: center; /* Vertically centers the content within the container */
+
+        }
+
+        .email-share-button {
+
+            background: #007BFF; /* Example: a distinct blue color for the email button */
+
+            color: white; /* Ensure text and icon are white for visibility */
+
+        }
+
+        #share-buttons {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 5px;
+
+        }
+
+        .share-button {
+
+            display: inline-flex;
+
+            padding: 2px 4px;
+
+            font-size: 14px;
+
+            cursor: pointer;
+
+            text-align: center;
+
+            color: white;
+
+            border-radius: 0px;
+
+        }
+
+    </style>
+
+
+
+
+
+    <footer class="centered-text">
+
+        <p>Copyright © <span id="copyright-year"></span> Jesse Anderson</p>
+
+        <!-- Other footer details -->
+
+    </footer>
+
+    <div>
+
+        <hr>
+
+        <h3 class="centered-text">Support my work with a Coffee/Monster</h3>
+
+        <div class="centered-content">
+
+            <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="jesseanderson" data-color="#06436e" data-emoji="☕" data-font="Lato" data-text="Support me" data-outline-color="#ffffff" data-font-color="#ffffff" data-coffee-color="#FFDD00" data-height="40px"></script>
+
+        </div>
+
+        <!-- Footer content -->
+
+        <h3 class="centered-text">Share</h3>
+
+        <!-- Share Buttons -->
+
+        <div id="share-buttons" class="centered-content">
+
+            <!-- Twitter Share Button, dynamically setting the URL -->
+
+            <a href="#" class="share-button twitter-share-button" data-size="large" data-hashtags="computerscience" data-via="JesseA7C5" data-show-count="false">Tweet</a>
+
+            <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+            <!-- Facebook SDK with Dynamic Nonce -->
+
+            <div id="fb-root"></div>
+
+            <script id="facebook-jssdk" async="" defer="" crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&amp;version=v10.0"></script>
+
+            <div class="fb-share-button share-button" data-href="" data-layout="button_count">
+
+            </div>
+
+            <!-- LinkedIn Share Button -->
+
+            <script src="https://platform.linkedin.com/in.js" type="text/javascript">lang: en_US</script>
+
+            <script type="IN/Share" data-url=""></script>
+
+            <!-- Email Share Button -->
+
+            <a href="#" class="share-button email-share-button"><i class="fas fa-envelope"></i></a>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        // Function to generate a random nonce
+
+        function generateNonce(length = 16) {
+
+            const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+            let text = "";
+
+            for (let i = 0; i < length; i++) {
+
+                text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+            }
+
+            return text;
+
+        }
+
+        // Set the nonce attribute for the Facebook SDK script and dynamically set URLs
+
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const nonce = generateNonce();
+
+            const facebookSDKScript = document.getElementById('facebook-jssdk');
+
+            facebookSDKScript.setAttribute('nonce', nonce);
+
+            var elems = document.querySelectorAll('script[type="IN/Share"]');
+
+            for (var i = 0; i < elems.length; i++) {
+
+                elems[i].setAttribute('data-url', window.location.href);
+
+            }
+
+            // Set dynamic URLs for social sharing
+
+            const currentUrl = window.location.href;
+
+            const currentTitle = document.title; // Use the current document title as the email subject
+
+            // Facebook
+
+            document.querySelector('.fb-share-button').setAttribute('data-href', currentUrl);
+
+            // LinkedIn
+
+            document.querySelectorAll('script[type="IN/Share"]')[0].setAttribute('data-url', currentUrl);
+
+            // Twitter
+
+            document.querySelector('.twitter-share-button').setAttribute('href', 'https://twitter.com/share?url=' + encodeURIComponent(currentUrl) + '&hashtags=rstats');
+
+            // Email
+
+            document.querySelector('.email-share-button').setAttribute('href', `mailto:?subject=${encodeURIComponent(currentTitle)}&body=Check out this link: ${encodeURIComponent(currentUrl)}`);
+
+            // Dynamically set the current year in the copyright footer
+
+            document.getElementById('copyright-year').textContent = new Date().getFullYear();
+
+        });
+
+        // This script below to put a latest posts list after the comment system was such a pain in the ass.
+
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // console.log("Latest Posts Populating...");
+
+            // Create the latest posts container
+
+            const latestPostsContainer = document.createElement('div');
+
+            latestPostsContainer.className = 'latest-posts';
+
+            latestPostsContainer.innerHTML = `
+
+                <h3>Latest Posts</h3>
+
+                <ul id="latest-posts-list">
+
+                    <!-- Latest posts will be inserted here -->
+
+                </ul>
+
+            `;
+
+            // Find the footer element
+
+            const footer = document.querySelector('footer.footer');
+
+            // Insert the latest posts container before footer, easier than after utterances.
+
+            footer.parentNode.insertBefore(latestPostsContainer, footer);
+
+            // Fetch latest posts from the archive page
+
+            fetch('https://jesse-anderson.github.io/Blog/_site/archive.html')
+
+                .then(response => response.text())
+
+                .then(data => {
+
+                    const parser = new DOMParser();
+
+                    const doc = parser.parseFromString(data, 'text/html');
+
+                    const posts = doc.querySelectorAll('.quarto-listing-container-table tbody tr');
+
+                    // console.log("Posts: ", posts);
+
+                    const latestPostsList = document.getElementById('latest-posts-list');
+
+                    let count = 0;
+
+                    posts.forEach(post => {
+
+                        if (count < 4) {
+
+                            // console.log("Title populating...");
+
+                            const titleElement = post.querySelector('.listing-title'); // Correctly select the <a> tag with the title class
+
+                            // console.log(titleElement)
+
+                              const imageElement = post.querySelector('.listing-image img');
+
+                              // console.log(imageElement)
+
+                            if (titleElement) {
+
+                                const title = titleElement.textContent.trim();
+
+                                // console.log('Title: ', title);
+
+                                let url = titleElement.getAttribute('href');
+
+                                // console.log('URL: ', url);
+
+                                if (url && !url.startsWith('http')) {
+
+                                    url = 'https://jesse-anderson.github.io/Blog/_site/' + url.replace(/^\.\//, '');
+
+                                }
+
+                                // console.log('Formatted URL: ', url);
+
+                                const imageUrl = imageElement ? imageElement.getAttribute('src').replace(/^\.\//, 'https://jesse-anderson.github.io/Blog/_site/') : 'default-image.jpg'; // Fallback image
+
+                                // console.log('Image URL: ', imageUrl);
+
+                                const listItem = document.createElement('li');
+
+                                listItem.innerHTML = `<a href="${url}"><img src="${imageUrl}" alt="Post Image" style="height: 20px;"> ${title}</a>`;
+
+                                latestPostsList.appendChild(listItem);
+
+                                // console.log('ListItem: ', listItem);
+
+                                count++;
+
+                            } else {
+
+                                console.warn('Missing elements for post:', post);
+
+                            }
+
+                        }
+
+                    });
+
+                });
+
+        });
+
+    </script>
+
+
+
+
+
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<script src="https://utteranc.es/client.js" repo="jesse-anderson/blogComments" issue-term="title" theme="github-dark" crossorigin="anonymous" async="">
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+
+<div class="cookie-consent-footer"><a href="#" id="open_preferences_center">Cookie Preferences</a></div></div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
