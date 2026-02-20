@@ -136,10 +136,7 @@ cookieconsent.run({
   
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
 
-
-
 <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
-
 
 
 <link rel="stylesheet" href="../../styles.css">
@@ -243,7 +240,7 @@ cookieconsent.run({
 
 <section id="import-libraries" class="level2">
 <h2 class="anchored" data-anchor-id="import-libraries">Import Libraries</h2>
-<div id="5725734d" class="cell" data-execution_count="1">
+<div id="3d7f5d70" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-3"><a href="#cb1-3"></a><span class="im">from</span> sklearn.cluster <span class="im">import</span> OPTICS</span>
@@ -257,7 +254,7 @@ cookieconsent.run({
 </section>
 <section id="load-and-visualize-the-blob-data" class="level1">
 <h1>Load and Visualize the Blob Data</h1>
-<div id="990a6fbb" class="cell" data-execution_count="2">
+<div id="124074ff" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Load example data</span></span>
 <span id="cb2-2"><a href="#cb2-2"></a>n_samples <span class="op">=</span> <span class="dv">1000</span></span>
 <span id="cb2-3"><a href="#cb2-3"></a>min_samples <span class="op">=</span> <span class="dv">15</span></span>
@@ -283,19 +280,867 @@ cookieconsent.run({
 </section>
 <section id="apply-sklearn-optics-clustering" class="level1">
 <h1>Apply sklearn OPTICS Clustering</h1>
-<div id="a0982a2a" class="cell" data-execution_count="3">
+<div id="343b4af4" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a><span class="co"># Step 1: Apply OPTICS</span></span>
 <span id="cb3-2"><a href="#cb3-2"></a>optics_model <span class="op">=</span> OPTICS(min_samples<span class="op">=</span>min_samples)</span>
 <span id="cb3-3"><a href="#cb3-3"></a>optics_model.fit(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
-<style>#sk-container-id-1 {color: black;}#sk-container-id-1 pre{padding: 0;}#sk-container-id-1 div.sk-toggleable {background-color: white;}#sk-container-id-1 label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.3em;box-sizing: border-box;text-align: center;}#sk-container-id-1 label.sk-toggleable__label-arrow:before {content: "▸";float: left;margin-right: 0.25em;color: #696969;}#sk-container-id-1 label.sk-toggleable__label-arrow:hover:before {color: black;}#sk-container-id-1 div.sk-estimator:hover label.sk-toggleable__label-arrow:before {color: black;}#sk-container-id-1 div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}#sk-container-id-1 div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}#sk-container-id-1 input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}#sk-container-id-1 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {content: "▾";}#sk-container-id-1 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}#sk-container-id-1 div.sk-estimator {font-family: monospace;background-color: #f0f8ff;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;margin-bottom: 0.5em;}#sk-container-id-1 div.sk-estimator:hover {background-color: #d4ebff;}#sk-container-id-1 div.sk-parallel-item::after {content: "";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}#sk-container-id-1 div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-serial::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: 0;}#sk-container-id-1 div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;padding-right: 0.2em;padding-left: 0.2em;position: relative;}#sk-container-id-1 div.sk-item {position: relative;z-index: 1;}#sk-container-id-1 div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;position: relative;}#sk-container-id-1 div.sk-item::before, #sk-container-id-1 div.sk-parallel-item::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: -1;}#sk-container-id-1 div.sk-parallel-item {display: flex;flex-direction: column;z-index: 1;position: relative;background-color: white;}#sk-container-id-1 div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}#sk-container-id-1 div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}#sk-container-id-1 div.sk-parallel-item:only-child::after {width: 0;}#sk-container-id-1 div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0 0.4em 0.5em 0.4em;box-sizing: border-box;padding-bottom: 0.4em;background-color: white;}#sk-container-id-1 div.sk-label label {font-family: monospace;font-weight: bold;display: inline-block;line-height: 1.2em;}#sk-container-id-1 div.sk-label-container {text-align: center;}#sk-container-id-1 div.sk-container {/* jupyter's `normalize.less` sets `[hidden] { display: none; }` but bootstrap.min.css set `[hidden] { display: none !important; }` so we also need the `!important` here to be able to override the default hidden behavior on the sphinx rendered scikit-learn.org. See: https://github.com/scikit-learn/scikit-learn/issues/21755 */display: inline-block !important;position: relative;}#sk-container-id-1 div.sk-text-repr-fallback {display: none;}</style><div id="sk-container-id-1" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>OPTICS(min_samples=15)</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br>On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden=""><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-1" type="checkbox" checked=""><label for="sk-estimator-id-1" class="sk-toggleable__label sk-toggleable__label-arrow">OPTICS</label><div class="sk-toggleable__content"><pre>OPTICS(min_samples=15)</pre></div></div></div></div></div>
+<div>
+<style>#sk-container-id-1 {
+  /* Definition of color scheme common for light and dark mode */
+  --sklearn-color-text: #000;
+  --sklearn-color-text-muted: #666;
+  --sklearn-color-line: gray;
+  /* Definition of color scheme for unfitted estimators */
+  --sklearn-color-unfitted-level-0: #fff5e6;
+  --sklearn-color-unfitted-level-1: #f6e4d2;
+  --sklearn-color-unfitted-level-2: #ffe0b3;
+  --sklearn-color-unfitted-level-3: chocolate;
+  /* Definition of color scheme for fitted estimators */
+  --sklearn-color-fitted-level-0: #f0f8ff;
+  --sklearn-color-fitted-level-1: #d4ebff;
+  --sklearn-color-fitted-level-2: #b3dbfd;
+  --sklearn-color-fitted-level-3: cornflowerblue;
+}
+
+#sk-container-id-1.light {
+  /* Specific color for light theme */
+  --sklearn-color-text-on-default-background: black;
+  --sklearn-color-background: white;
+  --sklearn-color-border-box: black;
+  --sklearn-color-icon: #696969;
+}
+
+#sk-container-id-1.dark {
+  --sklearn-color-text-on-default-background: white;
+  --sklearn-color-background: #111;
+  --sklearn-color-border-box: white;
+  --sklearn-color-icon: #878787;
+}
+
+#sk-container-id-1 {
+  color: var(--sklearn-color-text);
+}
+
+#sk-container-id-1 pre {
+  padding: 0;
+}
+
+#sk-container-id-1 input.sk-hidden--visually {
+  border: 0;
+  clip: rect(1px 1px 1px 1px);
+  clip: rect(1px, 1px, 1px, 1px);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
+#sk-container-id-1 div.sk-dashed-wrapped {
+  border: 1px dashed var(--sklearn-color-line);
+  margin: 0 0.4em 0.5em 0.4em;
+  box-sizing: border-box;
+  padding-bottom: 0.4em;
+  background-color: var(--sklearn-color-background);
+}
+
+#sk-container-id-1 div.sk-container {
+  /* jupyter's `normalize.less` sets `[hidden] { display: none; }`
+     but bootstrap.min.css set `[hidden] { display: none !important; }`
+     so we also need the `!important` here to be able to override the
+     default hidden behavior on the sphinx rendered scikit-learn.org.
+     See: https://github.com/scikit-learn/scikit-learn/issues/21755 */
+  display: inline-block !important;
+  position: relative;
+}
+
+#sk-container-id-1 div.sk-text-repr-fallback {
+  display: none;
+}
+
+div.sk-parallel-item,
+div.sk-serial,
+div.sk-item {
+  /* draw centered vertical line to link estimators */
+  background-image: linear-gradient(var(--sklearn-color-text-on-default-background), var(--sklearn-color-text-on-default-background));
+  background-size: 2px 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+/* Parallel-specific style estimator block */
+
+#sk-container-id-1 div.sk-parallel-item::after {
+  content: "";
+  width: 100%;
+  border-bottom: 2px solid var(--sklearn-color-text-on-default-background);
+  flex-grow: 1;
+}
+
+#sk-container-id-1 div.sk-parallel {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  background-color: var(--sklearn-color-background);
+  position: relative;
+}
+
+#sk-container-id-1 div.sk-parallel-item {
+  display: flex;
+  flex-direction: column;
+}
+
+#sk-container-id-1 div.sk-parallel-item:first-child::after {
+  align-self: flex-end;
+  width: 50%;
+}
+
+#sk-container-id-1 div.sk-parallel-item:last-child::after {
+  align-self: flex-start;
+  width: 50%;
+}
+
+#sk-container-id-1 div.sk-parallel-item:only-child::after {
+  width: 0;
+}
+
+/* Serial-specific style estimator block */
+
+#sk-container-id-1 div.sk-serial {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--sklearn-color-background);
+  padding-right: 1em;
+  padding-left: 1em;
+}
+
+
+/* Toggleable style: style used for estimator/Pipeline/ColumnTransformer box that is
+clickable and can be expanded/collapsed.
+- Pipeline and ColumnTransformer use this feature and define the default style
+- Estimators will overwrite some part of the style using the `sk-estimator` class
+*/
+
+/* Pipeline and ColumnTransformer style (default) */
+
+#sk-container-id-1 div.sk-toggleable {
+  /* Default theme specific background. It is overwritten whether we have a
+  specific estimator or a Pipeline/ColumnTransformer */
+  background-color: var(--sklearn-color-background);
+}
+
+/* Toggleable label */
+#sk-container-id-1 label.sk-toggleable__label {
+  cursor: pointer;
+  display: flex;
+  width: 100%;
+  margin-bottom: 0;
+  padding: 0.5em;
+  box-sizing: border-box;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+}
+
+#sk-container-id-1 label.sk-toggleable__label .caption {
+  font-size: 0.6rem;
+  font-weight: lighter;
+  color: var(--sklearn-color-text-muted);
+}
+
+#sk-container-id-1 label.sk-toggleable__label-arrow:before {
+  /* Arrow on the left of the label */
+  content: "▸";
+  float: left;
+  margin-right: 0.25em;
+  color: var(--sklearn-color-icon);
+}
+
+#sk-container-id-1 label.sk-toggleable__label-arrow:hover:before {
+  color: var(--sklearn-color-text);
+}
+
+/* Toggleable content - dropdown */
+
+#sk-container-id-1 div.sk-toggleable__content {
+  display: none;
+  text-align: left;
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-1 div.sk-toggleable__content.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+#sk-container-id-1 div.sk-toggleable__content pre {
+  margin: 0.2em;
+  border-radius: 0.25em;
+  color: var(--sklearn-color-text);
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-1 div.sk-toggleable__content.fitted pre {
+  /* unfitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+#sk-container-id-1 input.sk-toggleable__control:checked~div.sk-toggleable__content {
+  /* Expand drop-down */
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+
+#sk-container-id-1 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {
+  content: "▾";
+}
+
+/* Pipeline/ColumnTransformer-specific style */
+
+#sk-container-id-1 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-1 div.sk-label.fitted input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Estimator-specific style */
+
+/* Colorize estimator box */
+#sk-container-id-1 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-1 div.sk-estimator.fitted input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+#sk-container-id-1 div.sk-label label.sk-toggleable__label,
+#sk-container-id-1 div.sk-label label {
+  /* The background is the default theme color */
+  color: var(--sklearn-color-text-on-default-background);
+}
+
+/* On hover, darken the color of the background */
+#sk-container-id-1 div.sk-label:hover label.sk-toggleable__label {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+/* Label box, darken color on hover, fitted */
+#sk-container-id-1 div.sk-label.fitted:hover label.sk-toggleable__label.fitted {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Estimator label */
+
+#sk-container-id-1 div.sk-label label {
+  font-family: monospace;
+  font-weight: bold;
+  line-height: 1.2em;
+}
+
+#sk-container-id-1 div.sk-label-container {
+  text-align: center;
+}
+
+/* Estimator-specific */
+#sk-container-id-1 div.sk-estimator {
+  font-family: monospace;
+  border: 1px dotted var(--sklearn-color-border-box);
+  border-radius: 0.25em;
+  box-sizing: border-box;
+  margin-bottom: 0.5em;
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-1 div.sk-estimator.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+/* on hover */
+#sk-container-id-1 div.sk-estimator:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-1 div.sk-estimator.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Specification for estimator info (e.g. "i" and "?") */
+
+/* Common style for "i" and "?" */
+
+.sk-estimator-doc-link,
+a:link.sk-estimator-doc-link,
+a:visited.sk-estimator-doc-link {
+  float: right;
+  font-size: smaller;
+  line-height: 1em;
+  font-family: monospace;
+  background-color: var(--sklearn-color-unfitted-level-0);
+  border-radius: 1em;
+  height: 1em;
+  width: 1em;
+  text-decoration: none !important;
+  margin-left: 0.5em;
+  text-align: center;
+  /* unfitted */
+  border: var(--sklearn-color-unfitted-level-3) 1pt solid;
+  color: var(--sklearn-color-unfitted-level-3);
+}
+
+.sk-estimator-doc-link.fitted,
+a:link.sk-estimator-doc-link.fitted,
+a:visited.sk-estimator-doc-link.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+  border: var(--sklearn-color-fitted-level-3) 1pt solid;
+  color: var(--sklearn-color-fitted-level-3);
+}
+
+/* On hover */
+div.sk-estimator:hover .sk-estimator-doc-link:hover,
+.sk-estimator-doc-link:hover,
+div.sk-label-container:hover .sk-estimator-doc-link:hover,
+.sk-estimator-doc-link:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-3);
+  border: var(--sklearn-color-fitted-level-0) 1pt solid;
+  color: var(--sklearn-color-unfitted-level-0);
+  text-decoration: none;
+}
+
+div.sk-estimator.fitted:hover .sk-estimator-doc-link.fitted:hover,
+.sk-estimator-doc-link.fitted:hover,
+div.sk-label-container:hover .sk-estimator-doc-link.fitted:hover,
+.sk-estimator-doc-link.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-3);
+  border: var(--sklearn-color-fitted-level-0) 1pt solid;
+  color: var(--sklearn-color-fitted-level-0);
+  text-decoration: none;
+}
+
+/* Span, style for the box shown on hovering the info icon */
+.sk-estimator-doc-link span {
+  display: none;
+  z-index: 9999;
+  position: relative;
+  font-weight: normal;
+  right: .2ex;
+  padding: .5ex;
+  margin: .5ex;
+  width: min-content;
+  min-width: 20ex;
+  max-width: 50ex;
+  color: var(--sklearn-color-text);
+  box-shadow: 2pt 2pt 4pt #999;
+  /* unfitted */
+  background: var(--sklearn-color-unfitted-level-0);
+  border: .5pt solid var(--sklearn-color-unfitted-level-3);
+}
+
+.sk-estimator-doc-link.fitted span {
+  /* fitted */
+  background: var(--sklearn-color-fitted-level-0);
+  border: var(--sklearn-color-fitted-level-3);
+}
+
+.sk-estimator-doc-link:hover span {
+  display: block;
+}
+
+/* "?"-specific style due to the `<a>` HTML tag */
+
+#sk-container-id-1 a.estimator_doc_link {
+  float: right;
+  font-size: 1rem;
+  line-height: 1em;
+  font-family: monospace;
+  background-color: var(--sklearn-color-unfitted-level-0);
+  border-radius: 1rem;
+  height: 1rem;
+  width: 1rem;
+  text-decoration: none;
+  /* unfitted */
+  color: var(--sklearn-color-unfitted-level-1);
+  border: var(--sklearn-color-unfitted-level-1) 1pt solid;
+}
+
+#sk-container-id-1 a.estimator_doc_link.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+  border: var(--sklearn-color-fitted-level-1) 1pt solid;
+  color: var(--sklearn-color-fitted-level-1);
+}
+
+/* On hover */
+#sk-container-id-1 a.estimator_doc_link:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-3);
+  color: var(--sklearn-color-background);
+  text-decoration: none;
+}
+
+#sk-container-id-1 a.estimator_doc_link.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-3);
+}
+
+.estimator-table {
+    font-family: monospace;
+}
+
+.estimator-table summary {
+    padding: .5rem;
+    cursor: pointer;
+}
+
+.estimator-table summary::marker {
+    font-size: 0.7rem;
+}
+
+.estimator-table details[open] {
+    padding-left: 0.1rem;
+    padding-right: 0.1rem;
+    padding-bottom: 0.3rem;
+}
+
+.estimator-table .parameters-table {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    margin-top: 0;
+}
+
+.estimator-table .parameters-table tr:nth-child(odd) {
+    background-color: #fff;
+}
+
+.estimator-table .parameters-table tr:nth-child(even) {
+    background-color: #f6f6f6;
+}
+
+.estimator-table .parameters-table tr:hover {
+    background-color: #e0e0e0;
+}
+
+.estimator-table table td {
+    border: 1px solid rgba(106, 105, 104, 0.232);
+}
+
+/*
+    `table td`is set in notebook with right text-align.
+    We need to overwrite it.
+*/
+.estimator-table table td.param {
+    text-align: left;
+    position: relative;
+    padding: 0;
+}
+
+.user-set td {
+    color:rgb(255, 94, 0);
+    text-align: left !important;
+}
+
+.user-set td.value {
+    color:rgb(255, 94, 0);
+    background-color: transparent;
+}
+
+.default td {
+    color: black;
+    text-align: left !important;
+}
+
+.user-set td i,
+.default td i {
+    color: black;
+}
+
+/*
+    Styles for parameter documentation links
+    We need styling for visited so jupyter doesn't overwrite it
+*/
+a.param-doc-link,
+a.param-doc-link:link,
+a.param-doc-link:visited {
+    text-decoration: underline dashed;
+    text-underline-offset: .3em;
+    color: inherit;
+    display: block;
+    padding: .5em;
+}
+
+/* "hack" to make the entire area of the cell containing the link clickable */
+a.param-doc-link::before {
+    position: absolute;
+    content: "";
+    inset: 0;
+}
+
+.param-doc-description {
+    display: none;
+    position: absolute;
+    z-index: 9999;
+    left: 0;
+    padding: .5ex;
+    margin-left: 1.5em;
+    color: var(--sklearn-color-text);
+    box-shadow: .3em .3em .4em #999;
+    width: max-content;
+    text-align: left;
+    max-height: 10em;
+    overflow-y: auto;
+
+    /* unfitted */
+    background: var(--sklearn-color-unfitted-level-0);
+    border: thin solid var(--sklearn-color-unfitted-level-3);
+}
+
+/* Fitted state for parameter tooltips */
+.fitted .param-doc-description {
+    /* fitted */
+    background: var(--sklearn-color-fitted-level-0);
+    border: thin solid var(--sklearn-color-fitted-level-3);
+}
+
+.param-doc-link:hover .param-doc-description {
+    display: block;
+}
+
+.copy-paste-icon {
+    background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0NDggNTEyIj48IS0tIUZvbnQgQXdlc29tZSBGcmVlIDYuNy4yIGJ5IEBmb250YXdlc29tZSAtIGh0dHBzOi8vZm9udGF3ZXNvbWUuY29tIExpY2Vuc2UgLSBodHRwczovL2ZvbnRhd2Vzb21lLmNvbS9saWNlbnNlL2ZyZWUgQ29weXJpZ2h0IDIwMjUgRm9udGljb25zLCBJbmMuLS0+PHBhdGggZD0iTTIwOCAwTDMzMi4xIDBjMTIuNyAwIDI0LjkgNS4xIDMzLjkgMTQuMWw2Ny45IDY3LjljOSA5IDE0LjEgMjEuMiAxNC4xIDMzLjlMNDQ4IDMzNmMwIDI2LjUtMjEuNSA0OC00OCA0OGwtMTkyIDBjLTI2LjUgMC00OC0yMS41LTQ4LTQ4bDAtMjg4YzAtMjYuNSAyMS41LTQ4IDQ4LTQ4ek00OCAxMjhsODAgMCAwIDY0LTY0IDAgMCAyNTYgMTkyIDAgMC0zMiA2NCAwIDAgNDhjMCAyNi41LTIxLjUgNDgtNDggNDhMNDggNTEyYy0yNi41IDAtNDgtMjEuNS00OC00OEwwIDE3NmMwLTI2LjUgMjEuNS00OCA0OC00OHoiLz48L3N2Zz4=);
+    background-repeat: no-repeat;
+    background-size: 14px 14px;
+    background-position: 0;
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+}
+</a></style><div id="sk-container-id-1" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>OPTICS(min_samples=15)</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br>On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden=""><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-1" type="checkbox" checked=""><label for="sk-estimator-id-1" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>OPTICS</div></div><div><a class="sk-estimator-doc-link fitted" rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.8/modules/generated/sklearn.cluster.OPTICS.html">?<span>Documentation for OPTICS</span></a><span class="sk-estimator-doc-link fitted">i<span>Fitted</span></span></div></label><div class="sk-toggleable__content fitted" data-param-prefix="">
+        <div class="estimator-table">
+            <details>
+                <summary>Parameters</summary>
+                
+<table class="parameters-table table table-sm table-striped small" data-quarto-postprocess="true">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<tbody>
+<tr class="odd user-set">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.cluster.OPTICS.html#:~:text=min_samples,-int%20%3E%201%20or%20float%20between%200%20and%201%2C%20default%3D5" class="param-doc-link" rel="noreferrer" target="_blank">min_samples <span class="param-doc-description">min_samples: int &gt; 1 or float between 0 and 1, default=5<br>
+<br>
+The number of samples in a neighborhood for a point to be considered as<br>
+a core point. Also, up and down steep regions can't have more than<br>
+``min_samples`` consecutive non-steep points. Expressed as an absolute<br>
+number or a fraction of the number of samples (rounded to be at least<br>
+2).</span></a></td>
+<td class="value">15</td>
+</tr>
+<tr class="even default">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.cluster.OPTICS.html#:~:text=max_eps,-float%2C%20default%3Dnp.inf" class="param-doc-link" rel="noreferrer" target="_blank">max_eps <span class="param-doc-description">max_eps: float, default=np.inf<br>
+<br>
+The maximum distance between two samples for one to be considered as<br>
+in the neighborhood of the other. Default value of ``np.inf`` will<br>
+identify clusters across all scales; reducing ``max_eps`` will result<br>
+in shorter run times.</span></a></td>
+<td class="value">inf</td>
+</tr>
+<tr class="odd default">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.cluster.OPTICS.html#:~:text=metric,-str%20or%20callable%2C%20default%3D%27minkowski%27" class="param-doc-link" rel="noreferrer" target="_blank">metric <span class="param-doc-description">metric: str or callable, default='minkowski'<br>
+<br>
+Metric to use for distance computation. Any metric from scikit-learn<br>
+or :mod:`scipy.spatial.distance` can be used.<br>
+<br>
+If `metric` is a callable function, it is called on each<br>
+pair of instances (rows) and the resulting value recorded. The callable<br>
+should take two arrays as input and return one value indicating the<br>
+distance between them. This works for Scipy's metrics, but is less<br>
+efficient than passing the metric name as a string. If metric is<br>
+"precomputed", `X` is assumed to be a distance matrix and must be<br>
+square.<br>
+<br>
+Valid values for metric are:<br>
+<br>
+- from scikit-learn: ['cityblock', 'cosine', 'euclidean', 'l1', 'l2',<br>
+'manhattan']<br>
+<br>
+- from scipy.spatial.distance: ['braycurtis', 'canberra', 'chebyshev',<br>
+'correlation', 'dice', 'hamming', 'jaccard', 'kulsinski',<br>
+'mahalanobis', 'minkowski', 'rogerstanimoto', 'russellrao',<br>
+'seuclidean', 'sokalmichener', 'sokalsneath', 'sqeuclidean',<br>
+'yule']<br>
+<br>
+Sparse matrices are only supported by scikit-learn metrics.<br>
+See :mod:`scipy.spatial.distance` for details on these metrics.<br>
+<br>
+.. note::<br>
+`'kulsinski'` is deprecated from SciPy 1.9 and will be removed in SciPy 1.11.</span></a></td>
+<td class="value">'minkowski'</td>
+</tr>
+<tr class="even default">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.cluster.OPTICS.html#:~:text=p,-float%2C%20default%3D2" class="param-doc-link" rel="noreferrer" target="_blank">p <span class="param-doc-description">p: float, default=2<br>
+<br>
+Parameter for the Minkowski metric from<br>
+:class:`~sklearn.metrics.pairwise_distances`. When p = 1, this is<br>
+equivalent to using manhattan_distance (l1), and euclidean_distance<br>
+(l2) for p = 2. For arbitrary p, minkowski_distance (l_p) is used.</span></a></td>
+<td class="value">2</td>
+</tr>
+<tr class="odd default">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.cluster.OPTICS.html#:~:text=metric_params,-dict%2C%20default%3DNone" class="param-doc-link" rel="noreferrer" target="_blank">metric_params <span class="param-doc-description">metric_params: dict, default=None<br>
+<br>
+Additional keyword arguments for the metric function.</span></a></td>
+<td class="value">None</td>
+</tr>
+<tr class="even default">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.cluster.OPTICS.html#:~:text=cluster_method,-%7B%27xi%27%2C%20%27dbscan%27%7D%2C%20default%3D%27xi%27" class="param-doc-link" rel="noreferrer" target="_blank">cluster_method <span class="param-doc-description">cluster_method: {'xi', 'dbscan'}, default='xi'<br>
+<br>
+The extraction method used to extract clusters using the calculated<br>
+reachability and ordering.</span></a></td>
+<td class="value">'xi'</td>
+</tr>
+<tr class="odd default">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.cluster.OPTICS.html#:~:text=eps,-float%2C%20default%3Dnp.inf" class="param-doc-link" rel="noreferrer" target="_blank">eps <span class="param-doc-description">eps: float, default=None<br>
+<br>
+The maximum distance between two samples for one to be considered as<br>
+in the neighborhood of the other. By default it assumes the same value<br>
+as ``max_eps``.<br>
+Used only when ``cluster_method='dbscan'``.</span></a></td>
+<td class="value">None</td>
+</tr>
+<tr class="even default">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.cluster.OPTICS.html#:~:text=xi,-float%20between%200%20and%201%2C%20default%3D0.05" class="param-doc-link" rel="noreferrer" target="_blank">xi <span class="param-doc-description">xi: float between 0 and 1, default=0.05<br>
+<br>
+Determines the minimum steepness on the reachability plot that<br>
+constitutes a cluster boundary. For example, an upwards point in the<br>
+reachability plot is defined by the ratio from one point to its<br>
+successor being at most 1-xi.<br>
+Used only when ``cluster_method='xi'``.</span></a></td>
+<td class="value">0.05</td>
+</tr>
+<tr class="odd default">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.cluster.OPTICS.html#:~:text=predecessor_correction,-bool%2C%20default%3DTrue" class="param-doc-link" rel="noreferrer" target="_blank">predecessor_correction <span class="param-doc-description">predecessor_correction: bool, default=True<br>
+<br>
+Correct clusters according to the predecessors calculated by OPTICS<br>
+[2]_. This parameter has minimal effect on most datasets.<br>
+Used only when ``cluster_method='xi'``.</span></a></td>
+<td class="value">True</td>
+</tr>
+<tr class="even default">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.cluster.OPTICS.html#:~:text=min_cluster_size,-int%20%3E%201%20or%20float%20between%200%20and%201%2C%20default%3DNone" class="param-doc-link" rel="noreferrer" target="_blank">min_cluster_size <span class="param-doc-description">min_cluster_size: int &gt; 1 or float between 0 and 1, default=None<br>
+<br>
+Minimum number of samples in an OPTICS cluster, expressed as an<br>
+absolute number or a fraction of the number of samples (rounded to be<br>
+at least 2). If ``None``, the value of ``min_samples`` is used instead.<br>
+Used only when ``cluster_method='xi'``.</span></a></td>
+<td class="value">None</td>
+</tr>
+<tr class="odd default">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.cluster.OPTICS.html#:~:text=algorithm,-%7B%27auto%27%2C%20%27ball_tree%27%2C%20%27kd_tree%27%2C%20%27brute%27%7D%2C%20default%3D%27auto%27" class="param-doc-link" rel="noreferrer" target="_blank">algorithm <span class="param-doc-description">algorithm: {'auto', 'ball_tree', 'kd_tree', 'brute'}, default='auto'<br>
+<br>
+Algorithm used to compute the nearest neighbors:<br>
+<br>
+- 'ball_tree' will use :class:`~sklearn.neighbors.BallTree`.<br>
+- 'kd_tree' will use :class:`~sklearn.neighbors.KDTree`.<br>
+- 'brute' will use a brute-force search.<br>
+- 'auto' (default) will attempt to decide the most appropriate<br>
+algorithm based on the values passed to :meth:`fit` method.<br>
+<br>
+Note: fitting on sparse input will override the setting of<br>
+this parameter, using brute force.</span></a></td>
+<td class="value">'auto'</td>
+</tr>
+<tr class="even default">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.cluster.OPTICS.html#:~:text=leaf_size,-int%2C%20default%3D30" class="param-doc-link" rel="noreferrer" target="_blank">leaf_size <span class="param-doc-description">leaf_size: int, default=30<br>
+<br>
+Leaf size passed to :class:`~sklearn.neighbors.BallTree` or<br>
+:class:`~sklearn.neighbors.KDTree`. This can affect the speed of the<br>
+construction and query, as well as the memory required to store the<br>
+tree. The optimal value depends on the nature of the problem.</span></a></td>
+<td class="value">30</td>
+</tr>
+<tr class="odd default">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.cluster.OPTICS.html#:~:text=memory,-str%20or%20object%20with%20the%20joblib.Memory%20interface%2C%20default%3DNone" class="param-doc-link" rel="noreferrer" target="_blank">memory <span class="param-doc-description">memory: str or object with the joblib.Memory interface, default=None<br>
+<br>
+Used to cache the output of the computation of the tree.<br>
+By default, no caching is done. If a string is given, it is the<br>
+path to the caching directory.</span></a></td>
+<td class="value">None</td>
+</tr>
+<tr class="even default">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.cluster.OPTICS.html#:~:text=n_jobs,-int%2C%20default%3DNone" class="param-doc-link" rel="noreferrer" target="_blank">n_jobs <span class="param-doc-description">n_jobs: int, default=None<br>
+<br>
+The number of parallel jobs to run for neighbors search.<br>
+``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.<br>
+``-1`` means using all processors. See :term:`Glossary <n_jobs>`<br>
+for more details.</n_jobs></span></a></td>
+<td class="value">None</td>
+</tr>
+</tbody>
+</table>
+
+            </details>
+        </div>
+    </div></div></div></div></div><script>function copyToClipboard(text, element) {
+    // Get the parameter prefix from the closest toggleable content
+    const toggleableContent = element.closest('.sk-toggleable__content');
+    const paramPrefix = toggleableContent ? toggleableContent.dataset.paramPrefix : '';
+    const fullParamName = paramPrefix ? `${paramPrefix}${text}` : text;
+
+    const originalStyle = element.style;
+    const computedStyle = window.getComputedStyle(element);
+    const originalWidth = computedStyle.width;
+    const originalHTML = element.innerHTML.replace('Copied!', '');
+
+    navigator.clipboard.writeText(fullParamName)
+        .then(() => {
+            element.style.width = originalWidth;
+            element.style.color = 'green';
+            element.innerHTML = "Copied!";
+
+            setTimeout(() => {
+                element.innerHTML = originalHTML;
+                element.style = originalStyle;
+            }, 2000);
+        })
+        .catch(err => {
+            console.error('Failed to copy:', err);
+            element.style.color = 'red';
+            element.innerHTML = "Failed!";
+            setTimeout(() => {
+                element.innerHTML = originalHTML;
+                element.style = originalStyle;
+            }, 2000);
+        });
+    return false;
+}
+
+document.querySelectorAll('.copy-paste-icon').forEach(function(element) {
+    const toggleableContent = element.closest('.sk-toggleable__content');
+    const paramPrefix = toggleableContent ? toggleableContent.dataset.paramPrefix : '';
+    const paramName = element.parentElement.nextElementSibling
+        .textContent.trim().split(' ')[0];
+    const fullParamName = paramPrefix ? `${paramPrefix}${paramName}` : paramName;
+
+    element.setAttribute('title', fullParamName);
+});
+
+
+/**
+ * Adapted from Skrub
+ * https://github.com/skrub-data/skrub/blob/403466d1d5d4dc76a7ef569b3f8228db59a31dc3/skrub/_reporting/_data/templates/report.js#L789
+ * @returns "light" or "dark"
+ */
+function detectTheme(element) {
+    const body = document.querySelector('body');
+
+    // Check VSCode theme
+    const themeKindAttr = body.getAttribute('data-vscode-theme-kind');
+    const themeNameAttr = body.getAttribute('data-vscode-theme-name');
+
+    if (themeKindAttr && themeNameAttr) {
+        const themeKind = themeKindAttr.toLowerCase();
+        const themeName = themeNameAttr.toLowerCase();
+
+        if (themeKind.includes("dark") || themeName.includes("dark")) {
+            return "dark";
+        }
+        if (themeKind.includes("light") || themeName.includes("light")) {
+            return "light";
+        }
+    }
+
+    // Check Jupyter theme
+    if (body.getAttribute('data-jp-theme-light') === 'false') {
+        return 'dark';
+    } else if (body.getAttribute('data-jp-theme-light') === 'true') {
+        return 'light';
+    }
+
+    // Guess based on a parent element's color
+    const color = window.getComputedStyle(element.parentNode, null).getPropertyValue('color');
+    const match = color.match(/^rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)\s*$/i);
+    if (match) {
+        const [r, g, b] = [
+            parseFloat(match[1]),
+            parseFloat(match[2]),
+            parseFloat(match[3])
+        ];
+
+        // https://en.wikipedia.org/wiki/HSL_and_HSV#Lightness
+        const luma = 0.299 * r + 0.587 * g + 0.114 * b;
+
+        if (luma > 180) {
+            // If the text is very bright we have a dark theme
+            return 'dark';
+        }
+        if (luma < 75) {
+            // If the text is very dark we have a light theme
+            return 'light';
+        }
+        // Otherwise fall back to the next heuristic.
+    }
+
+    // Fallback to system preference
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+
+function forceTheme(elementId) {
+    const estimatorElement = document.querySelector(`#${elementId}`);
+    if (estimatorElement === null) {
+        console.error(`Element with id ${elementId} not found.`);
+    } else {
+        const theme = detectTheme(estimatorElement);
+        estimatorElement.classList.add(theme);
+    }
+}
+
+forceTheme('sk-container-id-1');</script>
+</div>
 </div>
 </div>
 <p>OPTICS(Ordering Points to Identify Clustering Structure) is an algorithm similar enough to DBSCAN, but handles varying densities better. This block will initialize the OPTICS model with a min sample count per cluster and fit it to the dataset. This will allow us to extract the reachability distances later on, which will quantify the density connectivity of the data points.</p>
 </section>
 <section id="get-reachability-distances-handle-infinity-values" class="level1">
 <h1>Get Reachability Distances &amp; Handle Infinity Values</h1>
-<div id="7557136a" class="cell" data-execution_count="4">
+<div id="0e594696" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1"></a><span class="co"># Step 2: Plot the reachability diagram</span></span>
 <span id="cb4-2"><a href="#cb4-2"></a>space <span class="op">=</span> np.arange(<span class="bu">len</span>(data))</span>
 <span id="cb4-3"><a href="#cb4-3"></a>reachability <span class="op">=</span> optics_model.reachability_[optics_model.ordering_]</span>
@@ -331,7 +1176,7 @@ cookieconsent.run({
 </section>
 <section id="identify-the-elbow-point-in-the-sorted-reachability-plot" class="level1">
 <h1>Identify the “Elbow” Point in the Sorted Reachability Plot</h1>
-<div id="23e6ac23" class="cell" data-execution_count="5">
+<div id="b473cdf8" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1"></a><span class="co"># Plot sorted reachability distances</span></span>
 <span id="cb6-2"><a href="#cb6-2"></a>sorted_reachability <span class="op">=</span> np.sort(reachability)</span>
 <span id="cb6-3"><a href="#cb6-3"></a>indices <span class="op">=</span> np.arange(<span class="bu">len</span>(sorted_reachability))</span>
@@ -373,7 +1218,7 @@ cookieconsent.run({
 </section>
 <section id="trying-the-maximum-deviation-line-for-clustering" class="level1">
 <h1>Trying the Maximum Deviation Line for Clustering</h1>
-<div id="5e5cf153" class="cell" data-execution_count="6">
+<div id="6510639f" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1"></a><span class="co">#  Create a list of colors to use for bars below the threshold, and black for above</span></span>
 <span id="cb7-2"><a href="#cb7-2"></a><span class="co"># We'll generate a color map to cycle through a set of colors for segments below the threshold</span></span>
 <span id="cb7-3"><a href="#cb7-3"></a>below_threshold_colors <span class="op">=</span> <span class="bu">list</span>(mcolors.TABLEAU_COLORS.values())  <span class="co"># Get a set of unique colors</span></span>
@@ -407,7 +1252,7 @@ cookieconsent.run({
 <span id="cb7-31"><a href="#cb7-31"></a><span class="co"># plt.legend()</span></span>
 <span id="cb7-32"><a href="#cb7-32"></a><span class="co"># plt.show()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="3022ef65" class="cell" data-execution_count="7">
+<div id="bfcda2ef" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1"></a><span class="co"># Step 3: Extract clusters using the reachability distance at the elbow point as a cutoff</span></span>
 <span id="cb8-2"><a href="#cb8-2"></a><span class="co"># The reachability distance at the elbow is used as a threshold for cluster extraction</span></span>
 <span id="cb8-3"><a href="#cb8-3"></a>reachability_distance_at_elbow <span class="op">=</span> elbow_cutoff</span>
@@ -462,7 +1307,7 @@ cookieconsent.run({
 <p><a href="ReachabilityElbowOptimal.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4"><img src="ReachabilityElbowOptimal.png" class="img-fluid"></a></p>
 <p><a href="ClustersElbowAutomatic.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5"><img src="ClustersElbowAutomatic.png" class="img-fluid"></a></p>
 <p>As you can see above we get three clusters based on one of the clusters encountering significant overlap. We can stop here and examine why this may be when we don’t have synthetic data, but at least for the purposes of this demonstration I will find the point at which I need to set the reachability distance to distinguish that first cluster by hovering over that point in Python’s matplotlib plot. As you can see below that value is roughly 0.88 . See that all we have to do is change one line and we can rerun the reachability distance.</p>
-<div id="540921e2" class="cell" data-execution_count="8">
+<div id="6253746f" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1"></a>elbow_cutoff <span class="op">=</span><span class="fl">0.866</span> <span class="co">##THIS IS A GREAT EXAMPLE OF WHEN YOUR ELBOW FAILS YOU AND YOU NEED TO PLAY AROUND WITH VALUES!!!!</span></span>
 <span id="cb9-2"><a href="#cb9-2"></a></span>
 <span id="cb9-3"><a href="#cb9-3"></a><span class="co">#  Create a list of colors to use for bars below the threshold, and black for above</span></span>
@@ -506,7 +1351,7 @@ cookieconsent.run({
 </div>
 </div>
 <p>Now that we have broken out the clusters we can now reassign clusters based on the new threshold.</p>
-<div id="89cf0eca" class="cell" data-execution_count="9">
+<div id="f332e44a" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1"></a><span class="co"># Step 3: Extract clusters using the reachability distance at the elbow point as a cutoff</span></span>
 <span id="cb10-2"><a href="#cb10-2"></a><span class="co"># The reachability distance at the elbow is used as a threshold for cluster extraction</span></span>
 <span id="cb10-3"><a href="#cb10-3"></a>reachability_distance_at_elbow <span class="op">=</span> elbow_cutoff</span>
@@ -562,7 +1407,7 @@ cookieconsent.run({
 <p><a href="ClustersManual.png" class="lightbox" data-gallery="quarto-lightbox-gallery-8"><img src="ClustersManual.png" class="img-fluid"></a></p>
 <p>And that’s it. Given this data and the significant overlap between cluster’s 0 and 1 I would definitely just go with the original reachability distance found by the elbow, but given that we have ZERO underlying knowledge besides here’s 4 clusters here we are. Note that the ratio of noise:data changed and more points are discarded. Evaluate whether or not those points are important and if so consider other clustering algorithms(I’m looking at you Esimation Maximization). For an example with differing STD see <a href="Optics_Diff_STD.py">here</a>.</p>
 <p>If we want to use the Xi clustering method on this data by evaluating the relative slopes of the reachability plot or by evaluating the silhouette score of a variety of Xi values we can proceed with the below. Please note that we use the same data as before.</p>
-<div id="2be8712a" class="cell" data-execution_count="10">
+<div id="7a1d0e6d" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1"></a><span class="co">#Now instead of using the reachability metric we use the Xi clustering method to apply OPTICS</span></span>
 <span id="cb11-2"><a href="#cb11-2"></a><span class="co">#Please note I tried relative differences in reachability distances by calculating their relative slopes and another method using significant slopes</span></span>
 <span id="cb11-3"><a href="#cb11-3"></a><span class="co"># using a percentile approach and they both performed poor.</span></span>
@@ -637,13 +1482,15 @@ cookieconsent.run({
 Xi_value[Significanty Slopes]:  0.06486873356523164</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>C:\Users\Jesse\AppData\Local\Temp\ipykernel_282880\2141299887.py:25: RuntimeWarning: invalid value encountered in divide
-  slopes = np.diff(reachabilities_initial) / reachabilities_initial[:-1]</code></pre>
+<pre><code>C:\Users\Jesse\AppData\Local\Temp\ipykernel_227020\2141299887.py:25: RuntimeWarning:
+
+invalid value encountered in divide
+</code></pre>
 </div>
 </div>
 <p><a href="SilhouetteScore.png" class="lightbox" data-gallery="quarto-lightbox-gallery-9"><img src="SilhouetteScore.png" class="img-fluid"></a></p>
 <p>As one can see in the image above, the silhouette score is maximized at a value of: 0.1725225…. and thus that is what we will use. The silhouette score is a measure of how similar an object is to its own cluster compared to other clusters. This metric ranges from -1 to +1, where a high value indicates that the object is well matched to its own cluster and poorly matched to neighboring clusters. A score close to 1 signifies that the object is far away from its neighboring clusters, a score of 0 indicates that the object is on or very close to the decision boundary between two neighboring clusters, and a negative score indicates that the object might have been assigned to the wrong cluster. From here we will select the best Xi to use based on the maximum silhouette score.</p>
-<div id="c416c607" class="cell" data-execution_count="11">
+<div id="f918fe3c" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1"></a><span class="co"># Select the best Xi based on maximum silhouette score</span></span>
 <span id="cb14-2"><a href="#cb14-2"></a>best_xi_index <span class="op">=</span> np.argmax(silhouette_scores)</span>
 <span id="cb14-3"><a href="#cb14-3"></a>best_xi <span class="op">=</span> xi_values[best_xi_index]</span>
@@ -688,7 +1535,7 @@ Xi_value[Significanty Slopes]:  0.06486873356523164</code></pre>
 <p><a href="ClustersDynamicXi.png" class="lightbox" data-gallery="quarto-lightbox-gallery-11"><img src="ClustersDynamicXi.png" class="img-fluid"></a></p>
 <p>As one can see the number of clusters is different here and more likely than not indicative of my ability/willingness to play with Xi values than the inherent performance of OPTICS. Regardless, it was much faster to simply establish a cutoff with the first method described than it was to iterate over Xi for this particular dataset. There may be cases where Xi is better equipped to cluster the dataset and as a result I kept it here for my own reference sometime in the future.</p>
 <p>The resultant clustering is performed below:</p>
-<div id="08e737d1" class="cell" data-execution_count="12">
+<div id="47975b17" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1"></a><span class="co"># Scatter plot of clusters</span></span>
 <span id="cb16-2"><a href="#cb16-2"></a><span class="co"># plt.figure(figsize=(10, 7))</span></span>
 <span id="cb16-3"><a href="#cb16-3"></a></span>
@@ -719,7 +1566,7 @@ Xi_value[Significanty Slopes]:  0.06486873356523164</code></pre>
 <li><p><strong>Mutual Information</strong>: This measures the amount of information one can obtain about one random variable by observing another random variable. The Adjusted Mutual Information (AMI) score is an adjustment of the Mutual Information Score that accounts for chance, making it a more reliable metric in assessing the agreement of the clustering result with the ground truth, if available. This one is really just thrown because why not?</p></li>
 </ol>
 <p>The code is below and I parallelized the calculations as it would have taken quite some time otherwise.</p>
-<div id="3445219f" class="cell" data-execution_count="13">
+<div id="f5b0c960" class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1"></a><span class="co"># Neuroticism:</span></span>
 <span id="cb17-2"><a href="#cb17-2"></a></span>
 <span id="cb17-3"><a href="#cb17-3"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> davies_bouldin_score, calinski_harabasz_score, adjusted_rand_score, adjusted_mutual_info_score</span>
@@ -1632,7 +2479,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"selector":".lightbox","closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"loop":false,"closeEffect":"zoom","openEffect":"zoom","descPosition":"bottom","selector":".lightbox"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

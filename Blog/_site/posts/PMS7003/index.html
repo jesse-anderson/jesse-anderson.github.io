@@ -43,6 +43,9 @@ ul.task-list li input[type="checkbox"] {
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -211,6 +214,7 @@ cookieconsent.run({
 <li><p><strong>PM2.5</strong> - particles up to 2.5 µm, dominated by combustion sources like vehicles, wildfires and power plants.</p></li>
 <li><p><strong>PM1</strong> - particles up to 1 µm, often secondary aerosols or diesel and wood smoke; they can cross the alveolar membrane, enter the bloodstream and drive systemic inflammation.</p></li>
 </ul>
+<p><a href="pm2.5_scale_graphic-color_2.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="pm2.5_scale_graphic-color_2.jpg" class="img-fluid"></a></p>
 </section>
 <section id="why-it-is-harmful" class="level3">
 <h3 class="anchored" data-anchor-id="why-it-is-harmful">Why it is harmful</h3>
@@ -336,7 +340,7 @@ cookieconsent.run({
 <td>Traffic pollutant tied to childhood asthma.</td>
 </tr>
 <tr class="odd">
-<td><strong>SO2 24 h mean</strong></td>
+<td><strong>SO2</strong></td>
 <td>40 µg m⁻³ [24 h][1]</td>
 <td><p>35ppb ≈ 91.7 µg m⁻³ [1hr] [2]</p>
 <p>10ppb ≈ 26.2 µg m⁻³ [1yr] [19]</p></td>
@@ -354,6 +358,9 @@ cookieconsent.run({
 </tbody>
 </table>
 <p>I generally just use the WHO values as a basis, but I’m including the US values as a comparison. Unless stated otherwise I’m taking the ideal values where they exist, if the values correspond to an unhealthy for sensitive groups, etc it will be shown in brackets.</p>
+</section>
+<section id="a-cautionary-tale" class="level3">
+<h3 class="anchored" data-anchor-id="a-cautionary-tale">A Cautionary Tale</h3>
 <p>To dive a bit more into the whole sulfur issue and monitoring lacking(a bunch of missed days…).. The inadequacy of sulfur monitoring becomes starkly apparent during environmental disasters, as demonstrated by a 2022 study of Beaumont, Texas - a city surrounded by major petroleum refineries. When Hurricane Harvey struck in August 2017, the community’s already limited air monitoring network essentially went dark at the worst possible time. With only two monitors covering the entire industrial city, officials shut down equipment for a full week (August 25-September 1) to prevent storm damage, leaving residents without any data on air quality while refineries were in operation. The hydrogen sulfide monitor was particularly unreliable, missing 213 days of data in 2017 alone, with overall data capture rates plummeting to just 39% during the hurricane period. Even when operational, the monitor consistently recorded hydrogen sulfide concentrations above OSHA safety limits at levels residents could smell daily. This case illustrates how monitoring gaps compound during crises: precisely when industrial accidents and emergency shutdowns release the most pollution, communities lose the data needed to assess health risks[18].</p>
 <p>As an aside, OSHA considers Sulfur Dioxide 5ppm or 13 mg m⁻³ to be permissible exposure limit, 10 hr time weighted average 2 ppm for their recommended exposure limit[20]. The values seen above according to the data in the journal article show an average of 0.68ppb in 2017 and an H2S RfC of 1.0 ppb for the general population[21]. This is in contrast to the 0.14ppb value that is cited in the journal. Overall, with the missing sensor days, dated EPA guidelines, and general confusion in interpreting these values it becomes even more critically important to monitor one’s environments for particulate and chemical matter.</p>
 <p><strong>Why include these gases in a DIY station?</strong><br>
@@ -413,6 +420,13 @@ Electrochemical and MOS chips are inexpensive and socket-friendly but drift over
 <li><p>May, N.W., Dixon, C.,&nbsp;Jaffe, D.A. (2021). Impact of Wildfire Smoke Events on Indoor Air Quality and Evaluation of a Low-cost Filtration Method. Aerosol Air Qual. Res. 21, 210046. https://doi.org/10.4209/aaqr.210046</p></li>
 <li><p>Xiang, Jianbang, et al.&nbsp;“Field Measurements of PM2.5 Infiltration Factor and Portable Air Cleaner Effectiveness during Wildfire Episodes in US Residences.” <em>Science of the Total Environment</em>, vol.&nbsp;773, June 2021, p.&nbsp;145642, https://doi.org/10.1016/j.scitotenv.2021.145642. Accessed 3 Feb.&nbsp;2022.</p></li>
 </ol>
+</section>
+<section id="actual-sensor" class="level1">
+<h1>Actual Sensor</h1>
+<p>So, I had originally intended to use a PMS7003, but after writing some C++ and running the PMS7003 against a Sensiron PM sensor I cannot in good faith recommend using the PMS7003. As such, I’ll just talk about the Sensiron SPS30(Not to be confused with the SEN5x) which has been calibrated to TSI DustTrak™ DRX 8533 Ambient Mode. It seems to hold up pretty well and is always within 80% of the actual value for PM2.5(a lot better than the randomness reported by PMS7003)[<a href="https://www.aqmd.gov/docs/default-source/aq-spec/summary/sensirion-sps30---summary-report.pdf?sfvrsn=8">Link</a>]. I preferred this one over the SEN5x since it’ll report the particle count and average while the 5x gives you humidity/temp/VOC/NOx index. I’d rather have this sensor + a standalone VOC/NOx sensor to decouple failure.</p>
+<p>Anyhow, here’s some insights below(they will be updated as I measure data):</p>
+<p>Soldering fume dissipation over time:<br>
+</p>
 
 
 </section>
@@ -1161,6 +1175,31 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","selector":".lightbox","loop":false,"openEffect":"zoom","descPosition":"bottom"});
+window.onload = () => {
+  lightboxQuarto.on('slide_before_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    const href = trigger.getAttribute('href');
+    if (href !== null) {
+      const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+      if (imgEl !== null) {
+        const srcAttr = imgEl.getAttribute("src");
+        if (srcAttr && srcAttr.startsWith("data:")) {
+          slideConfig.href = srcAttr;
+        }
+      }
+    } 
+  });
+
+  lightboxQuarto.on('slide_after_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    if (window.Quarto?.typesetMath) {
+      window.Quarto.typesetMath(slideNode);
+    }
+  });
+
+};
+          </script>
 
 
 
