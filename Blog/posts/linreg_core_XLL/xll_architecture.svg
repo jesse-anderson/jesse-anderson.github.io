@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#333" />
+    </marker>
+  </defs>
+  <style>
+    .box { fill: #f7f7f7; stroke: #333; stroke-width: 2; rx: 10; }
+    .inner { fill: #ffffff; stroke: #333; stroke-width: 1.5; rx: 8; }
+    .title { font: 600 18px 'Segoe UI', Arial, sans-serif; fill: #111; }
+    .text { font: 14px 'Segoe UI', Arial, sans-serif; fill: #111; }
+    .arrow { stroke: #333; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+    .dash { stroke-dasharray: 6 6; }
+    .step-circle { fill: #e3f2fd; stroke: #1565c0; stroke-width: 2; }
+    .step-text { font: 700 12px 'Segoe UI', Arial, sans-serif; fill: #0d47a1; }
+  </style>
+
+  <!-- Columns -->
+  <rect class="box" x="40" y="40" width="320" height="440" />
+  <rect class="box" x="440" y="40" width="320" height="440" />
+  <rect class="box" x="840" y="40" width="320" height="440" />
+
+  <!-- Column titles -->
+  <text class="title" x="200" y="70" text-anchor="middle">Excel (host)</text>
+  <text class="title" x="600" y="70" text-anchor="middle">XLL boundary layer</text>
+  <text class="title" x="1000" y="70" text-anchor="middle">Rust core library</text>
+
+  <!-- Excel inner -->
+  <rect class="inner" x="80" y="120" width="240" height="70" />
+  <text class="text" x="200" y="160" text-anchor="middle">Worksheet formulas</text>
+
+  <rect class="inner" x="80" y="300" width="240" height="70" />
+  <text class="text" x="200" y="340" text-anchor="middle">Spilled results</text>
+
+  <!-- XLL inner -->
+  <rect class="inner" x="480" y="120" width="240" height="70" />
+  <text class="text" x="600" y="152" text-anchor="middle">UDFs</text>
+  <text class="text" x="600" y="172" text-anchor="middle">(extern "system")</text>
+
+  <rect class="inner" x="480" y="230" width="240" height="70" />
+  <text class="text" x="600" y="270" text-anchor="middle">XLOPER12 parse/build</text>
+
+  <rect class="inner" x="480" y="340" width="240" height="70" />
+  <text class="text" x="600" y="380" text-anchor="middle">xlAutoFree12</text>
+
+  <!-- Core inner -->
+  <rect class="inner" x="880" y="210" width="240" height="90" />
+  <text class="text" x="1000" y="250" text-anchor="middle">Regression + diagnostics</text>
+
+  <!-- Arrows -->
+  <line class="arrow" x1="320" y1="155" x2="480" y2="155" />
+  <line class="arrow" x1="600" y1="190" x2="600" y2="230" />
+  <line class="arrow" x1="720" y1="265" x2="880" y2="265" />
+  <line class="arrow" x1="880" y1="295" x2="720" y2="295" />
+  <line class="arrow" x1="480" y1="265" x2="320" y2="335" />
+
+  <!-- Step numbers -->
+  <circle class="step-circle" cx="400" cy="155" r="12" />
+  <text class="step-text" x="400" y="159" text-anchor="middle">1</text>
+
+  <circle class="step-circle" cx="600" cy="210" r="12" />
+  <text class="step-text" x="600" y="214" text-anchor="middle">2</text>
+
+  <circle class="step-circle" cx="800" cy="265" r="12" />
+  <text class="step-text" x="800" y="269" text-anchor="middle">3</text>
+
+  <circle class="step-circle" cx="800" cy="295" r="12" />
+  <text class="step-text" x="800" y="299" text-anchor="middle">4</text>
+
+  <circle class="step-circle" cx="400" cy="300" r="12" />
+  <text class="step-text" x="400" y="304" text-anchor="middle">5</text>
+
+  <!-- Callback arrow -->
+  <line class="arrow dash" x1="320" y1="370" x2="480" y2="375" />
+  <text class="text" x="360" y="350">callback after copy</text>
+  <circle class="step-circle" cx="400" cy="372" r="12" />
+  <text class="step-text" x="400" y="376" text-anchor="middle">6</text>
+</svg>

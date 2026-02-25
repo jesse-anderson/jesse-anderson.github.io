@@ -77,6 +77,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -135,6 +138,7 @@ cookieconsent.run({
 
 <link rel="stylesheet" href="../../styles.css">
 <meta property="og:title" content="Jesse Anderson’s Blog - Calling Rust from Excel: Building a Native DLL for VBA">
+<meta property="og:description" content="">
 <meta property="og:image" content="linreg_core_example_workbook.png">
 <meta property="og:site_name" content="Jesse Anderson's Blog">
 </head>
@@ -233,8 +237,22 @@ cookieconsent.run({
 
 <section id="calling-rust-from-excel-building-a-native-dll-for-vba" class="level1">
 <h1>Calling Rust from Excel: Building a Native DLL for VBA</h1>
-<section id="introduction" class="level2">
-<h2 class="anchored" data-anchor-id="introduction">1. Introduction</h2>
+<p>Build a native Rust DLL that Excel can call directly through VBA, with a handle‑based FFI that stays safe across the boundary. This article walks from calling conventions and 32‑bit name decoration to a production‑ready VBA wrapper layer.</p>
+<p><strong>Table of Contents</strong></p>
+<ol type="1">
+<li><p><a href="#Section1">Introduction</a></p></li>
+<li><p><a href="#Section2">How VBA Calls a DLL</a></p></li>
+<li><p><a href="#Section3">The 32-bit Problem: Stdcall Name Decoration</a></p></li>
+<li><p><a href="#Section4">Designing a Safe API Across the Boundary</a></p></li>
+<li><p><a href="#Section5">The Internal Type System</a></p></li>
+<li><p><a href="#Section6">Building for Both Architectures</a></p></li>
+<li><p><a href="#Section7">The VBA Wrapper Layer</a></p></li>
+<li><p><a href="#Section8">Lessons Learned</a></p></li>
+<li><p><a href="#Section9">Is It Worth It?</a></p></li>
+<li><p><a href="#Section10">Conclusion</a></p></li>
+</ol>
+<section id="Section1" class="level2">
+<h2 class="anchored" data-anchor-id="Section1">Section 1. Introduction</h2>
 <p>If you’ve worked in finance, research, or any domain where data analysis meets institutional inertia, you know that Excel is immovable. Not because it’s the best tool (it often isn’t) but because it’s <em>there</em>, everyone knows it, and the infrastructure built around it spans decades. The models live in workbooks. The reports are formatted in sheets. The business logic is buried in VBA macros that nobody fully understands anymore.</p>
 <p>The problem is that VBA, Excel’s built-in scripting language, was not designed for heavy numerical work. It lacks meaningful typed arrays, has no access to modern numerical libraries, and its performance on anything compute-intensive (matrix operations, iterative solvers, bootstrapped confidence intervals) is genuinely painful. If you need to run a regression on a moderately large dataset, you are either exporting to Python, reaching for an add-in you do not fully trust, or waiting.</p>
 <p>I found myself thinking about this in the course of building <a href="https://github.com/jesse-anderson/linreg-core">linreg-core</a>, a self-contained Rust library for statistical regression. The library covers OLS, Ridge, Lasso, Elastic Net, a full battery of diagnostic tests, prediction intervals, and k-fold cross-validation, all implemented from scratch without external math libraries. I had already compiled it to WebAssembly for browser use. The natural next question was: could I make it callable directly from Excel?</p>
@@ -246,7 +264,7 @@ cookieconsent.run({
 <p>Several properties make Rust well-suited for this kind of FFI target.</p>
 <p><strong>Performance.</strong> Rust code runs at native speed with no garbage collector pauses. The coordinate descent solver for Lasso, the Householder QR decomposition, the iterative diagnostic tests—these run in microseconds for datasets that would take VBA seconds or longer. When the DLL returns, the answer is already there.</p>
 <p><strong>Memory safety at the boundary.</strong> The FFI boundary between VBA and a DLL is dangerous territory. VBA has no concept of ownership, lifetimes, or destructors. Any memory the DLL allocates and does not free is leaked forever. Any pointer VBA passes incorrectly is a silent crash. Rust’s ownership model forces you to be explicit about these boundaries at design time, and the resulting API makes the safety contract visible rather than implicit.</p>
-<p><strong>Zero-dependency DLL output.</strong> Rust compiles to a <code>.dll</code> with no separate runtime. Drop it in the same folder as the workbook and it works (no Visual C++ redistributable, no Python interpreter, no JVM). This matters because the target users are analysts, not developers. They do not have Visual Studio installed, they likely do not have admin rights to install a runtime package, and they will not troubleshoot a cryptic <code>VCRUNTIME140.dll was not found</code> dialog. The entire value proposition of shipping a DLL collapses the moment there is a hidden prerequisite. Rust’s <code>.cargo/config.toml</code> setting <code>target-feature=+crt-static</code> statically links the C runtime into the DLL itself, so the only remaining dependencies are system DLLs that ship with every Windows installation.</p>
+<p><strong>Zero-dependency DLL output.</strong> Rust compiles to a <code>.dll</code> with no separate runtime. Drop it in the same folder as the workbook and it works (no Visual C++ redistributable, no Python interpreter, no JVM). This matters because the target users are analysts, not developers. They do not have Visual Studio installed, they likely do not have admin rights to install a runtime package, and they will not troubleshoot a cryptic <code>VCRUNTIME140.dll was not found</code> dialog. The entire value proposition of shipping a DLL collapses the moment there is a hidden prerequisite. Rust’s <code>.cargo/config.toml</code> setting <code>target-feature=+crt-static</code> statically links the C runtime into the DLL itself, so the only remaining dependencies are system DLLs present on Windows 8+.</p>
 <hr>
 </section>
 <section id="what-i-built" class="level3">
@@ -269,14 +287,26 @@ cookieconsent.run({
 <div class="sourceCode" id="cb1"><pre class="sourceCode numberSource vba number-lines code-with-copy"><code class="sourceCode"><span id="cb1-1"><a href="#cb1-1"></a>Dim tbl As Variant</span>
 <span id="cb1-2"><a href="#cb1-2"></a>tbl = LinReg_OLS(Range("B2:B21"), Range("C2:F21"))</span>
 <span id="cb1-3"><a href="#cb1-3"></a>Range("H2").Resize(UBound(tbl, 1) + 1, UBound(tbl, 2) + 1).Value = tbl</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="vba_wrapper_3lines.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1" title="Figure 1. The user-facing API: three lines of VBA to run OLS and paste the result table."><img src="vba_wrapper_3lines.png" class="img-fluid figure-img" alt="Figure 1. The user-facing API: three lines of VBA to run OLS and paste the result table."></a></p>
+<figcaption>Figure 1. The user-facing API: three lines of VBA to run OLS and paste the result table.</figcaption>
+</figure>
+</div>
 <p>Three lines. The first calls the high-level VBA wrapper with a response range and a predictor matrix range. The second pastes the result into the sheet. What comes back is a formatted table: a header row followed by one row per coefficient containing the term name, coefficient estimate, standard error, t-statistic, and p-value, then a blank separator and four summary rows (R², adjusted R², F-statistic with its p-value, and MSE with n).</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="vba_example_ols_output.png" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="quarto-lightbox-gallery-2" title="Figure 2. Result pasted into the worksheet: coefficients, standard errors, t-stats, p-values, and summary rows."><img src="vba_example_ols_output.png" class="img-fluid figure-img" alt="Figure 2. Result pasted into the worksheet: coefficients, standard errors, t-stats, p-values, and summary rows."></a></p>
+<figcaption>Figure 2. Result pasted into the worksheet: coefficients, standard errors, t-stats, p-values, and summary rows.</figcaption>
+</figure>
+</div>
 <p>Paste it anywhere in the workbook. Format it however you like. It is just values in cells.</p>
 <p>Getting to those three lines required solving problems in Rust’s build system, Windows calling conventions, 32-bit symbol decoration, and safe cross-language handle management. The rest of this article walks through each of those in turn.</p>
 <hr>
 </section>
 </section>
-<section id="how-vba-calls-a-dll" class="level2">
-<h2 class="anchored" data-anchor-id="how-vba-calls-a-dll">2. How VBA Calls a DLL</h2>
+<section id="Section2" class="level2">
+<h2 class="anchored" data-anchor-id="Section2">Section 2. How VBA Calls a DLL</h2>
 <p>Before designing anything, it helps to understand exactly what happens at runtime when VBA calls a DLL function. The mechanism is older than Rust by decades, and it is remarkably simple.</p>
 <section id="the-declare-statement" class="level3">
 <h3 class="anchored" data-anchor-id="the-declare-statement">The Declare Statement</h3>
@@ -293,6 +323,12 @@ cookieconsent.run({
 <span id="cb3-5"><a href="#cb3-5"></a>        LoadLibraryA ThisWorkbook.Path &amp; "\linreg_core_x86.dll"</span>
 <span id="cb3-6"><a href="#cb3-6"></a>    #End If</span>
 <span id="cb3-7"><a href="#cb3-7"></a>End Sub</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="vba_lr_init_flow.png" class="lightbox" data-glightbox="description: .lightbox-desc-3" data-gallery="quarto-lightbox-gallery-3" title="Figure 3. LR_Init flow: VBA loads the correct DLL from the workbook folder before any calls."><img src="vba_lr_init_flow.png" class="img-fluid figure-img" alt="Figure 3. LR_Init flow: VBA loads the correct DLL from the workbook folder before any calls."></a></p>
+<figcaption>Figure 3. LR_Init flow: VBA loads the correct DLL from the workbook folder before any calls.</figcaption>
+</figure>
+</div>
 <p>This should be called from <code>Workbook_Open</code> so the correct DLL is pinned in the process before anything else runs (the user wires this up once in the <code>ThisWorkbook</code> module). From that point on, <code>GetProcAddress</code> resolves <code>"LR_OLS"</code> to a function pointer and every subsequent call goes through it directly. The DLL does not need to know anything about VBA, COM, or the Excel object model. It only needs to export a symbol with the right name and a C-compatible calling convention.</p>
 <p><code>PtrSafe</code> was introduced in VBA7 (Office 2010) to indicate that a declaration is safe to run under 64-bit Office. Any <code>Declare</code> statement in a modern workbook should use it. The older <code>Declare Function</code> form (without <code>PtrSafe</code>) still compiles on 32-bit VBA but is not allowed in 64-bit VBA. See the <a href="https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/declare-statement">Microsoft Declare statement reference</a> for the full syntax.</p>
 </section>
@@ -315,10 +351,10 @@ cookieconsent.run({
 <p>The FFI boundary only understands the C type system. The following types transfer without any conversion on both 32-bit and 64-bit Windows:</p>
 <table class="table">
 <colgroup>
-<col style="width: 26%">
-<col style="width: 29%">
-<col style="width: 22%">
-<col style="width: 22%">
+<col style="width: 25%">
+<col style="width: 27%">
+<col style="width: 23%">
+<col style="width: 23%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -407,8 +443,8 @@ cookieconsent.run({
 <hr>
 </section>
 </section>
-<section id="the-32-bit-problem-stdcall-name-decoration" class="level2">
-<h2 class="anchored" data-anchor-id="the-32-bit-problem-stdcall-name-decoration">3. The 32-bit Problem: Stdcall Name Decoration</h2>
+<section id="Section3" class="level2">
+<h2 class="anchored" data-anchor-id="Section3">Section 3. The 32-bit Problem: Stdcall Name Decoration</h2>
 <p>Everything in Section 2 is true and sufficient (for 64-bit Office). On 32-bit Office—still common in enterprise environments where IT standardized on 32-bit Office years ago and never changed—there is an additional problem that is entirely invisible until you try to call a function and VBA raises <a href="https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/specified-dll-function-not-found-error-453">runtime error 453</a>: <strong>Specified DLL function not found</strong>.</p>
 <p>The DLL is loaded. The function exists. But VBA cannot find it. The reason is stdcall name decoration.</p>
 <section id="what-decoration-means" class="level3">
@@ -417,6 +453,12 @@ cookieconsent.run({
 <pre><code>_FunctionName@N</code></pre>
 <p>where <code>N</code> is the total number of bytes those arguments occupy on the stack. For <code>LR_OLS</code>, which takes two pointers and two <code>i32</code> values (each 4 bytes on a 32-bit target):</p>
 <pre><code>_LR_OLS@16      ; 4 + 4 + 4 + 4 = 16 bytes</code></pre>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="vba_stdcall_decoration.png" class="lightbox" data-glightbox="description: .lightbox-desc-4" data-gallery="quarto-lightbox-gallery-4" title="Figure 4. Stdcall name decoration on x86: the exported symbol includes the leading underscore and @N stack bytes."><img src="vba_stdcall_decoration.png" class="img-fluid figure-img" alt="Figure 4. Stdcall name decoration on x86: the exported symbol includes the leading underscore and @N stack bytes."></a></p>
+<figcaption>Figure 4. Stdcall name decoration on x86: the exported symbol includes the leading underscore and <span class="citation" data-cites="N">@N</span> stack bytes.</figcaption>
+</figure>
+</div>
 <p>A simpler getter like <code>LR_GetRSquared</code>, which takes one <code>usize</code> handle (4 bytes on x86):</p>
 <pre><code>_LR_GetRSquared@4</code></pre>
 <p>A vector getter like <code>LR_GetCoefficients(handle: usize, out_ptr: *mut f64, out_len: i32)</code>:</p>
@@ -479,8 +521,8 @@ EXPORTS
 <hr>
 </section>
 </section>
-<section id="designing-a-safe-api-across-the-boundary" class="level2">
-<h2 class="anchored" data-anchor-id="designing-a-safe-api-across-the-boundary">4. Designing a Safe API Across the Boundary</h2>
+<section id="Section4" class="level2">
+<h2 class="anchored" data-anchor-id="Section4">Section 4. Designing a Safe API Across the Boundary</h2>
 <p>Sections 2 and 3 covered the mechanical problems (how VBA finds symbols, how calling conventions work, how to strip name decoration). This section is about the design problem: given that VBA cannot participate in Rust’s ownership model at all, how do you hand results back to a caller that has no concept of destructors?</p>
 <section id="the-core-constraint" class="level3">
 <h3 class="anchored" data-anchor-id="the-core-constraint">The Core Constraint</h3>
@@ -496,6 +538,12 @@ EXPORTS
 <li><strong>Any value ≥ 1</strong> is a valid handle that can be passed to getter functions.</li>
 </ul>
 <p>This is intentionally simpler than SQLite’s pointer-based handles. VBA cannot dereference a <code>usize</code> or accidentally corrupt it. It can only pass it back, which is exactly the behavior we want.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="vba_handle_lifecycle.png" class="lightbox" data-glightbox="description: .lightbox-desc-5" data-gallery="quarto-lightbox-gallery-5" title="Figure 5. Handle lifecycle across the boundary: fit returns a handle, getters read, and LR_Free releases the stored result."><img src="vba_handle_lifecycle.png" class="img-fluid figure-img" alt="Figure 5. Handle lifecycle across the boundary: fit returns a handle, getters read, and LR_Free releases the stored result."></a></p>
+<figcaption>Figure 5. Handle lifecycle across the boundary: fit returns a handle, getters read, and <code>LR_Free</code> releases the stored result.</figcaption>
+</figure>
+</div>
 </section>
 <section id="the-handle-store" class="level3">
 <h3 class="anchored" data-anchor-id="the-handle-store">The Handle Store</h3>
@@ -575,8 +623,8 @@ EXPORTS
 <hr>
 </section>
 </section>
-<section id="the-internal-type-system" class="level2">
-<h2 class="anchored" data-anchor-id="the-internal-type-system">5. The Internal Type System</h2>
+<section id="Section5" class="level2">
+<h2 class="anchored" data-anchor-id="Section5">Section 5. The Internal Type System</h2>
 <p>Section 4 introduced the <code>FitResult</code> enum and the single-<code>HashMap</code> store. The enum has ten variants: <code>Ols</code>, <code>Ridge</code>, <code>Lasso</code>, <code>ElasticNet</code>, <code>Wls</code>, <code>Diagnostic</code>, <code>PredictionInterval</code>, <code>Vector</code>, <code>Matrix</code>, and <code>CV</code>. That variety creates an API design problem: different variants expose different fields. OLS has an F-statistic; Ridge has an effective degrees-of-freedom value; Lasso has a nonzero-coefficient count; a DFBETAS result is a matrix. How do you expose all of this through a typed C API without creating a getter for every field of every type?</p>
 <p>The answer is a three-tier getter taxonomy.</p>
 <section id="tier-1-shared-scalar-getters" class="level3">
@@ -696,8 +744,8 @@ EXPORTS
 <hr>
 </section>
 </section>
-<section id="building-for-both-architectures" class="level2">
-<h2 class="anchored" data-anchor-id="building-for-both-architectures">6. Building for Both Architectures</h2>
+<section id="Section6" class="level2">
+<h2 class="anchored" data-anchor-id="Section6">Section 6. Building for Both Architectures</h2>
 <p>Sections 3 and 4 covered the <em>why</em> of the dual-architecture support (stdcall decoration on 32-bit and the handle store design). This section covers the <em>how</em>: the exact build setup, commands, and file placement that produce the two DLLs.</p>
 <section id="prerequisites" class="level3">
 <h3 class="anchored" data-anchor-id="prerequisites">Prerequisites</h3>
@@ -731,7 +779,7 @@ EXPORTS
 <span id="cb31-3"><a href="#cb31-3"></a></span>
 <span id="cb31-4"><a href="#cb31-4"></a><span class="kw">[target.i686-pc-windows-msvc]</span></span>
 <span id="cb31-5"><a href="#cb31-5"></a><span class="dt">rustflags</span> <span class="op">=</span> <span class="op">[</span><span class="st">"-C"</span><span class="op">,</span> <span class="st">"target-feature=+crt-static"</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>This statically links the C runtime into each DLL, eliminating the Visual C++ Redistributable dependency discussed in Section 1. The remaining DLL dependencies should be limited to system components that ship with every Windows installation (typically <code>KERNEL32.dll</code>, <code>ntdll.dll</code>, and a few CRT-related API sets), though the exact list varies by Rust toolchain version (verify with <code>dumpbin /dependents</code> on the final binary).</p>
+<p>This statically links the C runtime into each DLL, eliminating the Visual C++ Redistributable dependency discussed in Section 1. The remaining DLL dependencies should be limited to system components present on Windows 8+ (typically <code>KERNEL32.dll</code>, <code>ntdll.dll</code>, and a few CRT-related API sets), though the exact list varies by Rust toolchain version (verify with <code>dumpbin /dependents</code> on the final binary).</p>
 <p>The 32-bit build also triggers the <code>.def</code> file path in <code>build.rs</code> (Section 3 covers that mechanism). The 64-bit build skips it.</p>
 <p>The release profile in <code>Cargo.toml</code> applies to both:</p>
 <div class="sourceCode" id="cb32"><pre class="sourceCode numberSource toml number-lines code-with-copy"><code class="sourceCode toml"><span id="cb32-1"><a href="#cb32-1"></a><span class="kw">[profile.release]</span></span>
@@ -764,9 +812,15 @@ linreg_core.dll  -&gt;  linreg_core_x86.dll   (from i686 output)</code></pre>
 <hr>
 </section>
 </section>
-<section id="the-vba-wrapper-layer" class="level2">
-<h2 class="anchored" data-anchor-id="the-vba-wrapper-layer">7. The VBA Wrapper Layer</h2>
+<section id="Section7" class="level2">
+<h2 class="anchored" data-anchor-id="Section7">Section 7. The VBA Wrapper Layer</h2>
 <p>Everything covered so far has been Rust. This section is about the VBA that sits in front of it (the code that an Excel user or VBA developer actually calls). <code>LinregCore.bas</code> is organized into two distinct layers: a set of raw <code>Declare</code> statements that expose the DLL symbols directly, and a set of public wrapper functions that hide all handle management and present clean, Excel-native results.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="vba_module_structure.png" class="lightbox" data-glightbox="description: .lightbox-desc-6" data-gallery="quarto-lightbox-gallery-6" title="Figure 6. VBA module layout: declarations at the top, followed by public wrappers that return Excel-friendly results."><img src="vba_module_structure.png" class="img-fluid figure-img" alt="Figure 6. VBA module layout: declarations at the top, followed by public wrappers that return Excel-friendly results."></a></p>
+<figcaption>Figure 6. VBA module layout: declarations at the top, followed by public wrappers that return Excel-friendly results.</figcaption>
+</figure>
+</div>
 <section id="the-declaration-layer" class="level3">
 <h3 class="anchored" data-anchor-id="the-declaration-layer">The Declaration Layer</h3>
 <p>The DLL is declared once per exported symbol, twice over (once for 64-bit Office and once for 32-bit). A compile-time <code>#If VBA7 Then / #If Win64 Then</code> structure handles both:</p>
@@ -1012,8 +1066,8 @@ linreg_core.dll  -&gt;  linreg_core_x86.dll   (from i686 output)</code></pre>
 <hr>
 </section>
 </section>
-<section id="lessons-learned" class="level2">
-<h2 class="anchored" data-anchor-id="lessons-learned">8. Lessons Learned</h2>
+<section id="Section8" class="level2">
+<h2 class="anchored" data-anchor-id="Section8">Section 8. Lessons Learned</h2>
 <p>Every section so far has described the design as it exists today (clean, layered, working). This section is about what went wrong on the way there, and the non-obvious failure modes that are still latent in any project built this way.</p>
 <section id="handle-leaks-are-silent-and-cumulative" class="level3">
 <h3 class="anchored" data-anchor-id="handle-leaks-are-silent-and-cumulative">Handle Leaks Are Silent and Cumulative</h3>
@@ -1060,6 +1114,12 @@ linreg_core.dll  -&gt;  linreg_core_x86.dll   (from i686 output)</code></pre>
 <p>The 64-bit build worked immediately. The <code>Declare</code> statements resolved, the DLL loaded, regression results came back correct. The natural next step was to build the 32-bit DLL for the substantial population of enterprise users still running 32-bit Office. The build succeeded. The DLL appeared in the output directory. The file was the right size. <code>LR_Init()</code> confirmed the DLL loaded into the process.</p>
 <p>Then every subsequent call failed with runtime error 453: “Specified DLL function not found.”</p>
 <p>The DLL was loaded. The function existed (<code>dumpbin /exports</code> showed it in the export table). But the name in the export table was <code>_LR_OLS@16</code>, not <code>LR_OLS</code>. VBA was searching for the plain name and finding nothing.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="vba_dumpbin_exports.png" class="lightbox" data-glightbox="description: .lightbox-desc-7" data-gallery="quarto-lightbox-gallery-7" title="Figure 7. Export table inspection: dumpbin /exports reveals the decorated x86 name _LR_OLS@16 instead of LR_OLS."><img src="vba_dumpbin_exports.png" class="img-fluid figure-img" alt="Figure 7. Export table inspection: dumpbin /exports reveals the decorated x86 name _LR_OLS@16 instead of LR_OLS."></a></p>
+<figcaption>Figure 7. Export table inspection: <code>dumpbin /exports</code> reveals the decorated x86 name <code>_LR_OLS@16</code> instead of <code>LR_OLS</code>.</figcaption>
+</figure>
+</div>
 <p>The debugging sequence went roughly like this:</p>
 <ol type="1">
 <li>Verify the DLL is loaded (<code>LoadLibraryA</code> succeeded; confirmed).</li>
@@ -1134,10 +1194,10 @@ linreg_core.dll  -&gt;  linreg_core_x86.dll   (from i686 output)</code></pre>
 <hr>
 </section>
 </section>
-<section id="is-it-worth-it" class="level2">
-<h2 class="anchored" data-anchor-id="is-it-worth-it">9. Is It Worth It?</h2>
+<section id="Section9" class="level2">
+<h2 class="anchored" data-anchor-id="Section9">Section 9. Is It Worth It?</h2>
 <p>The result of all this engineering is that an Excel user (someone who has never heard of Rust, does not have Python installed, and does not have admin rights on their machine) can run an OLS regression, a Lasso regularization path, a Breusch-Pagan heteroscedasticity test, or a k-fold cross-validation from a single button click in a spreadsheet. The output lands in cells. No installation, no configuration, no external process. The DLL and the workbook travel together as two files in a folder.</p>
-<p>The cost was a handle-based C API, stdcall decoration stripping for 32-bit targets, duplicated <code>Declare</code> statements across two architectures, and a <code>.def</code> file with 65 entries. The question is whether that cost was justified, and whether any simpler path would have delivered the same result.</p>
+<p>The cost was a handle-based C API, stdcall decoration stripping for 32-bit targets, duplicated <code>Declare</code> statements across two architectures, and a <code>.def</code> file with 75 entries. The question is whether that cost was justified, and whether any simpler path would have delivered the same result.</p>
 <section id="when-this-approach-makes-sense" class="level3">
 <h3 class="anchored" data-anchor-id="when-this-approach-makes-sense">When This Approach Makes Sense</h3>
 <p>The approach makes sense under a specific set of conditions that happen to be common in institutional environments:</p>
@@ -1162,7 +1222,7 @@ linreg_core.dll  -&gt;  linreg_core_x86.dll   (from i686 output)</code></pre>
 </section>
 <section id="why-it-was-worth-it-here" class="level3">
 <h3 class="anchored" data-anchor-id="why-it-was-worth-it-here">Why It Was Worth It Here</h3>
-<p>The cost calculus for this project was different from a greenfield DLL effort, and this is the key point the alternatives comparison obscures: <strong>the library already existed.</strong> <code>linreg-core</code> was already built, already tested against R and Python reference implementations across 20 datasets, and already compiled to WebAssembly for browser use. The core Rust code (the QR decomposition, the coordinate descent solver, the distribution functions, every diagnostic test) did not need to change. The FFI layer was additive: 9 new files in <code>src/ffi/</code>, a <code>.def</code> file, a <code>build.rs</code> guard, and a VBA module. The core library’s <code>Cargo.toml</code> gained a single feature flag (<code>ffi = []</code>) with no new dependencies.</p>
+<p>The cost calculus for this project was different from a greenfield DLL effort, and this is the key point the alternatives comparison obscures: <strong>the library already existed.</strong> <code>linreg-core</code> was already built, already tested against R and Python reference implementations across 20 datasets, and already compiled to WebAssembly for browser use. The core Rust code (the QR decomposition, the coordinate descent solver, the distribution functions, every diagnostic test) did not need to change. The FFI layer was additive: 10 new files in <code>src/ffi/</code>, a <code>.def</code> file, a <code>build.rs</code> guard, and a VBA module. The core library’s <code>Cargo.toml</code> gained a single feature flag (<code>ffi = []</code>) with no new dependencies.</p>
 <p>That is a fundamentally different question from “should I write a statistical library in Rust so that VBA can call it?” The answer to that question is almost certainly no (the effort would not justify the audience). But “should I spend a day adding an FFI layer to a library I already have, to reach users who cannot be reached any other way?” has a different answer. The marginal cost of the DLL was small relative to the sunk cost of the library. The marginal value (making validated statistical methods available inside Excel without any installation) was concrete and immediate.</p>
 <p>This is the real lesson: the native DLL approach is not a general-purpose strategy for extending Excel. It is a <em>distribution mechanism</em> for an existing asset. The library earns its keep across multiple targets (native Rust, WebAssembly, Python via PyO3, and now VBA via FFI). The VBA surface is one more compilation target, not the reason the library exists.</p>
 </section>
@@ -1170,10 +1230,10 @@ linreg_core.dll  -&gt;  linreg_core_x86.dll   (from i686 output)</code></pre>
 <h3 class="anchored" data-anchor-id="the-maintenance-burden">The Maintenance Burden</h3>
 <p>The honest cost of the native DLL approach is not in the initial build. It is in the ongoing synchronization between four parallel surfaces that must stay in lockstep:</p>
 <ol type="1">
-<li><p><strong>Rust FFI functions:</strong> 65 <code>pub extern "system" fn</code> items across six files in <code>src/ffi/</code> (four are generated by a <code>diag_fn!</code> macro). This is the source of truth. Every exported function is defined here with its exact signature, calling convention, and <code>#[no_mangle]</code> attribute.</p></li>
-<li><p><strong>The <code>.def</code> file:</strong> 65 entries in <code>linreg_core.def</code>, each one a plain symbol name that the MSVC linker uses to strip stdcall decoration on 32-bit builds. Every function in surface 1 must appear here, or the 32-bit DLL will silently export a decorated name that VBA cannot find.</p></li>
-<li><p><strong>VBA <code>Declare</code> statements:</strong> approximately 130 lines in <code>LinregCore.bas</code>, split across a <code>#If Win64 Then</code> branch (64-bit, ~65 declarations) and a <code>#Else</code> branch (32-bit, ~65 declarations). Each declaration must match the Rust signature exactly: parameter count, parameter order, <code>ByVal</code> on every parameter, correct types (<code>LongPtr</code> for pointers, <code>Long</code> for <code>i32</code>, <code>Double</code> for <code>f64</code>), and the correct DLL filename for the architecture.</p></li>
-<li><p><strong>VBA wrapper functions:</strong> 26 public functions that hide handle management and return Excel-native arrays. Each wrapper must call the right DLL functions in the right order, free the handle on every code path, and format the output correctly.</p></li>
+<li><p><strong>Rust FFI functions:</strong> 75 <code>pub extern "system" fn</code> items across seven files in <code>src/ffi/</code> (four are generated by a <code>diag_fn!</code> macro). This is the source of truth. Every exported function is defined here with its exact signature, calling convention, and <code>#[no_mangle]</code> attribute.</p></li>
+<li><p><strong>The <code>.def</code> file:</strong> 75 entries in <code>linreg_core.def</code>, each one a plain symbol name that the MSVC linker uses to strip stdcall decoration on 32-bit builds. Every function in surface 1 must appear here, or the 32-bit DLL will silently export a decorated name that VBA cannot find.</p></li>
+<li><p><strong>VBA <code>Declare</code> statements:</strong> approximately 150 lines in <code>LinregCore.bas</code>, split across VBA7 <code>#If Win64 Then</code> (64-bit, ~75 declarations) and VBA7 <code>#Else</code> (32-bit, ~75 declarations), with a pre‑VBA7 32‑bit block included for reference. Each declaration must match the Rust signature exactly: parameter count, parameter order, <code>ByVal</code> on every parameter, correct types (<code>LongPtr</code> for pointers, <code>Long</code> for <code>i32</code>, <code>Double</code> for <code>f64</code>), and the correct DLL filename for the architecture.</p></li>
+<li><p><strong>VBA wrapper functions:</strong> 28 public functions that hide handle management and return Excel-native arrays. Each wrapper must call the right DLL functions in the right order, free the handle on every code path, and format the output correctly.</p></li>
 </ol>
 <p>Adding a single new feature (say, a new diagnostic test) requires changes in all four surfaces: a Rust function, a <code>.def</code> entry, two <code>Declare</code> statements (one per architecture), and a wrapper function. Forgetting any one of them produces a failure that manifests differently depending on which surface was missed:</p>
 <table class="table">
@@ -1212,12 +1272,12 @@ linreg_core.dll  -&gt;  linreg_core_x86.dll   (from i686 output)</code></pre>
 <hr>
 </section>
 </section>
-<section id="conclusion" class="level2">
-<h2 class="anchored" data-anchor-id="conclusion">10. Conclusion</h2>
+<section id="Section10" class="level2">
+<h2 class="anchored" data-anchor-id="Section10">Section 10. Conclusion</h2>
 <p>The architecture, end to end, is four layers:</p>
 <ol type="1">
 <li><p><strong>Rust core:</strong> OLS, Ridge, Lasso, Elastic Net, diagnostic tests, prediction intervals, cross-validation. Custom linear algebra, custom distribution functions, no external math dependencies. This layer knows nothing about VBA, Excel, or Windows calling conventions. It is the same code that compiles to WebAssembly and links into the Python bindings.</p></li>
-<li><p><strong>Handle-based FFI layer:</strong> 65 <code>extern "system"</code> functions that wrap the core. Each computation stores its result in a global <code>HashMap&lt;usize, FitResult&gt;</code> behind a <code>Mutex</code> and returns an opaque integer handle. Callers retrieve individual values through typed getter functions (<code>LR_GetRSquared</code>, <code>LR_GetCoefficients</code>, <code>LR_GetPValue</code>) and release the handle with <code>LR_Free</code>. Errors go to a thread-local string buffer, retrieved via <code>LR_GetLastError</code>. The pattern is the same one used by SQLite, OpenSSL, and every other C library that hands opaque pointers to callers who cannot manage memory.</p></li>
+<li><p><strong>Handle-based FFI layer:</strong> 75 <code>extern "system"</code> functions that wrap the core. Each computation stores its result in a global <code>HashMap&lt;usize, FitResult&gt;</code> behind a <code>Mutex</code> and returns an opaque integer handle. Callers retrieve individual values through typed getter functions (<code>LR_GetRSquared</code>, <code>LR_GetCoefficients</code>, <code>LR_GetPValue</code>) and release the handle with <code>LR_Free</code>. Errors go to a thread-local string buffer, retrieved via <code>LR_GetLastError</code>. The pattern is the same one used by SQLite, OpenSSL, and every other C library that hands opaque pointers to callers who cannot manage memory.</p></li>
 <li><p><strong>VBA declarations:</strong> <code>Declare PtrSafe Function</code> statements that map each exported symbol to a VBA-callable function, with <code>#If Win64</code> branching between the 64-bit and 32-bit DLLs. These are the contract: parameter types, calling convention, and DLL filename, all specified exactly once.</p></li>
 <li><p><strong>VBA wrappers:</strong> High-level functions like <code>LinReg_OLS</code> and <code>LinReg_Ridge</code> that accept Excel <code>Range</code> objects, marshal the data into flat arrays, call the DLL, extract the results, free the handle, and return a 2D <code>Variant</code> array that pastes directly into a worksheet. Three lines of VBA to get a coefficient table.</p></li>
 </ol>
@@ -1240,12 +1300,19 @@ linreg_core.dll  -&gt;  linreg_core_x86.dll   (from i686 output)</code></pre>
 <p>This project started with a practical question: could I make a Rust regression library callable from an Excel spreadsheet without requiring the user to install anything? The answer turned out to be yes, and the engineering required to get there (calling conventions, symbol decoration, handle management, buffer protocols, architecture-conditional linking) was more interesting than I expected.</p>
 <p>The result is a single DLL that drops into a folder next to a workbook. An analyst opens the workbook, runs <code>LR_Init</code>, and calls <code>LinReg_OLS</code> from a macro. No Python, no R, no admin rights, no internet connection. The statistical methods behind the call are the same ones validated against R and Python across 20 datasets. The analyst does not need to know that. They just need the coefficients to appear in the right cells.</p>
 <p>If you want to try it, the full source is at <a href="https://github.com/jesse-anderson/linreg-core">github.com/jesse-anderson/linreg-core</a>. The FFI layer is behind the <code>ffi</code> feature flag. The VBA module and example workbook are in <code>VBA_Example/</code>. Build instructions for both 64-bit and 32-bit targets are in the repository README.</p>
-</section>
-</section>
-<section id="the-inspiration-for-this-came-from-a-chemical-engineering-professor-who-built-a-process-simulator-in-excel-with-the-heavy-computation-hidden-in-a-dll.-it-always-seemed-like-magic.-this-project-was-my-attempt-to-pull-back-that-curtain-using-rust-and-to-document-something-that-isnt-widely-discussed.-the-reality-is-that-vba-is-still-what-many-engineers-get-stuck-with-in-industry-regardless-of-whether-we-would-prefer-something-more-modern." class="level2">
-<h2 class="anchored" data-anchor-id="the-inspiration-for-this-came-from-a-chemical-engineering-professor-who-built-a-process-simulator-in-excel-with-the-heavy-computation-hidden-in-a-dll.-it-always-seemed-like-magic.-this-project-was-my-attempt-to-pull-back-that-curtain-using-rust-and-to-document-something-that-isnt-widely-discussed.-the-reality-is-that-vba-is-still-what-many-engineers-get-stuck-with-in-industry-regardless-of-whether-we-would-prefer-something-more-modern.">The inspiration for this came from a Chemical Engineering professor who built a process simulator in Excel with the heavy computation hidden in a DLL. It always seemed like magic. This project was my attempt to pull back that curtain using Rust, and to document something that isn’t widely discussed. The reality is that VBA is still what many engineers get stuck with in industry, regardless of whether we would prefer something more modern.</h2>
+<p>The inspiration for this came from a Chemical Engineering professor who built a process simulator in Excel with the heavy computation hidden in a DLL. It always seemed like magic. This project was my attempt to pull back that curtain using Rust, and to document something that isn’t widely discussed. The reality is that VBA is still what many engineers get stuck with in industry, regardless of whether we would prefer something more modern.</p>
 
 
+<div class="hidden" aria-hidden="true">
+<span class="glightbox-desc lightbox-desc-1">Figure 1. The user-facing API: three lines of VBA to run OLS and paste the result table.</span>
+<span class="glightbox-desc lightbox-desc-2">Figure 2. Result pasted into the worksheet: coefficients, standard errors, t-stats, p-values, and summary rows.</span>
+<span class="glightbox-desc lightbox-desc-3">Figure 3. LR_Init flow: VBA loads the correct DLL from the workbook folder before any calls.</span>
+<span class="glightbox-desc lightbox-desc-4">Figure 4. Stdcall name decoration on x86: the exported symbol includes the leading underscore and <span class="citation" data-cites="N">@N</span> stack bytes.</span>
+<span class="glightbox-desc lightbox-desc-5">Figure 5. Handle lifecycle across the boundary: fit returns a handle, getters read, and <code>LR_Free</code> releases the stored result.</span>
+<span class="glightbox-desc lightbox-desc-6">Figure 6. VBA module layout: declarations at the top, followed by public wrappers that return Excel-friendly results.</span>
+<span class="glightbox-desc lightbox-desc-7">Figure 7. Export table inspection: <code>dumpbin /exports</code> reveals the decorated x86 name <code>_LR_OLS@16</code> instead of <code>LR_OLS</code>.</span>
+</div>
+</section>
 </section>
 </section>
 
@@ -1993,6 +2060,31 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
+<script>var lightboxQuarto = GLightbox({"loop":false,"descPosition":"bottom","selector":".lightbox","openEffect":"zoom","closeEffect":"zoom"});
+window.onload = () => {
+  lightboxQuarto.on('slide_before_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    const href = trigger.getAttribute('href');
+    if (href !== null) {
+      const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+      if (imgEl !== null) {
+        const srcAttr = imgEl.getAttribute("src");
+        if (srcAttr && srcAttr.startsWith("data:")) {
+          slideConfig.href = srcAttr;
+        }
+      }
+    } 
+  });
+
+  lightboxQuarto.on('slide_after_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    if (window.Quarto?.typesetMath) {
+      window.Quarto.typesetMath(slideNode);
+    }
+  });
+
+};
+          </script>
 
 
 

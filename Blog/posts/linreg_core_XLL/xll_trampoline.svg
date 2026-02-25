@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="620" viewBox="0 0 1000 620">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#333" />
+    </marker>
+  </defs>
+  <style>
+    .box { fill: #f7f7f7; stroke: #333; stroke-width: 2; rx: 8; }
+    .diamond { fill: #f7f7f7; stroke: #333; stroke-width: 2; }
+    .text { font: 14px 'Segoe UI', Arial, sans-serif; fill: #111; }
+    .title { font: 600 16px 'Segoe UI', Arial, sans-serif; fill: #111; }
+    .arrow { stroke: #333; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+  </style>
+
+  <!-- Nodes -->
+  <rect class="box" x="360" y="40" width="280" height="50" />
+  <text class="title" x="500" y="72" text-anchor="middle">XLL calls excel12/excel12v</text>
+
+  <rect class="box" x="360" y="120" width="280" height="50" />
+  <text class="text" x="500" y="152" text-anchor="middle">excel12v() -&gt; fetch_entry_pt()</text>
+
+  <polygon class="diamond" points="500,210 600,250 500,290 400,250" />
+  <text class="text" x="500" y="255" text-anchor="middle">ENTRY_PT cached?</text>
+
+  <rect class="box" x="80" y="320" width="260" height="50" />
+  <text class="text" x="210" y="352" text-anchor="middle">GetModuleHandleA(NULL)</text>
+
+  <rect class="box" x="80" y="400" width="260" height="50" />
+  <text class="text" x="210" y="432" text-anchor="middle">GetProcAddress("MdCallBack12")</text>
+
+  <rect class="box" x="80" y="480" width="260" height="50" />
+  <text class="text" x="210" y="512" text-anchor="middle">Cache in AtomicPtr</text>
+
+  <rect class="box" x="660" y="320" width="260" height="50" />
+  <text class="text" x="790" y="352" text-anchor="middle">call cached MdCallBack12</text>
+
+  <rect class="box" x="660" y="400" width="260" height="50" />
+  <text class="text" x="790" y="424" text-anchor="middle">Excel runs xlfRegister /</text>
+  <text class="text" x="790" y="444" text-anchor="middle">xlGetName / xlFree</text>
+
+  <!-- Arrows -->
+  <line class="arrow" x1="500" y1="90" x2="500" y2="120" />
+  <line class="arrow" x1="500" y1="170" x2="500" y2="210" />
+
+  <line class="arrow" x1="400" y1="250" x2="210" y2="320" />
+  <text class="text" x="320" y="305">no</text>
+
+  <line class="arrow" x1="210" y1="370" x2="210" y2="400" />
+  <line class="arrow" x1="210" y1="450" x2="210" y2="480" />
+  <path class="arrow" d="M210 530 L210 580 L500 580 L500 345 L660 345" />
+
+  <line class="arrow" x1="600" y1="250" x2="790" y2="320" />
+  <text class="text" x="660" y="300">yes</text>
+
+  <line class="arrow" x1="790" y1="370" x2="790" y2="400" />
+</svg>

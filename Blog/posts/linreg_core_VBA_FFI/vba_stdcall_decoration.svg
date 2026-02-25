@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="420" viewBox="0 0 1200 420">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#333" />
+    </marker>
+  </defs>
+  <style>
+    .box { fill: #f7f7f7; stroke: #333; stroke-width: 2; rx: 10; }
+    .inner { fill: #ffffff; stroke: #333; stroke-width: 1.5; rx: 8; }
+    .title { font: 600 16px 'Segoe UI', Arial, sans-serif; fill: #111; }
+    .text { font: 14px 'Segoe UI', Arial, sans-serif; fill: #111; }
+    .small { font: 12px 'Segoe UI', Arial, sans-serif; fill: #111; }
+    .arrow { stroke: #333; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+    .note { fill: #fff8e1; stroke: #c9a53f; stroke-width: 2; rx: 8; }
+    .bad { fill: #fdecea; stroke: #c62828; stroke-width: 2; rx: 8; }
+    .step { fill: #e3f2fd; stroke: #1565c0; stroke-width: 2; }
+    .step-text { font: 700 11px 'Segoe UI', Arial, sans-serif; fill: #0d47a1; }
+  </style>
+
+  <text class="title" x="550" y="40" text-anchor="middle">x86 stdcall name decoration</text>
+
+  <text class="small" x="60" y="70">Path A: no .def (mismatch)</text>
+
+  <!-- Mismatch path -->
+  <rect class="box" x="60" y="80" width="420" height="120" />
+  <circle class="step" cx="80" cy="105" r="14" />
+  <text class="step-text" x="80" y="109" text-anchor="middle">A.1</text>
+  <text class="text" x="270" y="110" text-anchor="middle">DLL export table (x86)</text>
+  <rect class="inner" x="150" y="130" width="240" height="40" />
+  <text class="text" x="270" y="156" text-anchor="middle">_LR_OLS@16</text>
+
+  <rect class="box" x="720" y="80" width="420" height="120" />
+  <circle class="step" cx="740" cy="105" r="14" />
+  <text class="step-text" x="740" y="109" text-anchor="middle">A.2</text>
+  <text class="text" x="930" y="110" text-anchor="middle">VBA Declare expects</text>
+  <rect class="inner" x="810" y="130" width="240" height="40" />
+  <text class="text" x="930" y="156" text-anchor="middle">LR_OLS</text>
+
+  <line class="arrow" x1="480" y1="140" x2="720" y2="140" />
+  <text class="small" x="600" y="125" text-anchor="middle">GetProcAddress("LR_OLS")</text>
+  <rect class="bad" x="520" y="150" width="160" height="36" />
+  <text class="small" x="600" y="173" text-anchor="middle">name mismatch</text>
+
+  <!-- Fix path -->
+  <text class="small" x="60" y="230">Path B: with .def (fixed)</text>
+  <rect class="box" x="60" y="240" width="420" height="120" />
+  <circle class="step" cx="80" cy="265" r="14" />
+  <text class="step-text" x="80" y="269" text-anchor="middle">B.1</text>
+  <text class="text" x="270" y="270" text-anchor="middle">linreg_core.def (EXPORTS)</text>
+  <rect class="inner" x="150" y="290" width="240" height="40" />
+  <text class="text" x="270" y="316" text-anchor="middle">LR_OLS</text>
+
+  <line class="arrow" x1="270" y1="330" x2="270" y2="360" />
+  <text class="small" x="270" y="380" text-anchor="middle">exports plain name</text>
+
+  <line class="arrow" x1="480" y1="300" x2="720" y2="300" />
+  <text class="small" x="600" y="285" text-anchor="middle">GetProcAddress("LR_OLS")</text>
+
+  <rect class="box" x="720" y="240" width="420" height="120" />
+  <circle class="step" cx="740" cy="265" r="14" />
+  <text class="step-text" x="740" y="269" text-anchor="middle">B.2</text>
+  <text class="text" x="930" y="270" text-anchor="middle">VBA Declare matches</text>
+  <rect class="inner" x="810" y="290" width="240" height="40" />
+  <text class="text" x="930" y="316" text-anchor="middle">LR_OLS</text>
+
+  <text class="small" x="600" y="405" text-anchor="middle">Note: x64 has no stdcall decoration</text>
+
+</svg>

@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#333" />
+    </marker>
+  </defs>
+  <style>
+    .box { fill: #f7f7f7; stroke: #333; stroke-width: 2; rx: 10; }
+    .inner { fill: #ffffff; stroke: #333; stroke-width: 1.5; rx: 8; }
+    .title { font: 600 18px 'Segoe UI', Arial, sans-serif; fill: #111; }
+    .subtitle { font: 600 13px 'Segoe UI', Arial, sans-serif; fill: #333; }
+    .text { font: 14px 'Segoe UI', Arial, sans-serif; fill: #111; }
+    .arrow { stroke: #333; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+    .step { fill: #e3f2fd; stroke: #1565c0; stroke-width: 2; }
+    .step-text { font: 700 12px 'Segoe UI', Arial, sans-serif; fill: #0d47a1; }
+  </style>
+
+  <!-- Cards -->
+  <rect class="box" x="60" y="60" width="500" height="400" />
+  <rect class="box" x="640" y="60" width="500" height="400" />
+
+  <!-- Titles -->
+  <text class="title" x="310" y="95" text-anchor="middle">VBA DLL</text>
+  <text class="subtitle" x="310" y="118" text-anchor="middle">manual ownership protocol</text>
+
+  <text class="title" x="890" y="95" text-anchor="middle">XLL</text>
+  <text class="subtitle" x="890" y="118" text-anchor="middle">callback ownership protocol</text>
+
+  <!-- VBA steps -->
+  <rect class="inner" x="100" y="130" width="420" height="60" />
+  <circle class="step" cx="122" cy="160" r="12" />
+  <text class="step-text" x="122" y="164" text-anchor="middle">1</text>
+  <text class="text" x="300" y="155" text-anchor="middle">allocate result + store handle</text>
+
+  <rect class="inner" x="100" y="210" width="420" height="60" />
+  <circle class="step" cx="122" cy="240" r="12" />
+  <text class="step-text" x="122" y="244" text-anchor="middle">2</text>
+  <text class="text" x="300" y="235" text-anchor="middle">return handle to VBA</text>
+
+  <rect class="inner" x="100" y="290" width="420" height="60" />
+  <circle class="step" cx="122" cy="320" r="12" />
+  <text class="step-text" x="122" y="324" text-anchor="middle">3</text>
+  <text class="text" x="300" y="315" text-anchor="middle">VBA calls getters (copy out)</text>
+
+  <rect class="inner" x="100" y="370" width="420" height="60" />
+  <circle class="step" cx="122" cy="400" r="12" />
+  <text class="step-text" x="122" y="404" text-anchor="middle">4</text>
+  <text class="text" x="300" y="395" text-anchor="middle">VBA calls LR_Free (explicit)</text>
+
+  <!-- XLL steps -->
+  <rect class="inner" x="680" y="130" width="420" height="60" />
+  <circle class="step" cx="702" cy="160" r="12" />
+  <text class="step-text" x="702" y="164" text-anchor="middle">1</text>
+  <text class="text" x="890" y="150" text-anchor="middle">allocate XLOPER12 + set</text>
+  <text class="text" x="890" y="170" text-anchor="middle">xlbitDLLFree</text>
+
+  <rect class="inner" x="680" y="210" width="420" height="60" />
+  <circle class="step" cx="702" cy="240" r="12" />
+  <text class="step-text" x="702" y="244" text-anchor="middle">2</text>
+  <text class="text" x="890" y="235" text-anchor="middle">return *mut XLOPER12</text>
+
+  <rect class="inner" x="680" y="290" width="420" height="60" />
+  <circle class="step" cx="702" cy="320" r="12" />
+  <text class="step-text" x="702" y="324" text-anchor="middle">3</text>
+  <text class="text" x="890" y="315" text-anchor="middle">Excel copies into sheet</text>
+
+  <rect class="inner" x="680" y="370" width="420" height="60" />
+  <circle class="step" cx="702" cy="400" r="12" />
+  <text class="step-text" x="702" y="404" text-anchor="middle">4</text>
+  <text class="text" x="890" y="395" text-anchor="middle">Excel calls xlAutoFree12</text>
+
+  <!-- Arrows VBA -->
+  <line class="arrow" x1="310" y1="190" x2="310" y2="210" />
+  <line class="arrow" x1="310" y1="270" x2="310" y2="290" />
+  <line class="arrow" x1="310" y1="350" x2="310" y2="370" />
+
+  <!-- Arrows XLL -->
+  <line class="arrow" x1="890" y1="190" x2="890" y2="210" />
+  <line class="arrow" x1="890" y1="270" x2="890" y2="290" />
+  <line class="arrow" x1="890" y1="350" x2="890" y2="370" />
+</svg>
