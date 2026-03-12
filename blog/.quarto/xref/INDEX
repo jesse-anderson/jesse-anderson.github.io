@@ -62,5 +62,8 @@
   },
   "posts/linreg_core_XLL/index.qmd": {
     "index.html": "85ef0073"
+  },
+  "posts/XLLGen_Cargo_Generate/Rust_XLLGen_Template_Tutorial.md": {
+    "Rust_XLLGen_Template_Tutorial.html": "983ac705"
   }
 }

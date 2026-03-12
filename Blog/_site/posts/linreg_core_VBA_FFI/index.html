@@ -289,14 +289,14 @@ cookieconsent.run({
 <span id="cb1-3"><a href="#cb1-3"></a>Range("H2").Resize(UBound(tbl, 1) + 1, UBound(tbl, 2) + 1).Value = tbl</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="vba_wrapper_3lines.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1" title="Figure 1. The user-facing API: three lines of VBA to run OLS and paste the result table."><img src="vba_wrapper_3lines.png" class="img-fluid figure-img" alt="Figure 1. The user-facing API: three lines of VBA to run OLS and paste the result table."></a></p>
+<p><a href="vba_wrapper_3lines.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1" title="Figure 1. The user-facing API: three lines of VBA to run OLS and paste the result table."><img src="vba_wrapper_3lines.png" class="img-fluid figure-img" alt="Figure 1. The user-facing API: three lines of VBA to run OLS and paste the result table."></a></p>
 <figcaption>Figure 1. The user-facing API: three lines of VBA to run OLS and paste the result table.</figcaption>
 </figure>
 </div>
 <p>Three lines. The first calls the high-level VBA wrapper with a response range and a predictor matrix range. The second pastes the result into the sheet. What comes back is a formatted table: a header row followed by one row per coefficient containing the term name, coefficient estimate, standard error, t-statistic, and p-value, then a blank separator and four summary rows (R², adjusted R², F-statistic with its p-value, and MSE with n).</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="vba_example_ols_output.png" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="quarto-lightbox-gallery-2" title="Figure 2. Result pasted into the worksheet: coefficients, standard errors, t-stats, p-values, and summary rows."><img src="vba_example_ols_output.png" class="img-fluid figure-img" alt="Figure 2. Result pasted into the worksheet: coefficients, standard errors, t-stats, p-values, and summary rows."></a></p>
+<p><a href="vba_example_ols_output.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" data-glightbox="description: .lightbox-desc-2" title="Figure 2. Result pasted into the worksheet: coefficients, standard errors, t-stats, p-values, and summary rows."><img src="vba_example_ols_output.png" class="img-fluid figure-img" alt="Figure 2. Result pasted into the worksheet: coefficients, standard errors, t-stats, p-values, and summary rows."></a></p>
 <figcaption>Figure 2. Result pasted into the worksheet: coefficients, standard errors, t-stats, p-values, and summary rows.</figcaption>
 </figure>
 </div>
@@ -325,7 +325,7 @@ cookieconsent.run({
 <span id="cb3-7"><a href="#cb3-7"></a>End Sub</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="vba_lr_init_flow.png" class="lightbox" data-glightbox="description: .lightbox-desc-3" data-gallery="quarto-lightbox-gallery-3" title="Figure 3. LR_Init flow: VBA loads the correct DLL from the workbook folder before any calls."><img src="vba_lr_init_flow.png" class="img-fluid figure-img" alt="Figure 3. LR_Init flow: VBA loads the correct DLL from the workbook folder before any calls."></a></p>
+<p><a href="vba_lr_init_flow.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" data-glightbox="description: .lightbox-desc-3" title="Figure 3. LR_Init flow: VBA loads the correct DLL from the workbook folder before any calls."><img src="vba_lr_init_flow.png" class="img-fluid figure-img" alt="Figure 3. LR_Init flow: VBA loads the correct DLL from the workbook folder before any calls."></a></p>
 <figcaption>Figure 3. LR_Init flow: VBA loads the correct DLL from the workbook folder before any calls.</figcaption>
 </figure>
 </div>
@@ -455,7 +455,7 @@ cookieconsent.run({
 <pre><code>_LR_OLS@16      ; 4 + 4 + 4 + 4 = 16 bytes</code></pre>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="vba_stdcall_decoration.png" class="lightbox" data-glightbox="description: .lightbox-desc-4" data-gallery="quarto-lightbox-gallery-4" title="Figure 4. Stdcall name decoration on x86: the exported symbol includes the leading underscore and @N stack bytes."><img src="vba_stdcall_decoration.png" class="img-fluid figure-img" alt="Figure 4. Stdcall name decoration on x86: the exported symbol includes the leading underscore and @N stack bytes."></a></p>
+<p><a href="vba_stdcall_decoration.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" data-glightbox="description: .lightbox-desc-4" title="Figure 4. Stdcall name decoration on x86: the exported symbol includes the leading underscore and @N stack bytes."><img src="vba_stdcall_decoration.png" class="img-fluid figure-img" alt="Figure 4. Stdcall name decoration on x86: the exported symbol includes the leading underscore and @N stack bytes."></a></p>
 <figcaption>Figure 4. Stdcall name decoration on x86: the exported symbol includes the leading underscore and <span class="citation" data-cites="N">@N</span> stack bytes.</figcaption>
 </figure>
 </div>
@@ -540,7 +540,7 @@ EXPORTS
 <p>This is intentionally simpler than SQLite’s pointer-based handles. VBA cannot dereference a <code>usize</code> or accidentally corrupt it. It can only pass it back, which is exactly the behavior we want.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="vba_handle_lifecycle.png" class="lightbox" data-glightbox="description: .lightbox-desc-5" data-gallery="quarto-lightbox-gallery-5" title="Figure 5. Handle lifecycle across the boundary: fit returns a handle, getters read, and LR_Free releases the stored result."><img src="vba_handle_lifecycle.png" class="img-fluid figure-img" alt="Figure 5. Handle lifecycle across the boundary: fit returns a handle, getters read, and LR_Free releases the stored result."></a></p>
+<p><a href="vba_handle_lifecycle.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" data-glightbox="description: .lightbox-desc-5" title="Figure 5. Handle lifecycle across the boundary: fit returns a handle, getters read, and LR_Free releases the stored result."><img src="vba_handle_lifecycle.png" class="img-fluid figure-img" alt="Figure 5. Handle lifecycle across the boundary: fit returns a handle, getters read, and LR_Free releases the stored result."></a></p>
 <figcaption>Figure 5. Handle lifecycle across the boundary: fit returns a handle, getters read, and <code>LR_Free</code> releases the stored result.</figcaption>
 </figure>
 </div>
@@ -817,7 +817,7 @@ linreg_core.dll  -&gt;  linreg_core_x86.dll   (from i686 output)</code></pre>
 <p>Everything covered so far has been Rust. This section is about the VBA that sits in front of it (the code that an Excel user or VBA developer actually calls). <code>LinregCore.bas</code> is organized into two distinct layers: a set of raw <code>Declare</code> statements that expose the DLL symbols directly, and a set of public wrapper functions that hide all handle management and present clean, Excel-native results.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="vba_module_structure.png" class="lightbox" data-glightbox="description: .lightbox-desc-6" data-gallery="quarto-lightbox-gallery-6" title="Figure 6. VBA module layout: declarations at the top, followed by public wrappers that return Excel-friendly results."><img src="vba_module_structure.png" class="img-fluid figure-img" alt="Figure 6. VBA module layout: declarations at the top, followed by public wrappers that return Excel-friendly results."></a></p>
+<p><a href="vba_module_structure.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6" data-glightbox="description: .lightbox-desc-6" title="Figure 6. VBA module layout: declarations at the top, followed by public wrappers that return Excel-friendly results."><img src="vba_module_structure.png" class="img-fluid figure-img" alt="Figure 6. VBA module layout: declarations at the top, followed by public wrappers that return Excel-friendly results."></a></p>
 <figcaption>Figure 6. VBA module layout: declarations at the top, followed by public wrappers that return Excel-friendly results.</figcaption>
 </figure>
 </div>
@@ -1116,7 +1116,7 @@ linreg_core.dll  -&gt;  linreg_core_x86.dll   (from i686 output)</code></pre>
 <p>The DLL was loaded. The function existed (<code>dumpbin /exports</code> showed it in the export table). But the name in the export table was <code>_LR_OLS@16</code>, not <code>LR_OLS</code>. VBA was searching for the plain name and finding nothing.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="vba_dumpbin_exports.png" class="lightbox" data-glightbox="description: .lightbox-desc-7" data-gallery="quarto-lightbox-gallery-7" title="Figure 7. Export table inspection: dumpbin /exports reveals the decorated x86 name _LR_OLS@16 instead of LR_OLS."><img src="vba_dumpbin_exports.png" class="img-fluid figure-img" alt="Figure 7. Export table inspection: dumpbin /exports reveals the decorated x86 name _LR_OLS@16 instead of LR_OLS."></a></p>
+<p><a href="vba_dumpbin_exports.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7" data-glightbox="description: .lightbox-desc-7" title="Figure 7. Export table inspection: dumpbin /exports reveals the decorated x86 name _LR_OLS@16 instead of LR_OLS."><img src="vba_dumpbin_exports.png" class="img-fluid figure-img" alt="Figure 7. Export table inspection: dumpbin /exports reveals the decorated x86 name _LR_OLS@16 instead of LR_OLS."></a></p>
 <figcaption>Figure 7. Export table inspection: <code>dumpbin /exports</code> reveals the decorated x86 name <code>_LR_OLS@16</code> instead of <code>LR_OLS</code>.</figcaption>
 </figure>
 </div>
@@ -2060,7 +2060,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"loop":false,"descPosition":"bottom","selector":".lightbox","openEffect":"zoom","closeEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"loop":false,"selector":".lightbox","closeEffect":"zoom","descPosition":"bottom","openEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

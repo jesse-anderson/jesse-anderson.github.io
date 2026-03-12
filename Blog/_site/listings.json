@@ -1,7 +1,8 @@
 [
   {
-    "listing": "/archive.html",
+    "listing": "/index.html",
     "items": [
+      "/posts/XLLGen_Cargo_Generate/Rust_XLLGen_Template_Tutorial.html",
       "/posts/linreg_core_XLL/index.html",
       "/posts/linreg_core_VBA_FFI/index.html",
       "/posts/PMS7003/index.html",
@@ -19,7 +20,7 @@
     ]
   },
   {
-    "listing": "/index.html",
+    "listing": "/archive.html",
     "items": [
       "/posts/linreg_core_XLL/index.html",
       "/posts/linreg_core_VBA_FFI/index.html",

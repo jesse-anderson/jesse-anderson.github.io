@@ -1,0 +1,1608 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.553">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Jesse Anderson">
+<meta name="dcterms.date" content="2026-03-12">
+
+<title>Jesse Anderson’s Blog - Build Custom Excel Functions in Rust with xllgen</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/cookie-consent/cookie-consent.js"></script>
+<link href="../../site_libs/cookie-consent/cookie-consent.css" rel="stylesheet">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-5CSPYCMY55"></script>
+
+<script type="text/plain" cookie-consent="tracking">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-5CSPYCMY55', { 'anonymize_ip': true});
+</script>
+
+<script type="text/javascript" charset="UTF-8">
+document.addEventListener('DOMContentLoaded', function () {
+cookieconsent.run({
+  "notice_banner_type":"simple",
+  "consent_type":"implied",
+  "palette":"light",
+  "language":"en",
+  "page_load_consent_levels":["strictly-necessary","functionality","tracking","targeting"],
+  "notice_banner_reject_button_hide":false,
+  "preferences_center_close_button_hide":false,
+  "website_name":""
+  ,
+"language":"en"
+  });
+});
+</script> 
+  
+
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="Jesse Anderson’s Blog - Build Custom Excel Functions in Rust with xllgen">
+<meta property="og:description" content="">
+<meta property="og:image" content="Excel_Insert_Function.png">
+<meta property="og:site_name" content="Jesse Anderson's Blog">
+</head>
+
+<body class="nav-fixed fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Jesse Anderson’s Blog</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../archive.html"> 
+<span class="menu-text">Archive</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://portfolio.jesse-anderson.net/"> <i class="bi bi-Folder symlink fill" role="img">
+</i> 
+<span class="menu-text">Portfolio</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/jesse-anderson/"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/jesse-anderson-a7c5/"> <i class="bi bi-linkedin" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Build Custom Excel Functions in Rust with xllgen</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">Rust</div>
+                <div class="quarto-category">Excel</div>
+                <div class="quarto-category">XLL</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Jesse Anderson </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">March 12, 2026</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+
+<section id="build-custom-excel-functions-in-rust" class="level1">
+<h1>Build Custom Excel Functions in Rust</h1>
+<p>The <a href="https://blog.jesse-anderson.net/posts/linreg_core_XLL/">previous article</a> ended with a working XLL add-in built in pure Rust. No C compiler, no external SDK, no import library. Just Rust, talking directly to Excel’s <a href="https://learn.microsoft.com/en-us/office/client-developer/excel/programming-with-the-c-api-in-excel">C API</a>. I was genuinely happy with how it turned out.</p>
+<p>I rewrote everything across a few crates hoping for portability. Then I looked at the registration code.</p>
+<p>Every function that an XLL exposes to Excel needs to be <a href="https://learn.microsoft.com/en-us/office/client-developer/excel/xlfregister-form-1">registered</a> at load time: 10+ <code>XLOPER12</code> arguments per function, a character-per-type encoding string, category and help text, argument names. For linreg-core I wrote all of that by hand. It worked, but the gotchas added up. Naming mismatches between the export symbol and the registration name would silently fail. Return codes come back as integers, so you’re checking <code>== 0</code> instead of matching on a proper error type. None of it was catastrophic, just the kind of friction that makes you not want to start a second project.</p>
+<p>And that was the thing. I wanted to start more XLL projects. I wanted to test the limits of what Excel could do with Rust behind it. But every new add-in would mean copying the same boilerplate, hitting the same gotchas, and hand-writing the same registration calls all over again.</p>
+<p>If you’ve used <code>wasm-bindgen</code>, you know the model I had in mind: annotate a Rust function, and let a proc macro generate the binding code. Tag a function with an attribute, and the tooling figures out the type encoding, the registration arguments, and the export symbols. That’s what I set out to build.</p>
+<p>The result is three crates. <a href="https://crates.io/crates/xll-rs"><code>xll-rs</code></a> implements the XLL runtime and build tooling in pure Rust, the same approach I used in linreg-core but packaged as a library. <a href="https://crates.io/crates/xllgen"><code>xllgen</code></a> is the proc macro that generates the ABI wrappers, type conversions, and registration metadata from annotated functions. <a href="https://crates.io/crates/xll-utils"><code>xll-utils</code></a> provides PE/COFF parsing and export verification for inspecting the built binaries. And there’s a <a href="https://github.com/jesse-anderson/xll-template"><code>cargo-generate</code> template</a> that wires it all together into a working project scaffold.</p>
+<p>This tutorial walks through using that template. You write plain Rust functions, tag them with <code>#[xll_bindgen]</code>, build, and load the XLL into Excel. No registration strings. No boilerplate. About ten minutes from an empty directory to custom functions in a spreadsheet.</p>
+<p>Let’s build one.</p>
+<section id="what-were-building" class="level2">
+<h2 class="anchored" data-anchor-id="what-were-building">What we’re building</h2>
+<p>The template generates a complete XLL add-in with five example functions across three categories:</p>
+<table class="table">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 30%">
+<col style="width: 38%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Category</th>
+<th>Function</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>finance_tools</code></td>
+<td><code>FINANCE_TOOLS.ADD(a, b)</code></td>
+<td>Scalar math, simplest possible pattern</td>
+</tr>
+<tr class="even">
+<td><code>finance_tools</code></td>
+<td><code>FINANCE_TOOLS.MULTIPLY(a, b)</code></td>
+<td>Same pattern, different operation</td>
+</tr>
+<tr class="odd">
+<td><code>Stats</code></td>
+<td><code>Stats.MEAN(A1:A10)</code></td>
+<td>Takes a range, returns a scalar</td>
+</tr>
+<tr class="even">
+<td><code>Sys</code></td>
+<td><code>Sys.VERSION()</code></td>
+<td>No arguments, returns a string</td>
+</tr>
+<tr class="odd">
+<td><code>Sys</code></td>
+<td><code>Sys.NOW_MS()</code></td>
+<td>Volatile: recalculates on every sheet change</td>
+</tr>
+</tbody>
+</table>
+<p>The category names in the left column are what show up in Excel’s Insert Function dialog. The function names are what you type in the formula bar.</p>
+<p>These five functions cover most of the patterns you’ll run into when writing your own: scalar in/out, range aggregation, string returns, and volatile recalculation. By the end of this tutorial you’ll have all of them working in Excel, and you’ll add a sixth from scratch.</p>
+</section>
+<section id="prerequisites" class="level2">
+<h2 class="anchored" data-anchor-id="prerequisites">Prerequisites</h2>
+<p>XLLs are native Windows DLLs, so the toolchain matters more than usual.</p>
+<ul>
+<li><p><strong>Rust</strong> (stable, MSVC toolchain). If you don’t have it yet, grab it from <a href="https://rustup.rs">rustup.rs</a>. You need the MSVC target. If you’re starting fresh:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource sh number-lines code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1"></a><span class="ex">rustup</span> toolchain install stable-x86_64-pc-windows-msvc</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>If you already have stable Rust but on the GNU target, you’ll need the MSVC linker first. Install the <a href="https://visualstudio.microsoft.com/visual-cpp-build-tools/">Visual Studio Build Tools</a> (select the C++ workload), then switch your default toolchain:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource sh number-lines code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1"></a><span class="ex">rustup</span> default stable-x86_64-pc-windows-msvc</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li><p><strong>cargo-generate</strong> (&gt;= 0.18.0). Install it with <code>cargo install cargo-generate</code>. The template uses conditional file inclusion, which landed in 0.18.0. Older versions will silently ignore it.</p></li>
+<li><p><strong>Windows</strong>. There is no cross-platform equivalent (as far as I know); the add-in runs inside Excel’s process.</p></li>
+<li><p><strong>Excel</strong>. Any recent desktop version (2016, 2019, 2021, Microsoft 365). The C API we’re targeting has been stable since Excel 2007.</p></li>
+</ul>
+</section>
+<section id="scaffold-the-project" class="level2">
+<h2 class="anchored" data-anchor-id="scaffold-the-project">Scaffold the project</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource sh number-lines code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1"></a><span class="ex">cargo</span> generate gh:jesse-anderson/xll-template <span class="at">--name</span> finance-tools</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>cargo-generate will ask you two questions:</p>
+<pre><code>Display name for the add-in (shown in Excel's Add-In Manager) [default: My Add-In]:</code></pre>
+<p>Type whatever you want users to see in Excel’s Add-In Manager. For this tutorial, use <code>Finance Tools</code>.</p>
+<pre><code>Include GitHub Actions CI workflow? [default: true]:</code></pre>
+<p>If <code>true</code>, the project includes a workflow that builds the XLL on push and attaches it to GitHub Releases when you tag a version. Say <code>true</code> for now; you can always delete the <code>.github</code> folder later.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="Cargo_Generate_Command_Prompt.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1" title="Screenshot of terminal showing cargo-generate output with the two prompts and the “Done!” message"><img src="Cargo_Generate_Command_Prompt.png" class="img-fluid figure-img" alt="Screenshot of terminal showing cargo-generate output with the two prompts and the &quot;Done!&quot; message"></a></p>
+<figcaption>Screenshot of terminal showing cargo-generate output with the two prompts and the “Done!” message</figcaption>
+</figure>
+</div>
+<p>Once it finishes, you get this:</p>
+<pre><code>finance-tools/
+├── Cargo.toml        # three dependencies: xll-rs, xllgen, xll-utils (dev)
+├── build.rs          # one line: calls emit_xll() to copy the DLL to .xll
+├── .gitignore
+├── src/
+│   └── lib.rs        # your functions live here
+├── tests/
+│   └── verify_exports.rs   # checks that the XLL has the right exports
+├── .github/
+│   └── workflows/
+│       └── build.yml       # CI: build, test, release (if you said yes)
+└── README.md</code></pre>
+<p>The important files are <code>src/lib.rs</code> (where you write functions), <code>build.rs</code> (one-liner that turns the DLL into an XLL), and <code>tests/verify_exports.rs</code> (catches missing or misnamed exports at test time).</p>
+<p><code>build.rs</code> is worth a quick look:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode numberSource rust number-lines code-with-copy"><code class="sourceCode rust"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">fn</span> main() <span class="op">{</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a>    <span class="pp">xll_rs::build::</span>emit_xll()<span class="op">;</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>That’s it. <code>emit_xll()</code> tells Cargo to copy the compiled <code>.dll</code> to a <code>.xll</code> with the package name after the build finishes. For this project, that means <code>target/release/finance-tools.xll</code>.</p>
+</section>
+<section id="build-and-verify" class="level2">
+<h2 class="anchored" data-anchor-id="build-and-verify">Build and verify</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode numberSource sh number-lines code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1"></a><span class="bu">cd</span> finance-tools</span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="ex">cargo</span> build <span class="at">--release</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The first build pulls in dependencies and takes a bit. Subsequent builds are fast. When it finishes, you should have <code>target/release/finance-tools.xll</code>.</p>
+<p>A word of caution from experience: when I first got the template working, cargo reported zero errors and the XLL loaded into Excel without complaint. But no functions appeared. The add-in was registering successfully, then silently failing during initialization. No error, no warning, just an empty category list. This is why the test suite exists. If the tests pass, the functions are there.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="Cargo_Build_Command_Prompt.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" data-glightbox="description: .lightbox-desc-2" title="Screenshot of terminal showing successful cargo build –release output"><img src="Cargo_Build_Command_Prompt.png" class="img-fluid figure-img" alt="Screenshot of terminal showing successful cargo build --release output"></a></p>
+<figcaption>Screenshot of terminal showing successful cargo build –release output</figcaption>
+</figure>
+</div>
+<p>Now run the tests:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode numberSource sh number-lines code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1"></a><span class="ex">cargo</span> test</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The test suite in <code>verify_exports.rs</code> does three things:</p>
+<ol type="1">
+<li><p><strong>Entry points.</strong> Checks that the XLL exports <code>xlAutoOpen</code> (registers functions on load), <code>xlAutoClose</code> (cleanup on unload), <code>xlAutoFree12</code> (frees memory Excel is done with), and <code>xlAddInManagerInfo12</code> (provides the display name). Only <code>xlAutoOpen</code> is strictly required for loading, but missing the others means memory leaks or no name in the Add-In Manager.</p></li>
+<li><p><strong>User functions.</strong> Checks that each function’s generated wrapper is exported: <code>xl_add</code>, <code>xl_multiply</code>, <code>xl_stats_mean</code>, <code>xl_version</code>, <code>xl_now_ms</code>. These are the symbols xllgen creates from your annotated functions (<code>#[xll_bindgen]</code> on <code>fn add</code> produces export <code>xl_add</code>).</p></li>
+<li><p><strong>Registration names.</strong> Scans the binary for the base names: <code>ADD</code>, <code>MULTIPLY</code>, <code>Stats.MEAN</code>, <code>Sys.VERSION</code>, <code>Sys.NOW_MS</code>. For dotted names like <code>Stats.MEAN</code>, this is exactly what you type in the formula bar. For <code>ADD</code> and <code>MULTIPLY</code>, the prefix <code>FINANCE_TOOLS</code> gets prepended at runtime during <code>xlAutoOpen</code>, so you’d type <code>FINANCE_TOOLS.ADD</code> in Excel. Either way, if the base name isn’t in the binary, registration will fail silently, which is exactly the kind of naming mismatch I mentioned earlier.</p></li>
+</ol>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="Cargo_Test_Command_Prompt.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" data-glightbox="description: .lightbox-desc-3" title="Screenshot of terminal showing cargo test with all 3 tests passing"><img src="Cargo_Test_Command_Prompt.png" class="img-fluid figure-img" alt="Screenshot of terminal showing cargo test with all 3 tests passing"></a></p>
+<figcaption>Screenshot of terminal showing cargo test with all 3 tests passing</figcaption>
+</figure>
+</div>
+<p>If all three tests pass, the XLL is ready to load into Excel.</p>
+</section>
+<section id="load-into-excel" class="level2">
+<h2 class="anchored" data-anchor-id="load-into-excel">Load into Excel</h2>
+<ol type="1">
+<li>Open Excel.</li>
+<li>Go to <strong>File &gt; Options &gt; Add-ins</strong>.</li>
+<li>At the bottom, make sure the dropdown says <strong>Excel Add-ins</strong>, then click <strong>Go…</strong>.</li>
+<li>Click <strong>Browse…</strong> and navigate to <code>target/release/finance-tools.xll</code>.</li>
+<li>Check the box next to it and click <strong>OK</strong>.</li>
+</ol>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="Excel_Add_ins.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" data-glightbox="description: .lightbox-desc-4" title="Screenshot of Excel Add-ins dialog with finance-tools.xll checked"><img src="Excel_Add_ins.png" class="img-fluid figure-img" alt="Screenshot of Excel Add-ins dialog with finance-tools.xll checked"></a></p>
+<figcaption>Screenshot of Excel Add-ins dialog with finance-tools.xll checked</figcaption>
+</figure>
+</div>
+<p>If Excel asks whether you trust the add-in, click <strong>Enable</strong>. Excel remembers this selection, so the add-in will load automatically on future startups until you uncheck it.</p>
+<p>To verify it worked, open the <strong>Insert Function</strong> dialog (click the <em>fx</em> button next to the formula bar, or press <strong>Shift+F3</strong>). You should see three new categories in the list: <code>finance_tools</code>, <code>Stats</code>, and <code>Sys</code>. (You may also see an <code>xllgen</code> category containing a diagnostic function <code>XLLGEN.REG_ERRORS</code>, which reports any registration failures. You can ignore it.)</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="Excel_Insert_Function.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" data-glightbox="description: .lightbox-desc-5" title="Screenshot of Insert Function dialog showing the three categories"><img src="Excel_Insert_Function.png" class="img-fluid figure-img" alt="Screenshot of Insert Function dialog showing the three categories"></a></p>
+<figcaption>Screenshot of Insert Function dialog showing the three categories</figcaption>
+</figure>
+</div>
+<p><strong>A note on reloading.</strong> Excel seems to cache add-ins. If you’re rebuilding and reloading to check changes, I’ve found that unchecking the add-in in the Add-ins dialog, then closing and reopening Excel before overwriting the old <code>.xll</code> works well. Trying to overwrite while Excel still has it loaded will fail since the file is locked.</p>
+</section>
+<section id="try-the-built-in-examples" class="level2">
+<h2 class="anchored" data-anchor-id="try-the-built-in-examples">Try the built-in examples</h2>
+<p>Open a blank workbook and try each function. The template includes five, split across three categories.</p>
+<section id="math" class="level3">
+<h3 class="anchored" data-anchor-id="math">Math</h3>
+<p>Type into any cell:</p>
+<pre><code>=FINANCE_TOOLS.ADD(2, 3)</code></pre>
+<p>You should get <code>5</code>. The prefix <code>FINANCE_TOOLS</code> comes from the crate name, uppercased. <code>ADD</code> is the base name from the <code>#[xll_bindgen]</code> attribute. The dot between them is added at registration time.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="Add.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6" data-glightbox="description: .lightbox-desc-6" title="Addition"><img src="Add.png" class="img-fluid figure-img" alt="Addition"></a></p>
+<figcaption>Addition</figcaption>
+</figure>
+</div>
+<pre><code>=FINANCE_TOOLS.MULTIPLY(4, 5)</code></pre>
+<p>Returns <code>20</code>. Same pattern. These two functions take scalar <code>f64</code> arguments and return a scalar <code>f64</code>. No error handling, no <code>Result</code>, just a plain return value. This is the simplest function shape you can write.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="Multiply.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7" data-glightbox="description: .lightbox-desc-7" title="Multiply"><img src="Multiply.png" class="img-fluid figure-img" alt="Multiply"></a></p>
+<figcaption>Multiply</figcaption>
+</figure>
+</div>
+</section>
+<section id="stats" class="level3">
+<h3 class="anchored" data-anchor-id="stats">Stats</h3>
+<p>Put some numbers in cells A1 through A5 (say, <code>10</code>, <code>20</code>, <code>30</code>, <code>40</code>, <code>50</code>), then in another cell:</p>
+<pre><code>=Stats.MEAN(A1:A5)</code></pre>
+<p>Returns <code>30</code>. This function takes a range, which xllgen converts from an <code>XLOPER12</code> multi into a <code>Vec&lt;f64&gt;</code> before your code sees it. You just write <code>fn stats_mean(values: Vec&lt;f64&gt;)</code> and the macro handles the rest.</p>
+<p>Notice the name <code>Stats.MEAN</code> has a dot in it. Because the dot is already in the <code>name</code> attribute, it bypasses the crate prefix entirely. This is how you create custom namespaces that don’t depend on the crate name.</p>
+<p>The function returns <code>Result&lt;f64, XllError&gt;</code> instead of a bare <code>f64</code>. If you pass it an empty range, it returns an <code>XllError</code> with the message <code>"empty input"</code>, which Excel displays in the cell as an error string rather than silently producing garbage.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="Mean.png" class="lightbox" data-gallery="quarto-lightbox-gallery-8" data-glightbox="description: .lightbox-desc-8" title="Mean"><img src="Mean.png" class="img-fluid figure-img" alt="Mean"></a></p>
+<figcaption>Mean</figcaption>
+</figure>
+</div>
+</section>
+<section id="sys" class="level3">
+<h3 class="anchored" data-anchor-id="sys">Sys</h3>
+<pre><code>=Sys.VERSION()</code></pre>
+<p>Returns <code>0.1.0</code> (the version from <code>Cargo.toml</code>). No arguments, returns a <code>String</code>. The function body is just <code>env!("CARGO_PKG_VERSION").to_string()</code>, which bakes the version in at compile time.</p>
+<pre><code>=Sys.NOW_MS()</code></pre>
+<p>Returns a large number: milliseconds since the UNIX epoch. Try editing any cell in the sheet and watch the value change. This function is marked <code>volatile</code>, which tells Excel to recalculate it on every sheet change. It’s not marked <code>threadsafe</code> here, but the two aren’t mutually exclusive. A function can be both volatile (recalculates on every change) and thread-safe (Excel can call it from multiple calculation threads). For <code>NOW_MS</code> it doesn’t matter much, but for a volatile function doing heavier work, adding <code>threadsafe</code> lets Excel parallelize the calls.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="Version.png" class="lightbox" data-gallery="quarto-lightbox-gallery-9" data-glightbox="description: .lightbox-desc-9" title="Version"><img src="Version.png" class="img-fluid figure-img" alt="Version"></a></p>
+<figcaption>Version</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="Now_Epochesque.png" class="lightbox" data-gallery="quarto-lightbox-gallery-10" data-glightbox="description: .lightbox-desc-10" title="Now"><img src="Now_Epochesque.png" class="img-fluid figure-img" alt="Now"></a></p>
+<figcaption>Now</figcaption>
+</figure>
+</div>
+</section>
+</section>
+<section id="write-your-first-function" class="level2">
+<h2 class="anchored" data-anchor-id="write-your-first-function">Write your first function</h2>
+<p>The template functions are there to show the patterns. Now add one of your own.</p>
+<p>Open <code>src/lib.rs</code> and add a CAGR (Compound Annual Growth Rate) function. You can put it anywhere in the file, but below the existing functions and above the <code>xll_auto_open!</code> call is a natural spot:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode numberSource rust number-lines code-with-copy"><code class="sourceCode rust"><span id="cb15-1"><a href="#cb15-1"></a><span class="co">/// Compound Annual Growth Rate.</span></span>
+<span id="cb15-2"><a href="#cb15-2"></a><span class="at">#[</span>xll_bindgen<span class="at">(</span></span>
+<span id="cb15-3"><a href="#cb15-3"></a>    name <span class="op">=</span> <span class="st">"FIN.CAGR"</span><span class="op">,</span></span>
+<span id="cb15-4"><a href="#cb15-4"></a>    category <span class="op">=</span> <span class="st">"Finance"</span><span class="op">,</span></span>
+<span id="cb15-5"><a href="#cb15-5"></a>    args <span class="op">=</span> <span class="st">"start_value, end_value, years"</span><span class="op">,</span></span>
+<span id="cb15-6"><a href="#cb15-6"></a>    help <span class="op">=</span> <span class="st">"Compound Annual Growth Rate"</span><span class="op">,</span></span>
+<span id="cb15-7"><a href="#cb15-7"></a>    threadsafe</span>
+<span id="cb15-8"><a href="#cb15-8"></a><span class="at">)]</span></span>
+<span id="cb15-9"><a href="#cb15-9"></a><span class="kw">pub</span> <span class="kw">fn</span> cagr(start_value<span class="op">:</span> <span class="dt">f64</span><span class="op">,</span> end_value<span class="op">:</span> <span class="dt">f64</span><span class="op">,</span> years<span class="op">:</span> <span class="dt">f64</span>) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span><span class="dt">f64</span><span class="op">,</span> XllError<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb15-10"><a href="#cb15-10"></a>    <span class="cf">if</span> start_value <span class="op">&lt;=</span> <span class="dv">0.0</span> <span class="op">||</span> end_value <span class="op">&lt;=</span> <span class="dv">0.0</span> <span class="op">{</span></span>
+<span id="cb15-11"><a href="#cb15-11"></a>        <span class="cf">return</span> <span class="cn">Err</span>(<span class="pp">XllError::</span>msg(<span class="pp">XLLError::</span>VALUE<span class="op">,</span> <span class="st">"values must be positive"</span>))<span class="op">;</span></span>
+<span id="cb15-12"><a href="#cb15-12"></a>    <span class="op">}</span></span>
+<span id="cb15-13"><a href="#cb15-13"></a>    <span class="cf">if</span> years <span class="op">&lt;=</span> <span class="dv">0.0</span> <span class="op">{</span></span>
+<span id="cb15-14"><a href="#cb15-14"></a>        <span class="cf">return</span> <span class="cn">Err</span>(<span class="pp">XllError::</span>msg(<span class="pp">XLLError::</span>VALUE<span class="op">,</span> <span class="st">"years must be positive"</span>))<span class="op">;</span></span>
+<span id="cb15-15"><a href="#cb15-15"></a>    <span class="op">}</span></span>
+<span id="cb15-16"><a href="#cb15-16"></a>    <span class="cn">Ok</span>((end_value <span class="op">/</span> start_value)<span class="op">.</span>powf(<span class="dv">1.0</span> <span class="op">/</span> years) <span class="op">-</span> <span class="dv">1.0</span>)</span>
+<span id="cb15-17"><a href="#cb15-17"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>That’s the entire function. No registration code, no type encoding strings, no wrapper. The <code>#[xll_bindgen]</code> attribute handles all of it. Here’s what each field does:</p>
+<ul>
+<li><strong><code>name = "FIN.CAGR"</code></strong> - The name users type in Excel. Because it contains a dot, it bypasses the crate prefix and registers exactly as <code>FIN.CAGR</code>. If you wrote <code>name = "CAGR"</code> instead, it would become <code>FINANCE_TOOLS.CAGR</code>.</li>
+<li><strong><code>category = "Finance"</code></strong> - Where this function appears in the Insert Function dialog. This creates a new category separate from the template’s existing ones.</li>
+<li><strong><code>args = "start_value, end_value, years"</code></strong> - Argument names shown in Excel’s Function Wizard when a user selects this function.</li>
+<li><strong><code>help = "Compound Annual Growth Rate"</code></strong> - Description text shown in the Function Wizard.</li>
+<li><strong><code>threadsafe</code></strong> - Tells Excel it can call this function from multiple calculation threads simultaneously. Safe here because the function is pure: no shared state, no side effects.</li>
+</ul>
+<p>The function itself is plain Rust. Three <code>f64</code> inputs, validation with early returns, and a one-line formula. <code>XllError::msg</code> lets you attach a human-readable message to an Excel error code. If <code>start_value</code> is zero or negative, the cell shows <code>"values must be positive"</code> instead of a cryptic <code>#VALUE!</code>.</p>
+<p>The <code>use</code> statements for <code>XllError</code> and <code>XLLError</code> are already at the top of <code>lib.rs</code> from the template, so you don’t need to add any imports.</p>
+<section id="update-the-tests" class="level3">
+<h3 class="anchored" data-anchor-id="update-the-tests">Update the tests</h3>
+<p>The test suite in <code>verify_exports.rs</code> checks hardcoded lists of exports and registration names. It won’t know about <code>cagr</code> unless you add it. Open <code>tests/verify_exports.rs</code> and add <code>"xl_cagr"</code> to the user functions test:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode numberSource rust number-lines code-with-copy"><code class="sourceCode rust"><span id="cb16-1"><a href="#cb16-1"></a><span class="kw">let</span> expected <span class="op">=</span> <span class="op">&amp;</span>[</span>
+<span id="cb16-2"><a href="#cb16-2"></a>    <span class="st">"xl_add"</span><span class="op">,</span></span>
+<span id="cb16-3"><a href="#cb16-3"></a>    <span class="st">"xl_multiply"</span><span class="op">,</span></span>
+<span id="cb16-4"><a href="#cb16-4"></a>    <span class="st">"xl_stats_mean"</span><span class="op">,</span></span>
+<span id="cb16-5"><a href="#cb16-5"></a>    <span class="st">"xl_version"</span><span class="op">,</span></span>
+<span id="cb16-6"><a href="#cb16-6"></a>    <span class="st">"xl_now_ms"</span><span class="op">,</span></span>
+<span id="cb16-7"><a href="#cb16-7"></a>    <span class="st">"xl_cagr"</span><span class="op">,</span>       <span class="co">// &lt;-- add this</span></span>
+<span id="cb16-8"><a href="#cb16-8"></a>]<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>And <code>"FIN.CAGR"</code> to the registration names test:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode numberSource rust number-lines code-with-copy"><code class="sourceCode rust"><span id="cb17-1"><a href="#cb17-1"></a><span class="kw">let</span> expected_names<span class="op">:</span> <span class="op">&amp;</span>[<span class="op">&amp;</span><span class="dt">str</span>] <span class="op">=</span> <span class="op">&amp;</span>[</span>
+<span id="cb17-2"><a href="#cb17-2"></a>    <span class="st">"ADD"</span><span class="op">,</span></span>
+<span id="cb17-3"><a href="#cb17-3"></a>    <span class="st">"MULTIPLY"</span><span class="op">,</span></span>
+<span id="cb17-4"><a href="#cb17-4"></a>    <span class="st">"Stats.MEAN"</span><span class="op">,</span></span>
+<span id="cb17-5"><a href="#cb17-5"></a>    <span class="st">"Sys.VERSION"</span><span class="op">,</span></span>
+<span id="cb17-6"><a href="#cb17-6"></a>    <span class="st">"Sys.NOW_MS"</span><span class="op">,</span></span>
+<span id="cb17-7"><a href="#cb17-7"></a>    <span class="st">"FIN.CAGR"</span><span class="op">,</span>      <span class="co">// &lt;-- add this</span></span>
+<span id="cb17-8"><a href="#cb17-8"></a>]<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The export name <code>xl_cagr</code> comes from xllgen prepending <code>xl_</code> to your function name. The registration name <code>FIN.CAGR</code> is exactly what you put in the <code>name</code> attribute. If either is wrong, the tests will catch it before you waste time debugging in Excel.</p>
+</section>
+</section>
+<section id="rebuild-and-test" class="level2">
+<h2 class="anchored" data-anchor-id="rebuild-and-test">Rebuild and test</h2>
+<div class="sourceCode" id="cb18"><pre class="sourceCode numberSource sh number-lines code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1"></a><span class="ex">cargo</span> build <span class="at">--release</span></span>
+<span id="cb18-2"><a href="#cb18-2"></a><span class="ex">cargo</span> test</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>All three tests should still pass, now covering the new function as well. If a test fails, the error message will tell you exactly which export or registration name is missing.</p>
+<p>**Note**: If you experience a “linking with ‘link.exe’ failed: exit code: 1104”-esque error its because you are attempting to build and overwrite an xll that is in use. The solution is to close Excel and any other processes which may be using the xll in question!</p>
+<p>Reload the add-in in Excel (uncheck, close Excel, rebuild, reopen, re-check) and try it:</p>
+<pre><code>=FIN.CAGR(1000, 2000, 5)</code></pre>
+<p>Returns <code>0.1487</code> (approximately). That’s 14.87% annual growth, which is what you’d expect for an investment that doubles in five years. You should also see a new <code>Finance</code> category in the Insert Function dialog with <code>FIN.CAGR</code> listed inside it.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="CAGR.png" class="lightbox" data-gallery="quarto-lightbox-gallery-11" data-glightbox="description: .lightbox-desc-11" title="Screenshot showing =FIN.CAGR(1000, 2000, 5) returning ~0.1487 in Excel"><img src="CAGR.png" class="img-fluid figure-img" alt="Screenshot showing =FIN.CAGR(1000, 2000, 5) returning ~0.1487 in Excel"></a></p>
+<figcaption>Screenshot showing =FIN.CAGR(1000, 2000, 5) returning ~0.1487 in Excel</figcaption>
+</figure>
+</div>
+<p>This was the moment that clicked for me. After coercing Rust types to Excel’s native representations by hand and writing registration code for every function, I could just type <code>=FIN.CAGR(...)</code> and it worked. It hit me that just about any engineering problem where I’d normally reach for a special Python script or some proprietary software, I could write some Rust once, write some tests, and never think about it again.</p>
+<p>Try the error handling:</p>
+<pre><code>=FIN.CAGR(-100, 2000, 5)</code></pre>
+<p>The cell should display <code>values must be positive</code> instead of a numeric result.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="Error.png" class="lightbox" data-gallery="quarto-lightbox-gallery-12" data-glightbox="description: .lightbox-desc-12" title="Error Message"><img src="Error.png" class="img-fluid figure-img" alt="Error Message"></a></p>
+<figcaption>Error Message</figcaption>
+</figure>
+</div>
+<p>The above shows that we can extend any sort of error message(I didn’t include an explicit ERR:, but you can) and create multiple failure modes allowing us to show where in the chain of our calculations did we fail. Singular matrix? Division by zero? Model failure to converge? The possibilities are endless unfortunately.</p>
+<p>That covers the full workflow: write a function, tag it, update the tests, build, load. The rest of this article is reference material, the patterns and options you’ll reach for as your add-in grows.</p>
+</section>
+<section id="function-patterns-reference" class="level2">
+<h2 class="anchored" data-anchor-id="function-patterns-reference">Function patterns reference</h2>
+<p>At some point you’ll want to go beyond the template’s examples. This is the section you’ll come back to when you’re staring at a function signature and wondering whether xllgen can handle it.</p>
+<section id="argument-types" class="level3">
+<h3 class="anchored" data-anchor-id="argument-types">Argument types</h3>
+<table class="table">
+<colgroup>
+<col style="width: 21%">
+<col style="width: 22%">
+<col style="width: 55%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Rust type</th>
+<th>Excel input</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>f64</code></td>
+<td>Number</td>
+<td>Also accepts integers from Excel (coerced)</td>
+</tr>
+<tr class="even">
+<td><code>i32</code></td>
+<td>Integer</td>
+<td>Truncates if Excel passes a float</td>
+</tr>
+<tr class="odd">
+<td><code>bool</code></td>
+<td>Boolean</td>
+<td><code>TRUE</code>/<code>FALSE</code>, also accepts 0/1</td>
+</tr>
+<tr class="even">
+<td><code>String</code></td>
+<td>Text</td>
+<td>Owned string, copied from XLOPER12</td>
+</tr>
+<tr class="odd">
+<td><code>&amp;str</code></td>
+<td>Text</td>
+<td>Borrowed for the duration of the call</td>
+</tr>
+<tr class="even">
+<td><code>Vec&lt;f64&gt;</code></td>
+<td>Range</td>
+<td>Flattened to a 1D vector</td>
+</tr>
+<tr class="odd">
+<td><code>Vec&lt;Vec&lt;f64&gt;&gt;</code></td>
+<td>Range</td>
+<td>2D matrix, row-major by default</td>
+</tr>
+<tr class="even">
+<td><code>Option&lt;T&gt;</code></td>
+<td>Any of the above</td>
+<td><code>None</code> if the argument is omitted</td>
+</tr>
+</tbody>
+</table>
+<p><code>Vec</code> and <code>Vec&lt;Vec&lt;&gt;&gt;</code> also work with <code>i32</code> and <code>bool</code> as the inner type.</p>
+</section>
+<section id="return-types" class="level3">
+<h3 class="anchored" data-anchor-id="return-types">Return types</h3>
+<table class="table">
+<colgroup>
+<col style="width: 34%">
+<col style="width: 40%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Rust type</th>
+<th>Excel output</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>f64</code></td>
+<td>Number</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>i32</code></td>
+<td>Integer</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>bool</code></td>
+<td>Boolean</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>String</code></td>
+<td>Text</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>Vec&lt;f64&gt;</code></td>
+<td>Spilled column</td>
+<td>Returns a 1D array (n rows, 1 column)</td>
+</tr>
+<tr class="even">
+<td><code>Vec&lt;Vec&lt;f64&gt;&gt;</code></td>
+<td>Spilled grid</td>
+<td>Returns a 2D array, row-major by default</td>
+</tr>
+<tr class="odd">
+<td><code>Result&lt;T, XllError&gt;</code></td>
+<td>T or error</td>
+<td>Error with message displays the string; without displays <code>#VALUE!</code> etc.</td>
+</tr>
+</tbody>
+</table>
+<p><code>Vec</code> and <code>Vec&lt;Vec&lt;&gt;&gt;</code> returns also work with <code>i32</code> and <code>bool</code>. <code>Option&lt;T&gt;</code> is <strong>not</strong> supported as a return type.</p>
+</section>
+<section id="common-patterns" class="level3">
+<h3 class="anchored" data-anchor-id="common-patterns">Common patterns</h3>
+<p><strong>Scalar in, scalar out (simplest)</strong></p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode numberSource rust number-lines code-with-copy"><code class="sourceCode rust"><span id="cb21-1"><a href="#cb21-1"></a><span class="at">#[</span>xll_bindgen<span class="at">(</span>name <span class="op">=</span> <span class="st">"ADD"</span><span class="op">,</span> category <span class="op">=</span> <span class="st">"Math"</span><span class="op">,</span> args <span class="op">=</span> <span class="st">"a, b"</span><span class="op">,</span> help <span class="op">=</span> <span class="st">"Adds two numbers"</span><span class="op">,</span> threadsafe<span class="at">)]</span></span>
+<span id="cb21-2"><a href="#cb21-2"></a><span class="kw">pub</span> <span class="kw">fn</span> add(a<span class="op">:</span> <span class="dt">f64</span><span class="op">,</span> b<span class="op">:</span> <span class="dt">f64</span>) <span class="op">-&gt;</span> <span class="dt">f64</span> <span class="op">{</span></span>
+<span id="cb21-3"><a href="#cb21-3"></a>    a <span class="op">+</span> b</span>
+<span id="cb21-4"><a href="#cb21-4"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>Range in, scalar out (aggregation)</strong></p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode numberSource rust number-lines code-with-copy"><code class="sourceCode rust"><span id="cb22-1"><a href="#cb22-1"></a><span class="at">#[</span>xll_bindgen<span class="at">(</span>name <span class="op">=</span> <span class="st">"Stats.MEAN"</span><span class="op">,</span> category <span class="op">=</span> <span class="st">"Stats"</span><span class="op">,</span> args <span class="op">=</span> <span class="st">"values"</span><span class="op">,</span> help <span class="op">=</span> <span class="st">"Mean of a range"</span><span class="op">,</span> threadsafe<span class="at">)]</span></span>
+<span id="cb22-2"><a href="#cb22-2"></a><span class="kw">pub</span> <span class="kw">fn</span> mean(values<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">f64</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span><span class="dt">f64</span><span class="op">,</span> XllError<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb22-3"><a href="#cb22-3"></a>    <span class="cf">if</span> values<span class="op">.</span>is_empty() <span class="op">{</span></span>
+<span id="cb22-4"><a href="#cb22-4"></a>        <span class="cf">return</span> <span class="cn">Err</span>(<span class="pp">XllError::</span>msg(<span class="pp">XLLError::</span>VALUE<span class="op">,</span> <span class="st">"empty input"</span>))<span class="op">;</span></span>
+<span id="cb22-5"><a href="#cb22-5"></a>    <span class="op">}</span></span>
+<span id="cb22-6"><a href="#cb22-6"></a>    <span class="cn">Ok</span>(values<span class="op">.</span>iter()<span class="op">.</span><span class="pp">sum::</span><span class="op">&lt;</span><span class="dt">f64</span><span class="op">&gt;</span>() <span class="op">/</span> values<span class="op">.</span>len() <span class="kw">as</span> <span class="dt">f64</span>)</span>
+<span id="cb22-7"><a href="#cb22-7"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>Optional parameters</strong></p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode numberSource rust number-lines code-with-copy"><code class="sourceCode rust"><span id="cb23-1"><a href="#cb23-1"></a><span class="at">#[</span>xll_bindgen<span class="at">(</span>name <span class="op">=</span> <span class="st">"Stats.WMEAN"</span><span class="op">,</span> category <span class="op">=</span> <span class="st">"Stats"</span><span class="op">,</span> args <span class="op">=</span> <span class="st">"values, weights"</span><span class="op">,</span> help <span class="op">=</span> <span class="st">"Weighted mean"</span><span class="op">,</span> threadsafe<span class="at">)]</span></span>
+<span id="cb23-2"><a href="#cb23-2"></a><span class="kw">pub</span> <span class="kw">fn</span> weighted_mean(values<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">f64</span><span class="op">&gt;,</span> weights<span class="op">:</span> <span class="dt">Option</span><span class="op">&lt;</span><span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">f64</span><span class="op">&gt;&gt;</span>) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span><span class="dt">f64</span><span class="op">,</span> XllError<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb23-3"><a href="#cb23-3"></a>    <span class="cf">if</span> values<span class="op">.</span>is_empty() <span class="op">{</span></span>
+<span id="cb23-4"><a href="#cb23-4"></a>        <span class="cf">return</span> <span class="cn">Err</span>(<span class="pp">XllError::</span>msg(<span class="pp">XLLError::</span>VALUE<span class="op">,</span> <span class="st">"empty input"</span>))<span class="op">;</span></span>
+<span id="cb23-5"><a href="#cb23-5"></a>    <span class="op">}</span></span>
+<span id="cb23-6"><a href="#cb23-6"></a>    <span class="cf">match</span> weights <span class="op">{</span></span>
+<span id="cb23-7"><a href="#cb23-7"></a>        <span class="cn">Some</span>(w) <span class="op">=&gt;</span> <span class="op">{</span></span>
+<span id="cb23-8"><a href="#cb23-8"></a>            <span class="kw">let</span> total_weight<span class="op">:</span> <span class="dt">f64</span> <span class="op">=</span> w<span class="op">.</span>iter()<span class="op">.</span>sum()<span class="op">;</span></span>
+<span id="cb23-9"><a href="#cb23-9"></a>            <span class="kw">let</span> weighted_sum<span class="op">:</span> <span class="dt">f64</span> <span class="op">=</span> values<span class="op">.</span>iter()<span class="op">.</span>zip(w<span class="op">.</span>iter())<span class="op">.</span>map(<span class="op">|</span>(v<span class="op">,</span> w)<span class="op">|</span> v <span class="op">*</span> w)<span class="op">.</span>sum()<span class="op">;</span></span>
+<span id="cb23-10"><a href="#cb23-10"></a>            <span class="cn">Ok</span>(weighted_sum <span class="op">/</span> total_weight)</span>
+<span id="cb23-11"><a href="#cb23-11"></a>        <span class="op">}</span></span>
+<span id="cb23-12"><a href="#cb23-12"></a>        <span class="cn">None</span> <span class="op">=&gt;</span> <span class="cn">Ok</span>(values<span class="op">.</span>iter()<span class="op">.</span><span class="pp">sum::</span><span class="op">&lt;</span><span class="dt">f64</span><span class="op">&gt;</span>() <span class="op">/</span> values<span class="op">.</span>len() <span class="kw">as</span> <span class="dt">f64</span>)<span class="op">,</span></span>
+<span id="cb23-13"><a href="#cb23-13"></a>    <span class="op">}</span></span>
+<span id="cb23-14"><a href="#cb23-14"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>When a user calls <code>=Stats.WMEAN(A1:A5)</code> without the second argument, <code>weights</code> is <code>None</code>. If they call <code>=Stats.WMEAN(A1:A5, B1:B5)</code>, it’s <code>Some(vec![...])</code>.</p>
+<p><strong>Array return (spills into cells)</strong></p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode numberSource rust number-lines code-with-copy"><code class="sourceCode rust"><span id="cb24-1"><a href="#cb24-1"></a><span class="at">#[</span>xll_bindgen<span class="at">(</span>name <span class="op">=</span> <span class="st">"SQUARES"</span><span class="op">,</span> category <span class="op">=</span> <span class="st">"Math"</span><span class="op">,</span> args <span class="op">=</span> <span class="st">"values"</span><span class="op">,</span> help <span class="op">=</span> <span class="st">"Square each value"</span><span class="op">,</span> threadsafe<span class="at">)]</span></span>
+<span id="cb24-2"><a href="#cb24-2"></a><span class="kw">pub</span> <span class="kw">fn</span> squares(values<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">f64</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">f64</span><span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb24-3"><a href="#cb24-3"></a>    values<span class="op">.</span>iter()<span class="op">.</span>map(<span class="op">|</span>v<span class="op">|</span> v <span class="op">*</span> v)<span class="op">.</span>collect()</span>
+<span id="cb24-4"><a href="#cb24-4"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This spills results into a column of cells. In Excel 365 and Excel 2021, spill happens automatically. Older versions require Ctrl+Shift+Enter to enter as an array formula.</p>
+<p><strong>Matrix return</strong></p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode numberSource rust number-lines code-with-copy"><code class="sourceCode rust"><span id="cb25-1"><a href="#cb25-1"></a><span class="at">#[</span>xll_bindgen<span class="at">(</span>name <span class="op">=</span> <span class="st">"IDENTITY"</span><span class="op">,</span> category <span class="op">=</span> <span class="st">"Math"</span><span class="op">,</span> args <span class="op">=</span> <span class="st">"n"</span><span class="op">,</span> help <span class="op">=</span> <span class="st">"n x n identity matrix"</span><span class="op">,</span> threadsafe<span class="at">)]</span></span>
+<span id="cb25-2"><a href="#cb25-2"></a><span class="kw">pub</span> <span class="kw">fn</span> identity(n<span class="op">:</span> <span class="dt">f64</span>) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span><span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">f64</span><span class="op">&gt;&gt;,</span> XllError<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb25-3"><a href="#cb25-3"></a>    <span class="kw">let</span> n <span class="op">=</span> n <span class="kw">as</span> <span class="dt">usize</span><span class="op">;</span></span>
+<span id="cb25-4"><a href="#cb25-4"></a>    <span class="cf">if</span> n <span class="op">==</span> <span class="dv">0</span> <span class="op">||</span> n <span class="op">&gt;</span> <span class="dv">1000</span> <span class="op">{</span></span>
+<span id="cb25-5"><a href="#cb25-5"></a>        <span class="cf">return</span> <span class="cn">Err</span>(<span class="pp">XllError::</span>msg(<span class="pp">XLLError::</span>VALUE<span class="op">,</span> <span class="st">"n must be 1-1000"</span>))<span class="op">;</span></span>
+<span id="cb25-6"><a href="#cb25-6"></a>    <span class="op">}</span></span>
+<span id="cb25-7"><a href="#cb25-7"></a>    <span class="kw">let</span> <span class="kw">mut</span> rows <span class="op">=</span> <span class="pp">vec!</span>[<span class="pp">vec!</span>[<span class="dv">0.0</span><span class="op">;</span> n]<span class="op">;</span> n]<span class="op">;</span></span>
+<span id="cb25-8"><a href="#cb25-8"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="dv">0</span><span class="op">..</span>n <span class="op">{</span></span>
+<span id="cb25-9"><a href="#cb25-9"></a>        rows[i][i] <span class="op">=</span> <span class="dv">1.0</span><span class="op">;</span></span>
+<span id="cb25-10"><a href="#cb25-10"></a>    <span class="op">}</span></span>
+<span id="cb25-11"><a href="#cb25-11"></a>    <span class="cn">Ok</span>(rows)</span>
+<span id="cb25-12"><a href="#cb25-12"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Returns a 2D grid that spills into an n-by-n block of cells. Row-major by default. If your data is column-major, add <code>layout = "col"</code> to the attribute:</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode numberSource rust number-lines code-with-copy"><code class="sourceCode rust"><span id="cb26-1"><a href="#cb26-1"></a><span class="at">#[</span>xll_bindgen<span class="at">(</span>name <span class="op">=</span> <span class="st">"MY_FUNC"</span><span class="op">,</span> layout <span class="op">=</span> <span class="st">"col"</span><span class="op">,</span> threadsafe<span class="at">)]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>Volatile (recalculates on any change)</strong></p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode numberSource rust number-lines code-with-copy"><code class="sourceCode rust"><span id="cb27-1"><a href="#cb27-1"></a><span class="at">#[</span>xll_bindgen<span class="at">(</span>name <span class="op">=</span> <span class="st">"Sys.NOW_MS"</span><span class="op">,</span> category <span class="op">=</span> <span class="st">"Sys"</span><span class="op">,</span> help <span class="op">=</span> <span class="st">"Milliseconds since UNIX epoch"</span><span class="op">,</span> volatile<span class="at">)]</span></span>
+<span id="cb27-2"><a href="#cb27-2"></a><span class="kw">pub</span> <span class="kw">fn</span> now_ms() <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span><span class="dt">f64</span><span class="op">,</span> XllError<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb27-3"><a href="#cb27-3"></a>    <span class="kw">let</span> now <span class="op">=</span> <span class="pp">std::time::SystemTime::</span>now()</span>
+<span id="cb27-4"><a href="#cb27-4"></a>        <span class="op">.</span>duration_since(<span class="pp">std::time::</span><span class="cn">UNIX_EPOCH</span>)</span>
+<span id="cb27-5"><a href="#cb27-5"></a>        <span class="op">.</span>map_err(<span class="op">|</span>_<span class="op">|</span> <span class="pp">XllError::</span>new(<span class="pp">XLLError::</span>VALUE))<span class="op">?;</span></span>
+<span id="cb27-6"><a href="#cb27-6"></a>    <span class="cn">Ok</span>(now<span class="op">.</span>as_secs_f64() <span class="op">*</span> <span class="dv">1000.0</span>)</span>
+<span id="cb27-7"><a href="#cb27-7"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>Error handling options</strong></p>
+<p>xllgen supports three error types in <code>Result</code>:</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode numberSource rust number-lines code-with-copy"><code class="sourceCode rust"><span id="cb28-1"><a href="#cb28-1"></a><span class="co">// XllError: error code + optional message string</span></span>
+<span id="cb28-2"><a href="#cb28-2"></a><span class="kw">pub</span> <span class="kw">fn</span> f1(x<span class="op">:</span> <span class="dt">f64</span>) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span><span class="dt">f64</span><span class="op">,</span> XllError<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb28-3"><a href="#cb28-3"></a>    <span class="cn">Err</span>(<span class="pp">XllError::</span>msg(<span class="pp">XLLError::</span>VALUE<span class="op">,</span> <span class="st">"must be positive"</span>))  <span class="co">// cell shows "must be positive"</span></span>
+<span id="cb28-4"><a href="#cb28-4"></a><span class="op">}</span></span>
+<span id="cb28-5"><a href="#cb28-5"></a></span>
+<span id="cb28-6"><a href="#cb28-6"></a><span class="co">// XLLError: error code only, no message</span></span>
+<span id="cb28-7"><a href="#cb28-7"></a><span class="kw">pub</span> <span class="kw">fn</span> f2(x<span class="op">:</span> <span class="dt">f64</span>) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span><span class="dt">f64</span><span class="op">,</span> XLLError<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb28-8"><a href="#cb28-8"></a>    <span class="cn">Err</span>(<span class="pp">XLLError::</span>VALUE)  <span class="co">// cell shows #VALUE!</span></span>
+<span id="cb28-9"><a href="#cb28-9"></a><span class="op">}</span></span>
+<span id="cb28-10"><a href="#cb28-10"></a></span>
+<span id="cb28-11"><a href="#cb28-11"></a><span class="co">// i32: raw error code</span></span>
+<span id="cb28-12"><a href="#cb28-12"></a><span class="kw">pub</span> <span class="kw">fn</span> f3(x<span class="op">:</span> <span class="dt">f64</span>) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span><span class="dt">f64</span><span class="op">,</span> <span class="dt">i32</span><span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb28-13"><a href="#cb28-13"></a>    <span class="cn">Err</span>(<span class="pp">xll_rs::types::</span>XLERR_VALUE)  <span class="co">// cell shows #VALUE!</span></span>
+<span id="cb28-14"><a href="#cb28-14"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>XllError</code> is the most useful because it can carry a human-readable message. <code>XLLError</code> and <code>i32</code> return standard Excel error codes (<code>#VALUE!</code>, <code>#NUM!</code>, <code>#N/A</code>, etc.).</p>
+</section>
+</section>
+<section id="naming-and-organization" class="level2">
+<h2 class="anchored" data-anchor-id="naming-and-organization">Naming and organization</h2>
+<p>There are two things that control how a function’s name appears in Excel: the <strong>prefix</strong> set in <code>xll_auto_open!</code>, and the <strong>name</strong> in each function’s <code>#[xll_bindgen]</code> attribute. They interact in a specific way, and it’s worth understanding the rules.</p>
+<section id="the-prefix" class="level3">
+<h3 class="anchored" data-anchor-id="the-prefix">The prefix</h3>
+<p>The <code>xll_auto_open!</code> macro at the bottom of <code>lib.rs</code> sets a global prefix:</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode numberSource rust number-lines code-with-copy"><code class="sourceCode rust"><span id="cb29-1"><a href="#cb29-1"></a><span class="pp">xllgen::xll_auto_open!</span>(</span>
+<span id="cb29-2"><a href="#cb29-2"></a>    prefix <span class="op">=</span> <span class="st">"FINANCE_TOOLS"</span><span class="op">,</span></span>
+<span id="cb29-3"><a href="#cb29-3"></a>    addin <span class="op">=</span> <span class="st">"Finance Tools"</span></span>
+<span id="cb29-4"><a href="#cb29-4"></a>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The template generates this from the crate name, uppercased. You can set it to whatever you want.</p>
+<p>If you omit the <code>prefix</code> argument entirely, it defaults to <code>env!("CARGO_PKG_NAME").to_ascii_uppercase()</code>. Note that <code>CARGO_PKG_NAME</code> preserves dashes (<code>finance-tools</code> -&gt; <code>FINANCE-TOOLS</code>), while the template uses <code>crate_name</code> which converts dashes to underscores (<code>FINANCE_TOOLS</code>). If your package name has dashes, keep the explicit prefix to avoid names like <code>FINANCE-TOOLS.ADD</code>.</p>
+</section>
+<section id="how-names-are-resolved" class="level3">
+<h3 class="anchored" data-anchor-id="how-names-are-resolved">How names are resolved</h3>
+<p>The naming rules at registration time work like this:</p>
+<ol type="1">
+<li><p><strong><code>name</code> contains a dot</strong> (e.g., <code>name = "FIN.CAGR"</code>): Used exactly as-is. The prefix is ignored. This is how you create custom namespaces.</p></li>
+<li><p><strong><code>name</code> without a dot</strong> (e.g., <code>name = "ADD"</code>): The prefix is prepended with a dot separator. <code>ADD</code> becomes <code>FINANCE_TOOLS.ADD</code>.</p></li>
+<li><p><strong><code>name</code> omitted entirely</strong>: The function name is uppercased and used as the base name, then the prefix is prepended. <code>pub fn my_func(...)</code> becomes <code>FINANCE_TOOLS.MY_FUNC</code>.</p></li>
+</ol>
+<p>Rules 2 and 3 produce the same result when the name matches the uppercased function name, which is why the template’s <code>name = "ADD"</code> on <code>fn add</code> is equivalent to omitting the name.</p>
+</section>
+<section id="categories-are-independent" class="level3">
+<h3 class="anchored" data-anchor-id="categories-are-independent">Categories are independent</h3>
+<p>The <code>category</code> in <code>#[xll_bindgen]</code> controls where a function appears in the Insert Function dialog. It has nothing to do with the function name or prefix. You can put <code>FINANCE_TOOLS.ADD</code> in a category called <code>"Math"</code> and <code>FIN.CAGR</code> in a category called <code>"Finance"</code>. They’re separate concepts.</p>
+<p>After this tutorial, the Insert Function dialog for this add-in looks like:</p>
+<pre><code>Insert Function dialog:
+  [finance_tools]    FINANCE_TOOLS.ADD, FINANCE_TOOLS.MULTIPLY
+  [Finance]          FIN.CAGR
+  [Stats]            Stats.MEAN
+  [Sys]              Sys.VERSION, Sys.NOW_MS</code></pre>
+<p>Four categories, two naming styles (prefixed and dotted custom namespace), all from the same XLL.</p>
+</section>
+<section id="aliases" class="level3">
+<h3 class="anchored" data-anchor-id="aliases">Aliases</h3>
+<p>If you want a function to be callable by more than one name, xllgen supports <code>aliases</code>:</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode numberSource rust number-lines code-with-copy"><code class="sourceCode rust"><span id="cb31-1"><a href="#cb31-1"></a><span class="at">#[</span>xll_bindgen<span class="at">(</span></span>
+<span id="cb31-2"><a href="#cb31-2"></a>    name <span class="op">=</span> <span class="st">"FIN.CAGR"</span><span class="op">,</span></span>
+<span id="cb31-3"><a href="#cb31-3"></a>    aliases <span class="op">=</span> [<span class="st">"CAGR"</span><span class="op">,</span> <span class="st">"COMPOUND_GROWTH"</span><span class="at">]</span><span class="op">,</span></span>
+<span id="cb31-4"><a href="#cb31-4"></a>    category <span class="op">=</span> <span class="st">"Finance"</span><span class="op">,</span></span>
+<span id="cb31-5"><a href="#cb31-5"></a>    threadsafe</span>
+<span id="cb31-6"><a href="#cb31-6"></a>)]</span>
+<span id="cb31-7"><a href="#cb31-7"></a><span class="kw">pub</span> <span class="kw">fn</span> cagr(<span class="op">...</span>) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span><span class="dt">f64</span><span class="op">,</span> XllError<span class="op">&gt;</span> <span class="op">{</span> <span class="op">...</span> <span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This registers the function three times: once as <code>FIN.CAGR</code>, once as <code>CAGR</code>, and once as <code>COMPOUND_GROWTH</code>. Aliases are used exactly as written, with no prefix applied.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="Aliases.png" class="lightbox" data-gallery="quarto-lightbox-gallery-13" data-glightbox="description: .lightbox-desc-13" title="Aliases"><img src="Aliases.png" class="img-fluid figure-img" alt="Aliases"></a></p>
+<figcaption>Aliases</figcaption>
+</figure>
+</div>
+</section>
+</section>
+<section id="cicd" class="level2">
+<h2 class="anchored" data-anchor-id="cicd">CI/CD</h2>
+<p>If you said yes to <code>include_ci</code> during project generation, the template created <code>.github/workflows/build.yml</code>. It does two things.</p>
+<p><strong>On every push and PR to main</strong>, the workflow:</p>
+<ol type="1">
+<li>Checks out the code on a <code>windows-latest</code> runner</li>
+<li>Installs the stable Rust toolchain</li>
+<li>Builds in release mode (<code>cargo build --release</code>)</li>
+<li>Runs the test suite (<code>cargo test</code>)</li>
+<li>Uploads the <code>.xll</code> file as a build artifact</li>
+</ol>
+<p>The artifact is available from the Actions tab in your GitHub repo. Anyone with access can download it.</p>
+<p><strong>When you push a version tag</strong>, the workflow also creates a GitHub Release with the XLL attached:</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode numberSource sh number-lines code-with-copy"><code class="sourceCode bash"><span id="cb32-1"><a href="#cb32-1"></a><span class="fu">git</span> tag v0.1.0</span>
+<span id="cb32-2"><a href="#cb32-2"></a><span class="fu">git</span> push origin v0.1.0</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The release job triggers on tags matching <code>v*</code>, downloads the artifact from the build job, and creates a release with auto-generated release notes. Users can then download the XLL directly from the Releases page.</p>
+<p>The workflow uses <code>actions/upload-artifact@v4</code> and <code>softprops/action-gh-release@v2</code> for artifact handling and release creation. Build caching is handled by <code>Swatinem/rust-cache@v2</code>, which speeds up subsequent runs significantly.</p>
+</section>
+<section id="next-steps" class="level2">
+<h2 class="anchored" data-anchor-id="next-steps">Next steps</h2>
+<p>At this point you have a working XLL, a test suite that catches registration problems before they reach Excel, and CI that builds and publishes it. The interesting part is what you do with it.</p>
+<p><strong>Add external crates.</strong> The add-in is a normal Rust project. You can pull in anything from crates.io. <code>serde</code> and <code>serde_json</code> for parsing structured data, <code>reqwest</code> (with <code>blocking</code>) for HTTP calls from a cell formula, <code>nalgebra</code> or <code>ndarray</code> for linear algebra. The only constraint is that the final output is a Windows DLL, so anything that compiles for <code>x86_64-pc-windows-msvc</code> works.</p>
+<p><strong>Look at the examples.</strong> Both <a href="https://github.com/jesse-anderson/xll-rs/tree/main/examples"><code>xll-rs</code></a> and <a href="https://github.com/jesse-anderson/xllgen/tree/main/examples"><code>xllgen</code></a> have example projects. The xll-rs <code>scientific_xll</code> example shows a more substantial add-in. The xllgen examples cover error handling patterns, layout options, and robust function design.</p>
+<p><strong>Read the previous article.</strong> If you want to understand what’s happening under the hood, the <a href="https://blog.jesse-anderson.net/posts/linreg_core_XLL/">linreg-core XLL article</a> walks through building an XLL from scratch without the proc macro. It covers the XLOPER12 memory model, the registration protocol, and the ownership rules between Excel and the DLL. Useful context if you ever need to debug something at a lower level.</p>
+<p><strong>Crate documentation:</strong></p>
+<p>- <a href="https://crates.io/crates/xll-rs"><code>xll-rs</code></a> - Runtime, types, build tooling</p>
+<p>- <a href="https://crates.io/crates/xllgen"><code>xllgen</code></a> - Proc macro, attribute reference</p>
+<p>- <a href="https://crates.io/crates/xll-utils"><code>xll-utils</code></a> - PE/COFF parsing, export verification</p>
+<p>- <a href="https://github.com/jesse-anderson/xll-template">Template repo</a> - Source for the cargo-generate template</p>
+<p>Thanks for taking the time to read this article. There are a few gaps in the implementation currently such as RTD and they will be worked out eventually. Currently the workflow is aimed moreso for engineers and I can’t quite see them needing Excel’s Real Time Data. There may be a short update to this article at some point in the future grabbing stock data, fetching data from an API, Machine Learning(definitely DBSCAN or OPTICS), and extending the template with something like nalgebra or similar. Right now I’m pretty happy with the result since I can generate an XLL that does all of the heavy lifting and audit it at compile time if I so choose. I’d like to also extend this template eventually to also generate a 32 and 64 bit dll at build time, but again, future work!</p>
+<p>Jesse</p>
+
+
+<div class="hidden" aria-hidden="true">
+<span class="glightbox-desc lightbox-desc-1">Screenshot of terminal showing cargo-generate output with the two prompts and the “Done!” message</span>
+<span class="glightbox-desc lightbox-desc-2">Screenshot of terminal showing successful cargo build –release output</span>
+<span class="glightbox-desc lightbox-desc-3">Screenshot of terminal showing cargo test with all 3 tests passing</span>
+<span class="glightbox-desc lightbox-desc-4">Screenshot of Excel Add-ins dialog with finance-tools.xll checked</span>
+<span class="glightbox-desc lightbox-desc-5">Screenshot of Insert Function dialog showing the three categories</span>
+<span class="glightbox-desc lightbox-desc-6">Addition</span>
+<span class="glightbox-desc lightbox-desc-7">Multiply</span>
+<span class="glightbox-desc lightbox-desc-8">Mean</span>
+<span class="glightbox-desc lightbox-desc-9">Version</span>
+<span class="glightbox-desc lightbox-desc-10">Now</span>
+<span class="glightbox-desc lightbox-desc-11">Screenshot showing =FIN.CAGR(1000, 2000, 5) returning ~0.1487 in Excel</span>
+<span class="glightbox-desc lightbox-desc-12">Error Message</span>
+<span class="glightbox-desc lightbox-desc-13">Aliases</span>
+</div>
+</section>
+</section>
+
+</main> <!-- /main -->
+
+
+
+
+
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Support Page</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+
+        .centered-text {
+
+            text-align: center; /* Centers text for elements with this class */
+
+        }
+
+        .centered-content {
+
+            display: flex; /* Uses Flexbox for layout */
+
+            justify-content: center; /* Horizontally centers the content within the container */
+
+            align-items: center; /* Vertically centers the content within the container */
+
+        }
+
+        .email-share-button {
+
+            background: #007BFF; /* Example: a distinct blue color for the email button */
+
+            color: white; /* Ensure text and icon are white for visibility */
+
+        }
+
+        #share-buttons {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 5px;
+
+        }
+
+        .share-button {
+
+            display: inline-flex;
+
+            padding: 2px 4px;
+
+            font-size: 14px;
+
+            cursor: pointer;
+
+            text-align: center;
+
+            color: white;
+
+            border-radius: 0px;
+
+        }
+
+    </style>
+
+
+
+
+
+    <footer class="centered-text">
+
+        <p>Copyright © <span id="copyright-year"></span> Jesse Anderson</p>
+
+        <!-- Other footer details -->
+
+    </footer>
+
+    <div>
+
+        <hr>
+
+        <h3 class="centered-text">Support my work with a Coffee/Monster</h3>
+
+        <div class="centered-content">
+
+            <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="jesseanderson" data-color="#06436e" data-emoji="☕" data-font="Lato" data-text="Support me" data-outline-color="#ffffff" data-font-color="#ffffff" data-coffee-color="#FFDD00" data-height="40px"></script>
+
+        </div>
+
+        <!-- Footer content -->
+
+        <h3 class="centered-text">Share</h3>
+
+        <!-- Share Buttons -->
+
+        <div id="share-buttons" class="centered-content">
+
+            <!-- Twitter Share Button, dynamically setting the URL -->
+
+            <a href="#" class="share-button twitter-share-button" data-size="large" data-hashtags="computerscience" data-via="JesseA7C5" data-show-count="false">Tweet</a>
+
+            <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+            <!-- Facebook SDK with Dynamic Nonce -->
+
+            <div id="fb-root"></div>
+
+            <script id="facebook-jssdk" async="" defer="" crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&amp;version=v10.0"></script>
+
+            <div class="fb-share-button share-button" data-href="" data-layout="button_count">
+
+            </div>
+
+            <!-- LinkedIn Share Button -->
+
+            <script src="https://platform.linkedin.com/in.js" type="text/javascript">lang: en_US</script>
+
+            <script type="IN/Share" data-url=""></script>
+
+            <!-- Email Share Button -->
+
+            <a href="#" class="share-button email-share-button"><i class="fas fa-envelope"></i></a>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        // Function to generate a random nonce
+
+        function generateNonce(length = 16) {
+
+            const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+            let text = "";
+
+            for (let i = 0; i < length; i++) {
+
+                text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+            }
+
+            return text;
+
+        }
+
+        // Set the nonce attribute for the Facebook SDK script and dynamically set URLs
+
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const nonce = generateNonce();
+
+            const facebookSDKScript = document.getElementById('facebook-jssdk');
+
+            facebookSDKScript.setAttribute('nonce', nonce);
+
+            var elems = document.querySelectorAll('script[type="IN/Share"]');
+
+            for (var i = 0; i < elems.length; i++) {
+
+                elems[i].setAttribute('data-url', window.location.href);
+
+            }
+
+            // Set dynamic URLs for social sharing
+
+            const currentUrl = window.location.href;
+
+            const currentTitle = document.title; // Use the current document title as the email subject
+
+            // Facebook
+
+            document.querySelector('.fb-share-button').setAttribute('data-href', currentUrl);
+
+            // LinkedIn
+
+            document.querySelectorAll('script[type="IN/Share"]')[0].setAttribute('data-url', currentUrl);
+
+            // Twitter
+
+            document.querySelector('.twitter-share-button').setAttribute('href', 'https://twitter.com/share?url=' + encodeURIComponent(currentUrl) + '&hashtags=rstats');
+
+            // Email
+
+            document.querySelector('.email-share-button').setAttribute('href', `mailto:?subject=${encodeURIComponent(currentTitle)}&body=Check out this link: ${encodeURIComponent(currentUrl)}`);
+
+            // Dynamically set the current year in the copyright footer
+
+            document.getElementById('copyright-year').textContent = new Date().getFullYear();
+
+        });
+
+        // This script below to put a latest posts list after the comment system was such a pain in the ass.
+
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // console.log("Latest Posts Populating...");
+
+            // Create the latest posts container
+
+            const latestPostsContainer = document.createElement('div');
+
+            latestPostsContainer.className = 'latest-posts';
+
+            latestPostsContainer.innerHTML = `
+
+                <h3>Latest Posts</h3>
+
+                <ul id="latest-posts-list">
+
+                    <!-- Latest posts will be inserted here -->
+
+                </ul>
+
+            `;
+
+            // Find the footer element
+
+            const footer = document.querySelector('footer.footer');
+
+            // Insert the latest posts container before footer, easier than after utterances.
+
+            footer.parentNode.insertBefore(latestPostsContainer, footer);
+
+            // Fetch latest posts from the archive page
+
+            fetch('https://jesse-anderson.github.io/Blog/_site/archive.html')
+
+                .then(response => response.text())
+
+                .then(data => {
+
+                    const parser = new DOMParser();
+
+                    const doc = parser.parseFromString(data, 'text/html');
+
+                    const posts = doc.querySelectorAll('.quarto-listing-container-table tbody tr');
+
+                    // console.log("Posts: ", posts);
+
+                    const latestPostsList = document.getElementById('latest-posts-list');
+
+                    let count = 0;
+
+                    posts.forEach(post => {
+
+                        if (count < 4) {
+
+                            // console.log("Title populating...");
+
+                            const titleElement = post.querySelector('.listing-title'); // Correctly select the <a> tag with the title class
+
+                            // console.log(titleElement)
+
+                              const imageElement = post.querySelector('.listing-image img');
+
+                              // console.log(imageElement)
+
+                            if (titleElement) {
+
+                                const title = titleElement.textContent.trim();
+
+                                // console.log('Title: ', title);
+
+                                let url = titleElement.getAttribute('href');
+
+                                // console.log('URL: ', url);
+
+                                if (url && !url.startsWith('http')) {
+
+                                    url = 'https://jesse-anderson.github.io/Blog/_site/' + url.replace(/^\.\//, '');
+
+                                }
+
+                                // console.log('Formatted URL: ', url);
+
+                                const imageUrl = imageElement ? imageElement.getAttribute('src').replace(/^\.\//, 'https://jesse-anderson.github.io/Blog/_site/') : 'default-image.jpg'; // Fallback image
+
+                                // console.log('Image URL: ', imageUrl);
+
+                                const listItem = document.createElement('li');
+
+                                listItem.innerHTML = `<a href="${url}"><img src="${imageUrl}" alt="Post Image" style="height: 20px;"> ${title}</a>`;
+
+                                latestPostsList.appendChild(listItem);
+
+                                // console.log('ListItem: ', listItem);
+
+                                count++;
+
+                            } else {
+
+                                console.warn('Missing elements for post:', post);
+
+                            }
+
+                        }
+
+                    });
+
+                });
+
+        });
+
+    </script>
+
+
+
+
+
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<script src="https://utteranc.es/client.js" repo="jesse-anderson/blogComments" issue-term="title" theme="github-dark" crossorigin="anonymous" async="">
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+
+<div class="cookie-consent-footer"><a href="#" id="open_preferences_center">Cookie Preferences</a></div></div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","selector":".lightbox","descPosition":"bottom","closeEffect":"zoom","loop":false});
+window.onload = () => {
+  lightboxQuarto.on('slide_before_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    const href = trigger.getAttribute('href');
+    if (href !== null) {
+      const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+      if (imgEl !== null) {
+        const srcAttr = imgEl.getAttribute("src");
+        if (srcAttr && srcAttr.startsWith("data:")) {
+          slideConfig.href = srcAttr;
+        }
+      }
+    } 
+  });
+
+  lightboxQuarto.on('slide_after_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    if (window.Quarto?.typesetMath) {
+      window.Quarto.typesetMath(slideNode);
+    }
+  });
+
+};
+          </script>
+
+
+
+
+</body></html>
