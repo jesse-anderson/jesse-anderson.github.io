@@ -1,0 +1,151 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="860" viewBox="0 0 1500 860" role="img" aria-labelledby="title desc">
+  <title id="title">Oak Park Crime ETL Pipeline</title>
+  <desc id="desc">Architecture diagram showing the hidden OP-Crime ETL pipeline: public PDF acquisition, cached downloads, V3 pdfplumber extraction, normalization, regex parsing, validation, geocoding, database artifact build, and public dashboard publish.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f7f8fb; }
+      .boundary { fill: #ffffff; stroke: #c8d0da; stroke-width: 1.4; }
+      .source { fill: #eef4ff; stroke: #5f7faa; stroke-width: 1.4; }
+      .private { fill: #fff8e6; stroke: #b88b24; stroke-width: 1.4; }
+      .process { fill: #f3f7fb; stroke: #7c8a99; stroke-width: 1.4; }
+      .artifact { fill: #edf8f1; stroke: #4f9b6e; stroke-width: 1.4; }
+      .public { fill: #ffffff; stroke: #6e7b87; stroke-width: 1.4; }
+      .audit { fill: #fff1ef; stroke: #bd6a5e; stroke-width: 1.4; }
+      .title { fill: #15202b; font-family: Arial, sans-serif; font-size: 30px; font-weight: 700; }
+      .subtitle { fill: #4d5b68; font-family: Arial, sans-serif; font-size: 15px; }
+      .section { fill: #27323c; font-family: Arial, sans-serif; font-size: 15px; font-weight: 700; text-transform: uppercase; }
+      .heading { fill: #17212b; font-family: Arial, sans-serif; font-size: 16px; font-weight: 700; }
+      .text { fill: #3d4a56; font-family: Arial, sans-serif; font-size: 13px; }
+      .small { fill: #53616e; font-family: Arial, sans-serif; font-size: 12px; }
+      .code { fill: #26323d; font-family: Consolas, monospace; font-size: 12px; }
+      .arrowLine { stroke: #46525e; stroke-width: 2.5; stroke-linecap: round; }
+      .arrowHead { fill: #46525e; }
+    </style>
+  </defs>
+
+  <rect class="bg" width="1500" height="860"/>
+  <text class="title" x="48" y="52">Oak Park Crime Data Pipeline</text>
+  <text class="subtitle" x="48" y="78">The private OP-Crime repo performs extraction and artifact generation. The public repo surfaces generated data and the dashboard.</text>
+
+  <rect class="boundary" x="46" y="110" width="1408" height="544" rx="10"/>
+  <text class="section" x="70" y="140">Automated Pipeline</text>
+
+  <!-- Top row -->
+  <rect class="source" x="70" y="170" width="205" height="112" rx="8"/>
+  <text class="heading" x="92" y="202">Oak Park Reports</text>
+  <text class="text" x="92" y="229">activity report pages</text>
+  <text class="small" x="92" y="250">current page and archive</text>
+
+  <rect class="private" x="315" y="170" width="205" height="112" rx="8"/>
+  <text class="heading" x="337" y="202">Acquire and Cache</text>
+  <text class="text" x="337" y="229">fetch PDF links</text>
+  <text class="text" x="337" y="249">download source PDFs</text>
+  <text class="code" x="337" y="269">pdf_cache.json</text>
+
+  <rect class="private" x="560" y="170" width="205" height="112" rx="8"/>
+  <text class="heading" x="582" y="202">V3 Extraction</text>
+  <text class="text" x="582" y="229">pdfplumber text</text>
+  <text class="small" x="582" y="249">x_tolerance=2</text>
+  <text class="small" x="582" y="268">y_tolerance=2</text>
+
+  <rect class="process" x="805" y="170" width="205" height="112" rx="8"/>
+  <text class="heading" x="827" y="202">Normalize and Parse</text>
+  <text class="text" x="827" y="229">canonical headers</text>
+  <text class="text" x="827" y="249">complaint blocks</text>
+  <text class="small" x="827" y="268">V1-style regex lookahead</text>
+
+  <rect class="process" x="1050" y="170" width="205" height="112" rx="8"/>
+  <text class="heading" x="1072" y="202">Validate and Enrich</text>
+  <text class="text" x="1072" y="229">raw values preserved</text>
+  <text class="text" x="1072" y="249">review flags and notes</text>
+  <text class="small" x="1072" y="268">source page, block position</text>
+
+  <rect class="process" x="1295" y="170" width="135" height="112" rx="8"/>
+  <text class="heading" x="1314" y="202">Geocode</text>
+  <text class="text" x="1314" y="229">Maps cache</text>
+  <text class="text" x="1314" y="249">NLP text</text>
+
+  <!-- Top row arrows -->
+  <line class="arrowLine" x1="275" y1="226" x2="315" y2="226"/>
+  <polygon class="arrowHead" points="315,226 303,219 303,233"/>
+  <line class="arrowLine" x1="520" y1="226" x2="560" y2="226"/>
+  <polygon class="arrowHead" points="560,226 548,219 548,233"/>
+  <line class="arrowLine" x1="765" y1="226" x2="805" y2="226"/>
+  <polygon class="arrowHead" points="805,226 793,219 793,233"/>
+  <line class="arrowLine" x1="1010" y1="226" x2="1050" y2="226"/>
+  <polygon class="arrowHead" points="1050,226 1038,219 1038,233"/>
+  <line class="arrowLine" x1="1255" y1="226" x2="1295" y2="226"/>
+  <polygon class="arrowHead" points="1295,226 1283,219 1283,233"/>
+
+  <!-- Down connector -->
+  <line class="arrowLine" x1="1362" y1="282" x2="1362" y2="336"/>
+
+  <!-- Bottom row, right to left visual bridge then left-to-right build -->
+  <rect class="artifact" x="70" y="378" width="205" height="126" rx="8"/>
+  <text class="heading" x="92" y="410">CSV Package</text>
+  <text class="code" x="92" y="437">summary_report.csv</text>
+  <text class="code" x="92" y="456">summary_report.zip</text>
+  <text class="small" x="92" y="477">package the DB build reads</text>
+
+  <rect class="artifact" x="315" y="378" width="205" height="126" rx="8"/>
+  <text class="heading" x="337" y="410">Database Builder</text>
+  <text class="code" x="337" y="437">prepare_crime_db.py</text>
+  <text class="text" x="337" y="456">two-table schema</text>
+  <text class="small" x="337" y="477">DuckDB-WASM target</text>
+
+  <rect class="artifact" x="560" y="378" width="245" height="126" rx="8"/>
+  <text class="heading" x="582" y="410">Generated Data</text>
+  <text class="code" x="582" y="437">crime_data.duckdb</text>
+  <text class="code" x="582" y="456">crime_data_v1.0.0.duckdb</text>
+  <text class="code" x="582" y="475">crimes / crime_details parquet</text>
+  <text class="code" x="582" y="494">crimes / crime_details csv</text>
+
+  <rect class="artifact" x="845" y="378" width="229" height="126" rx="8"/>
+  <text class="heading" x="867" y="410">Publish Artifacts</text>
+  <text class="text" x="867" y="437">data files only</text>
+  <text class="text" x="867" y="457">ETL source hidden</text>
+  <text class="small" x="867" y="478">public repo/domain consume output</text>
+
+  <rect class="public" x="1090" y="378" width="221" height="126" rx="8"/>
+  <text class="heading" x="1112" y="410">Static Dashboard</text>
+  <text class="text" x="1112" y="437">DuckDB-WASM attach</text>
+  <text class="text" x="1112" y="457">Leaflet map</text>
+  <text class="small" x="1112" y="478">filters, search, popups, CSV export</text>
+
+  <rect class="public" x="1335" y="378" width="95" height="126" rx="8"/>
+  <text class="heading" x="1353" y="410">Cache</text>
+  <text class="text" x="1353" y="437">WASM</text>
+  <text class="text" x="1353" y="457">DB</text>
+  <text class="text" x="1353" y="477">tiles</text>
+
+  <!-- Bridge from geocode to CSV -->
+  <line class="arrowLine" x1="1362" y1="336" x2="172" y2="336"/>
+  <line class="arrowLine" x1="172" y1="336" x2="172" y2="378"/>
+  <polygon class="arrowHead" points="172,378 165,366 179,366"/>
+
+  <!-- Bottom row arrows -->
+  <line class="arrowLine" x1="275" y1="441" x2="315" y2="441"/>
+  <polygon class="arrowHead" points="315,441 303,434 303,448"/>
+  <line class="arrowLine" x1="520" y1="441" x2="560" y2="441"/>
+  <polygon class="arrowHead" points="560,441 548,434 548,448"/>
+  <line class="arrowLine" x1="805" y1="441" x2="845" y2="441"/>
+  <polygon class="arrowHead" points="845,441 833,434 833,448"/>
+  <line class="arrowLine" x1="1074" y1="441" x2="1090" y2="441"/>
+  <polygon class="arrowHead" points="1090,441 1078,434 1078,448"/>
+  <line class="arrowLine" x1="1311" y1="441" x2="1335" y2="441"/>
+  <polygon class="arrowHead" points="1335,441 1323,434 1323,448"/>
+
+  <!-- Validation and audit lane -->
+  <rect class="audit" x="70" y="574" width="640" height="56" rx="8"/>
+  <text class="heading" x="92" y="598">Evaluation and review</text>
+  <text class="text" x="92" y="617">truth manifest, candidate JSON, scorer output, review chunks</text>
+
+  <rect class="audit" x="750" y="574" width="680" height="56" rx="8"/>
+  <text class="heading" x="772" y="598">Manual reference boundary</text>
+  <text class="text" x="772" y="617">Oak Park's rendered PDF map is used for checks, not as ETL input.</text>
+
+  <rect class="boundary" x="46" y="700" width="1408" height="94" rx="10"/>
+  <text class="section" x="70" y="732">Version Context</text>
+  <text class="text" x="70" y="760">V1 used PyPDF2 plus regex and produced summary_report outputs. V2 made pdfplumber primary with PyPDF2 fallback.</text>
+  <text class="text" x="70" y="780">V3 routes the production extractor through pdfplumber, normalization, V1-style parsing, review flags, and the two-table database build.</text>
+</svg>

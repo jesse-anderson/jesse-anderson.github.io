@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/OP-Crime-Documentation/index.html",
       "/posts/XLLGen_Cargo_Generate/Rust_XLLGen_Template_Tutorial.html",
       "/posts/linreg_core_XLL/index.html",
       "/posts/linreg_core_VBA_FFI/index.html",
@@ -15,13 +16,13 @@
       "/posts/VAE_GAN/VAEGAN.html",
       "/posts/OPTICSWriteup/index.html",
       "/posts/DBSCAN/index.html",
-      "/posts/welcome/index.html",
-      "/posts/OP-Crime-Documentation/index.html"
+      "/posts/welcome/index.html"
     ]
   },
   {
     "listing": "/archive.html",
     "items": [
+      "/posts/OP-Crime-Documentation/index.html",
       "/posts/linreg_core_XLL/index.html",
       "/posts/linreg_core_VBA_FFI/index.html",
       "/posts/PMS7003/index.html",
@@ -34,8 +35,7 @@
       "/posts/VAE_GAN/VAEGAN.html",
       "/posts/OPTICSWriteup/index.html",
       "/posts/DBSCAN/index.html",
-      "/posts/welcome/index.html",
-      "/posts/OP-Crime-Documentation/index.html"
+      "/posts/welcome/index.html"
     ]
   }
 ]

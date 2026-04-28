@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Jesse Anderson">
-<meta name="dcterms.date" content="2020-01-09">
+<meta name="dcterms.date" content="2026-04-27">
 
-<title>Jesse Anderson’s Blog - Oak Park Crime Reporting</title>
+<title>Jesse Anderson’s Blog - Building an Oak Park Crime Map from Public PDFs</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -21,6 +21,40 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -43,6 +77,9 @@ ul.task-list li input[type="checkbox"] {
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -100,9 +137,9 @@ cookieconsent.run({
 
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="Jesse Anderson’s Blog - Oak Park Crime Reporting">
+<meta property="og:title" content="Jesse Anderson’s Blog - Building an Oak Park Crime Map from Public PDFs">
 <meta property="og:description" content="">
-<meta property="og:image" content="image.jpg">
+<meta property="og:image" content="image.png">
 <meta property="og:site_name" content="Jesse Anderson's Blog">
 </head>
 
@@ -157,11 +194,11 @@ cookieconsent.run({
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Oak Park Crime Reporting</h1>
+      <h1 class="title">Building an Oak Park Crime Map from Public PDFs</h1>
                                 <div class="quarto-categories">
                 <div class="quarto-category">Data Science</div>
-                <div class="quarto-category">Data Analytics</div>
                 <div class="quarto-category">Data Engineering</div>
+                <div class="quarto-category">Public Analytics</div>
               </div>
                   </div>
   </div>
@@ -179,7 +216,7 @@ cookieconsent.run({
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">January 9, 2020</p>
+        <p class="date">April 27, 2026</p>
       </div>
     </div>
     
@@ -198,36 +235,565 @@ cookieconsent.run({
 
 
 
-<section id="oak-park-crime-reporting-documentation" class="level2">
-<h2 class="anchored" data-anchor-id="oak-park-crime-reporting-documentation"><strong>Oak Park Crime Reporting Documentation</strong></h2>
-<p>** Note that due to a dramatic restructuring of this project and migration to an efficient client side duckdb instance I wiped this doc that referenced my initial streamlit implementation and also my single html folium map with all markers. The new implementation is massively more efficient and prevents multiple copies of data. To Be Continued… ### <strong>Table of Contents</strong></p>
+<p>I originally built this because navigating Oak Park’s crime reporting was slow. The activity reports were public, but the actual workflow was painful: open a PDF, read through it manually, cross-reference Oak Park’s rendered PDF crime map, and repeat that process any time I wanted more context about what was happening near me.</p>
+<p>A PDF is fine if you want to read one daily report. It is less fine if you want to ask what changed over the last 14 days, search narratives, map incidents, or compare one year against another without opening a pile of files by hand. Or printing them, highlighting relevant reports, then trying to pin everything on a printed Google Map..</p>
+<p>It also seemed like a useful project to build while I was working through my Master’s in Computer Science. It had enough real-world mess to be interesting: scraping, PDF parsing, regex, geocoding, browser performance, public disclaimers, and eventually DuckDB-WASM.</p>
+<p>The project has been rebuilt several times. The first useful version was a Streamlit app sitting on top of a CSV. The next version became a private PDF scraper and parser using PyPDF2. DuckDB-WASM entered the public dashboard early because I already wanted the browser to do local analytical work instead of round-tripping every query through a backend(why would I pay hosting costs when duckDB is magical?).</p>
+<p>That was for the most part the right instinct, but the rest of the stack had to catch up. After that I spent a while making the regular expressions and PDF parsing more tolerant, which helped in places and also taught me that I was fixing too many symptoms. The current version is the first one where the private pipeline and the public dashboard feel like they are solving the right problems separately: cleaner extraction, source-preserving records, a two-table schema, and enough caching that the map feels like an application rather than a static dump.</p>
+<p>The live application is here:</p>
+<p><a href="https://opcrime.jesse-anderson.net">Oak Park Crime Map</a></p>
+<p>Image post-Disclaimer:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="image.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1" title="Image showing the Oak Park Crime Map with gun in the Search descriptions showing 437 crimes with the word “gun” across all zones + outside of Oak Park. Heatmap off for cleanliness."><img src="image.png" class="img-fluid figure-img" alt="Image showing the Oak Park Crime Map with gun in the Search descriptions showing 437 crimes with the word &quot;gun&quot; across all zones + outside of Oak Park. Heatmap off for cleanliness."></a></p>
+<figcaption>Image showing the Oak Park Crime Map with gun in the Search descriptions showing 437 crimes with the word “gun” across all zones + outside of Oak Park. Heatmap off for cleanliness.</figcaption>
+</figure>
+</div>
+<p>The public dashboard source and generated data are here:</p>
+<p><a href="https://github.com/jesse-anderson/Oak-Park-Crime">Oak-Park-Crime on GitHub</a></p>
+<p>The ETL pipeline itself lives in a private GitHub repository. I only surface the public dashboard and the generated data artifacts.</p>
+<p>The current public version is a static Leaflet application backed by DuckDB-WASM. The browser downloads a generated DuckDB database, attaches it read-only, and runs the filtering, searching, popup lookup, and CSV export work locally. The private pipeline does the slower work before publication: downloading Oak Park Police Department PDFs, extracting records, preserving source fields, geocoding locations, assigning zones where possible, and building the database artifacts the dashboard consumes.</p>
+<p><u><strong>Important disclaimer up front:</strong></u> this is a demonstrative research project built from publicly available police activity reports. It is not affiliated with, endorsed by, or operated in partnership with the Oak Park Police Department, the Village of Oak Park, or any government agency. The official PDFs remain the authoritative source. This tool should not be used for legal, safety, investigative, operational, official, or unofficial decision-making.</p>
+<section id="motivation" class="level2">
+<h2 class="anchored" data-anchor-id="motivation">Motivation</h2>
+<p>Oak Park publishes police activity reports as PDFs. That checks the public record box, and I do not want to frame this as if publishing PDFs is some sort of bad-faith choice. PDFs are a normal government publication format and I am grateful that my local government publishes reports to inform the public. The issue is that they are awkward if the question is analytical instead of “what happened in this one report?” PDFs do not naturally answer questions like:</p>
+<ul>
+<li>What types of offenses are most common over the last 14 days?</li>
+<li>How does that compare with the last year?</li>
+<li>Which incidents were inside Oak Park and which were reported elsewhere?</li>
+<li>Can I search narratives for a word or phrase?</li>
+<li>Can I click from a map point back to the original report context?</li>
+</ul>
+<p>Those are normal data questions, but the source format makes them awkward. Police reports are also human-entered documents. They contain typos, inconsistent formatting, missing fields, and occasional layout problems. Any system built on top of them has to deal with that honestly.</p>
+<p>That became one of the main design rules for the current version: preserve what the source says, validate what can be validated, and flag records that deserve review instead of silently rewriting them. If a report says <code>25-O3750</code> with a letter O, the pipeline should not confidently turn it into <code>25-03750</code> just because that looks more likely. If a date token says <code>30-JUN-148</code>, that should be visible as source weirdness, not quietly patched into whatever year I think the person who entered the record meant.</p>
+</section>
+<section id="how-the-project-evolved" class="level2">
+<h2 class="anchored" data-anchor-id="how-the-project-evolved">How the Project Evolved</h2>
+<p>The short version is this:</p>
+<table class="table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Stage</th>
+<th>What it did</th>
+<th>What changed next</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Streamlit prototype</td>
+<td>Loaded a CSV, showed filters, rendered a Folium map, and proved the data was useful.</td>
+<td>The public app needed to feel like a real browser map, not a Python dashboard.</td>
+</tr>
+<tr class="even">
+<td>PyPDF2 pipeline</td>
+<td>Downloaded PDFs, parsed complaint blocks, geocoded locations, and produced <code>summary_report.zip</code>.</td>
+<td>The parser missed records and PyPDF2 introduced layout damage.</td>
+</tr>
+<tr class="odd">
+<td>V2 regex/pdfplumber pass</td>
+<td>Made extraction more tolerant and got more usable records onto the map.</td>
+<td>It still relied on too many cleanup rules and lived as a bridge for longer than it should have.</td>
+</tr>
+<tr class="even">
+<td>Current V3 pipeline/dashboard</td>
+<td>Uses cleaner extraction, source-preserving records, a two-table schema, DuckDB-WASM, and browser caching.</td>
+<td>Current work is focused on performance, validation, and future email/LLM summarization.</td>
+</tr>
+</tbody>
+</table>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="op-crime-evolution.svg" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="quarto-lightbox-gallery-2" title="Project evolution from the Streamlit CSV prototype through PyPDF2 extraction, the V2 pdfplumber/regex bridge, and the current V3 pipeline plus browser dashboard."><img src="op-crime-evolution.svg" class="img-fluid figure-img" alt="Project evolution timeline from Streamlit and PyPDF2 through the current V3 pipeline and browser dashboard."></a></p>
+<figcaption>Project evolution from the Streamlit CSV prototype through PyPDF2 extraction, the V2 pdfplumber/regex bridge, and the current V3 pipeline plus browser dashboard.</figcaption>
+</figure>
+</div>
+</section>
+<section id="the-initial-streamlit-version" class="level2">
+<h2 class="anchored" data-anchor-id="the-initial-streamlit-version">The Initial Streamlit Version</h2>
+<p>The first version that felt useful was a Streamlit application. It loaded <code>data/summary_report.zip</code> into pandas, cached the DataFrame with <code>st.cache_data</code>, and rendered the result with Folium and MarkerCluster. There was a disclaimer gate, some basic filters, links back to the blog/portfolio, and early hooks for weekly update workflows.</p>
+<p>For a prototype, that was good enough. Streamlit let me move quickly and it made the idea visible. I could prove that the PDF-derived data was worth looking at without first building a full front end.</p>
+<p>It also put the ceiling in plain view. Streamlit is great when the audience is small and the workflow is analytical. It is less great as the public surface for a map-heavy application that should feel instant. The map was effectively being served through a Python app, the data was shaped as one large flat file, and the browser interaction was never going to feel like a purpose-built Leaflet page.</p>
+<p>I also had a static Folium map phase, including cumulative HTML maps with all markers embedded into the page. That worked as a published artifact. It did not work as an exploratory tool. If the user only wants the last two weeks, there is no reason to make their browser pay for every marker in the history of the project. TLDR; It was painfully slow, but a great proof of concept.</p>
+<p>That was the first split I should have made explicit: the private pipeline and the public dashboard are different products. One extracts and prepares data. The other lets people explore it.</p>
+<p>The email side also started early. The email update list still exists, and users still get email updates when there is a bigger project change. I also experimented with weekly report summaries, but I stopped short of sending raw PDF parsing output as if it were a finished product. At the time, LLM parsing and summarization had too high of a hallucination rate for something that looked like a public crime report. A future feature is to bring that back with a better model and stronger validation. The programming pieces are mostly there; the future version is more likely to be a model swap and validation problem than a brand-new email system. Recent trials show that more recent LLMs don’t insert nonsense as often as my first trials.</p>
+</section>
+<section id="the-pypdf2-pipeline" class="level2">
+<h2 class="anchored" data-anchor-id="the-pypdf2-pipeline">The PyPDF2 Pipeline</h2>
+<p>The next major step was the private extraction pipeline. Instead of treating the CSV as the starting point, the project began downloading Oak Park activity report PDFs directly(including a record that they were downloaded to avoid abuse!), extracting text, parsing complaint blocks, geocoding locations, and writing structured output.</p>
+<p>The first production parser used PyPDF2. It fetched PDF links from the current activity report page and archive, downloaded PDFs into a local cache, extracted page text with <code>PdfReader</code>, stripped headers and footers, split blocks by complaint number, pulled fields with regular expressions, geocoded locations through Google Maps, and wrote <code>summary_report.csv</code> / <code>summary_report.zip</code>.</p>
+<p>That version was useful enough to build the first real dataset. It was also the version where the uncomfortable parser problems became obvious. My estimate, based on manual spot checks and comparing complaint counts against parser output, is that the initial parser could miss roughly 10-20% of complaints depending on the report and time period. That was not one clean bug. It was a mixture of fragile regex, PyPDF2 layout damage, and source formatting that varied just enough to break assumptions.</p>
+<p>First, the input text was not stable. PyPDF2 often introduced layout artifacts in born-digital PDFs: broken words, unexpected spaces, field bleed across headers, page-break damage, and text ordering issues. Some of the failures looked like OCR problems at first, but they were not OCR problems. The PDFs were born digital. The text extraction layer was damaging the layout before the parser ever saw it.</p>
+<p>Second, the data model deduplicated on complaint number. That sounds reasonable until you look at the reports. A complaint number is not always a unique event for map and analysis purposes. One case can include multiple recoveries, multiple offenses, or a theft in one report and a recovery in another. Keeping only the “most complete” row can silently remove real events.</p>
+<p>That was the first major lesson: a crime report parser cannot treat complaint number as a primary key just because it looks like one. <code>18-1802</code> appearing three times for separate Hertz recoveries is not the same kind of problem as a duplicate row in a database import. It is a source event that happens to share a case number. I was happy that I had a base pipeline running, but not happy with how sporadic the PDF parsing could be.</p>
+</section>
+<section id="the-regex-optimization-pass" class="level2">
+<h2 class="anchored" data-anchor-id="the-regex-optimization-pass">The Regex Optimization Pass</h2>
+<p>The next version tried to make the parser more robust by improving extraction rules. This was the V2 pass, and it was not a weekend experiment. Some version of this regex/pdfplumber approach existed for nearly two years before the V3 rewrite.</p>
+<p>V2 added pdfplumber as a preferred extractor with PyPDF2 as fallback, larger artifact-correction dictionaries, more flexible field header matching, dataclasses for complaint records, confidence scoring, better date parsing, better location normalization, a separate V2 cache, and more detailed statistics.</p>
+<p>I would not call that wasted work. If field headers are split, misspelled, or inconsistently spaced, better field patterns help. If dates contain <code>0CT</code> instead of <code>OCT</code>, date-specific cleanup helps. If locations use inconsistent abbreviations, location normalization helps.</p>
+<p>But V2 also showed the limit of that strategy. The regular expressions were not the root problem. The root problem was the text layer. The parser was being asked to recover from extraction damage that should not have existed in the first place.</p>
+<p>The trap is that every fix feels locally correct. Add another header variation. Add another date correction. Add another cleanup rule. After a while the parser starts looking sophisticated, but the sophistication is hiding the fact that the input text is still bad. In this case the answer was not a bigger regex. It was to get cleaner text before regex entered the conversation.</p>
+<p>That said, the V2 period was still important. It got more records onto the map and reduced a lot of the random spaces, broken headers, and other nonsense that made earlier output unreliable. The mistake would be pretending it was the final architecture when there were plenty of more one off hurdles to overcome.</p>
+</section>
+<section id="the-current-architecture" class="level2">
+<h2 class="anchored" data-anchor-id="the-current-architecture">The Current Architecture</h2>
+<p>The current system separates the project into two parts: a private ingestion pipeline and a public browser dashboard.</p>
+<p>The private pipeline downloads and caches source PDFs, extracts complaint records, preserves source values, geocodes locations, assigns Oak Park policing zones where possible, builds the database artifacts, and publishes the files the dashboard consumes.</p>
+<p>The public dashboard loads those artifacts in the browser, filters by time period/offense/search/zone, renders markers and heatmap layers, lazy-loads details when a user opens a popup, exports the current view, and caches the expensive pieces so repeat visits are not punished.</p>
+<p>The browser should not parse PDFs. The private pipeline should not care how Leaflet pans. Once those concerns were separated, both sides became easier to optimize.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="op-crime-pipeline.svg" class="lightbox" data-glightbox="description: .lightbox-desc-3" data-gallery="quarto-lightbox-gallery-3" title="Oak Park PDFs flow into the private parser, geocoder, and database build, then into the static public DuckDB-WASM dashboard."><img src="op-crime-pipeline.svg" class="img-fluid figure-img" alt="Architecture diagram showing public Oak Park PDFs flowing through a private ETL pipeline into generated database artifacts consumed by the public dashboard."></a></p>
+<figcaption>Oak Park PDFs flow into the private parser, geocoder, and database build, then into the static public DuckDB-WASM dashboard.</figcaption>
+</figure>
+</div>
+</section>
+<section id="extraction-fixing-the-input-instead-of-chasing-symptoms" class="level2">
+<h2 class="anchored" data-anchor-id="extraction-fixing-the-input-instead-of-chasing-symptoms">Extraction: Fixing the Input Instead of Chasing Symptoms</h2>
+<p>The current extraction pipeline uses pdfplumber and a normalization layer before field parsing. The important design change was not simply “use pdfplumber.” It was the realization that the old V1 parser strategy was mostly sound when the input text was clean.</p>
+<p>The current parser follows a deliberately boring pattern:</p>
 <ol type="1">
-<li><a href="#Motivation">Motivation</a></li>
+<li>Extract text from the PDF with pdfplumber using tight layout tolerances.</li>
+<li>Normalize the text into canonical field headers.</li>
+<li>Split the document into complaint blocks.</li>
+<li>For each field, search from the field header until the next known field header.</li>
+<li>Return the first match.</li>
 </ol>
+<p>In simplified form, the useful idea is:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a>pattern <span class="op">=</span> field_header <span class="op">+</span> <span class="vs">r"\s*(.+?)(?="</span> <span class="op">+</span> <span class="st">"|"</span>.join(all_headers) <span class="op">+</span> <span class="vs">r"|$)"</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a>match <span class="op">=</span> re.search(pattern, complaint_block, re.DOTALL <span class="op">|</span> re.IGNORECASE)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The important part is not the exact spelling of that expression. It is the lookahead against every known field header. Each field is allowed to consume text until the next real field begins.</p>
+<p>That “first match” behavior is important. It prevents narrative text that happens to contain words like <code>LOCATION</code> from being mistaken for the real field header, because the real field appears earlier in the block.</p>
+<p>The evaluation work made the improvement measurable. A hand-labeled truth set of 50 PDFs covering 369 complaints was used to score extraction. On that evaluation set, the current V3 pipeline reached:</p>
+<table class="table">
+<colgroup>
+<col style="width: 43%">
+<col style="width: 56%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th style="text-align: right;">Current result on evaluation set</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Complaint recall</td>
+<td style="text-align: right;">100%</td>
+</tr>
+<tr class="even">
+<td>Complaint precision</td>
+<td style="text-align: right;">100%</td>
+</tr>
+<tr class="odd">
+<td>Field accuracy for offense/date/time/location/victim/narrative</td>
+<td style="text-align: right;">100%</td>
+</tr>
+<tr class="even">
+<td>Cascade failures</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>Those validation files live with the private ETL repository, not in the public dashboard repository. The public repo gets the generated data artifacts and the browser application. The private repo keeps the source PDFs, truth-set files, candidate outputs, scorer scripts, and manual review notes.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="op-crime-validation.svg" class="lightbox" data-glightbox="description: .lightbox-desc-4" data-gallery="quarto-lightbox-gallery-4" title="Validation workflow showing the labeled truth-set benchmark, full-corpus review flags, chunk review, re-geocode pass, and database artifact rebuild."><img src="op-crime-validation.svg" class="img-fluid figure-img" alt="Validation workflow with a private labeled truth set, candidate extraction, scorer output, review flags, review chunks, fixes, re-geocoding, and rebuild steps."></a></p>
+<figcaption>Validation workflow showing the labeled truth-set benchmark, full-corpus review flags, chunk review, re-geocode pass, and database artifact rebuild.</figcaption>
+</figure>
+</div>
+<p>That does not mean the source is now magically clean. It means the current extractor passed the labeled evaluation set, and then still needed the normal kind of manual checking that public-record data deserves. It is also a parser benchmark, not a completeness guarantee for the public dashboard. Oak Park controls what gets published and when it gets published, and there can be reporting delays or publication limits that no parser can recover from. I still keep a conservative 10 percent incompleteness buffer in the public framing, because that is the honest way to describe a derived dataset built from delayed public PDFs.</p>
+<p>The primary change here was using a different PDF parsing library really. I was aware when I first got the project going years ago that the broken text chunks were a problem, but the product was usable so it was ok. It wasn’t until I began exploring the data science aspect of the project that it became important to make sure the text was clean to feed into whatever nonsensical Machine Learning model is the flavor of the week. More on that in a future article, until then here’s the link to that project: <a href="https://opcrimeds.jesse-anderson.net/" class="uri">https://opcrimeds.jesse-anderson.net/</a></p>
 </section>
-<section id="Motivation" class="level2">
-<h2 class="anchored" data-anchor-id="Motivation"><strong>Motivation</strong></h2>
-<p>Tracking and analyzing crime data is crucial for fostering safer communities and enabling informed decision-making. While this tool is not designed nor should not be used in any informal or informal decision making per the disclaimers presented within the application it is my hope that it triggers discussion regarding using analytics to enable data driven decision making per my other projects both personal and professional. My journey to develop a comprehensive crime tracking tool for Oak Park was driven by the challenges and inefficiencies I encountered while navigating the Oak Park Police Department’s (OPPD) publicly available resources.</p>
-<section id="initial-challenges" class="level3">
-<h3 class="anchored" data-anchor-id="initial-challenges"><strong>Initial Challenges</strong></h3>
+<section id="data-modeling-preserving-real-records" class="level2">
+<h2 class="anchored" data-anchor-id="data-modeling-preserving-real-records">Data Modeling: Preserving Real Records</h2>
+<p>The current database schema moved away from complaint-number uniqueness. That sounds like a small database detail, but it changed the behavior of the whole project.</p>
+<p>In the older flat model, a single <code>crimes</code> table held everything: map fields, date fields, narrative text, victim text, source information, and coordinates. That was easy to understand, but it caused two problems:</p>
+<ol type="1">
+<li>It encouraged deduplication by complaint number.</li>
+<li>It forced the browser to load narrative and victim text even when the user only needed map points.</li>
+</ol>
+<p>The current schema uses two tables. The first table is what the map needs. The second table is what a person needs after they click a record.</p>
+<p><code>crimes</code> is the map layer:</p>
+<ul>
+<li><code>record_id</code></li>
+<li><code>complaint_num</code></li>
+<li><code>pdf_filename</code></li>
+<li><code>pdf_url</code></li>
+<li><code>block_position</code></li>
+<li><code>offense</code></li>
+<li><code>date</code></li>
+<li><code>location</code></li>
+<li><code>lat</code></li>
+<li><code>long</code></li>
+<li><code>zone_id</code></li>
+<li><code>zone_name</code></li>
+<li><code>year</code></li>
+<li><code>month</code></li>
+<li><code>day</code></li>
+<li><code>date_str</code></li>
+</ul>
+<p><code>crime_details</code> is the deferred detail layer:</p>
+<ul>
+<li><code>record_id</code></li>
+<li><code>time</code></li>
+<li><code>victim</code></li>
+<li><code>narrative</code></li>
+<li><code>date_raw</code></li>
+<li><code>source_page</code></li>
+<li><code>notes</code></li>
+</ul>
+<p><code>record_id</code> is the primary key. <code>complaint_num</code> is indexed, but it is not treated as unique. A deterministic natural key, <code>pdf_filename</code> plus <code>block_position</code>, keeps records stable without collapsing legitimate duplicate complaint numbers.</p>
+<p>That fixes several real cases:</p>
+<table class="table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Pattern</th>
+<th>Old behavior</th>
+<th>Current behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Multiple recoveries under one complaint number</td>
+<td>Kept one row</td>
+<td>Preserves every recovery record</td>
+</tr>
+<tr class="even">
+<td>Multiple offenses under one case</td>
+<td>Could drop one offense</td>
+<td>Preserves both offenses</td>
+</tr>
+<tr class="odd">
+<td>Theft and later recovery in different reports</td>
+<td>Could keep only one side</td>
+<td>Preserves both source records</td>
+</tr>
+</tbody>
+</table>
+<p>As of the April 27, 2026 build, the current database metadata reports 14,581 records in both <code>crimes</code> and <code>crime_details</code>. The generated artifacts in that build include:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="op-crime-schema.svg" class="lightbox" data-glightbox="description: .lightbox-desc-5" data-gallery="quarto-lightbox-gallery-5" title="Current V3 two-table schema showing crimes as the map layer and crime_details as the lazy-loaded detail layer."><img src="op-crime-schema.svg" class="img-fluid figure-img" alt="Two-table schema diagram showing the crimes map table joined to the crime_details table by record_id."></a></p>
+<figcaption>Current V3 two-table schema showing <code>crimes</code> as the map layer and <code>crime_details</code> as the lazy-loaded detail layer.</figcaption>
+</figure>
+</div>
+<table class="table">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 30%">
+<col style="width: 39%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Artifact</th>
+<th>Purpose</th>
+<th style="text-align: right;">Size</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>crime_data.duckdb</code></td>
+<td>Browser-attached DuckDB database</td>
+<td style="text-align: right;">7.01 MB</td>
+</tr>
+<tr class="even">
+<td><code>crime_data_v1.0.0.duckdb</code></td>
+<td>Legacy storage-version DuckDB build for WASM compatibility</td>
+<td style="text-align: right;">6.76 MB</td>
+</tr>
+<tr class="odd">
+<td><code>crimes.parquet</code></td>
+<td>Lightweight map layer</td>
+<td style="text-align: right;">0.58 MB</td>
+</tr>
+<tr class="even">
+<td><code>crime_details.parquet</code></td>
+<td>Deferred detail layer</td>
+<td style="text-align: right;">1.60 MB</td>
+</tr>
+<tr class="odd">
+<td><code>crimes.csv</code></td>
+<td>CSV backup of map layer</td>
+<td style="text-align: right;">4.10 MB</td>
+</tr>
+<tr class="even">
+<td><code>crime_details.csv</code></td>
+<td>CSV backup of detail layer</td>
+<td style="text-align: right;">3.80 MB</td>
+</tr>
+</tbody>
+</table>
+<p>The pipeline still emits multiple formats because they serve different roles. DuckDB is convenient for the current browser application. Parquet is the better transport shape for a future map-first load path. CSV remains useful because at some point you always want to open the thing in a normal tool and make sure it says what you think it says. I’d really rather not over optimize at this point. It works reasonably well and there’s plenty of optimizations I could make in the future to keep me occupied.</p>
+<p>The public repository also uses a split-license model: source code under MIT and data artifacts under Creative Commons Attribution 4.0 International. That split matches the project. The code should be easy to reuse as software, while the data should remain reusable with attribution and a clear disclaimer that it is not an official public-safety dataset. CC BY 4.0 is a good fit here because the goal is public-record transparency, not locking the generated dataset behind the project that produced it.</p>
 </section>
-<section id="embarking-on-a-solution" class="level3">
-<h3 class="anchored" data-anchor-id="embarking-on-a-solution"><strong>Embarking on a Solution</strong></h3>
+<section id="source-fidelity-and-review-flags" class="level2">
+<h2 class="anchored" data-anchor-id="source-fidelity-and-review-flags">Source Fidelity and Review Flags</h2>
+<p>The current extractor follows a “flag, don’t fix” policy.</p>
+<p>That means:</p>
+<ul>
+<li>complaint numbers are not zero-padded;</li>
+<li>letter/number substitutions are not silently corrected;</li>
+<li>dates are validated, but suspicious dates are not rewritten;</li>
+<li>source typos are preserved;</li>
+<li>missing fields remain missing;</li>
+<li>anomalies are surfaced through notes and review flags.</li>
+</ul>
+<p>The practical reason is simple: I do not want the pipeline inventing data. That matters more than squeezing out a tiny number of ugly records.</p>
+<p>For example, if a complaint number is printed with a letter <code>O</code>, the system should not silently decide that the police meant zero. If a PDF contains a strange date token, the system should flag it rather than infer a replacement from the report year. Those guesses might be right most of the time, but the cost of being wrong is that the system has created a record that never appeared in the source. I would rather have a review flag than a false sense of polish.</p>
+<p>The current review categories include:</p>
+<ul>
+<li><code>date_year_drift</code></li>
+<li><code>date_unparseable_token</code></li>
+<li><code>missing_field</code></li>
+<li><code>geocode_outside_oak_park</code></li>
+</ul>
+<p>Review flags do not block publication by themselves. Their job is to make uncertainty visible.</p>
+<p>An example of a pass that generates review flags is below:</p>
+<blockquote class="blockquote">
+<p>Flagged for Review — 2026-04-27 12:01:14 Total flagged: 4 ================================================================================</p>
+<p>Complaint #: 26-01939</p>
+<p>Date: 1900-01-01</p>
+<p>Offense: UNLAWFUL POSSESSION OF A WEAPON BY FELON ARREST</p>
+<p>Location: 1100 BLOCK OF LAKE</p>
+<p>Lat/Long: 41.8889519, -87.80295470000002</p>
+<p>Source PDF: summary-report-22-april-2026.pdf</p>
+<p>Block Pos: 4</p>
+<p>Reasons: date_unparseable: no valid token in ‘0706 HRS.’</p>
+<hr>
+<p>Complaint #: 25-03933</p>
+<p>Date: 2025-07-23</p>
+<p>Offense: BATTERY ARREST</p>
+<p>Location: 900 BLOCK OF W LAKE ST</p>
+<p>Lat/Long: 41.8859463, -87.65002659999999</p>
+<p>Source PDF: summary-report-23-24-july.pdf</p>
+<p>Block Pos: 6</p>
+<p>Reasons: geocode_outside_oak_park: (41.885946, -87.650027) for ‘900 BLOCK OF W LAKE ST’</p>
+<hr>
+<p>Complaint #: 19- 4305</p>
+<p>Date: 2019-07-30</p>
+<p>Offense: AGGRAVATED BATTERY TO LAW ENFORCEMENT OFFICER ARREST</p>
+<p>Location: 1500 MAYBROOK DR. MAYWOOD IL</p>
+<p>Lat/Long: 41.8730197, -87.82649889999999</p>
+<p>Source PDF: 24_hour_summary_report_31_july_2019.pdf</p>
+<p>Block Pos: 2</p>
+<p>Reasons: geocode_outside_oak_park: (41.873020, -87.826499) for ‘1500 MAYBROOK DR. MAYWOOD IL’</p>
+<hr>
+<p>Complaint #: 19-3747 Date: 2019-07-29</p>
+<p>Offense: BURGLARY ARREST</p>
+<p>Location: 1500 BLOCK OF S. MAYBROOK DRIVE, MAYWOOD</p>
+<p>Lat/Long: 41.8730197, -87.82649889999999</p>
+<p>Source PDF: 24_hour_summary_report_30_july_2019.pdf</p>
+<p>Block Pos: 2</p>
+<p>Reasons: geocode_outside_oak_park: (41.873020, -87.826499) for ‘1500 BLOCK OF S. MAYBROOK DRIVE, MAYWOOD’</p>
+<hr>
+</blockquote>
+<p>As you can see it is pretty easy to acknowledge several of these are valid. Maywood is outside of Oak Park. The date encoding as a time is another issue and the 900 W Block of Lake Street needs to be checked manually then likely added to the JSON file as a valid encoding alongside its true location in Oak Park. There is some manual work here and there as I encounter one off issues, but for the most part at this point in time nearly everything is automated.</p>
 </section>
-<section id="overcoming-technical-hurdles" class="level3">
-<h3 class="anchored" data-anchor-id="overcoming-technical-hurdles"><strong>Overcoming Technical Hurdles</strong></h3>
+<section id="bugs-that-changed-the-design" class="level2">
+<h2 class="anchored" data-anchor-id="bugs-that-changed-the-design">Bugs That Changed the Design</h2>
+<p>The current design is mostly a collection of lessons from bugs I did not want to keep solving one at a time.</p>
+<p>The first class was source-format weirdness. A complaint number like <code>25-O3750</code> looks like a typo if you assume every character after the dash should be a digit. It may even be a typo in the original report. But if the pipeline turns that into <code>25-03750</code>, the output no longer matches the source. The current rule is to preserve it and flag it if needed.</p>
+<p>The second class was date damage and date ambiguity. <code>30-JUN-148</code> is not a date I want a parser quietly repairing. The earlier instinct was to infer the year from the report filename or nearby context. The better answer is to validate the date, keep the raw token visible, and mark the record for review.</p>
+<p>The third class was duplicate complaint numbers. <code>18-1802</code> showed up multiple times for separate Hertz vehicle recoveries. An ordinary deduplication rule would collapse that into one row. For a map, that is wrong. Those recoveries are separate records with separate locations, even if they share a complaint number.</p>
+<p>The fourth class was geocoding. Some records legitimately point outside Oak Park: Chicago, Maywood, Cicero, Forest Park, and other surrounding places appear in the reports because incidents, arrests, recoveries, and related case activity do not always happen inside village boundaries. Other records are Oak Park addresses that a geocoder can place incorrectly, especially on border streets or ambiguous block descriptions. The review chunks split those cases apart: legitimate outside-Oak-Park records stay flagged as outside, while likely geocode errors can be queued for a re-geocode pass.</p>
+<p>That audit work was chunked deliberately. My private <code>review_chunks/chunk_*.md</code> files walk through 726 flagged items: unparseable dates, year drift, missing fields, geocode-outside-Oak-Park flags, legitimate non-Oak-Park incidents, and likely geocode errors. Working through those flags removes many possible future issues, but it is also part of an ongoing audit workflow. It was miserable to get through them, but its one and done as each peculiar record adds a new rule or geocoding prevents future issues. Realistically, of the 726 items, maybe 50 or so were true narrative errors or some issue in geocoding. Most were outside of Oak Park getting flagged. 50/~14000 = &lt;0.5% which is good enough for me.</p>
 </section>
-<section id="creating-insightful-visualizations" class="level3">
-<h3 class="anchored" data-anchor-id="creating-insightful-visualizations"><strong>Creating Insightful Visualizations</strong></h3>
+<section id="browser-dashboard-duckdb-wasm-leaflet-and-caching" class="level2">
+<h2 class="anchored" data-anchor-id="browser-dashboard-duckdb-wasm-leaflet-and-caching">Browser Dashboard: DuckDB-WASM, Leaflet, and Caching</h2>
+<p>The public dashboard runs as a static web application. There is no server-side query API in the hot path. The page loads DuckDB-WASM, downloads the generated database file, attaches it read-only, and queries it directly in the browser. DuckDB-WASM was already the direction in the earlier public dashboard, so the current win was not “discover DuckDB.” The win was making the data shape, runtime caching, and map rendering match that decision. This resulted in a browser application with a small analytical database sitting next to the UI.</p>
+<p>The map is built with Leaflet. It has marker clusters for incidents, a heatmap layer, Oak Park policing zones, date and offense filters, text search, zone filtering, CSV export, and a center button to get back to Oak Park after panning away.</p>
+<p>The current dashboard only loads map-level fields for normal browsing. Time, victim, and narrative live in <code>crime_details</code>, and are loaded when a user opens a popup. That changes the interaction model: the map query stays smaller, the browser does not hold every narrative string just to draw points, popup details are still available when the user asks for them, and exports can still join detail fields when needed. I did not notice all that much of a speed increase with this new design decision, but it was more logical so I kept it. The caching strategy was marginally more important, but actually clean data was the clear win, at least for me.</p>
+<p>The public application also has a layered cache strategy(convoluted??). The dashboard has three different cold paths, and they differ in policy:</p>
+<ul>
+<li>DuckDB-WASM runtime files are large, change rarely, and affect startup time.</li>
+<li>The generated <code>.duckdb</code> file changes on the public data cadence.</li>
+<li>OpenStreetMap tiles are small, numerous, and matter most while a user is panning or zooming.</li>
+</ul>
+<p>Treating those as one generic cache would either keep stale data too long or throw away expensive runtime and tile work too early. I do not wish to anger the OpenStreetMaps developer who blesseth me with tiles. The current version splits them into separate browser caches with separate freshness rules.</p>
+<p>Deployment is intentionally simple: static assets on a custom domain, fed by a custom ETL pipeline that publishes the generated data artifacts. Most of the interesting work happens before deployment or inside the browser after the page loads.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="op-crime-cache.svg" class="lightbox" data-glightbox="description: .lightbox-desc-6" data-gallery="quarto-lightbox-gallery-6" title="Current cache and data-loading diagram showing the service-worker routing layer, DuckDB-WASM runtime cache, 11-hour DuckDB data cache, two-tier OpenStreetMap tile cache, bounded adjacent-tile look-ahead, and rendering buffers used to reduce blank blocks while panning."><img src="op-crime-cache.svg" class="img-fluid figure-img" alt="Browser cache architecture showing separate service-worker handling for DuckDB runtime assets, DuckDB data files, OpenStreetMap tiles, bounded adjacent-tile look-ahead, and rendering buffers."></a></p>
+<figcaption>Current cache and data-loading diagram showing the service-worker routing layer, DuckDB-WASM runtime cache, 11-hour DuckDB data cache, two-tier OpenStreetMap tile cache, bounded adjacent-tile look-ahead, and rendering buffers used to reduce blank blocks while panning.</figcaption>
+</figure>
+</div>
+<p>The cache policy is intentionally explicit:</p>
+<table class="table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Cache</th>
+<th>Contents</th>
+<th>Freshness rule</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>DuckDB runtime</td>
+<td>DuckDB ES module, worker, and WASM binary</td>
+<td>365-day service-worker TTL, reinforced by static headers for WASM</td>
+<td>Cache-first because these files are expensive and rarely change</td>
+</tr>
+<tr class="even">
+<td>DuckDB data</td>
+<td>Generated <code>.duckdb</code> files</td>
+<td>11-hour TTL</td>
+<td>Fresh cache returns immediately; stale cache tries network first and falls back only if refresh fails</td>
+</tr>
+<tr class="odd">
+<td>Tile backbone</td>
+<td>OpenStreetMap tiles at zoom levels 9-13 inside the Oak Park cache radius</td>
+<td>14-day TTL</td>
+<td>Small orientation cache, bounded by geography</td>
+</tr>
+<tr class="even">
+<td>Tile hot cache</td>
+<td>OpenStreetMap tiles at zoom levels 14-18 inside the Oak Park cache radius</td>
+<td>30-day TTL, capped at 5,000 entries</td>
+<td>High-zoom browsing cache, LRU-trimmed around an observed 85 MB ceiling</td>
+</tr>
+</tbody>
+</table>
+<section id="service-worker-routing" class="level3">
+<h3 class="anchored" data-anchor-id="service-worker-routing">Service Worker Routing</h3>
+<p>The service worker is the routing layer for the expensive repeat requests. It does not blindly cache every request. It classifies traffic into DuckDB runtime assets, DuckDB data files, and OpenStreetMap tile requests. Each class has its own cache name, TTL, and failure behavior.</p>
+<p>Freshness is tracked with a <code>sw-cached-at</code> response header written by the service worker. That avoids treating every cached response as equally fresh. The cache can make a deliberate decision: return a fresh asset immediately, serve a stale tile while refreshing it in the background, or attempt a network refresh before falling back to stale data.</p>
+<p>The page registers the service worker before DuckDB initialization. That matters because the WASM path is part of startup cost. If the runtime files are already in CacheStorage, the app can avoid paying the full DuckDB-WASM fetch cost on every repeat visit. The page also keeps a roughly 25-second ping running against the service worker, which reduces the chance that the next tile request pays a service-worker cold-start penalty during map movement. When the browser supports it, the page asks for persistent storage so the tile and data caches are less likely to be evicted under storage pressure.</p>
 </section>
-<section id="expanding-analytical-capabilities" class="level3">
-<h3 class="anchored" data-anchor-id="expanding-analytical-capabilities"><strong>Expanding Analytical Capabilities</strong></h3>
+<section id="duckdb-runtime-cache" class="level3">
+<h3 class="anchored" data-anchor-id="duckdb-runtime-cache">DuckDB Runtime Cache</h3>
+<p>DuckDB-WASM is not one file. The browser needs the ES module, the worker, and the WASM binary. Those runtime files are cached separately from the data with a long-lived policy because they change far less often than the crime records.</p>
+<p>The runtime cache covers the local DuckDB assets used by the app, and the page has a CacheStorage-backed fallback for runtime URLs that need to be loaded as worker or WASM resources. In practice, that means the browser can reuse the runtime even when DuckDB initialization asks for those assets through a path that would otherwise bypass a simple static-file cache.</p>
+<p>The hosting headers reinforce the same idea. The WASM binary is served with a long immutable cache policy, while the JavaScript wrapper files have a shorter static cache policy. The service-worker runtime cache gives the app another layer of control on top of normal HTTP cache behavior.</p>
 </section>
-<section id="personal-satisfaction-and-practical-usage" class="level3">
-<h3 class="anchored" data-anchor-id="personal-satisfaction-and-practical-usage"><strong>Personal Satisfaction and Practical Usage</strong></h3>
+<section id="duckdb-data-cache" class="level3">
+<h3 class="anchored" data-anchor-id="duckdb-data-cache">DuckDB Data Cache</h3>
+<p>The generated <code>.duckdb</code> file is intentionally not cached like the runtime. The data changes twice per day, so the browser pins the data file for 11 hours. That is long enough to make same-day repeat visits fast, but short enough that the dashboard does not quietly hold a stale database across multiple public update cycles. 11 hours was arbitrary; I will likely shorten it to 8 hours, enough for a work day sitting down and observing the crimes of the week.</p>
+<p>The failure mode matters. If the cached database is still fresh, it is returned directly. If it is stale, the service worker tries the network first. If the network refresh fails and a cached copy exists, the app can still open with the stale database instead of failing into a blank dashboard.</p>
+</section>
+<section id="tile-cache" class="level3">
+<h3 class="anchored" data-anchor-id="tile-cache">Tile Cache</h3>
+<p>OpenStreetMap tiles are cached by a service worker, but only around Oak Park. The cache uses a 5-mile radius around Oak Park Village Hall so normal use gets faster while unrelated browsing is left alone. Requests outside that geography, outside the supported zoom bands, or outside the approved OSM hosts pass through normally.</p>
+<p>There are two tile tiers. The backbone tier covers zoom levels 9 through 13. It is small, bounded by geometry, and exists so low-zoom orientation tiles are available quickly. The hot tier covers zoom levels 14 through 18, where normal street-level browsing happens.</p>
+<p>The hot cache is capped at 5,000 entries, roughly an 85 MB ceiling in observed use. It is LRU-trimmed with lightweight in-memory touch tracking so the app does not need to write an IndexedDB record every time a tile is used. Cached tiles are returned immediately. If a cached tile is stale, the service worker refreshes it in the background instead of making the user wait on the refresh.</p>
+<p>The service worker itself does not bulk download or seed tiles. It fills the cache from normal Leaflet requests and from a small adjacent-tile look-ahead that runs only after human map movement settles. That look-ahead stays at the current zoom, remains inside the Oak Park cache radius plus a small margin, and is intended to smooth normal interactive panning rather than create an offline tile archive.</p>
+<p>I did notice some speed up with the tile cache and on desktop my experience is far better to quickly pan around and see what happened where.</p>
+</section>
+<section id="panning-and-rendering-work" class="level3">
+<h3 class="anchored" data-anchor-id="panning-and-rendering-work">Panning and Rendering Work</h3>
+<p>The rendering work is separate from the data loading work, but it solves the same user-visible problem: blank blocks and stalls while moving the map. The dashboard now uses several browser-side optimizations to reduce pan and zoom friction:</p>
+<ul>
+<li>desktop Leaflet <code>keepBuffer</code> is set to 8, while mobile stays lower;</li>
+<li>marker cluster animation is disabled during bulk rebuilds;</li>
+<li>the heatmap raster is buffered to the viewport plus 75 percent padding in each direction, so modest pans can translate an existing canvas instead of immediately rebuilding the whole heatmap;</li>
+<li>the heatmap canvas gets a <code>willReadFrequently</code> hint because the plugin reads pixel data during pan and zoom work;</li>
+<li>policing zones render on a larger padded canvas so they repaint less often;</li>
+<li>after a one-second idle pause following map movement, the page requests a small outer ring of nearby tiles as short-range look-ahead;</li>
+<li>late automatic <code>fitBounds</code> calls are suppressed once the user has moved the map.</li>
+</ul>
+<p>These are memory-for-smoothness tradeoffs. The page can use more memory than the earlier version because it is keeping tile rings, buffered rasters, and cached runtime work available. That is acceptable here because the application is a map exploration tool. A slightly larger memory footprint is preferable to a map that visibly stalls every time the user pans across the neighborhood. I will gladly take 100-200 mb more memory for a much faster time to analysis. As a side note, I was launching myself around the world as I had inertia settings on which meant a slight pause in processing would make the engine think I was swiping at the speed of light. Fun time debugging that.</p>
+</section>
+</section>
+<section id="what-improved" class="level2">
+<h2 class="anchored" data-anchor-id="what-improved">What Improved</h2>
+<p>The most important improvement is reliability. V3 is not merely faster; it is less likely to lose or distort records, which matters more for this project than a flashy UI change.</p>
+<p>Extraction improved because the pipeline stopped treating PyPDF2 layout damage as an OCR problem. The current pdfplumber plus normalization approach produces cleaner text, and the parser can stay simpler.</p>
+<p>Data fidelity improved because duplicate complaint numbers are preserved instead of collapsed. That matters for recoveries, multi-offense cases, and events that appear across multiple reports. For some inexplicable reason in my head I thought that each crime got its own number even if it was a separate day, but related instance.</p>
+<p>Browser performance improved because map rendering and detail display are now separate operations. The user can draw the map from the <code>crimes</code> layer and only pay for narratives when opening a specific record. That is a better fit for how people actually use the map: pan, zoom, filter, click a few records, and move on. I, on the other hand, type the most unhinged thing into the search bar for the narrative then see if I get a hit!</p>
+<p>The database build now has a clear web target. DuckDB-WASM was already part of the direction, but the two-table design made that decision pay off more. The map no longer needs to load every narrative and victim field just to draw points, and Parquet gives the project a cleaner future transport format than a single flat CSV.</p>
+<p>The performance notes from the V3 redesign show the direction:</p>
+<table class="table">
+<colgroup>
+<col style="width: 29%">
+<col style="width: 23%">
+<col style="width: 23%">
+<col style="width: 23%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th style="text-align: right;">Previous flat layout</th>
+<th style="text-align: right;">V3 split layout</th>
+<th style="text-align: right;">Change</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Initial map data payload</td>
+<td style="text-align: right;">2,020 KB</td>
+<td style="text-align: right;">445 KB</td>
+<td style="text-align: right;">-78%</td>
+</tr>
+<tr class="even">
+<td>Detail payload</td>
+<td style="text-align: right;">Included up front</td>
+<td style="text-align: right;">Deferred</td>
+<td style="text-align: right;">Loaded on demand</td>
+</tr>
+<tr class="odd">
+<td>Full map load query</td>
+<td style="text-align: right;">92.3 ms</td>
+<td style="text-align: right;">51.0 ms</td>
+<td style="text-align: right;">-45%</td>
+</tr>
+<tr class="even">
+<td>Detail lookup on pin click</td>
+<td style="text-align: right;">1.6 ms</td>
+<td style="text-align: right;">1.1 ms</td>
+<td style="text-align: right;">-31%</td>
+</tr>
+</tbody>
+</table>
+<p>Those numbers were measured locally on the generated DuckDB/Parquet artifacts. Real-world browser performance still depends on network, device, viewport size, and cache state, but the structural improvement is the important part: the browser no longer needs every field to render the first useful map.</p>
+</section>
+<section id="remaining-caveats" class="level2">
+<h2 class="anchored" data-anchor-id="remaining-caveats">Remaining Caveats</h2>
+<p>The project is still constrained by the source.</p>
+<p>The official reports are PDFs. They are not an API, and they are not guaranteed to have stable formatting forever. A future report template change could break assumptions that are currently valid. That is why the extraction pipeline has a truth set, review flags, and a bias toward preserving source text rather than rewriting it. Maybe a FOIA request for a csv of everything including pre 2018 data would be in the works if this project ever picks up traction. Writing these blog posts is like screaming into the void.</p>
+<p>Geocoding is also imperfect. Police report locations are often block-level descriptions rather than exact addresses. Some incidents occur outside Oak Park. Some location strings are ambiguous. The system can assign coordinates and zones where possible, but a map point should not be read as a precise legal location. That is actually quite useful for me since that means we don’t track individual crimes to addresses which is its own ethical conundrum.</p>
+<p>The public dashboard is a demonstration interface. It is useful for exploration, discussion, and technical transparency. It is not an official public safety system, and I do not want the interface to imply otherwise. Thus the heavy handed disclaimer that likely dissuades most users from even viewing it!</p>
+</section>
+<section id="why-this-matters" class="level2">
+<h2 class="anchored" data-anchor-id="why-this-matters">Why This Matters</h2>
+<p>This project is a small example of a larger data engineering problem: public records are often technically public but operationally hard to use.</p>
+<p>A PDF archive satisfies publication requirements, but it does not make the data easy to search, compare, map, or audit. Turning those PDFs into a browser-based analytical tool required the unglamorous layers: acquisition, extraction, validation, geocoding, schema design, browser transport, map rendering, caching, and disclaimers. None of those pieces are individually exotic. The work is in getting them to stop fighting each other.</p>
+<p>The current architecture is better because each layer now has a clear job.</p>
+<p>The private pipeline turns messy public documents into structured artifacts without pretending the source is perfect. The public dashboard makes those artifacts explorable without requiring a backend query server. DuckDB-WASM makes local browser analytics practical. Leaflet makes the spatial interface familiar. The service worker makes repeat use fast enough to feel like an application rather than a static data dump.</p>
+<p>The most useful lesson is that performance and correctness were connected. The same redesign that made the dashboard faster also made the data model more honest. Splitting map fields from detail fields reduced browser load. Replacing complaint-number deduplication with <code>record_id</code> preserved real events. Fixing PDF text extraction reduced parser complexity. Caching the runtime, tiles, and data improved repeat visits without changing the source of truth. Or I decided to dedicate more brain power in the search of correctness and performance naturally followed. Anyway..</p>
+<p>What this project needed wasn’t a bigger regex or some non zero cost server, but a cleaner pipeline. For me, this project is primarily data engineering in service of public record transparency. I wanted to make the records easier to explore, render any source limitations clearly visible, and clearly delineate where my tooling stands vs the official records. Again, this is my own project, not affiliated with any entity beyond myself as of Late April 2026.</p>
+<p>If you’ve made it this far congrats! : )</p>
+<p>The old app used to look like this:</p>
+<p><a href="image_old.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-7"><img src="image_old.jpg" class="img-fluid"></a></p>
+<p>Notice the lack of an overlay, the (i) records, no search functionality, and the fact that all the records were dumped at once. It is pretty nice to be able to have a before and after. Placed at the tail end since nobody cares how things used to look.</p>
+<p>Thanks for reading,</p>
+<p>Jesse</p>
 
 
-</section>
+<div class="hidden" aria-hidden="true">
+<span class="glightbox-desc lightbox-desc-1">Image showing the Oak Park Crime Map with gun in the Search descriptions showing 437 crimes with the word “gun” across all zones + outside of Oak Park. Heatmap off for cleanliness.</span>
+<span class="glightbox-desc lightbox-desc-2">Project evolution from the Streamlit CSV prototype through PyPDF2 extraction, the V2 pdfplumber/regex bridge, and the current V3 pipeline plus browser dashboard.</span>
+<span class="glightbox-desc lightbox-desc-3">Oak Park PDFs flow into the private parser, geocoder, and database build, then into the static public DuckDB-WASM dashboard.</span>
+<span class="glightbox-desc lightbox-desc-4">Validation workflow showing the labeled truth-set benchmark, full-corpus review flags, chunk review, re-geocode pass, and database artifact rebuild.</span>
+<span class="glightbox-desc lightbox-desc-5">Current V3 two-table schema showing <code>crimes</code> as the map layer and <code>crime_details</code> as the lazy-loaded detail layer.</span>
+<span class="glightbox-desc lightbox-desc-6">Current cache and data-loading diagram showing the service-worker routing layer, DuckDB-WASM runtime cache, 11-hour DuckDB data cache, two-tier OpenStreetMap tile cache, bounded adjacent-tile look-ahead, and rendering buffers used to reduce blank blocks while panning.</span>
+</div>
 </section>
 
 </main> <!-- /main -->
@@ -974,6 +1540,31 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","closeEffect":"zoom","loop":false,"openEffect":"zoom","descPosition":"bottom"});
+window.onload = () => {
+  lightboxQuarto.on('slide_before_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    const href = trigger.getAttribute('href');
+    if (href !== null) {
+      const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+      if (imgEl !== null) {
+        const srcAttr = imgEl.getAttribute("src");
+        if (srcAttr && srcAttr.startsWith("data:")) {
+          slideConfig.href = srcAttr;
+        }
+      }
+    } 
+  });
+
+  lightboxQuarto.on('slide_after_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    if (window.Quarto?.typesetMath) {
+      window.Quarto.typesetMath(slideNode);
+    }
+  });
+
+};
+          </script>
 
 
 
