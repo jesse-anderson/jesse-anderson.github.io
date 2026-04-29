@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Oak Park crime dashboard build and runtime flow</title>
+  <desc id="desc">The build flow runs from public police PDFs through the map ETL, public parquet files, the private dashboard pipeline, and publish outputs. The runtime flow starts in the browser, loads the static dashboard from Cloudflare Pages, and reads large binary artifacts through a Pages Function backed by R2.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f8fafc; }
+      .lane { fill: #ffffff; stroke: #e2e8f0; stroke-width: 1.5; rx: 12; }
+      .box { fill: #ffffff; stroke: #cbd5e1; stroke-width: 2; rx: 8; }
+      .public { fill: #eef2ff; stroke: #818cf8; }
+      .private { fill: #fff7ed; stroke: #fdba74; }
+      .publish { fill: #fef9c3; stroke: #eab308; }
+      .r2 { fill: #ecfeff; stroke: #06b6d4; }
+      .runtime { fill: #f0fdf4; stroke: #22c55e; }
+      .title { font: 700 23px system-ui, -apple-system, Segoe UI, sans-serif; fill: #111827; }
+      .laneTitle { font: 700 13px system-ui, -apple-system, Segoe UI, sans-serif; fill: #64748b; text-transform: uppercase; letter-spacing: .06em; }
+      .label { font: 700 14px system-ui, -apple-system, Segoe UI, sans-serif; fill: #111827; }
+      .small { font: 12px system-ui, -apple-system, Segoe UI, sans-serif; fill: #475569; }
+      .note { font: 12px system-ui, -apple-system, Segoe UI, sans-serif; fill: #64748b; }
+      .buildArrow { stroke: #475569; stroke-width: 2.4; fill: none; marker-end: url(#buildHead); }
+      .publishArrow { stroke: #a16207; stroke-width: 2.4; fill: none; marker-end: url(#publishHead); }
+      .runtimeArrow { stroke: #059669; stroke-width: 2.4; fill: none; marker-end: url(#runtimeHead); }
+    </style>
+    <marker id="buildHead" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#475569"/>
+    </marker>
+    <marker id="publishHead" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#a16207"/>
+    </marker>
+    <marker id="runtimeHead" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#059669"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1280" height="720"/>
+  <text class="title" x="48" y="52">OP Crime Data Science Dashboard: build flow and runtime reads</text>
+  <text class="note" x="48" y="78">Build writes artifacts. Runtime only reads the published site and R2-backed binary files.</text>
+
+  <rect class="lane" x="40" y="112" width="1200" height="260"/>
+  <text class="laneTitle" x="64" y="142">Build and publish flow</text>
+
+  <rect class="box public" x="70" y="182" width="140" height="86"/>
+  <text class="label" x="92" y="212">OP PD PDFs</text>
+  <text class="small" x="92" y="236">Daily bulletins</text>
+  <text class="small" x="92" y="254">public source</text>
+
+  <rect class="box private" x="240" y="182" width="150" height="86"/>
+  <text class="label" x="262" y="212">Map ETL</text>
+  <text class="small" x="262" y="236">parse, geocode</text>
+  <text class="small" x="262" y="254">assign zones</text>
+
+  <rect class="box public" x="420" y="182" width="170" height="86"/>
+  <text class="label" x="442" y="212">Public parquet</text>
+  <text class="small" x="442" y="236">crimes.parquet</text>
+  <text class="small" x="442" y="254">crime_details</text>
+
+  <rect class="box private" x="620" y="182" width="185" height="86"/>
+  <text class="label" x="642" y="212">Dashboard build</text>
+  <text class="small" x="642" y="236">enrich, aggregate</text>
+  <text class="small" x="642" y="254">compile React + WASM</text>
+
+  <rect class="box publish" x="835" y="182" width="130" height="86"/>
+  <text class="label" x="857" y="212">Publish</text>
+  <text class="small" x="857" y="236">stage outputs</text>
+  <text class="small" x="857" y="254">manifest last</text>
+
+  <path class="buildArrow" d="M210 225 H240"/>
+  <path class="buildArrow" d="M390 225 H420"/>
+  <path class="buildArrow" d="M590 225 H620"/>
+  <path class="buildArrow" d="M805 225 H835"/>
+
+  <rect class="box public" x="1010" y="180" width="120" height="50"/>
+  <text class="label" x="1028" y="211">Public git</text>
+
+  <rect class="box public" x="1150" y="180" width="80" height="50"/>
+  <text class="label" x="1166" y="211">Pages</text>
+
+  <rect class="box r2" x="1010" y="285" width="140" height="50"/>
+  <text class="label" x="1030" y="316">R2 bucket</text>
+
+  <path class="publishArrow" d="M965 205 H1010"/>
+  <path class="publishArrow" d="M1130 205 H1150"/>
+  <path class="publishArrow" d="M900 268 V310 H1010"/>
+
+  <text class="note" x="600" y="360">Small artifacts deploy through git. Large binary blobs upload to R2.</text>
+
+  <rect class="lane" x="40" y="410" width="1200" height="220"/>
+  <text class="laneTitle" x="64" y="440">Browser runtime flow</text>
+
+  <rect class="box runtime" x="95" y="500" width="160" height="70"/>
+  <text class="label" x="118" y="530">Browser</text>
+  <text class="small" x="118" y="552">user session</text>
+
+  <rect class="box public" x="345" y="490" width="190" height="90"/>
+  <text class="label" x="368" y="520">Cloudflare Pages</text>
+  <text class="small" x="368" y="544">SPA, JSON, parquet</text>
+  <text class="small" x="368" y="562">WASM modules</text>
+
+  <rect class="box public" x="625" y="490" width="190" height="90"/>
+  <text class="label" x="648" y="520">/r2/* Function</text>
+  <text class="small" x="648" y="544">same public domain</text>
+  <text class="small" x="648" y="562">proxies binary reads</text>
+
+  <rect class="box r2" x="905" y="490" width="205" height="90"/>
+  <text class="label" x="928" y="520">Private R2 bucket</text>
+  <text class="small" x="928" y="544">incident vectors</text>
+  <text class="small" x="928" y="562">metadata blobs</text>
+
+  <path class="runtimeArrow" d="M255 535 H345"/>
+  <path class="runtimeArrow" d="M535 535 H625"/>
+  <path class="runtimeArrow" d="M815 535 H905"/>
+
+  <text class="note" x="96" y="662">There is no browser write path back to the ETL, public git repo, or upstream source data.</text>
+</svg>

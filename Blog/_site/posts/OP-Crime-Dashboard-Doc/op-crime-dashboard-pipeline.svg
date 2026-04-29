@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="680" viewBox="0 0 1280 680" role="img" aria-labelledby="title desc">
+  <title id="title">Dashboard pipeline grouped phase flow</title>
+  <desc id="desc">The dashboard pipeline is shown as grouped phases: fetch public parquet, build a timed incident table, enrich context and text, build browser artifacts, and publish public git and R2 outputs.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f8fafc; }
+      .group { fill: #ffffff; stroke: #cbd5e1; stroke-width: 2; rx: 10; }
+      .input { fill: #eef2ff; stroke: #818cf8; }
+      .core { fill: #ecfeff; stroke: #06b6d4; }
+      .enrich { fill: #fef3c7; stroke: #f59e0b; }
+      .build { fill: #dcfce7; stroke: #22c55e; }
+      .ship { fill: #e0f2fe; stroke: #38bdf8; }
+      .chip { fill: #ffffff; stroke: #e2e8f0; stroke-width: 1.3; rx: 6; }
+      .title { font: 700 23px system-ui, -apple-system, Segoe UI, sans-serif; fill: #111827; }
+      .label { font: 700 14px system-ui, -apple-system, Segoe UI, sans-serif; fill: #111827; }
+      .small { font: 12px system-ui, -apple-system, Segoe UI, sans-serif; fill: #475569; }
+      .note { font: 12px system-ui, -apple-system, Segoe UI, sans-serif; fill: #64748b; }
+      .arrow { stroke: #475569; stroke-width: 2.4; fill: none; marker-end: url(#head); }
+      .softArrow { stroke: #94a3b8; stroke-width: 2; fill: none; marker-end: url(#softHead); }
+    </style>
+    <marker id="head" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#475569"/>
+    </marker>
+    <marker id="softHead" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#94a3b8"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1280" height="680"/>
+  <text class="title" x="48" y="52">Dashboard pipeline: coarse flow by phase group</text>
+  <text class="note" x="48" y="78">This view favors readability over every individual cache edge. The phase table in the article carries exact names and responsibilities.</text>
+
+  <rect class="group input" x="60" y="135" width="180" height="350"/>
+  <text class="label" x="84" y="170">1. Fetch</text>
+  <rect class="chip" x="82" y="205" width="136" height="44"/>
+  <text class="label" x="98" y="233">fetch_upstream</text>
+  <text class="small" x="84" y="288">Pull public parquet</text>
+  <text class="small" x="84" y="308">from Oak-Park-Crime:</text>
+  <text class="small" x="84" y="336">crimes.parquet</text>
+  <text class="small" x="84" y="356">crime_details.parquet</text>
+
+  <rect class="group core" x="300" y="135" width="180" height="350"/>
+  <text class="label" x="324" y="170">2. Normalize</text>
+  <rect class="chip" x="322" y="205" width="136" height="44"/>
+  <text class="label" x="342" y="233">parse_time</text>
+  <text class="small" x="324" y="288">Create one timed</text>
+  <text class="small" x="324" y="308">incident table with</text>
+  <text class="small" x="324" y="336">start, end, midpoint,</text>
+  <text class="small" x="324" y="356">duration, and date.</text>
+
+  <rect class="group enrich" x="540" y="105" width="300" height="410"/>
+  <text class="label" x="564" y="140">3. Enrich context</text>
+  <text class="small" x="564" y="162">Independent caches, joined later by builders.</text>
+
+  <rect class="chip" x="565" y="190" width="116" height="42"/>
+  <text class="label" x="580" y="217">calendar</text>
+  <rect class="chip" x="700" y="190" width="116" height="42"/>
+  <text class="label" x="721" y="217">weather</text>
+
+  <rect class="chip" x="565" y="255" width="116" height="42"/>
+  <text class="label" x="586" y="282">census</text>
+  <rect class="chip" x="700" y="255" width="116" height="42"/>
+  <text class="label" x="720" y="282">regional</text>
+  <text class="small" x="716" y="317">future layer</text>
+
+  <rect class="chip" x="565" y="350" width="116" height="42"/>
+  <text class="label" x="581" y="377">narratives</text>
+  <path class="softArrow" d="M681 371 H700"/>
+  <rect class="chip" x="700" y="350" width="116" height="42"/>
+  <text class="label" x="718" y="377">embeddings</text>
+  <path class="softArrow" d="M758 392 V412"/>
+  <rect class="chip" x="700" y="412" width="116" height="42"/>
+  <text class="label" x="728" y="439">topics</text>
+  <text class="small" x="565" y="488">Calendar, weather, and census add context.</text>
+  <text class="small" x="565" y="506">Narratives feed embeddings and topics.</text>
+
+  <rect class="group build" x="900" y="135" width="190" height="350"/>
+  <text class="label" x="924" y="170">4. Build artifacts</text>
+  <rect class="chip" x="922" y="205" width="146" height="42"/>
+  <text class="label" x="942" y="232">aggregates</text>
+  <rect class="chip" x="922" y="262" width="146" height="42"/>
+  <text class="label" x="949" y="289">search</text>
+  <rect class="chip" x="922" y="319" width="146" height="42"/>
+  <text class="label" x="944" y="346">similarity</text>
+  <rect class="chip" x="922" y="376" width="146" height="42"/>
+  <text class="label" x="943" y="403">frontend</text>
+  <text class="small" x="924" y="455">JSON, parquet, WASM,</text>
+  <text class="small" x="924" y="475">SPA, vector payloads.</text>
+
+  <rect class="group ship" x="1140" y="135" width="100" height="350"/>
+  <text class="label" x="1162" y="170">5. Ship</text>
+  <rect class="chip" x="1155" y="205" width="70" height="42"/>
+  <text class="label" x="1168" y="232">R2</text>
+  <rect class="chip" x="1155" y="272" width="70" height="42"/>
+  <text class="label" x="1168" y="299">git</text>
+  <rect class="chip" x="1155" y="339" width="70" height="42"/>
+  <text class="label" x="1162" y="366">Pages</text>
+  <text class="small" x="1158" y="430">publish</text>
+  <text class="small" x="1158" y="450">writes</text>
+  <text class="small" x="1158" y="470">last</text>
+
+  <path class="arrow" d="M240 310 H300"/>
+  <path class="arrow" d="M480 310 H540"/>
+  <path class="arrow" d="M840 310 H900"/>
+  <path class="arrow" d="M1090 310 H1140"/>
+
+  <text class="note" x="60" y="585">Builders are the convergence point: aggregate panels read enriched tabular caches, search reads narrative plus time metadata, and similarity reads topics plus embeddings.</text>
+  <text class="note" x="60" y="610">Publish keeps the public git tree small and sends the large binary artifacts to R2 before the manifest points clients at them.</text>
+</svg>

@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.553">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Jesse Anderson">
+<meta name="dcterms.date" content="2026-04-28">
+
+<title>Jesse Anderson’s Blog - Building an Oak Park Crime Data Science Dashboard</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/cookie-consent/cookie-consent.js"></script>
+<link href="../../site_libs/cookie-consent/cookie-consent.css" rel="stylesheet">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-5CSPYCMY55"></script>
+
+<script type="text/plain" cookie-consent="tracking">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-5CSPYCMY55', { 'anonymize_ip': true});
+</script>
+
+<script type="text/javascript" charset="UTF-8">
+document.addEventListener('DOMContentLoaded', function () {
+cookieconsent.run({
+  "notice_banner_type":"simple",
+  "consent_type":"implied",
+  "palette":"light",
+  "language":"en",
+  "page_load_consent_levels":["strictly-necessary","functionality","tracking","targeting"],
+  "notice_banner_reject_button_hide":false,
+  "preferences_center_close_button_hide":false,
+  "website_name":""
+  ,
+"language":"en"
+  });
+});
+</script> 
+  
+
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="Jesse Anderson’s Blog - Building an Oak Park Crime Data Science Dashboard">
+<meta property="og:description" content="">
+<meta property="og:image" content="image.png">
+<meta property="og:site_name" content="Jesse Anderson's Blog">
+</head>
+
+<body class="nav-fixed fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Jesse Anderson’s Blog</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../archive.html"> 
+<span class="menu-text">Archive</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://portfolio.jesse-anderson.net/"> <i class="bi bi-Folder symlink fill" role="img">
+</i> 
+<span class="menu-text">Portfolio</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/jesse-anderson/"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/jesse-anderson-a7c5/"> <i class="bi bi-linkedin" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Building an Oak Park Crime Data Science Dashboard</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">Data Science</div>
+                <div class="quarto-category">Data Engineering</div>
+                <div class="quarto-category">Public Analytics</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Jesse Anderson </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">April 28, 2026</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+
+<p>The crime map answered one kind of question: where did the Oak Park Police Department reports say incidents happened?</p>
+<p>That was useful, but it was not the question I kept wanting to ask.</p>
+<p>I live in Oak Park. That makes the map personally useful, but it also makes it easy to bring my own location bias into the interpretation. If I pan around near places I recognize, I am already filtering the data through memory, habit, and whatever I happened to notice last week.</p>
+<p>For the next layer of the project, I wanted something colder.</p>
+<p>Not “what do I feel like is happening near me?” but “what does the dataset say when I stop staring at my own neighborhood?” Soulless cold calculation, as much as a personal public-data project can provide it.</p>
+<p>The live dashboard is here:</p>
+<p><a href="https://opcrimeds.jesse-anderson.net/">Oak Park Crime Data Science Dashboard</a></p>
+<p>The map that feeds the broader project is here:</p>
+<p><a href="https://opcrime.jesse-anderson.net/">Oak Park Crime Map</a></p>
+<p>Image post-disclaimer:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="dashboard-overview.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1" title="Dashboard overview showing year-to-date totals, pulse windows, and a custom date-range comparison chart."><img src="dashboard-overview.png" class="img-fluid figure-img" alt="Dashboard overview showing year-to-date totals and pulse windows."></a></p>
+<figcaption>Dashboard overview showing year-to-date totals, pulse windows, and a custom date-range comparison chart.</figcaption>
+</figure>
+</div>
+<p>The map project and its pipeline are described in the companion post:</p>
+<p><a href="https://blog.jesse-anderson.net/posts/OP-Crime-Documentation/">Building an Oak Park Crime Map from Public PDFs</a></p>
+<p>This post is about the next layer: the data science dashboard sitting on top of the map dataset.</p>
+<p><u><strong>Important disclaimer up front:</strong></u> this is a demonstrative research project built from publicly available police activity reports. It is not affiliated with, endorsed by, or operated in partnership with the Oak Park Police Department, the Village of Oak Park, or any government agency. The official PDFs remain the authoritative source. This tool should not be used for legal, safety, investigative, operational, official, or unofficial decision-making.</p>
+<section id="motivation" class="level2">
+<h2 class="anchored" data-anchor-id="motivation">Motivation</h2>
+<p>The map made the records explorable. The dashboard is meant to make them analyzable.</p>
+<p>Those are different jobs.</p>
+<p>A map is good when the natural question starts with “where.” Where are reports clustering? Where did this incident happen? Which zone is this block in? Can I click through to the original PDF?</p>
+<p>A dashboard is better when the natural question starts with “compared with what?”</p>
+<ul>
+<li>Are incidents up year-to-date compared with the same window last year?</li>
+<li>Is one zone actually unusual, or does it just contain more total incidents?</li>
+<li>Do certain offenses concentrate in civil darkness more than day length alone would predict?</li>
+<li>Do holiday and weather patterns show anything interesting?</li>
+<li>What kinds of themes emerge from the narratives when I stop manually choosing search terms?</li>
+<li>Can I find similar records without hand-writing a hundred rules?</li>
+</ul>
+<p>The original map was a public-record exploration tool. This dashboard is a descriptive analytics layer over the same public record stream.</p>
+<p>That distinction matters because the dashboard is not trying to become an official crime system, a risk model, or a per-address scoring engine. It is a set of computed views over messy, delayed, human-entered public PDF data.</p>
+<p>That sounds less exciting than “AI crime dashboard,” but it is more honest.</p>
+</section>
+<section id="how-this-fits-with-the-map" class="level2">
+<h2 class="anchored" data-anchor-id="how-this-fits-with-the-map">How This Fits With the Map</h2>
+<p>The dashboard does not scrape PDFs and it does not geocode addresses. That work belongs to the upstream crime-map pipeline.</p>
+<p>The upstream project downloads Oak Park Police Department bulletins, parses complaint records, preserves source fields, geocodes where possible, assigns policing zones, and publishes structured data artifacts. The data science dashboard consumes those generated artifacts over HTTPS and builds its own derived views.</p>
+<p>That separation is deliberate.</p>
+<p>The map pipeline has to care about source fidelity. It needs to know whether a complaint number was weird, whether a date token was malformed, whether a record is outside Oak Park, and whether a geocoder placed something in the wrong municipality.</p>
+<p>The dashboard has to care about analysis products. It needs to know how to normalize time ranges, how to build year-to-date comparisons, how to join weather and calendar data, how to compute topic clusters, how to rank search results, and how to ship those artifacts to a browser without a backend query server.</p>
+<p>Those are related problems, but they should not be the same codebase.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="op-crime-dashboard-architecture.svg" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="quarto-lightbox-gallery-2" title="Architecture diagram showing the public map artifacts flowing into the private dashboard pipeline, then out to Cloudflare Pages and R2."><img src="op-crime-dashboard-architecture.svg" class="img-fluid figure-img" alt="Architecture diagram showing Oak Park public PDFs flowing through the map ETL, public parquet artifacts, the private dashboard pipeline, staged web artifacts, R2 binaries, and the public Cloudflare Pages dashboard."></a></p>
+<figcaption>Architecture diagram showing the public map artifacts flowing into the private dashboard pipeline, then out to Cloudflare Pages and R2.</figcaption>
+</figure>
+</div>
+<p>The dashboard repository is private. The public boundary receives only compiled or generated artifacts: the minified web build, public JSON and parquet files, compiled WASM modules, a manifest, and large binary files in R2.</p>
+<p>The private side keeps the Python pipeline, TypeScript source, Rust source, gazetteers, caches, model outputs that should not ship directly, and the operational glue. The public side gets the rendered product.</p>
+<p>That split is partly operational. The public dashboard should be easy to visit; it does not need to expose every internal build script, cache file, or model artifact used to create it.</p>
+</section>
+<section id="the-current-shape" class="level2">
+<h2 class="anchored" data-anchor-id="the-current-shape">The Current Shape</h2>
+<p>The current system has three main parts:</p>
+<ol type="1">
+<li>A Python build pipeline that fetches upstream parquet files and creates enriched artifacts.</li>
+<li>A Vite, TypeScript, and React single-page app that renders the dashboard.</li>
+<li>Two Rust-to-WASM modules that handle heavier browser-side text and similarity work.</li>
+</ol>
+<p>The last full build I am writing from used 14,531 upstream crime records. The exact number changes as new bulletins are published and the upstream project rebuilds.</p>
+<p>The pipeline phases are intentionally boring:</p>
+<table class="table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Phase</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>fetch_upstream</code></td>
+<td>Downloads <code>crimes.parquet</code> and <code>crime_details.parquet</code> from the public map artifacts.</td>
+</tr>
+<tr class="even">
+<td><code>parse_time</code></td>
+<td>Parses OP PD time strings into start, end, midpoint, and duration fields.</td>
+</tr>
+<tr class="odd">
+<td><code>enrich_calendar</code></td>
+<td>Builds date-level holiday, weekend, school-calendar, daylight, and moon-context fields.</td>
+</tr>
+<tr class="even">
+<td><code>enrich_weather</code></td>
+<td>Joins daily weather observations from Chicago Midway.</td>
+</tr>
+<tr class="odd">
+<td><code>enrich_narratives</code></td>
+<td>Normalizes narratives, scans curated keyword lists, and creates embedding-safe text.</td>
+</tr>
+<tr class="even">
+<td><code>enrich_embeddings</code></td>
+<td>Encodes narratives with a sentence-embedding model and quantizes the vectors.</td>
+</tr>
+<tr class="odd">
+<td><code>enrich_topics</code></td>
+<td>Builds unsupervised narrative topics using UMAP, HDBSCAN, and c-TF-IDF.</td>
+</tr>
+<tr class="even">
+<td><code>enrich_census</code></td>
+<td>Interpolates Census ACS context from tracts to policing zones.</td>
+</tr>
+<tr class="odd">
+<td><code>build_aggregates</code></td>
+<td>Produces the JSON panels used by Overview, Time, Place, Topics, and Offense pages.</td>
+</tr>
+<tr class="even">
+<td><code>build_search_index</code></td>
+<td>Builds the BM25 keyword-search index and public document payload.</td>
+</tr>
+<tr class="odd">
+<td><code>build_similarity_aggregate</code></td>
+<td>Packs quantized vectors and incident metadata for the WASM similarity engine.</td>
+</tr>
+<tr class="even">
+<td><code>build_frontend</code></td>
+<td>Compiles Rust WASM and builds the React app.</td>
+</tr>
+<tr class="odd">
+<td><code>publish</code></td>
+<td>Uploads large binary artifacts to R2 and pushes the public web artifact tree.</td>
+</tr>
+</tbody>
+</table>
+<p>There is also a regional enrichment phase stubbed for future work. It is intentionally not pretending to be complete yet.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="op-crime-dashboard-pipeline.svg" class="lightbox" data-glightbox="description: .lightbox-desc-3" data-gallery="quarto-lightbox-gallery-3" title="Pipeline diagram showing the dashboard build as grouped phases from upstream fetch through normalization, enrichment, browser artifacts, and publish."><img src="op-crime-dashboard-pipeline.svg" class="img-fluid figure-img" alt="Pipeline diagram showing the dashboard build as grouped phases from upstream fetch through normalization, enrichment, browser artifacts, and publish."></a></p>
+<figcaption>Pipeline diagram showing the dashboard build as grouped phases from upstream fetch through normalization, enrichment, browser artifacts, and publish.</figcaption>
+</figure>
+</div>
+<p>Most of the dashboard is not querying a database at runtime. It is reading precomputed JSON, parquet, and binary artifacts. That is not as glamorous as live querying, but it is a good fit here.</p>
+<p>This is a static public dashboard. The expensive work happens before publication.</p>
+</section>
+<section id="overview-what-changed-recently" class="level2">
+<h2 class="anchored" data-anchor-id="overview-what-changed-recently">Overview: What Changed Recently?</h2>
+<p>The Overview page is the front door. It gives the kind of high-level answer I wanted before I built any of this:</p>
+<ul>
+<li>year-to-date incident count;</li>
+<li>same-window comparison against the prior year;</li>
+<li>most common YTD offenses;</li>
+<li>most active zones;</li>
+<li>most active day of week;</li>
+<li>recent pulse windows over 28 days, 90 days, and 365 days;</li>
+<li>a custom date-range comparison chart.</li>
+</ul>
+<p>The point is not to make a dramatic claim. The point is to prevent my own attention from becoming the query engine.</p>
+<p>If I happened to notice three incidents near me this week, that does not mean Oak Park is suddenly different. If a zone looks busy on a map, that might be because it is always busy. If a year-to-date number is up, it matters whether the comparison window is aligned.</p>
+<p>The dashboard tries to keep those comparisons explicit.</p>
+<p>Year-to-date comparisons use calendar-matched windows: January 1 through the current as-of date this year compared with January 1 through the same date in the prior year. That is not a statistical model. It is just a resident-readable comparison.</p>
+<p>The custom comparison chart exists because fixed windows are often not enough. Sometimes the question is “what did this summer look like compared with last summer?” or “how does the period after this change compare with the same number of days before it?” The chart lets me line up arbitrary date ranges by day index instead of forcing every question into a single canned metric.</p>
+</section>
+<section id="time-ranges-holidays-darkness-and-weather" class="level2">
+<h2 class="anchored" data-anchor-id="time-ranges-holidays-darkness-and-weather">Time: Ranges, Holidays, Darkness, and Weather</h2>
+<p>Time normalization was one of the first places where the data pushed back.</p>
+<p>Police report times are not always point events. A theft may be reported as happening between 1800 and 0600 because the victim was away or asleep. If I reduce that to a midpoint, I pretend to know more than the report says. If I assign it entirely to the start hour, I create a fake spike.</p>
+<p>So the dashboard keeps start, end, midpoint, and duration fields. Hour-of-day and day-of-week profiles spread each incident across every hour it touches. A 12-hour overnight range contributes one-twelfth of an incident to each hour, not one full incident to a single chosen hour.</p>
+<p>That one choice makes the time panels less punchy but more honest.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="op-crime-dashboard-time-method.svg" class="lightbox" data-glightbox="description: .lightbox-desc-4" data-gallery="quarto-lightbox-gallery-4" title="Time-method diagram showing reported time ranges being kept as intervals, spread fractionally across touched hours, and holiday comparisons using calendar-day denominators."><img src="op-crime-dashboard-time-method.svg" class="img-fluid figure-img" alt="Time-method diagram showing reported time ranges being kept as intervals, spread fractionally across touched hours, and holiday comparisons using calendar-day denominators."></a></p>
+<figcaption>Time-method diagram showing reported time ranges being kept as intervals, spread fractionally across touched hours, and holiday comparisons using calendar-day denominators.</figcaption>
+</figure>
+</div>
+<p>The Time page currently includes:</p>
+<ul>
+<li>long-run daily trends;</li>
+<li>year-by-month heatmaps;</li>
+<li>month-of-year profiles;</li>
+<li>hour by day-of-week heatmaps;</li>
+<li>calendar heatmaps;</li>
+<li>holiday and weekend comparisons;</li>
+<li>darkness-share panels by offense;</li>
+<li>weather cohorts.</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="dashboard-time.png" class="lightbox" data-glightbox="description: .lightbox-desc-5" data-gallery="quarto-lightbox-gallery-5" title="Time tab screenshot showing month of year and hour x day of week."><img src="dashboard-time.png" class="img-fluid figure-img" alt="Time tab screenshot showing month of year and hour x day of week."></a></p>
+<figcaption>Time tab screenshot showing month of year and hour x day of week.</figcaption>
+</figure>
+</div>
+<p>The holiday panel caused one of the more humbling bugs.</p>
+<p>Holiday math looks easy: count incidents on holidays, divide by holiday days, compare with baseline days.</p>
+<p>I still managed to get it wrong at one point.</p>
+<p>The fix was not conceptually hard. The panel has to count holiday occurrences as days first, then compute mean incidents per holiday day, then compare against a clean non-holiday weekday baseline. It is not enough to grab records with a holiday flag and call that a holiday rate. The denominator matters.</p>
+<p>Juneteenth added another wrinkle. The holiday API and calendar libraries do not necessarily treat every historical date as a holiday just because we now recognize it. Illinois did not start recognizing Juneteenth as a state holiday until Governor Pritzker signed it into law in 2021, so early-year counts behave differently depending on whether the question is “June 19 as a recurring date” or “recognized holiday under the law at that time.”</p>
+<p>That is exactly the kind of little detail that makes public-data dashboards less trivial than they look.</p>
+<p>Weather is similar. The dashboard joins daily observations from Chicago Midway because it is close enough to Oak Park and has useful coverage. The weather panel does not say weather causes crime. It says that, in this dataset, days with certain weather conditions had different mean incident counts.</p>
+<p>That difference matters. Descriptive association is not causation, and I do not want the interface to pretend otherwise.</p>
+</section>
+<section id="place-zones-not-blocks" class="level2">
+<h2 class="anchored" data-anchor-id="place-zones-not-blocks">Place: Zones, Not Blocks</h2>
+<p>The Place page is where the dashboard gets closest to the map, but it still operates at policing-zone granularity.</p>
+<p>It shows:</p>
+<ul>
+<li>YTD incidents by zone;</li>
+<li>lifetime incidents by zone;</li>
+<li>YTD change by zone;</li>
+<li>YTD incidents per 1,000 residents;</li>
+<li>top offenses by zone;</li>
+<li>distinctive offenses by lift;</li>
+<li>hour and day-of-week profiles;</li>
+<li>narrative signal shares;</li>
+<li>Census-derived demographic context.</li>
+</ul>
+<p>The choropleth, a word I learned while reading papers for this project, uses the April 2024 Oak Park policing-zone map. That means historical incidents are projected into current zone boundaries. That is a limitation, but it is an explicit one.</p>
+<p>The demographic layer comes from Census ACS tract data, interpolated into policing zones. Count-like variables such as population and households are area-weighted. Rate-like variables such as income, age, and percentage fields are population-weighted.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="op-crime-dashboard-place-context.svg" class="lightbox" data-glightbox="description: .lightbox-desc-6" data-gallery="quarto-lightbox-gallery-6" title="Place-context diagram showing incident locations assigned to current policing zones, ACS tract context interpolated into zones, and a guardrail against per-address or per-block risk scores."><img src="op-crime-dashboard-place-context.svg" class="img-fluid figure-img" alt="Place-context diagram showing incident locations assigned to current policing zones, ACS tract context interpolated into zones, and a guardrail against per-address or per-block risk scores."></a></p>
+<figcaption>Place-context diagram showing incident locations assigned to current policing zones, ACS tract context interpolated into zones, and a guardrail against per-address or per-block risk scores.</figcaption>
+</figure>
+</div>
+<p>This is not perfect. Tracts do not line up cleanly with policing zones, and areal interpolation assumes uniform distribution inside tracts. That assumption is not literally true. It is still a reasonable way to provide zone-level context without attaching demographic fields to individual incidents.</p>
+<p>Per-capita rates are shown at the zone level. Smaller zones get a small-n badge instead of being hidden. I considered a stricter 5,000-resident display floor, but hiding zones below that threshold would make the interface feel more suspicious than transparent. Showing the number with a warning is the better compromise for this project.</p>
+<p>The important guardrail is that the dashboard does not create per-address or per-block risk scores. That is not a feature waiting to be built. It is a feature I do not want.</p>
+</section>
+<section id="narrative-signals-useful-but-bounded" class="level2">
+<h2 class="anchored" data-anchor-id="narrative-signals-useful-but-bounded">Narrative Signals: Useful, But Bounded</h2>
+<p>The upstream PDF parser gives the dashboard narrative text. That text is messy, but it is also where much of the interesting signal lives.</p>
+<p>The first narrative layer is deliberately simple: curated keyword scans.</p>
+<p>The pipeline scans for categories such as:</p>
+<ul>
+<li>firearm terms;</li>
+<li>vehicle modus operandi;</li>
+<li>stolen items;</li>
+<li>substances;</li>
+<li>location types;</li>
+<li>outcome flags.</li>
+</ul>
+<p>These lists are not meant to be a universal crime ontology. They are a practical way to answer questions like “how often does this zone’s narrative text mention unlocked vehicles?” or “which items appear most often in theft narratives?”</p>
+<p>The keyword lists do not include suspect race or ethnicity mining. That is a design choice, not a technical limitation. The dashboard is about event patterns in public records, not building a suspect-descriptor search engine.</p>
+<p>The narrative pipeline also creates a second text column for embeddings. The displayed narrative preserves the normalized source text. The embedding input replaces race and sex shorthand, demographic phrases, and police-internal codes with neutral placeholders before the model sees it.</p>
+<p>That distinction is important:</p>
+<ul>
+<li>Display text stays close to what the public source says.</li>
+<li>Model input removes fields I do not want driving semantic similarity.</li>
+</ul>
+<p>I do not think that makes the model morally pure or mathematically unbiased. It just removes some obvious garbage signal before asking the model to compare event descriptions.</p>
+</section>
+<section id="topics-the-part-i-like-most" class="level2">
+<h2 class="anchored" data-anchor-id="topics-the-part-i-like-most">Topics: The Part I Like Most</h2>
+<p>The Topics page is the part of the dashboard I am happiest with.</p>
+<p>It is also the part that forced me to learn the most.</p>
+<p>The goal was to let the narratives tell me what kinds of recurring themes exist without manually writing every category in advance. A keyword list can find “catalytic converter” if I know to look for it. It will not discover the broader shape of package theft, bike theft, retail patterns, vehicle recoveries, or arrest-heavy clusters on its own.</p>
+<p>The current topic pipeline looks like this:</p>
+<ol type="1">
+<li>Encode each narrative with <code>BAAI/bge-large-en-v1.5</code>.</li>
+<li>Reduce the 1024-dimensional vectors with UMAP.</li>
+<li>Cluster the reduced vectors with HDBSCAN.</li>
+<li>Label clusters with c-TF-IDF terms.</li>
+<li>Filter public labels to remove race and police-shorthand terms.</li>
+<li>Build topic cards with size, words, zone distribution, lift, top offenses, and sample incidents.</li>
+</ol>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="op-crime-dashboard-nlp.svg" class="lightbox" data-glightbox="description: .lightbox-desc-7" data-gallery="quarto-lightbox-gallery-7" title="NLP pipeline diagram showing normalized narratives splitting into browser search, topic modeling, and similarity artifact branches."><img src="op-crime-dashboard-nlp.svg" class="img-fluid figure-img" alt="NLP pipeline diagram showing normalized narratives splitting into browser search, topic modeling, and similarity artifact branches."></a></p>
+<figcaption>NLP pipeline diagram showing normalized narratives splitting into browser search, topic modeling, and similarity artifact branches.</figcaption>
+</figure>
+</div>
+<p>My first instinct was to try PCA for dimensionality reduction. PCA is familiar, linear, and easy to reason about. It also did not give me the neighborhood structure I wanted. The clusters felt smeared. The local semantic shape of the data was not coming through cleanly.</p>
+<p>UMAP worked better, but it was not a magic switch. I had to tune it.</p>
+<p>That was fun in the painful way. UMAP became one of those project detours where the technique stops being abstract because your lack of familiarity with it is suddenly blocking the thing you are trying to build.</p>
+<p>The dashboard uses UMAP to reduce embeddings before HDBSCAN clusters them. HDBSCAN helps because it can label records as noise instead of forcing every narrative into a topic. Public police narratives have long tails, one-off events, sparse descriptions, and generic arrest language; forcing every row into a cluster would make the topic page look cleaner while making it less honest.</p>
+<p>After clustering, c-TF-IDF labels each topic by finding terms that are common inside the cluster and relatively uncommon outside it. That produced useful labels, but it also exposed an ethical problem.</p>
+<p>Some raw labels surfaced race or police shorthand because those terms appear in source narratives. On at least one topic, descriptor language ranked too highly for comfort. Publishing that as a topic label would let the model put identity terms in the headline of a crime theme.</p>
+<p>So the topic pipeline keeps two versions:</p>
+<ul>
+<li>raw topic words, retained privately as an audit trail;</li>
+<li>public topic words, after a blocklist removes race and police-shorthand terms.</li>
+</ul>
+<p>The cluster assignments do not change. Only the displayed labels change.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="dashboard-topics.png" class="lightbox" data-glightbox="description: .lightbox-desc-8" data-gallery="quarto-lightbox-gallery-8" title="Topics tab screenshot showing discovered narrative clusters, top words, zone lift, and sample records."><img src="dashboard-topics.png" class="img-fluid figure-img" alt="Topics tab screenshot showing discovered narrative clusters, top words, zone lift, and sample records."></a></p>
+<figcaption>Topics tab screenshot showing discovered narrative clusters, top words, zone lift, and sample records.</figcaption>
+</figure>
+</div>
+<p>This is where I am both enthusiastic and cautious.</p>
+<p>The topic page is genuinely useful. It surfaces patterns I would not have seen as quickly with manual filtering. It helps turn thousands of narrative blurbs into a browsable shape.</p>
+<p>It is also just a model.</p>
+<p>Unless a model is rigorously validated for the thing you are using it for, it is another overhyped black box with nice-looking output. That does not mean it is useless. It means the interface should present it as exploratory structure, not as truth.</p>
+<p>The dashboard tries to do that. Topics are themes, not official classifications. Labels are summaries, not legal findings. Noise is allowed. Samples link back to the source PDFs.</p>
+</section>
+<section id="search-bm25-in-the-browser" class="level2">
+<h2 class="anchored" data-anchor-id="search-bm25-in-the-browser">Search: BM25 in the Browser</h2>
+<p>The Search page is intentionally less fancy than semantic search. It uses BM25, the standard keyword-ranking formula used by many search systems.</p>
+<p>That is a good thing.</p>
+<p>Sometimes the right tool is not another embedding. Sometimes I just want to type <code>catalytic converter</code>, <code>+porch package</code>, or <code>bicyc* -arrest</code> and see the relevant reports.</p>
+<p>The pipeline builds a search index from the narratives:</p>
+<ul>
+<li>lowercased tokenization;</li>
+<li>stopword and blocklist removal;</li>
+<li>document lengths;</li>
+<li>term document frequencies;</li>
+<li>flat postings lists;</li>
+<li>BM25 constants <code>k1 = 1.2</code>, <code>b = 0.75</code>.</li>
+</ul>
+<p>The browser loads that index and the document payload. Query parsing, wildcard expansion, boolean operators, and scoring run in Rust compiled to WASM.</p>
+<p>That is not because JavaScript could not do it. The first version did. Rust/WASM also made the scoring path easier to test natively and kept the browser search module aligned with the heavier similarity engine.</p>
+<p>The Search page also makes the blocklist visible through behavior. If a user searches for blocked race or police-shorthand terms, those words are not in the index. They return nothing because they were stripped at build time.</p>
+<p>The Rust choice was not grand architecture. It was familiar, fast enough for the job, and easy to test without dragging the browser into every scoring check.</p>
+</section>
+<section id="similar-incidents-useful-neighbors-not-a-detective" class="level2">
+<h2 class="anchored" data-anchor-id="similar-incidents-useful-neighbors-not-a-detective">Similar Incidents: Useful Neighbors, Not a Detective</h2>
+<p>The incident page is where the embedding work becomes interactive.</p>
+<p>From a search result, offense drill-down, or topic sample, a user can open an incident page. The page shows the seed record, then asks the similarity engine for related narratives.</p>
+<p>The similarity engine uses the quantized sentence embeddings. It computes cosine similarity in the browser, applies a floor, re-ranks with MMR for diversity, and collapses runs of repeated same-location neighbors so one address does not dominate the panel.</p>
+<p>There are two panels:</p>
+<ul>
+<li>most similar incidents;</li>
+<li>anti-neighbors, meaning incidents in the same broad topic that read least like the seed.</li>
+</ul>
+<p>The second one is a little strange, but useful. Similar incidents show the obvious peer group. Anti-neighbors show what makes a record distinctive inside its topic.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="dashboard-incident.png" class="lightbox" data-glightbox="description: .lightbox-desc-9" data-gallery="quarto-lightbox-gallery-9" title="Incident page screenshot showing the seed narrative, similar incidents, and anti-neighbor panel."><img src="dashboard-incident.png" class="img-fluid figure-img" alt="Incident page screenshot showing the seed narrative, similar incidents, and anti-neighbor panel."></a></p>
+<figcaption>Incident page screenshot showing the seed narrative, similar incidents, and anti-neighbor panel.</figcaption>
+</figure>
+</div>
+<p>The vectors ship as signed 8-bit integers instead of full 32-bit floats. That reduces the browser payload from roughly 59 MB to about 15 MB for the current corpus.</p>
+<p>I did not want to do that blindly. Quantization can quietly destroy nearest-neighbor rankings if the embedding space is tight enough. So I ran validation against the full corpus.</p>
+<p>The short version: the int8 vectors preserve neighbor rankings well enough for this feature. Mean recall at useful K values stayed high, median recall was perfect, and cosine drift was small compared with the natural spread between related narratives.</p>
+<p>That does not prove the embedding model understands crime reports in some deep way. It proves the compression step did not materially break the neighborhoods the model already produced.</p>
+<p>Again: useful, bounded, not magic. Useful enough to support exploration; not strong enough to pretend that it is evidence by itself.</p>
+</section>
+<section id="offense-drill-downs" class="level2">
+<h2 class="anchored" data-anchor-id="offense-drill-downs">Offense Drill-Downs</h2>
+<p>The offense pages are a middle ground between high-level dashboard panels and individual incidents.</p>
+<p>For common offenses, the pipeline precomputes drill-down profiles:</p>
+<ul>
+<li>lifetime count;</li>
+<li>year-to-date count and change;</li>
+<li>monthly history;</li>
+<li>hour by day-of-week matrix;</li>
+<li>zone distribution;</li>
+<li>zone lift;</li>
+<li>narrative signals;</li>
+<li>recent samples with source PDF links.</li>
+</ul>
+<p>This helps when the Overview page says “THEFT” or “RETAIL THEFT” is high but the next question is “what does that actually mean over time and place?”</p>
+<p>Not every offense gets a page. Rare offenses are excluded from drill-down output because shipping a lot of tiny panels would create small-n noise and inflate the public payload. If a user wants rare records, Search is the better interface.</p>
+</section>
+<section id="caching-and-publication" class="level2">
+<h2 class="anchored" data-anchor-id="caching-and-publication">Caching and Publication</h2>
+<p>The dashboard is published as a static application, but the static part is a little deceptive.</p>
+<p>The build is doing real work:</p>
+<ul>
+<li>Python writes JSON and parquet artifacts into <code>staging/git</code>.</li>
+<li>Large binary files go into <code>staging/r2</code>.</li>
+<li>Rust crates compile to WASM and are copied into the frontend bundle.</li>
+<li>The Vite build produces a minified SPA.</li>
+<li>R2 uploads happen before the public manifest is committed.</li>
+</ul>
+<p>That last ordering matters.</p>
+<p>The manifest tells the browser where the large binary artifacts live. If the public manifest updates before R2 has the corresponding files, the site can point users at missing blobs. Uploading R2 first and committing the manifest last means interruption tends to leave the previous public build consistent.</p>
+<p>The browser-side R2 path goes through a Cloudflare Pages Function. The R2 bucket stays private; the function streams allowed files at <code>/r2/&lt;key&gt;</code>. In development, Vite serves the local <code>staging/r2</code> directory at the same path so the frontend code does not need a separate local mode.</p>
+<p>This is the sort of plumbing that is not very visible in a screenshot but makes the project feel like an application instead of a pile of scripts.</p>
+</section>
+<section id="what-improved" class="level2">
+<h2 class="anchored" data-anchor-id="what-improved">What Improved</h2>
+<p>The dashboard changed the project from a map of records into a set of comparisons.</p>
+<p>That matters most for bias. The map is still useful, but it naturally pulls my attention toward places I recognize. The dashboard pushes the work toward totals, deltas, baselines, zones, topics, and time windows.</p>
+<p>It also gives each question a better home. The map can stay focused on location and source records. Time, place, weather, calendar, narratives, topics, search, and similarity can become separate lenses instead of being crammed into one interface.</p>
+<p>The public/private boundary is cleaner too. The private side can keep the heavier models, caches, Python tooling, and audit files. The public side can stay a static dashboard with generated artifacts and source links.</p>
+</section>
+<section id="bugs-and-lessons" class="level2">
+<h2 class="anchored" data-anchor-id="bugs-and-lessons">Bugs and Lessons</h2>
+<p>The holiday bug is the one I keep thinking about because it was so ordinary: not a dramatic machine-learning failure, not a WASM issue, just simple math.</p>
+<p>A lot of the bugs I ran into were the kind that make dashboards dangerous: everything looks polished, but the chart is quietly answering the wrong question.</p>
+<p>I’d count records when I really needed days, and suddenly the holiday view was misleading. I’d treat a time range like a single point, and the hourly heatmap looked way more confident than it should. I’d deduplicate complaint numbers and accidentally drop real records from the map. I’d publish raw topic labels and realize the model was turning source bias into the headline.</p>
+<p>That ended up being most of the hard work, not fixing huge, obvious failures. Catching the small assumptions that looked reasonable right up until they weren’t.</p>
+<p>The UMAP work taught a different lesson. Sometimes the correct answer is not to force the familiar method to work. PCA was understandable and convenient. It did not produce the structure I wanted. Learning enough UMAP to tune the topic pipeline was the better path.</p>
+<p>The same thing happened with embeddings. The exciting part is not “I used a model.” Anyone can call a model. The useful part is deciding what text the model should see, what it should not see, how to validate the compressed output, and how to present the result without making it look more authoritative than it is.</p>
+</section>
+<section id="remaining-caveats" class="level2">
+<h2 class="anchored" data-anchor-id="remaining-caveats">Remaining Caveats</h2>
+<p>The dashboard is still constrained by the source.</p>
+<p>Oak Park publishes PDF bulletins. The upstream project turns those PDFs into structured artifacts, but the source remains delayed, human-entered, and sometimes messy. Incidents that are not reported to police do not appear. Corrections flow from the official source, not from my dashboard.</p>
+<p>Geography is approximate. Many records are block-level. Some incidents legitimately occur outside Oak Park. Zone boundaries are current 2024 policing zones projected backward across the full dataset.</p>
+<p>The analytical panels are descriptive. Weather ratios, holiday comparisons, topic clusters, and similar-incident results can suggest patterns worth inspecting, but they are not causal claims, official categories, suspect matching, address surveillance, or repeat-offender inference.</p>
+<p>Those boundaries are the point. The dashboard is useful only if it stays descriptive, source-linked, and cautious about what public records can actually show.</p>
+</section>
+<section id="future-work" class="level2">
+<h2 class="anchored" data-anchor-id="future-work">Future Work</h2>
+<p>The two future directions I care about most are anomaly detection and higher-order spatio-temporal clustering.</p>
+<p>Anomaly detection would be the natural next analytical layer. The current dashboard can show that a count is up or down. A better version could ask whether a day, week, offense, or zone is unusual given the historical baseline, seasonality, weekday pattern, and known calendar effects.</p>
+<p>That needs to be handled carefully. “Unusual” is not the same as “dangerous,” and anomaly scoring can easily become a misleading alert machine if the UI is too dramatic.</p>
+<p>The spatio-temporal work is more interesting. Right now, Place and Time are mostly separate tabs. Topics add narrative themes. The next layer would ask questions across all three:</p>
+<ul>
+<li>Are certain narrative topics appearing in particular zones during particular time windows?</li>
+<li>Do vehicle-related patterns cluster near transit corridors differently from package theft?</li>
+<li>Are seasonal patterns different by zone and offense family?</li>
+<li>Can we identify recurring public-record patterns without creating per-address risk products?</li>
+</ul>
+<p>That is where the dashboard could become more than a collection of panels.</p>
+<p>It also needs more care than a weekend build. The moment a dashboard starts surfacing “clusters,” people can overread them. The right interface would need uncertainty, minimum counts, clear aggregation, and conservative language.</p>
+</section>
+<section id="why-this-matters" class="level2">
+<h2 class="anchored" data-anchor-id="why-this-matters">Why This Matters</h2>
+<p>The crime map made public PDF records easier to explore. The dashboard makes them easier to compare.</p>
+<p>That is the whole point.</p>
+<p>Public records can be technically available and still operationally awkward. PDFs satisfy publication, but they do not naturally answer questions about trends, zones, weather, holidays, narrative themes, or similar reports. A map helps. A dashboard helps differently.</p>
+<p>The current project is not a polished government product. It is a personal data engineering and data science project built around one local public-record stream.</p>
+<p>But the pattern is general:</p>
+<ol type="1">
+<li>Preserve the source.</li>
+<li>Build structured artifacts.</li>
+<li>Separate ingestion from analysis.</li>
+<li>Keep the public interface descriptive.</li>
+<li>Validate the parts that can be validated.</li>
+<li>Admit the parts that cannot.</li>
+</ol>
+<p>The dashboard is useful because it does not rely on one big clever trick. It is mostly a pile of small, defensible decisions: parse time ranges honestly, count holiday days correctly, keep zones coarse, strip suspect descriptors from model input, label topics conservatively, quantize embeddings only after checking neighbor preservation, and link back to the official PDFs.</p>
+<p>That is less flashy than pretending the model discovered the truth. But for public analytics, I’d like to think that is the better bargain: preserve the source, make the comparisons clear, validate what can be validated, and stay honest about the rest.</p>
+<p>Thanks for reading,</p>
+<p>Jesse</p>
+
+
+<div class="hidden" aria-hidden="true">
+<span class="glightbox-desc lightbox-desc-1">Dashboard overview showing year-to-date totals, pulse windows, and a custom date-range comparison chart.</span>
+<span class="glightbox-desc lightbox-desc-2">Architecture diagram showing the public map artifacts flowing into the private dashboard pipeline, then out to Cloudflare Pages and R2.</span>
+<span class="glightbox-desc lightbox-desc-3">Pipeline diagram showing the dashboard build as grouped phases from upstream fetch through normalization, enrichment, browser artifacts, and publish.</span>
+<span class="glightbox-desc lightbox-desc-4">Time-method diagram showing reported time ranges being kept as intervals, spread fractionally across touched hours, and holiday comparisons using calendar-day denominators.</span>
+<span class="glightbox-desc lightbox-desc-5">Time tab screenshot showing month of year and hour x day of week.</span>
+<span class="glightbox-desc lightbox-desc-6">Place-context diagram showing incident locations assigned to current policing zones, ACS tract context interpolated into zones, and a guardrail against per-address or per-block risk scores.</span>
+<span class="glightbox-desc lightbox-desc-7">NLP pipeline diagram showing normalized narratives splitting into browser search, topic modeling, and similarity artifact branches.</span>
+<span class="glightbox-desc lightbox-desc-8">Topics tab screenshot showing discovered narrative clusters, top words, zone lift, and sample records.</span>
+<span class="glightbox-desc lightbox-desc-9">Incident page screenshot showing the seed narrative, similar incidents, and anti-neighbor panel.</span>
+</div>
+</section>
+
+</main> <!-- /main -->
+
+
+
+
+
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Support Page</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+
+        .centered-text {
+
+            text-align: center; /* Centers text for elements with this class */
+
+        }
+
+        .centered-content {
+
+            display: flex; /* Uses Flexbox for layout */
+
+            justify-content: center; /* Horizontally centers the content within the container */
+
+            align-items: center; /* Vertically centers the content within the container */
+
+        }
+
+        .email-share-button {
+
+            background: #007BFF; /* Example: a distinct blue color for the email button */
+
+            color: white; /* Ensure text and icon are white for visibility */
+
+        }
+
+        #share-buttons {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 5px;
+
+        }
+
+        .share-button {
+
+            display: inline-flex;
+
+            padding: 2px 4px;
+
+            font-size: 14px;
+
+            cursor: pointer;
+
+            text-align: center;
+
+            color: white;
+
+            border-radius: 0px;
+
+        }
+
+    </style>
+
+
+
+
+
+    <footer class="centered-text">
+
+        <p>Copyright © <span id="copyright-year"></span> Jesse Anderson</p>
+
+        <!-- Other footer details -->
+
+    </footer>
+
+    <div>
+
+        <hr>
+
+        <h3 class="centered-text">Support my work with a Coffee/Monster</h3>
+
+        <div class="centered-content">
+
+            <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="jesseanderson" data-color="#06436e" data-emoji="☕" data-font="Lato" data-text="Support me" data-outline-color="#ffffff" data-font-color="#ffffff" data-coffee-color="#FFDD00" data-height="40px"></script>
+
+        </div>
+
+        <!-- Footer content -->
+
+        <h3 class="centered-text">Share</h3>
+
+        <!-- Share Buttons -->
+
+        <div id="share-buttons" class="centered-content">
+
+            <!-- Twitter Share Button, dynamically setting the URL -->
+
+            <a href="#" class="share-button twitter-share-button" data-size="large" data-hashtags="computerscience" data-via="JesseA7C5" data-show-count="false">Tweet</a>
+
+            <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+            <!-- Facebook SDK with Dynamic Nonce -->
+
+            <div id="fb-root"></div>
+
+            <script id="facebook-jssdk" async="" defer="" crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&amp;version=v10.0"></script>
+
+            <div class="fb-share-button share-button" data-href="" data-layout="button_count">
+
+            </div>
+
+            <!-- LinkedIn Share Button -->
+
+            <script src="https://platform.linkedin.com/in.js" type="text/javascript">lang: en_US</script>
+
+            <script type="IN/Share" data-url=""></script>
+
+            <!-- Email Share Button -->
+
+            <a href="#" class="share-button email-share-button"><i class="fas fa-envelope"></i></a>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        // Function to generate a random nonce
+
+        function generateNonce(length = 16) {
+
+            const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+            let text = "";
+
+            for (let i = 0; i < length; i++) {
+
+                text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+            }
+
+            return text;
+
+        }
+
+        // Set the nonce attribute for the Facebook SDK script and dynamically set URLs
+
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const nonce = generateNonce();
+
+            const facebookSDKScript = document.getElementById('facebook-jssdk');
+
+            facebookSDKScript.setAttribute('nonce', nonce);
+
+            var elems = document.querySelectorAll('script[type="IN/Share"]');
+
+            for (var i = 0; i < elems.length; i++) {
+
+                elems[i].setAttribute('data-url', window.location.href);
+
+            }
+
+            // Set dynamic URLs for social sharing
+
+            const currentUrl = window.location.href;
+
+            const currentTitle = document.title; // Use the current document title as the email subject
+
+            // Facebook
+
+            document.querySelector('.fb-share-button').setAttribute('data-href', currentUrl);
+
+            // LinkedIn
+
+            document.querySelectorAll('script[type="IN/Share"]')[0].setAttribute('data-url', currentUrl);
+
+            // Twitter
+
+            document.querySelector('.twitter-share-button').setAttribute('href', 'https://twitter.com/share?url=' + encodeURIComponent(currentUrl) + '&hashtags=rstats');
+
+            // Email
+
+            document.querySelector('.email-share-button').setAttribute('href', `mailto:?subject=${encodeURIComponent(currentTitle)}&body=Check out this link: ${encodeURIComponent(currentUrl)}`);
+
+            // Dynamically set the current year in the copyright footer
+
+            document.getElementById('copyright-year').textContent = new Date().getFullYear();
+
+        });
+
+        // This script below to put a latest posts list after the comment system was such a pain in the ass.
+
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // console.log("Latest Posts Populating...");
+
+            // Create the latest posts container
+
+            const latestPostsContainer = document.createElement('div');
+
+            latestPostsContainer.className = 'latest-posts';
+
+            latestPostsContainer.innerHTML = `
+
+                <h3>Latest Posts</h3>
+
+                <ul id="latest-posts-list">
+
+                    <!-- Latest posts will be inserted here -->
+
+                </ul>
+
+            `;
+
+            // Find the footer element
+
+            const footer = document.querySelector('footer.footer');
+
+            // Insert the latest posts container before footer, easier than after utterances.
+
+            footer.parentNode.insertBefore(latestPostsContainer, footer);
+
+            // Fetch latest posts from the archive page
+
+            fetch('https://jesse-anderson.github.io/Blog/_site/archive.html')
+
+                .then(response => response.text())
+
+                .then(data => {
+
+                    const parser = new DOMParser();
+
+                    const doc = parser.parseFromString(data, 'text/html');
+
+                    const posts = doc.querySelectorAll('.quarto-listing-container-table tbody tr');
+
+                    // console.log("Posts: ", posts);
+
+                    const latestPostsList = document.getElementById('latest-posts-list');
+
+                    let count = 0;
+
+                    posts.forEach(post => {
+
+                        if (count < 4) {
+
+                            // console.log("Title populating...");
+
+                            const titleElement = post.querySelector('.listing-title'); // Correctly select the <a> tag with the title class
+
+                            // console.log(titleElement)
+
+                              const imageElement = post.querySelector('.listing-image img');
+
+                              // console.log(imageElement)
+
+                            if (titleElement) {
+
+                                const title = titleElement.textContent.trim();
+
+                                // console.log('Title: ', title);
+
+                                let url = titleElement.getAttribute('href');
+
+                                // console.log('URL: ', url);
+
+                                if (url && !url.startsWith('http')) {
+
+                                    url = 'https://jesse-anderson.github.io/Blog/_site/' + url.replace(/^\.\//, '');
+
+                                }
+
+                                // console.log('Formatted URL: ', url);
+
+                                const imageUrl = imageElement ? imageElement.getAttribute('src').replace(/^\.\//, 'https://jesse-anderson.github.io/Blog/_site/') : 'default-image.jpg'; // Fallback image
+
+                                // console.log('Image URL: ', imageUrl);
+
+                                const listItem = document.createElement('li');
+
+                                listItem.innerHTML = `<a href="${url}"><img src="${imageUrl}" alt="Post Image" style="height: 20px;"> ${title}</a>`;
+
+                                latestPostsList.appendChild(listItem);
+
+                                // console.log('ListItem: ', listItem);
+
+                                count++;
+
+                            } else {
+
+                                console.warn('Missing elements for post:', post);
+
+                            }
+
+                        }
+
+                    });
+
+                });
+
+        });
+
+    </script>
+
+
+
+
+
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<script src="https://utteranc.es/client.js" repo="jesse-anderson/blogComments" issue-term="title" theme="github-dark" crossorigin="anonymous" async="">
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+
+<div class="cookie-consent-footer"><a href="#" id="open_preferences_center">Cookie Preferences</a></div></div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+<script>var lightboxQuarto = GLightbox({"descPosition":"bottom","closeEffect":"zoom","openEffect":"zoom","loop":false,"selector":".lightbox"});
+window.onload = () => {
+  lightboxQuarto.on('slide_before_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    const href = trigger.getAttribute('href');
+    if (href !== null) {
+      const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+      if (imgEl !== null) {
+        const srcAttr = imgEl.getAttribute("src");
+        if (srcAttr && srcAttr.startsWith("data:")) {
+          slideConfig.href = srcAttr;
+        }
+      }
+    } 
+  });
+
+  lightboxQuarto.on('slide_after_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    if (window.Quarto?.typesetMath) {
+      window.Quarto.typesetMath(slideNode);
+    }
+  });
+
+};
+          </script>
+
+
+
+
+</body></html>
