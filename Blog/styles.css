@@ -1,1 +1,161 @@
 /* css styles */
+
+/* ---- Cookie consent (Termsfeed) compactification ----
+   Quarto bundles the Termsfeed Privacy Consent library. Defaults are
+   aggressive: 3rem padding, 24px title, 16px body, full-width block
+   buttons, and a 200px-tall full-bleed mobile banner. Trim to a
+   reasonable corner toast and use !important to override the
+   JS-injected stylesheet. */
+
+.termsfeed-com---nb {
+  font-size: 13px !important;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+}
+
+.termsfeed-com---nb .cc-nb-main-container {
+  padding: 0.85rem 1rem !important;
+}
+
+.termsfeed-com---nb .cc-nb-title {
+  font-size: 14px !important;
+  font-weight: 600;
+  margin: 0 0 0.25rem 0;
+}
+
+.termsfeed-com---nb .cc-nb-text {
+  font-size: 12px !important;
+  margin: 0 0 0.6rem 0 !important;
+  line-height: 1.4;
+}
+
+.termsfeed-com---nb .cc-nb-buttons-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.termsfeed-com---nb .cc-nb-okagree,
+.termsfeed-com---nb .cc-nb-reject,
+.termsfeed-com---nb .cc-nb-changep {
+  display: inline-block !important;
+  width: auto !important;
+  font-size: 12px !important;
+  padding: 0.35em 0.75em !important;
+  margin: 0 !important;
+}
+
+/* "simple" style sits bottom-right; cap its size on desktop. */
+.termsfeed-com---nb-simple {
+  max-width: 360px !important;
+  height: auto !important;
+  overflow: visible !important;
+  border-radius: 6px;
+  margin: 0 12px 12px 0;
+}
+
+/* Mobile: keep it as a compact bottom toast, not a 200px slab. */
+@media screen and (max-width: 600px) {
+  .termsfeed-com---nb-simple,
+  .termsfeed-com---nb-headline {
+    max-width: calc(100vw - 16px) !important;
+    height: auto !important;
+    margin: 0 8px 8px 8px;
+  }
+  .termsfeed-com---nb .cc-nb-main-container {
+    padding: 0.7rem 0.85rem !important;
+  }
+  .termsfeed-com---nb .cc-nb-title {
+    font-size: 13px !important;
+  }
+  .termsfeed-com---nb .cc-nb-text {
+    font-size: 11.5px !important;
+  }
+  .termsfeed-com---nb .cc-nb-okagree,
+  .termsfeed-com---nb .cc-nb-reject,
+  .termsfeed-com---nb .cc-nb-changep {
+    font-size: 11.5px !important;
+    padding: 0.3em 0.65em !important;
+  }
+}
+
+/* ---- Footer actions and latest posts ---- */
+
+.centered-text {
+  text-align: center;
+}
+
+.centered-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.email-share-button {
+  background: #007bff;
+  color: white;
+}
+
+#share-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.share-button {
+  display: inline-flex;
+  padding: 2px 4px;
+  font-size: 14px;
+  cursor: pointer;
+  text-align: center;
+  color: white;
+  border-radius: 0;
+}
+
+.blog-comments {
+  max-width: 760px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.blog-comments:empty {
+  display: none;
+}
+
+.blog-comments h3 {
+  text-align: center;
+}
+
+.latest-posts {
+  max-width: 720px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.latest-posts h3 {
+  text-align: center;
+}
+
+#latest-posts-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+#latest-posts-list a {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+}
+
+.latest-post-thumbnail {
+  width: 56px;
+  height: 42px;
+  object-fit: cover;
+  flex: 0 0 auto;
+  border-radius: 4px;
+}

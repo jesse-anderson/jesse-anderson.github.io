@@ -121,10 +121,10 @@ gtag('config', 'G-5CSPYCMY55', { 'anonymize_ip': true});
 document.addEventListener('DOMContentLoaded', function () {
 cookieconsent.run({
   "notice_banner_type":"simple",
-  "consent_type":"implied",
+  "consent_type":"express",
   "palette":"light",
   "language":"en",
-  "page_load_consent_levels":["strictly-necessary","functionality","tracking","targeting"],
+  "page_load_consent_levels":["strictly-necessary"],
   "notice_banner_reject_button_hide":false,
   "preferences_center_close_button_hide":false,
   "website_name":""
@@ -169,9 +169,19 @@ cookieconsent.run({
 <span class="menu-text">About</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="https://portfolio.jesse-anderson.net/"> <i class="bi bi-Folder symlink fill" role="img">
+    <a class="nav-link" href="https://jesse-anderson.net/"> <i class="bi bi-house" role="img">
+</i> 
+<span class="menu-text">Main Site</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://portfolio.jesse-anderson.net/"> <i class="bi bi-folder-symlink-fill" role="img">
 </i> 
 <span class="menu-text">Portfolio</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://tools.jesse-anderson.net/"> <i class="bi bi-tools" role="img">
+</i> 
+<span class="menu-text">Tools</span></a>
   </li>  
   <li class="nav-item compact">
     <a class="nav-link" href="https://github.com/jesse-anderson/"> <i class="bi bi-github" role="img">
@@ -443,324 +453,88 @@ Code
 </section>
 
 </main> <!-- /main -->
-
-
-
-
-
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Support Page</title>
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
-    <style>
-
-        .centered-text {
-
-            text-align: center; /* Centers text for elements with this class */
-
-        }
-
-        .centered-content {
-
-            display: flex; /* Uses Flexbox for layout */
-
-            justify-content: center; /* Horizontally centers the content within the container */
-
-            align-items: center; /* Vertically centers the content within the container */
-
-        }
-
-        .email-share-button {
-
-            background: #007BFF; /* Example: a distinct blue color for the email button */
-
-            color: white; /* Ensure text and icon are white for visibility */
-
-        }
-
-        #share-buttons {
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            gap: 5px;
-
-        }
-
-        .share-button {
-
-            display: inline-flex;
-
-            padding: 2px 4px;
-
-            font-size: 14px;
-
-            cursor: pointer;
-
-            text-align: center;
-
-            color: white;
-
-            border-radius: 0px;
-
-        }
-
-    </style>
-
-
-
-
-
-    <footer class="centered-text">
-
-        <p>Copyright © <span id="copyright-year"></span> Jesse Anderson</p>
-
-        <!-- Other footer details -->
-
-    </footer>
-
-    <div>
-
-        <hr>
-
-        <h3 class="centered-text">Support my work with a Coffee/Monster</h3>
-
-        <div class="centered-content">
-
-            <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="jesseanderson" data-color="#06436e" data-emoji="☕" data-font="Lato" data-text="Support me" data-outline-color="#ffffff" data-font-color="#ffffff" data-coffee-color="#FFDD00" data-height="40px"></script>
-
-        </div>
-
-        <!-- Footer content -->
-
-        <h3 class="centered-text">Share</h3>
-
-        <!-- Share Buttons -->
-
-        <div id="share-buttons" class="centered-content">
-
-            <!-- Twitter Share Button, dynamically setting the URL -->
-
-            <a href="#" class="share-button twitter-share-button" data-size="large" data-hashtags="computerscience" data-via="JesseA7C5" data-show-count="false">Tweet</a>
-
-            <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-
-            <!-- Facebook SDK with Dynamic Nonce -->
-
-            <div id="fb-root"></div>
-
-            <script id="facebook-jssdk" async="" defer="" crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&amp;version=v10.0"></script>
-
-            <div class="fb-share-button share-button" data-href="" data-layout="button_count">
-
-            </div>
-
-            <!-- LinkedIn Share Button -->
-
-            <script src="https://platform.linkedin.com/in.js" type="text/javascript">lang: en_US</script>
-
-            <script type="IN/Share" data-url=""></script>
-
-            <!-- Email Share Button -->
-
-            <a href="#" class="share-button email-share-button"><i class="fas fa-envelope"></i></a>
-
-        </div>
-
+<footer class="centered-text">
+    <p>Copyright © 2024-<span id="copyright-year"></span> Jesse Anderson</p>
+</footer>
+
+<div class="blog-footer-actions">
+    <hr>
+    <h3 class="centered-text">Support my work with a Coffee/Monster</h3>
+    <div class="centered-content">
+        <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="jesseanderson" data-color="#06436e" data-emoji="" data-font="Lato" data-text="Support me" data-outline-color="#ffffff" data-font-color="#ffffff" data-coffee-color="#FFDD00" data-height="40px"></script>
     </div>
 
-    <script>
+    <h3 class="centered-text">Share</h3>
+    <div id="share-buttons" class="centered-content">
+        <a href="#" class="share-button twitter-share-button" data-size="large" data-hashtags="computerscience" data-via="JesseA7C5" data-show-count="false">Tweet</a>
+        <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
-        // Function to generate a random nonce
+        <div id="fb-root"></div>
+        <script id="facebook-jssdk" async="" defer="" crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&amp;version=v10.0"></script>
+        <div class="fb-share-button share-button" data-href="" data-layout="button_count">
+        </div>
 
-        function generateNonce(length = 16) {
+        <script src="https://platform.linkedin.com/in.js" type="text/javascript">lang: en_US</script>
+        <script type="IN/Share" data-url=""></script>
 
-            const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        <a href="#" class="share-button email-share-button" aria-label="Share by email"><i class="bi bi-envelope"></i></a>
+    </div>
+</div>
 
-            let text = "";
+<div class="latest-posts" data-latest-posts>
+    <h3>Latest Posts</h3>
+    <ul id="latest-posts-list">
+        <li><a href="../OP-Crime-Dashboard-Doc/index.html"><img src="../OP-Crime-Dashboard-Doc/image.png" alt="" class="latest-post-thumbnail" width="56" height="42" loading="lazy" decoding="async"><span>Building an Oak Park Crime Data Science Dashboard</span></a></li>
+        <li><a href="../OP-Crime-Documentation/index.html"><img src="../OP-Crime-Documentation/image.png" alt="" class="latest-post-thumbnail" width="56" height="42" loading="lazy" decoding="async"><span>Building an Oak Park Crime Map from Public PDFs</span></a></li>
+        <li><a href="../linreg_core_XLL/index.html"><img src="../linreg_core_XLL/linreg_core_example_workbook_XLL.png" alt="" class="latest-post-thumbnail" width="56" height="42" loading="lazy" decoding="async"><span>From DLL to XLL: Building an Excel Add-in in Pure Rust</span></a></li>
+        <li><a href="../linreg_core_VBA_FFI/index.html"><img src="../linreg_core_VBA_FFI/linreg_core_example_workbook.png" alt="" class="latest-post-thumbnail" width="56" height="42" loading="lazy" decoding="async"><span>Calling Rust from Excel: Building a Native DLL for VBA</span></a></li>
+    </ul>
+</div>
 
-            for (let i = 0; i < length; i++) {
+<script>
+    function generateNonce(length = 16) {
+        const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        let text = "";
+        for (let i = 0; i < length; i++) {
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+        }
+        return text;
+    }
 
-                text += possible.charAt(Math.floor(Math.random() * possible.length));
-
-            }
-
-            return text;
-
+    document.addEventListener('DOMContentLoaded', function() {
+        const facebookSDKScript = document.getElementById('facebook-jssdk');
+        if (facebookSDKScript) {
+            facebookSDKScript.setAttribute('nonce', generateNonce());
         }
 
-        // Set the nonce attribute for the Facebook SDK script and dynamically set URLs
+        const currentUrl = window.location.href;
+        const currentTitle = document.title;
 
-        document.addEventListener('DOMContentLoaded', function() {
-
-            const nonce = generateNonce();
-
-            const facebookSDKScript = document.getElementById('facebook-jssdk');
-
-            facebookSDKScript.setAttribute('nonce', nonce);
-
-            var elems = document.querySelectorAll('script[type="IN/Share"]');
-
-            for (var i = 0; i < elems.length; i++) {
-
-                elems[i].setAttribute('data-url', window.location.href);
-
-            }
-
-            // Set dynamic URLs for social sharing
-
-            const currentUrl = window.location.href;
-
-            const currentTitle = document.title; // Use the current document title as the email subject
-
-            // Facebook
-
-            document.querySelector('.fb-share-button').setAttribute('data-href', currentUrl);
-
-            // LinkedIn
-
-            document.querySelectorAll('script[type="IN/Share"]')[0].setAttribute('data-url', currentUrl);
-
-            // Twitter
-
-            document.querySelector('.twitter-share-button').setAttribute('href', 'https://twitter.com/share?url=' + encodeURIComponent(currentUrl) + '&hashtags=rstats');
-
-            // Email
-
-            document.querySelector('.email-share-button').setAttribute('href', `mailto:?subject=${encodeURIComponent(currentTitle)}&body=Check out this link: ${encodeURIComponent(currentUrl)}`);
-
-            // Dynamically set the current year in the copyright footer
-
-            document.getElementById('copyright-year').textContent = new Date().getFullYear();
-
+        document.querySelectorAll('script[type="IN/Share"]').forEach(elem => {
+            elem.setAttribute('data-url', currentUrl);
         });
 
-        // This script below to put a latest posts list after the comment system was such a pain in the ass.
+        const facebookButton = document.querySelector('.fb-share-button');
+        if (facebookButton) {
+            facebookButton.setAttribute('data-href', currentUrl);
+        }
 
-        document.addEventListener('DOMContentLoaded', function() {
+        const twitterButton = document.querySelector('.twitter-share-button');
+        if (twitterButton) {
+            twitterButton.setAttribute('href', 'https://twitter.com/share?url=' + encodeURIComponent(currentUrl) + '&hashtags=rstats');
+        }
 
-            // console.log("Latest Posts Populating...");
+        const emailButton = document.querySelector('.email-share-button');
+        if (emailButton) {
+            emailButton.setAttribute('href', `mailto:?subject=${encodeURIComponent(currentTitle)}&body=Check out this link: ${encodeURIComponent(currentUrl)}`);
+        }
 
-            // Create the latest posts container
-
-            const latestPostsContainer = document.createElement('div');
-
-            latestPostsContainer.className = 'latest-posts';
-
-            latestPostsContainer.innerHTML = `
-
-                <h3>Latest Posts</h3>
-
-                <ul id="latest-posts-list">
-
-                    <!-- Latest posts will be inserted here -->
-
-                </ul>
-
-            `;
-
-            // Find the footer element
-
-            const footer = document.querySelector('footer.footer');
-
-            // Insert the latest posts container before footer, easier than after utterances.
-
-            footer.parentNode.insertBefore(latestPostsContainer, footer);
-
-            // Fetch latest posts from the archive page
-
-            fetch('https://jesse-anderson.github.io/Blog/_site/archive.html')
-
-                .then(response => response.text())
-
-                .then(data => {
-
-                    const parser = new DOMParser();
-
-                    const doc = parser.parseFromString(data, 'text/html');
-
-                    const posts = doc.querySelectorAll('.quarto-listing-container-table tbody tr');
-
-                    // console.log("Posts: ", posts);
-
-                    const latestPostsList = document.getElementById('latest-posts-list');
-
-                    let count = 0;
-
-                    posts.forEach(post => {
-
-                        if (count < 4) {
-
-                            // console.log("Title populating...");
-
-                            const titleElement = post.querySelector('.listing-title'); // Correctly select the <a> tag with the title class
-
-                            // console.log(titleElement)
-
-                              const imageElement = post.querySelector('.listing-image img');
-
-                              // console.log(imageElement)
-
-                            if (titleElement) {
-
-                                const title = titleElement.textContent.trim();
-
-                                // console.log('Title: ', title);
-
-                                let url = titleElement.getAttribute('href');
-
-                                // console.log('URL: ', url);
-
-                                if (url && !url.startsWith('http')) {
-
-                                    url = 'https://jesse-anderson.github.io/Blog/_site/' + url.replace(/^\.\//, '');
-
-                                }
-
-                                // console.log('Formatted URL: ', url);
-
-                                const imageUrl = imageElement ? imageElement.getAttribute('src').replace(/^\.\//, 'https://jesse-anderson.github.io/Blog/_site/') : 'default-image.jpg'; // Fallback image
-
-                                // console.log('Image URL: ', imageUrl);
-
-                                const listItem = document.createElement('li');
-
-                                listItem.innerHTML = `<a href="${url}"><img src="${imageUrl}" alt="Post Image" style="height: 20px;"> ${title}</a>`;
-
-                                latestPostsList.appendChild(listItem);
-
-                                // console.log('ListItem: ', listItem);
-
-                                count++;
-
-                            } else {
-
-                                console.warn('Missing elements for post:', post);
-
-                            }
-
-                        }
-
-                    });
-
-                });
-
-        });
-
-    </script>
-
-
-
-
-
+        const copyrightYear = document.getElementById('copyright-year');
+        if (copyrightYear) {
+            copyrightYear.textContent = new Date().getFullYear();
+        }
+    });
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
@@ -1186,7 +960,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","openEffect":"zoom","selector":".lightbox","loop":false,"descPosition":"bottom"});
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","openEffect":"zoom","loop":false,"descPosition":"bottom","closeEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

@@ -4,22 +4,30 @@ image: profile.jpg
 about:
   template: jolla
   links:
+    - icon: house
+      text: jesse-anderson.net
+      href: https://jesse-anderson.net/
+    - icon: tools
+      text: Tools
+      href: https://tools.jesse-anderson.net/
     - icon: linkedin
       text: LinkedIn
       href: https://www.linkedin.com/in/jesse-anderson-a7c5/
     - icon: github
-      text: Github
+      text: GitHub
       href: https://github.com/jesse-anderson/
-    - icon: Folder symlink fill
-      text: Portfolio
-      href: https://portfolio.jesse-anderson.net/
+    - icon: file-earmark-person
+      text: Résumé
+      href: https://jesse-anderson.net/files/resume.pdf
+    - icon: bookmark-star
+      text: ORCID
+      href: https://orcid.org/0000-0001-5731-5511
 ---
 
-I launched this blog in April of 2024 as part of a unique project aimed at creating a space for my thoughts and analyses, free from the constraints and subscriptions of platforms like Medium, and distinct from the algorithm-driven feeds of LinkedIn. While there's certainly more content on the way, I hope this introduction serves as a more engaging placeholder than a simple "This is my blog."
+I'm a chemical engineer turned computer scientist. BS ChemE at UIC, MCS at UIUC, with six peer-reviewed papers in microscopy image analysis and computational biology along the way. Most of what I work on is automation of one flavor or another: data pipelines, dashboards, IoT sensor networks, and whatever scripting it takes to stitch the rest of it together. If a workflow is eating labor-hours, that's usually where I end up.
 
+This blog is where projects get written up properly, at the level of detail that won't fit on a portfolio card. Embedded sensor builds with ESP32, PMS7003, and SCD41. Civic data work like the Oak Park crime dashboard. Density-based clustering (DBSCAN, OPTICS) walked through end-to-end. A lot of writing about Excel, VBA, and Rust interop via XLLs, which turned out to be a much deeper rabbit hole than it had any right to be. Code, schematics, what broke, what I'd do differently next time.
 
+For the health, performance, and self-experimentation writing, see my [Substack](https://jesseandersonresearch.substack.com/). For interactive versions of the science (PK simulators, sensor references, image classifiers), see [Tools](https://tools.jesse-anderson.net/). Everything else lives at [jesse-anderson.net](https://jesse-anderson.net/).
 
-
-
-
-
+I started this in April 2024 to keep my technical writing free of Medium paywalls and out of the LinkedIn algorithm. That's still the deal. Long posts, no gating, no rented platform.

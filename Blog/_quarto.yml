@@ -8,14 +8,23 @@ website:
   title: "Jesse Anderson's Blog"
   open-graph: true
   google-analytics: "G-5CSPYCMY55"
-  cookie-consent: true
+  cookie-consent:
+    type: express
+    style: simple
+    palette: light
   navbar:
     right:
       - archive.qmd
       - about.qmd
-      - icon: Folder symlink fill
+      - icon: house
+        text: Main Site
+        href: https://jesse-anderson.net/
+      - icon: folder-symlink-fill
         text: Portfolio
         href: https://portfolio.jesse-anderson.net/
+      - icon: tools
+        text: Tools
+        href: https://tools.jesse-anderson.net/
       - icon: github
         href: https://github.com/jesse-anderson/
       - icon: linkedin

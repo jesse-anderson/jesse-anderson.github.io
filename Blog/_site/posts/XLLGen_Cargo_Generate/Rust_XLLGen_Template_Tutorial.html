@@ -121,10 +121,10 @@ gtag('config', 'G-5CSPYCMY55', { 'anonymize_ip': true});
 document.addEventListener('DOMContentLoaded', function () {
 cookieconsent.run({
   "notice_banner_type":"simple",
-  "consent_type":"implied",
+  "consent_type":"express",
   "palette":"light",
   "language":"en",
-  "page_load_consent_levels":["strictly-necessary","functionality","tracking","targeting"],
+  "page_load_consent_levels":["strictly-necessary"],
   "notice_banner_reject_button_hide":false,
   "preferences_center_close_button_hide":false,
   "website_name":""
@@ -169,9 +169,19 @@ cookieconsent.run({
 <span class="menu-text">About</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="https://portfolio.jesse-anderson.net/"> <i class="bi bi-Folder symlink fill" role="img">
+    <a class="nav-link" href="https://jesse-anderson.net/"> <i class="bi bi-house" role="img">
+</i> 
+<span class="menu-text">Main Site</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://portfolio.jesse-anderson.net/"> <i class="bi bi-folder-symlink-fill" role="img">
 </i> 
 <span class="menu-text">Portfolio</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://tools.jesse-anderson.net/"> <i class="bi bi-tools" role="img">
+</i> 
+<span class="menu-text">Tools</span></a>
   </li>  
   <li class="nav-item compact">
     <a class="nav-link" href="https://github.com/jesse-anderson/"> <i class="bi bi-github" role="img">
@@ -315,7 +325,7 @@ cookieconsent.run({
 <p>If <code>true</code>, the project includes a workflow that builds the XLL on push and attaches it to GitHub Releases when you tag a version. Say <code>true</code> for now; you can always delete the <code>.github</code> folder later.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="Cargo_Generate_Command_Prompt.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1" title="Screenshot of terminal showing cargo-generate output with the two prompts and the “Done!” message"><img src="Cargo_Generate_Command_Prompt.png" class="img-fluid figure-img" alt="Screenshot of terminal showing cargo-generate output with the two prompts and the &quot;Done!&quot; message"></a></p>
+<p><a href="Cargo_Generate_Command_Prompt.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1" title="Screenshot of terminal showing cargo-generate output with the two prompts and the “Done!” message"><img src="Cargo_Generate_Command_Prompt.png" class="img-fluid figure-img" alt="Screenshot of terminal showing cargo-generate output with the two prompts and the &quot;Done!&quot; message"></a></p>
 <figcaption>Screenshot of terminal showing cargo-generate output with the two prompts and the “Done!” message</figcaption>
 </figure>
 </div>
@@ -347,7 +357,7 @@ cookieconsent.run({
 <p>A word of caution from experience: when I first got the template working, cargo reported zero errors and the XLL loaded into Excel without complaint. But no functions appeared. The add-in was registering successfully, then silently failing during initialization. No error, no warning, just an empty category list. This is why the test suite exists. If the tests pass, the functions are there.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="Cargo_Build_Command_Prompt.png" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="quarto-lightbox-gallery-2" title="Screenshot of terminal showing successful cargo build –release output"><img src="Cargo_Build_Command_Prompt.png" class="img-fluid figure-img" alt="Screenshot of terminal showing successful cargo build --release output"></a></p>
+<p><a href="Cargo_Build_Command_Prompt.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" data-glightbox="description: .lightbox-desc-2" title="Screenshot of terminal showing successful cargo build –release output"><img src="Cargo_Build_Command_Prompt.png" class="img-fluid figure-img" alt="Screenshot of terminal showing successful cargo build --release output"></a></p>
 <figcaption>Screenshot of terminal showing successful cargo build –release output</figcaption>
 </figure>
 </div>
@@ -361,7 +371,7 @@ cookieconsent.run({
 </ol>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="Cargo_Test_Command_Prompt.png" class="lightbox" data-glightbox="description: .lightbox-desc-3" data-gallery="quarto-lightbox-gallery-3" title="Screenshot of terminal showing cargo test with all 3 tests passing"><img src="Cargo_Test_Command_Prompt.png" class="img-fluid figure-img" alt="Screenshot of terminal showing cargo test with all 3 tests passing"></a></p>
+<p><a href="Cargo_Test_Command_Prompt.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" data-glightbox="description: .lightbox-desc-3" title="Screenshot of terminal showing cargo test with all 3 tests passing"><img src="Cargo_Test_Command_Prompt.png" class="img-fluid figure-img" alt="Screenshot of terminal showing cargo test with all 3 tests passing"></a></p>
 <figcaption>Screenshot of terminal showing cargo test with all 3 tests passing</figcaption>
 </figure>
 </div>
@@ -378,7 +388,7 @@ cookieconsent.run({
 </ol>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="Excel_Add_ins.png" class="lightbox" data-glightbox="description: .lightbox-desc-4" data-gallery="quarto-lightbox-gallery-4" title="Screenshot of Excel Add-ins dialog with finance-tools.xll checked"><img src="Excel_Add_ins.png" class="img-fluid figure-img" alt="Screenshot of Excel Add-ins dialog with finance-tools.xll checked"></a></p>
+<p><a href="Excel_Add_ins.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" data-glightbox="description: .lightbox-desc-4" title="Screenshot of Excel Add-ins dialog with finance-tools.xll checked"><img src="Excel_Add_ins.png" class="img-fluid figure-img" alt="Screenshot of Excel Add-ins dialog with finance-tools.xll checked"></a></p>
 <figcaption>Screenshot of Excel Add-ins dialog with finance-tools.xll checked</figcaption>
 </figure>
 </div>
@@ -386,7 +396,7 @@ cookieconsent.run({
 <p>To verify it worked, open the <strong>Insert Function</strong> dialog (click the <em>fx</em> button next to the formula bar, or press <strong>Shift+F3</strong>). You should see three new categories in the list: <code>finance_tools</code>, <code>Stats</code>, and <code>Sys</code>. (You may also see an <code>xllgen</code> category containing a diagnostic function <code>XLLGEN.REG_ERRORS</code>, which reports any registration failures. You can ignore it.)</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="Excel_Insert_Function.png" class="lightbox" data-glightbox="description: .lightbox-desc-5" data-gallery="quarto-lightbox-gallery-5" title="Screenshot of Insert Function dialog showing the three categories"><img src="Excel_Insert_Function.png" class="img-fluid figure-img" alt="Screenshot of Insert Function dialog showing the three categories"></a></p>
+<p><a href="Excel_Insert_Function.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" data-glightbox="description: .lightbox-desc-5" title="Screenshot of Insert Function dialog showing the three categories"><img src="Excel_Insert_Function.png" class="img-fluid figure-img" alt="Screenshot of Insert Function dialog showing the three categories"></a></p>
 <figcaption>Screenshot of Insert Function dialog showing the three categories</figcaption>
 </figure>
 </div>
@@ -402,7 +412,7 @@ cookieconsent.run({
 <p>You should get <code>5</code>. The prefix <code>FINANCE_TOOLS</code> comes from the crate name, uppercased. <code>ADD</code> is the base name from the <code>#[xll_bindgen]</code> attribute. The dot between them is added at registration time.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="Add.png" class="lightbox" data-glightbox="description: .lightbox-desc-6" data-gallery="quarto-lightbox-gallery-6" title="Addition"><img src="Add.png" class="img-fluid figure-img" alt="Addition"></a></p>
+<p><a href="Add.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6" data-glightbox="description: .lightbox-desc-6" title="Addition"><img src="Add.png" class="img-fluid figure-img" alt="Addition"></a></p>
 <figcaption>Addition</figcaption>
 </figure>
 </div>
@@ -410,7 +420,7 @@ cookieconsent.run({
 <p>Returns <code>20</code>. Same pattern. These two functions take scalar <code>f64</code> arguments and return a scalar <code>f64</code>. No error handling, no <code>Result</code>, just a plain return value. This is the simplest function shape you can write.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="Multiply.png" class="lightbox" data-glightbox="description: .lightbox-desc-7" data-gallery="quarto-lightbox-gallery-7" title="Multiply"><img src="Multiply.png" class="img-fluid figure-img" alt="Multiply"></a></p>
+<p><a href="Multiply.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7" data-glightbox="description: .lightbox-desc-7" title="Multiply"><img src="Multiply.png" class="img-fluid figure-img" alt="Multiply"></a></p>
 <figcaption>Multiply</figcaption>
 </figure>
 </div>
@@ -424,7 +434,7 @@ cookieconsent.run({
 <p>The function returns <code>Result&lt;f64, XllError&gt;</code> instead of a bare <code>f64</code>. If you pass it an empty range, it returns an <code>XllError</code> with the message <code>"empty input"</code>, which Excel displays in the cell as an error string rather than silently producing garbage.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="Mean.png" class="lightbox" data-glightbox="description: .lightbox-desc-8" data-gallery="quarto-lightbox-gallery-8" title="Mean"><img src="Mean.png" class="img-fluid figure-img" alt="Mean"></a></p>
+<p><a href="Mean.png" class="lightbox" data-gallery="quarto-lightbox-gallery-8" data-glightbox="description: .lightbox-desc-8" title="Mean"><img src="Mean.png" class="img-fluid figure-img" alt="Mean"></a></p>
 <figcaption>Mean</figcaption>
 </figure>
 </div>
@@ -437,13 +447,13 @@ cookieconsent.run({
 <p>Returns a large number: milliseconds since the UNIX epoch. Try editing any cell in the sheet and watch the value change. This function is marked <code>volatile</code>, which tells Excel to recalculate it on every sheet change. It’s not marked <code>threadsafe</code> here, but the two aren’t mutually exclusive. A function can be both volatile (recalculates on every change) and thread-safe (Excel can call it from multiple calculation threads). For <code>NOW_MS</code> it doesn’t matter much, but for a volatile function doing heavier work, adding <code>threadsafe</code> lets Excel parallelize the calls.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="Version.png" class="lightbox" data-glightbox="description: .lightbox-desc-9" data-gallery="quarto-lightbox-gallery-9" title="Version"><img src="Version.png" class="img-fluid figure-img" alt="Version"></a></p>
+<p><a href="Version.png" class="lightbox" data-gallery="quarto-lightbox-gallery-9" data-glightbox="description: .lightbox-desc-9" title="Version"><img src="Version.png" class="img-fluid figure-img" alt="Version"></a></p>
 <figcaption>Version</figcaption>
 </figure>
 </div>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="Now_Epochesque.png" class="lightbox" data-glightbox="description: .lightbox-desc-10" data-gallery="quarto-lightbox-gallery-10" title="Now"><img src="Now_Epochesque.png" class="img-fluid figure-img" alt="Now"></a></p>
+<p><a href="Now_Epochesque.png" class="lightbox" data-gallery="quarto-lightbox-gallery-10" data-glightbox="description: .lightbox-desc-10" title="Now"><img src="Now_Epochesque.png" class="img-fluid figure-img" alt="Now"></a></p>
 <figcaption>Now</figcaption>
 </figure>
 </div>
@@ -514,7 +524,7 @@ cookieconsent.run({
 <p>Returns <code>0.1487</code> (approximately). That’s 14.87% annual growth, which is what you’d expect for an investment that doubles in five years. You should also see a new <code>Finance</code> category in the Insert Function dialog with <code>FIN.CAGR</code> listed inside it.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="CAGR.png" class="lightbox" data-glightbox="description: .lightbox-desc-11" data-gallery="quarto-lightbox-gallery-11" title="Screenshot showing =FIN.CAGR(1000, 2000, 5) returning ~0.1487 in Excel"><img src="CAGR.png" class="img-fluid figure-img" alt="Screenshot showing =FIN.CAGR(1000, 2000, 5) returning ~0.1487 in Excel"></a></p>
+<p><a href="CAGR.png" class="lightbox" data-gallery="quarto-lightbox-gallery-11" data-glightbox="description: .lightbox-desc-11" title="Screenshot showing =FIN.CAGR(1000, 2000, 5) returning ~0.1487 in Excel"><img src="CAGR.png" class="img-fluid figure-img" alt="Screenshot showing =FIN.CAGR(1000, 2000, 5) returning ~0.1487 in Excel"></a></p>
 <figcaption>Screenshot showing =FIN.CAGR(1000, 2000, 5) returning ~0.1487 in Excel</figcaption>
 </figure>
 </div>
@@ -524,7 +534,7 @@ cookieconsent.run({
 <p>The cell should display <code>values must be positive</code> instead of a numeric result.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="Error.png" class="lightbox" data-glightbox="description: .lightbox-desc-12" data-gallery="quarto-lightbox-gallery-12" title="Error Message"><img src="Error.png" class="img-fluid figure-img" alt="Error Message"></a></p>
+<p><a href="Error.png" class="lightbox" data-gallery="quarto-lightbox-gallery-12" data-glightbox="description: .lightbox-desc-12" title="Error Message"><img src="Error.png" class="img-fluid figure-img" alt="Error Message"></a></p>
 <figcaption>Error Message</figcaption>
 </figure>
 </div>
@@ -775,7 +785,7 @@ cookieconsent.run({
 <p>This registers the function three times: once as <code>FIN.CAGR</code>, once as <code>CAGR</code>, and once as <code>COMPOUND_GROWTH</code>. Aliases are used exactly as written, with no prefix applied.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="Aliases.png" class="lightbox" data-glightbox="description: .lightbox-desc-13" data-gallery="quarto-lightbox-gallery-13" title="Aliases"><img src="Aliases.png" class="img-fluid figure-img" alt="Aliases"></a></p>
+<p><a href="Aliases.png" class="lightbox" data-gallery="quarto-lightbox-gallery-13" data-glightbox="description: .lightbox-desc-13" title="Aliases"><img src="Aliases.png" class="img-fluid figure-img" alt="Aliases"></a></p>
 <figcaption>Aliases</figcaption>
 </figure>
 </div>
@@ -833,324 +843,88 @@ cookieconsent.run({
 </section>
 
 </main> <!-- /main -->
-
-
-
-
-
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Support Page</title>
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
-    <style>
-
-        .centered-text {
-
-            text-align: center; /* Centers text for elements with this class */
-
-        }
-
-        .centered-content {
-
-            display: flex; /* Uses Flexbox for layout */
-
-            justify-content: center; /* Horizontally centers the content within the container */
-
-            align-items: center; /* Vertically centers the content within the container */
-
-        }
-
-        .email-share-button {
-
-            background: #007BFF; /* Example: a distinct blue color for the email button */
-
-            color: white; /* Ensure text and icon are white for visibility */
-
-        }
-
-        #share-buttons {
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            gap: 5px;
-
-        }
-
-        .share-button {
-
-            display: inline-flex;
-
-            padding: 2px 4px;
-
-            font-size: 14px;
-
-            cursor: pointer;
-
-            text-align: center;
-
-            color: white;
-
-            border-radius: 0px;
-
-        }
-
-    </style>
-
-
-
-
-
-    <footer class="centered-text">
-
-        <p>Copyright © <span id="copyright-year"></span> Jesse Anderson</p>
-
-        <!-- Other footer details -->
-
-    </footer>
-
-    <div>
-
-        <hr>
-
-        <h3 class="centered-text">Support my work with a Coffee/Monster</h3>
-
-        <div class="centered-content">
-
-            <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="jesseanderson" data-color="#06436e" data-emoji="☕" data-font="Lato" data-text="Support me" data-outline-color="#ffffff" data-font-color="#ffffff" data-coffee-color="#FFDD00" data-height="40px"></script>
-
-        </div>
-
-        <!-- Footer content -->
-
-        <h3 class="centered-text">Share</h3>
-
-        <!-- Share Buttons -->
-
-        <div id="share-buttons" class="centered-content">
-
-            <!-- Twitter Share Button, dynamically setting the URL -->
-
-            <a href="#" class="share-button twitter-share-button" data-size="large" data-hashtags="computerscience" data-via="JesseA7C5" data-show-count="false">Tweet</a>
-
-            <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-
-            <!-- Facebook SDK with Dynamic Nonce -->
-
-            <div id="fb-root"></div>
-
-            <script id="facebook-jssdk" async="" defer="" crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&amp;version=v10.0"></script>
-
-            <div class="fb-share-button share-button" data-href="" data-layout="button_count">
-
-            </div>
-
-            <!-- LinkedIn Share Button -->
-
-            <script src="https://platform.linkedin.com/in.js" type="text/javascript">lang: en_US</script>
-
-            <script type="IN/Share" data-url=""></script>
-
-            <!-- Email Share Button -->
-
-            <a href="#" class="share-button email-share-button"><i class="fas fa-envelope"></i></a>
-
-        </div>
-
+<footer class="centered-text">
+    <p>Copyright © 2024-<span id="copyright-year"></span> Jesse Anderson</p>
+</footer>
+
+<div class="blog-footer-actions">
+    <hr>
+    <h3 class="centered-text">Support my work with a Coffee/Monster</h3>
+    <div class="centered-content">
+        <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="jesseanderson" data-color="#06436e" data-emoji="" data-font="Lato" data-text="Support me" data-outline-color="#ffffff" data-font-color="#ffffff" data-coffee-color="#FFDD00" data-height="40px"></script>
     </div>
 
-    <script>
+    <h3 class="centered-text">Share</h3>
+    <div id="share-buttons" class="centered-content">
+        <a href="#" class="share-button twitter-share-button" data-size="large" data-hashtags="computerscience" data-via="JesseA7C5" data-show-count="false">Tweet</a>
+        <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
-        // Function to generate a random nonce
+        <div id="fb-root"></div>
+        <script id="facebook-jssdk" async="" defer="" crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&amp;version=v10.0"></script>
+        <div class="fb-share-button share-button" data-href="" data-layout="button_count">
+        </div>
 
-        function generateNonce(length = 16) {
+        <script src="https://platform.linkedin.com/in.js" type="text/javascript">lang: en_US</script>
+        <script type="IN/Share" data-url=""></script>
 
-            const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        <a href="#" class="share-button email-share-button" aria-label="Share by email"><i class="bi bi-envelope"></i></a>
+    </div>
+</div>
 
-            let text = "";
+<div class="latest-posts" data-latest-posts>
+    <h3>Latest Posts</h3>
+    <ul id="latest-posts-list">
+        <li><a href="../OP-Crime-Dashboard-Doc/index.html"><img src="../OP-Crime-Dashboard-Doc/image.png" alt="" class="latest-post-thumbnail" width="56" height="42" loading="lazy" decoding="async"><span>Building an Oak Park Crime Data Science Dashboard</span></a></li>
+        <li><a href="../OP-Crime-Documentation/index.html"><img src="../OP-Crime-Documentation/image.png" alt="" class="latest-post-thumbnail" width="56" height="42" loading="lazy" decoding="async"><span>Building an Oak Park Crime Map from Public PDFs</span></a></li>
+        <li><a href="../linreg_core_XLL/index.html"><img src="../linreg_core_XLL/linreg_core_example_workbook_XLL.png" alt="" class="latest-post-thumbnail" width="56" height="42" loading="lazy" decoding="async"><span>From DLL to XLL: Building an Excel Add-in in Pure Rust</span></a></li>
+        <li><a href="../linreg_core_VBA_FFI/index.html"><img src="../linreg_core_VBA_FFI/linreg_core_example_workbook.png" alt="" class="latest-post-thumbnail" width="56" height="42" loading="lazy" decoding="async"><span>Calling Rust from Excel: Building a Native DLL for VBA</span></a></li>
+    </ul>
+</div>
 
-            for (let i = 0; i < length; i++) {
+<script>
+    function generateNonce(length = 16) {
+        const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        let text = "";
+        for (let i = 0; i < length; i++) {
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+        }
+        return text;
+    }
 
-                text += possible.charAt(Math.floor(Math.random() * possible.length));
-
-            }
-
-            return text;
-
+    document.addEventListener('DOMContentLoaded', function() {
+        const facebookSDKScript = document.getElementById('facebook-jssdk');
+        if (facebookSDKScript) {
+            facebookSDKScript.setAttribute('nonce', generateNonce());
         }
 
-        // Set the nonce attribute for the Facebook SDK script and dynamically set URLs
+        const currentUrl = window.location.href;
+        const currentTitle = document.title;
 
-        document.addEventListener('DOMContentLoaded', function() {
-
-            const nonce = generateNonce();
-
-            const facebookSDKScript = document.getElementById('facebook-jssdk');
-
-            facebookSDKScript.setAttribute('nonce', nonce);
-
-            var elems = document.querySelectorAll('script[type="IN/Share"]');
-
-            for (var i = 0; i < elems.length; i++) {
-
-                elems[i].setAttribute('data-url', window.location.href);
-
-            }
-
-            // Set dynamic URLs for social sharing
-
-            const currentUrl = window.location.href;
-
-            const currentTitle = document.title; // Use the current document title as the email subject
-
-            // Facebook
-
-            document.querySelector('.fb-share-button').setAttribute('data-href', currentUrl);
-
-            // LinkedIn
-
-            document.querySelectorAll('script[type="IN/Share"]')[0].setAttribute('data-url', currentUrl);
-
-            // Twitter
-
-            document.querySelector('.twitter-share-button').setAttribute('href', 'https://twitter.com/share?url=' + encodeURIComponent(currentUrl) + '&hashtags=rstats');
-
-            // Email
-
-            document.querySelector('.email-share-button').setAttribute('href', `mailto:?subject=${encodeURIComponent(currentTitle)}&body=Check out this link: ${encodeURIComponent(currentUrl)}`);
-
-            // Dynamically set the current year in the copyright footer
-
-            document.getElementById('copyright-year').textContent = new Date().getFullYear();
-
+        document.querySelectorAll('script[type="IN/Share"]').forEach(elem => {
+            elem.setAttribute('data-url', currentUrl);
         });
 
-        // This script below to put a latest posts list after the comment system was such a pain in the ass.
+        const facebookButton = document.querySelector('.fb-share-button');
+        if (facebookButton) {
+            facebookButton.setAttribute('data-href', currentUrl);
+        }
 
-        document.addEventListener('DOMContentLoaded', function() {
+        const twitterButton = document.querySelector('.twitter-share-button');
+        if (twitterButton) {
+            twitterButton.setAttribute('href', 'https://twitter.com/share?url=' + encodeURIComponent(currentUrl) + '&hashtags=rstats');
+        }
 
-            // console.log("Latest Posts Populating...");
+        const emailButton = document.querySelector('.email-share-button');
+        if (emailButton) {
+            emailButton.setAttribute('href', `mailto:?subject=${encodeURIComponent(currentTitle)}&body=Check out this link: ${encodeURIComponent(currentUrl)}`);
+        }
 
-            // Create the latest posts container
-
-            const latestPostsContainer = document.createElement('div');
-
-            latestPostsContainer.className = 'latest-posts';
-
-            latestPostsContainer.innerHTML = `
-
-                <h3>Latest Posts</h3>
-
-                <ul id="latest-posts-list">
-
-                    <!-- Latest posts will be inserted here -->
-
-                </ul>
-
-            `;
-
-            // Find the footer element
-
-            const footer = document.querySelector('footer.footer');
-
-            // Insert the latest posts container before footer, easier than after utterances.
-
-            footer.parentNode.insertBefore(latestPostsContainer, footer);
-
-            // Fetch latest posts from the archive page
-
-            fetch('https://jesse-anderson.github.io/Blog/_site/archive.html')
-
-                .then(response => response.text())
-
-                .then(data => {
-
-                    const parser = new DOMParser();
-
-                    const doc = parser.parseFromString(data, 'text/html');
-
-                    const posts = doc.querySelectorAll('.quarto-listing-container-table tbody tr');
-
-                    // console.log("Posts: ", posts);
-
-                    const latestPostsList = document.getElementById('latest-posts-list');
-
-                    let count = 0;
-
-                    posts.forEach(post => {
-
-                        if (count < 4) {
-
-                            // console.log("Title populating...");
-
-                            const titleElement = post.querySelector('.listing-title'); // Correctly select the <a> tag with the title class
-
-                            // console.log(titleElement)
-
-                              const imageElement = post.querySelector('.listing-image img');
-
-                              // console.log(imageElement)
-
-                            if (titleElement) {
-
-                                const title = titleElement.textContent.trim();
-
-                                // console.log('Title: ', title);
-
-                                let url = titleElement.getAttribute('href');
-
-                                // console.log('URL: ', url);
-
-                                if (url && !url.startsWith('http')) {
-
-                                    url = 'https://jesse-anderson.github.io/Blog/_site/' + url.replace(/^\.\//, '');
-
-                                }
-
-                                // console.log('Formatted URL: ', url);
-
-                                const imageUrl = imageElement ? imageElement.getAttribute('src').replace(/^\.\//, 'https://jesse-anderson.github.io/Blog/_site/') : 'default-image.jpg'; // Fallback image
-
-                                // console.log('Image URL: ', imageUrl);
-
-                                const listItem = document.createElement('li');
-
-                                listItem.innerHTML = `<a href="${url}"><img src="${imageUrl}" alt="Post Image" style="height: 20px;"> ${title}</a>`;
-
-                                latestPostsList.appendChild(listItem);
-
-                                // console.log('ListItem: ', listItem);
-
-                                count++;
-
-                            } else {
-
-                                console.warn('Missing elements for post:', post);
-
-                            }
-
-                        }
-
-                    });
-
-                });
-
-        });
-
-    </script>
-
-
-
-
-
+        const copyrightYear = document.getElementById('copyright-year');
+        if (copyrightYear) {
+            copyrightYear.textContent = new Date().getFullYear();
+        }
+    });
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
@@ -1576,7 +1350,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"descPosition":"bottom","closeEffect":"zoom","selector":".lightbox","openEffect":"zoom","loop":false});
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","closeEffect":"zoom","openEffect":"zoom","loop":false,"descPosition":"bottom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

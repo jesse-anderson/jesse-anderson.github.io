@@ -81,10 +81,10 @@ gtag('config', 'G-5CSPYCMY55', { 'anonymize_ip': true});
 document.addEventListener('DOMContentLoaded', function () {
 cookieconsent.run({
   "notice_banner_type":"simple",
-  "consent_type":"implied",
+  "consent_type":"express",
   "palette":"light",
   "language":"en",
-  "page_load_consent_levels":["strictly-necessary","functionality","tracking","targeting"],
+  "page_load_consent_levels":["strictly-necessary"],
   "notice_banner_reject_button_hide":false,
   "preferences_center_close_button_hide":false,
   "website_name":""
@@ -129,9 +129,19 @@ cookieconsent.run({
 <span class="menu-text">About</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="https://portfolio.jesse-anderson.net/"> <i class="bi bi-Folder symlink fill" role="img">
+    <a class="nav-link" href="https://jesse-anderson.net/"> <i class="bi bi-house" role="img">
+</i> 
+<span class="menu-text">Main Site</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://portfolio.jesse-anderson.net/"> <i class="bi bi-folder-symlink-fill" role="img">
 </i> 
 <span class="menu-text">Portfolio</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://tools.jesse-anderson.net/"> <i class="bi bi-tools" role="img">
+</i> 
+<span class="menu-text">Tools</span></a>
   </li>  
   <li class="nav-item compact">
     <a class="nav-link" href="https://github.com/jesse-anderson/"> <i class="bi bi-github" role="img">
@@ -166,23 +176,38 @@ cookieconsent.run({
 <div class="quarto-title-meta">
   </div>
 </header><main class="content" id="quarto-document-content">
-<p>I launched this blog in April of 2024 as part of a unique project aimed at creating a space for my thoughts and analyses, free from the constraints and subscriptions of platforms like Medium, and distinct from the algorithm-driven feeds of LinkedIn. While there’s certainly more content on the way, I hope this introduction serves as a more engaging placeholder than a simple “This is my blog.”</p>
+<p>I’m a chemical engineer turned computer scientist. BS ChemE at UIC, MCS at UIUC, with six peer-reviewed papers in microscopy image analysis and computational biology along the way. Most of what I work on is automation of one flavor or another: data pipelines, dashboards, IoT sensor networks, and whatever scripting it takes to stitch the rest of it together. If a workflow is eating labor-hours, that’s usually where I end up.</p>
+<p>This blog is where projects get written up properly, at the level of detail that won’t fit on a portfolio card. Embedded sensor builds with ESP32, PMS7003, and SCD41. Civic data work like the Oak Park crime dashboard. Density-based clustering (DBSCAN, OPTICS) walked through end-to-end. A lot of writing about Excel, VBA, and Rust interop via XLLs, which turned out to be a much deeper rabbit hole than it had any right to be. Code, schematics, what broke, what I’d do differently next time.</p>
+<p>For the health, performance, and self-experimentation writing, see my <a href="https://jesseandersonresearch.substack.com/">Substack</a>. For interactive versions of the science (PK simulators, sensor references, image classifiers), see <a href="https://tools.jesse-anderson.net/">Tools</a>. Everything else lives at <a href="https://jesse-anderson.net/">jesse-anderson.net</a>.</p>
+<p>I started this in April 2024 to keep my technical writing free of Medium paywalls and out of the LinkedIn algorithm. That’s still the deal. Long posts, no gating, no rented platform.</p>
 
 
 </main> 
   <hr class="about-sep">
    <div class="about-links">
+  <a href="https://jesse-anderson.net/" class="about-link" rel="" target="">
+    <i class="bi bi-house"></i>
+     <span class="about-link-text">jesse-anderson.net</span>
+  </a>
+  <a href="https://tools.jesse-anderson.net/" class="about-link" rel="" target="">
+    <i class="bi bi-tools"></i>
+     <span class="about-link-text">Tools</span>
+  </a>
   <a href="https://www.linkedin.com/in/jesse-anderson-a7c5/" class="about-link" rel="" target="">
     <i class="bi bi-linkedin"></i>
      <span class="about-link-text">LinkedIn</span>
   </a>
   <a href="https://github.com/jesse-anderson/" class="about-link" rel="" target="">
     <i class="bi bi-github"></i>
-     <span class="about-link-text">Github</span>
+     <span class="about-link-text">GitHub</span>
   </a>
-  <a href="https://portfolio.jesse-anderson.net/" class="about-link" rel="" target="">
-    <i class="bi bi-Folder symlink fill"></i>
-     <span class="about-link-text">Portfolio</span>
+  <a href="https://jesse-anderson.net/files/resume.pdf" class="about-link" rel="" target="">
+    <i class="bi bi-file-earmark-person"></i>
+     <span class="about-link-text">Résumé</span>
+  </a>
+  <a href="https://orcid.org/0000-0001-5731-5511" class="about-link" rel="" target="">
+    <i class="bi bi-bookmark-star"></i>
+     <span class="about-link-text">ORCID</span>
   </a>
 </div>
 </div>
