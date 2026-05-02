@@ -1845,9 +1845,27 @@ Main Code
 </section>
 
 </main> <!-- /main -->
-<footer class="centered-text">
-    <p>Copyright © 2024-<span id="copyright-year"></span> Jesse Anderson</p>
-</footer>
+<section class="blog-comments" data-comments>
+    <h3>Comments</h3>
+    <div id="cusdis_thread"
+         data-host="https://cusdis.com"
+         data-app-id="73a29664-ef73-4158-a3a9-3850647de254"
+         data-page-id="/posts/SCD41/"
+         data-page-url="https://blog.jesse-anderson.net/posts/SCD41/"
+         data-page-title="Jesse Anderson’s Blog - SCD41: On Demand CO2 Sensor"
+         data-theme="auto"></div>
+    <script async defer src="https://cusdis.com/js/cusdis.es.js"></script>
+</section>
+
+<div class="latest-posts" data-latest-posts>
+    <h3>Latest Posts</h3>
+    <ul id="latest-posts-list">
+        <li><a href="../OP-Crime-Dashboard-Doc/index.html"><img src="../OP-Crime-Dashboard-Doc/image.png" alt="" class="latest-post-thumbnail" width="56" height="42" loading="lazy" decoding="async"><span>Building an Oak Park Crime Data Science Dashboard</span></a></li>
+        <li><a href="../OP-Crime-Documentation/index.html"><img src="../OP-Crime-Documentation/image.png" alt="" class="latest-post-thumbnail" width="56" height="42" loading="lazy" decoding="async"><span>Building an Oak Park Crime Map from Public PDFs</span></a></li>
+        <li><a href="../linreg_core_XLL/index.html"><img src="../linreg_core_XLL/linreg_core_example_workbook_XLL.png" alt="" class="latest-post-thumbnail" width="56" height="42" loading="lazy" decoding="async"><span>From DLL to XLL: Building an Excel Add-in in Pure Rust</span></a></li>
+        <li><a href="../linreg_core_VBA_FFI/index.html"><img src="../linreg_core_VBA_FFI/linreg_core_example_workbook.png" alt="" class="latest-post-thumbnail" width="56" height="42" loading="lazy" decoding="async"><span>Calling Rust from Excel: Building a Native DLL for VBA</span></a></li>
+    </ul>
+</div>
 
 <div class="blog-footer-actions">
     <hr>
@@ -1873,15 +1891,9 @@ Main Code
     </div>
 </div>
 
-<div class="latest-posts" data-latest-posts>
-    <h3>Latest Posts</h3>
-    <ul id="latest-posts-list">
-        <li><a href="../OP-Crime-Dashboard-Doc/index.html"><img src="../OP-Crime-Dashboard-Doc/image.png" alt="" class="latest-post-thumbnail" width="56" height="42" loading="lazy" decoding="async"><span>Building an Oak Park Crime Data Science Dashboard</span></a></li>
-        <li><a href="../OP-Crime-Documentation/index.html"><img src="../OP-Crime-Documentation/image.png" alt="" class="latest-post-thumbnail" width="56" height="42" loading="lazy" decoding="async"><span>Building an Oak Park Crime Map from Public PDFs</span></a></li>
-        <li><a href="../linreg_core_XLL/index.html"><img src="../linreg_core_XLL/linreg_core_example_workbook_XLL.png" alt="" class="latest-post-thumbnail" width="56" height="42" loading="lazy" decoding="async"><span>From DLL to XLL: Building an Excel Add-in in Pure Rust</span></a></li>
-        <li><a href="../linreg_core_VBA_FFI/index.html"><img src="../linreg_core_VBA_FFI/linreg_core_example_workbook.png" alt="" class="latest-post-thumbnail" width="56" height="42" loading="lazy" decoding="async"><span>Calling Rust from Excel: Building a Native DLL for VBA</span></a></li>
-    </ul>
-</div>
+<footer class="centered-text">
+    <p>Copyright © 2024-<span id="copyright-year"></span> Jesse Anderson</p>
+</footer>
 
 <script>
     function generateNonce(length = 16) {
@@ -2336,8 +2348,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script>
-<script src="https://utteranc.es/client.js" repo="jesse-anderson/blogComments" issue-term="title" theme="github-dark" crossorigin="anonymous" async="">
-</script>
 </div> <!-- /content -->
 <footer class="footer">
   <div class="nav-footer">
@@ -2352,7 +2362,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","selector":".lightbox","loop":false,"openEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"loop":false,"closeEffect":"zoom","descPosition":"bottom","openEffect":"zoom","selector":".lightbox"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

@@ -14,7 +14,7 @@ LATEST_POSTS_PLACEHOLDER = re.compile(
 COMMENTS_PLACEHOLDER = re.compile(
     r'<section(?=[^>]*\bclass="blog-comments")(?=[^>]*\bdata-comments(?:="")?)[^>]*>\s*</section>'
 )
-CUSDIS_APP_ID = os.environ.get("CUSDIS_APP_ID", "").strip()
+CUSDIS_APP_ID = os.environ.get("CUSDIS_APP_ID", "73a29664-ef73-4158-a3a9-3850647de254").strip()
 CUSDIS_HOST = os.environ.get("CUSDIS_HOST", "https://cusdis.com").rstrip("/")
 SITE_URL = os.environ.get("BLOG_SITE_URL", "https://blog.jesse-anderson.net").rstrip("/")
 
