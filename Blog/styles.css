@@ -114,7 +114,7 @@
 }
 
 .blog-comments {
-  max-width: 760px;
+  max-width: 1100px;
   margin: 2.5rem auto;
   padding: 0 1rem;
   overflow: visible;
@@ -130,14 +130,13 @@
 
 .blog-comments #cusdis_thread {
   width: 100%;
-  min-height: 720px;
+  min-height: 200px;
   overflow: visible;
 }
 
 .blog-comments #cusdis_thread iframe {
   display: block;
   width: 100% !important;
-  min-height: 720px !important;
   border: 0;
 }
 
