@@ -114,10 +114,11 @@
 }
 
 .blog-comments {
+  width: 100%;
   max-width: 1100px;
-  margin: 2.5rem auto;
+  margin: 0 auto 1rem auto;
   padding: 0 1rem;
-  overflow: visible;
+  box-sizing: border-box;
 }
 
 .blog-comments:empty {
@@ -130,13 +131,13 @@
 
 .blog-comments #cusdis_thread {
   width: 100%;
-  min-height: 200px;
   overflow: visible;
 }
 
 .blog-comments #cusdis_thread iframe {
   display: block;
   width: 100% !important;
+  height: 600px !important;
   border: 0;
 }
 

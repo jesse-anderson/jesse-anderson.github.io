@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:blog.jesse-anderson.net)",
+      "Bash(curl -s \"https://blog.jesse-anderson.net/posts/OP-Crime-Dashboard-Doc/\")",
+      "Bash(curl -s *)",
+      "Bash(quarto render *)",
+      "WebFetch(domain:cusdis.com)"
+    ]
+  }
+}
