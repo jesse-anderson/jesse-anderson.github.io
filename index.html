@@ -196,15 +196,27 @@
                         </p>
                         <!-- Populated by js/hub.js; stays hidden if the fetch fails. -->
                         <figure class="spark" data-spark hidden>
-                            <div class="spark-chart" data-spark-chart></div>
-                            <figcaption class="spark-caption">
+                            <div class="spark-head">
+                                <span class="spark-title">Daily mean PM2.5 &mdash; indoor vs outdoor</span>
                                 <span class="spark-key">
                                     <span class="spark-swatch spark-swatch--indoor"></span>indoor
                                     <span class="spark-swatch spark-swatch--outdoor"></span>outdoor
                                 </span>
+                                <button type="button" class="spark-expand" data-spark-expand
+                                        aria-label="Expand chart" aria-expanded="false"
+                                        title="Expand chart">
+                                    <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true">
+                                        <path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4"
+                                              fill="none" stroke="currentColor" stroke-width="1.6"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="spark-chart" data-spark-chart></div>
+                            <figcaption class="spark-caption">
+                                <span class="spark-ratio" data-spark-ratio hidden></span>
                                 <span class="spark-meta">
-                                    daily mean PM2.5, <span data-spark-range></span> ·
-                                    published through <span data-spark-through></span>
+                                    published through <span data-spark-through></span>,
+                                    on a 30-day delay
                                 </span>
                             </figcaption>
                         </figure>

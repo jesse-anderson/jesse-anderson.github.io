@@ -361,54 +361,130 @@
      Static-first like the rest of this file: the block stays hidden unless real
      data arrives, so a failed fetch leaves no empty chart behind.
   */
-  function sparkPath(values, w, h, pad, lo, hi) {
-    const span = hi - lo || 1;
-    const step = values.length > 1 ? (w - pad * 2) / (values.length - 1) : 0;
-    let d = "";
-    let pen = false;
+  const SVGNS = "http://www.w3.org/2000/svg";
+  const svgEl = (name, attrs) => {
+    const n = document.createElementNS(SVGNS, name);
+    Object.keys(attrs).forEach((k) => n.setAttribute(k, attrs[k]));
+    return n;
+  };
+
+  // "Nice" axis bounds: round the domain out to a readable step so the y labels are
+  // numbers a person would actually write down.
+  function niceBounds(lo, hi) {
+    if (!(hi > lo)) return { lo: 0, hi: Math.max(1, hi || 1), step: 1 };
+    const raw = (hi - lo) / 3;
+    const mag = Math.pow(10, Math.floor(Math.log10(raw)));
+    const step = [1, 2, 2.5, 5, 10].map((m) => m * mag).find((s) => s >= raw) || 10 * mag;
+    return { lo: Math.floor(lo / step) * step, hi: Math.ceil(hi / step) * step, step };
+  }
+
+  function sparkPath(values, geo) {
+    const step = values.length > 1 ? (geo.w - geo.l - geo.r) / (values.length - 1) : 0;
+    const span = geo.hi - geo.lo || 1;
+    let d = "", pen = false;
     values.forEach((v, i) => {
       if (v === null || v === undefined) { pen = false; return; }   // gaps stay gaps
-      const x = pad + i * step;
-      const y = h - pad - ((v - lo) / span) * (h - pad * 2);
+      const x = geo.l + i * step;
+      const y = geo.h - geo.b - ((v - geo.lo) / span) * (geo.h - geo.t - geo.b);
       d += (pen ? "L" : "M") + x.toFixed(1) + " " + y.toFixed(1) + " ";
       pen = true;
     });
     return d.trim();
   }
 
-  function renderSparkline(box, data) {
+  function buildSparkSvg(data, W, H) {
     const t = data.t || [];
-    const inv = data.indoor_pm25 || [];
-    const outv = data.outdoor_pm25 || [];
-    const present = inv.concat(outv).filter((v) => typeof v === "number");
-    if (!t.length || !present.length) return false;
+    const series = [["outdoor", data.outdoor_pm25 || []], ["indoor", data.indoor_pm25 || []]];
+    const present = series.reduce((a, s) => a.concat(s[1]), [])
+      .filter((v) => typeof v === "number");
+    if (!t.length || !present.length) return null;
 
-    const W = 520, H = 96, PAD = 6;
-    const lo = Math.min.apply(null, present);
-    const hi = Math.max.apply(null, present);
-    const svgns = "http://www.w3.org/2000/svg";
-    const svg = document.createElementNS(svgns, "svg");
-    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
-    svg.setAttribute("preserveAspectRatio", "none");
-    svg.setAttribute("class", "spark-svg");
-    svg.setAttribute("role", "img");
-    svg.setAttribute("aria-label",
-      "Daily mean PM2.5, indoor versus outdoor, " + t[0] + " to " + t[t.length - 1]);
+    const nb = niceBounds(Math.min.apply(null, present), Math.max.apply(null, present));
+    const geo = { w: W, h: H, l: 34, r: 6, t: 8, b: 20, lo: nb.lo, hi: nb.hi };
 
-    [["outdoor", outv], ["indoor", inv]].forEach(function (pair) {
-      const d = sparkPath(pair[1], W, H, PAD, lo, hi);
-      if (!d) return;
-      const p = document.createElementNS(svgns, "path");
-      p.setAttribute("d", d);
-      p.setAttribute("fill", "none");
-      p.setAttribute("class", "spark-line spark-line--" + pair[0]);
-      svg.appendChild(p);
+    const svg = svgEl("svg", {
+      viewBox: "0 0 " + W + " " + H, class: "spark-svg", role: "img",
+      "aria-label": "Daily mean PM2.5 in micrograms per cubic metre, indoor versus "
+        + "outdoor, " + t[0] + " to " + t[t.length - 1]
     });
 
-    box.querySelector("[data-spark-chart]").appendChild(svg);
-    box.querySelector("[data-spark-range]").textContent =
-      Math.round(lo) + "–" + Math.round(hi) + " µg/m³";
+    // y gridlines + labels
+    for (let v = nb.lo; v <= nb.hi + 1e-9; v += nb.step) {
+      const y = geo.h - geo.b - ((v - geo.lo) / (geo.hi - geo.lo || 1)) * (geo.h - geo.t - geo.b);
+      svg.appendChild(svgEl("line", {
+        x1: geo.l, x2: geo.w - geo.r, y1: y.toFixed(1), y2: y.toFixed(1), class: "spark-grid"
+      }));
+      const lab = svgEl("text", { x: geo.l - 5, y: (y + 3).toFixed(1), class: "spark-axis",
+        "text-anchor": "end" });
+      lab.textContent = String(Math.round(v * 10) / 10);
+      svg.appendChild(lab);
+    }
+
+    // y unit, x endpoints
+    const unit = svgEl("text", { x: 0, y: 0, class: "spark-axis spark-axis--unit",
+      transform: "translate(9," + (geo.h / 2) + ") rotate(-90)", "text-anchor": "middle" });
+    unit.textContent = "µg/m³";
+    svg.appendChild(unit);
+
+    [[t[0], geo.l, "start"], [t[t.length - 1], geo.w - geo.r, "end"]].forEach((x) => {
+      const lab = svgEl("text", { x: x[1], y: geo.h - 6, class: "spark-axis",
+        "text-anchor": x[2] });
+      lab.textContent = x[0];
+      svg.appendChild(lab);
+    });
+
+    series.forEach((pair) => {
+      const d = sparkPath(pair[1], geo);
+      if (d) svg.appendChild(svgEl("path", { d: d, fill: "none",
+        class: "spark-line spark-line--" + pair[0] }));
+    });
+    return svg;
+  }
+
+  function renderSparkline(box, data) {
+    const host = box.querySelector("[data-spark-chart]");
+    const draw = (w, h) => {
+      host.textContent = "";
+      const svg = buildSparkSvg(data, w, h);
+      if (svg) host.appendChild(svg);
+      return !!svg;
+    };
+    if (!draw(560, 150)) return false;
+
+    // One ratio per indoor sensor. They disagree, and that is worth showing rather
+    // than averaging away; the charted one is marked.
+    const ratios = Object.keys(data.io_ratio || {})
+      .filter((k) => typeof data.io_ratio[k].median === "number")
+      .sort();
+    if (ratios.length) {
+      const r = box.querySelector("[data-spark-ratio]");
+      r.textContent = "indoor/outdoor median · " + ratios.map(function (k) {
+        const s = data.io_ratio[k];
+        const mark = k === data.primary_indoor ? " (charted)" : "";
+        return k.replace(/-/g, " ") + " " + s.median.toFixed(2) + mark;
+      }).join(" · ");
+      r.hidden = false;
+    }
     box.querySelector("[data-spark-through]").textContent = data.published_through || "";
+
+    // Expand: same chart, more room. Escape or the backdrop closes it.
+    const btn = box.querySelector("[data-spark-expand]");
+    if (btn) {
+      const onKey = (e) => { if (e.key === "Escape") toggle(false); };
+      function toggle(open) {
+        box.classList.toggle("spark--full", open);
+        btn.setAttribute("aria-expanded", String(open));
+        document.body.style.overflow = open ? "hidden" : "";
+        draw(open ? 1100 : 560, open ? Math.max(320, window.innerHeight - 260) : 150);
+        if (open) document.addEventListener("keydown", onKey);
+        else document.removeEventListener("keydown", onKey);
+      }
+      btn.addEventListener("click", () =>
+        toggle(!box.classList.contains("spark--full")));
+      box.addEventListener("click", (e) => {
+        if (e.target === box && box.classList.contains("spark--full")) toggle(false);
+      });
+    }
     box.hidden = false;
     return true;
   }
