@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jesse Anderson | Data Systems & Automation Engineering</title>
-    <meta name="description" content="Senior engineer specializing in data systems, automation, pipelines, and dashboards. BS Chemical Engineering, MS Computer Science (UIUC).">
+    <meta name="description" content="Engineer specializing in data systems, automation, pipelines, and dashboards. BS Chemical Engineering, MCS Computer Science (UIUC).">
     <meta name="keywords" content="data systems, automation, engineering, pipelines, dashboards, tooling">
     <meta name="author" content="Jesse Anderson">
     
     <!-- Open Graph -->
     <meta property="og:title" content="Jesse Anderson | Data Systems & Automation Engineering">
-    <meta property="og:description" content="Senior engineer specializing in automation-heavy data systems, pipelines, dashboards, and engineering tooling.">
+    <meta property="og:description" content="Engineer specializing in automation-heavy data systems, pipelines, dashboards, and engineering tooling.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://jesse-anderson.net">
     
@@ -36,6 +36,7 @@
                     <a href="https://portfolio.jesse-anderson.net" class="nav-link">Portfolio</a>
                     <a href="https://tools.jesse-anderson.net/tools.html" class="nav-link">Tools</a>
                     <a href="https://blog.jesse-anderson.net" class="nav-link">Blog</a>
+                    <a href="https://sensors.jesse-anderson.net/public" class="nav-link">Sensors</a>
                     <div class="nav-divider"></div>
                     <a href="files/resume.pdf" class="nav-link nav-link--doc" target="_blank">Resume</a>
                     <!-- <a href="files/CV.pdf" class="nav-link nav-link--doc" target="_blank">CV</a> -->
@@ -54,6 +55,7 @@
              <a href="https://portfolio.jesse-anderson.net" class="mobile-nav-link">Portfolio</a> 
             <a href="https://tools.jesse-anderson.net/tools.html" class="mobile-nav-link">Tools</a>
             <a href="https://blog.jesse-anderson.net" class="mobile-nav-link">Blog</a>
+            <a href="https://sensors.jesse-anderson.net/public" class="mobile-nav-link">Sensors</a>
             <div class="mobile-nav-divider"></div>
             <a href="files/resume.pdf" class="mobile-nav-link" target="_blank">Resume (PDF)</a>
             <!-- <a href="files/CV.pdf" class="mobile-nav-link" target="_blank">CV (PDF)</a> --> <!-- Remove for now, update immediately!-->
@@ -170,6 +172,51 @@
                 </div>
             </section>
 
+            <!-- Live System Section -->
+            <section class="live-system">
+                <div class="section-header">
+                    <h2 class="section-title">Running Now</h2>
+                    <p class="section-subtitle">Public data from the sensor network I run at home</p>
+                </div>
+                <a href="https://sensors.jesse-anderson.net/public" class="live-card">
+                    <div class="live-card-body">
+                        <div class="live-badge">
+                            <span class="pulse pulse--live"></span>
+                            Ingesting every 10 minutes
+                        </div>
+                        <h3 class="live-title">Home Environmental Sensor Network</h3>
+                        <p class="live-description">
+                            ESP32 boards around the house log CO&#8322;, particulates from PM1 through PM10,
+                            temperature, humidity, air pressure, illuminance, color temperature, and soil
+                            conditions. Readings move through a cron worker into precomputed artifacts on
+                            R2, with no runtime database. The full dashboard is access-gated. This public
+                            view publishes daily statistics on a 30-day delay, so nothing released reveals
+                            when anyone is home. Readings sit alongside an outdoor baseline drawn from the
+                            city sensor network, which is what turns an indoor number into a ratio.
+                        </p>
+                        <span class="live-cta">View public statistics →</span>
+                    </div>
+                    <dl class="live-specs">
+                        <div class="live-spec">
+                            <dt>Published</dt>
+                            <dd>4 sensors plus outdoor reference</dd>
+                        </div>
+                        <div class="live-spec">
+                            <dt>Statistic</dt>
+                            <dd>Daily mean, p25 to p75 band</dd>
+                        </div>
+                        <div class="live-spec">
+                            <dt>Record</dt>
+                            <dd>Since June 2024</dd>
+                        </div>
+                        <div class="live-spec">
+                            <dt>Export</dt>
+                            <dd>Per-device CSV</dd>
+                        </div>
+                    </dl>
+                </a>
+            </section>
+
             <!-- Featured Tools Section -->
             <section class="featured-tools">
                 <div class="section-header section-head-row">
@@ -284,6 +331,7 @@
                             </svg>
                             <span>Resume</span>
                         </a>
+
                         <!-- <a href="files/CV.pdf" class="doc-button" target="_blank">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -294,6 +342,7 @@
                             </svg>
                             <span>Full CV</span>
                         </a> -->
+
                     </div>
                 </div>
             </section>

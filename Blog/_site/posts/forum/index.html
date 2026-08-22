@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.553">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Jesse Anderson’s Blog</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/cookie-consent/cookie-consent.js"></script>
+<link href="../../site_libs/cookie-consent/cookie-consent.css" rel="stylesheet">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-5CSPYCMY55"></script>
+
+<script type="text/plain" cookie-consent="tracking">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-5CSPYCMY55', { 'anonymize_ip': true});
+</script>
+
+<script type="text/javascript" charset="UTF-8">
+document.addEventListener('DOMContentLoaded', function () {
+cookieconsent.run({
+  "notice_banner_type":"simple",
+  "consent_type":"express",
+  "palette":"light",
+  "language":"en",
+  "page_load_consent_levels":["strictly-necessary"],
+  "notice_banner_reject_button_hide":false,
+  "preferences_center_close_button_hide":false,
+  "website_name":""
+  ,
+"language":"en"
+  });
+});
+</script> 
+  
+
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="Jesse Anderson’s Blog">
+<meta property="og:description" content="">
+<meta property="og:site_name" content="Jesse Anderson's Blog">
+</head>
+
+<body class="nav-fixed fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Jesse Anderson’s Blog</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../archive.html"> 
+<span class="menu-text">Archive</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://jesse-anderson.net/"> <i class="bi bi-house" role="img">
+</i> 
+<span class="menu-text">Main Site</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://portfolio.jesse-anderson.net/"> <i class="bi bi-folder-symlink-fill" role="img">
+</i> 
+<span class="menu-text">Portfolio</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://tools.jesse-anderson.net/"> <i class="bi bi-tools" role="img">
+</i> 
+<span class="menu-text">Tools</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/jesse-anderson/"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/jesse-anderson-a7c5/"> <i class="bi bi-linkedin" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<section id="the-forum-was-the-easy-part" class="level1">
+<h1>The Forum Was the Easy Part</h1>
+<p>I wanted a private place for the training community I write for. Somewhere people could post, argue, share what they are working on, and find it again a month later. Not a Discord that scrolls into the void. Not a subreddit run on someone else’s rules and someone else’s ranking. Not a Facebook group. A real forum, invite-only, that I own.</p>
+<p>There was a colder reason too. One AI crawler hit my personal blog with over three hundred thousand requests in a single day, trying to swallow everything I had ever written. That is not a typo, and it was one crawler on one day. The open web is being strip-mined for training data, and I did not want the community’s conversations to be the next thing fed into a model without anyone asking. A login wall in front of the whole thing settles it. What members write stays theirs.</p>
+<!-- IMAGE (the AI spam): swap the TODO path for the real screenshot. The alt text doubles as the caption. -->
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="TODO-images/ai-crawler-spike.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1" title="One crawler, one day. blog.jesse-anderson.net served over three hundred thousand requests in a single twenty-four-hour span to one crawler trying to train on everything I had written. This is the reason the forum sits behind a login wall."><img src="TODO-images/ai-crawler-spike.png" class="img-fluid figure-img" alt="One crawler, one day. blog.jesse-anderson.net served over three hundred thousand requests in a single twenty-four-hour span to one crawler trying to train on everything I had written. This is the reason the forum sits behind a login wall."></a></p>
+<figcaption>One crawler, one day. blog.jesse-anderson.net served over three hundred thousand requests in a single twenty-four-hour span to one crawler trying to train on everything I had written. This is the reason the forum sits behind a login wall.</figcaption>
+</figure>
+</div>
+<p>So I built a forum for people to post training-related musings.</p>
+<p>It works. People post, reply, react, get notified, search, upload images, and read it on their phones. But “it works” is not the same as “it runs well on a platform that bills by the row,” and the second is where the engineering starts.</p>
+<p>I host the whole thing on Cloudflare’s edge. The API is a Worker, the frontend is on Pages, the database is D1 (their serverless SQLite), images sit in R2, and Cloudflare Access handles login. It is fast for the people using it, it fits inside the free tier, and at this size it costs nothing. Keeping it that way while the forum gets used is the part worth writing about.</p>
+<section id="why-i-wrote-my-own-forum" class="level2">
+<h2 class="anchored" data-anchor-id="why-i-wrote-my-own-forum">Why I Wrote My Own Forum</h2>
+<p>The first fair question is why I wrote a forum at all. Good forum software exists. Discourse is good. There were two reasons.</p>
+<p>The practical one is that the off-the-shelf options want a real server. Discourse alone expects Postgres, Redis, and a couple of gigabytes of memory sitting there whether anyone is posting or not. That is a machine to run, patch, and pay for, which is the exact opposite of what I wanted. The whole appeal was a thing that costs nothing while it sits idle and that I never have to log into a server to repair.</p>
+<p>The other is that I wanted to own every parameter. When you install someone else’s forum, you inherit their data model, their queries, and their performance characteristics, and you optimize in the cracks they leave you. When you write your own, every knob is yours. That is more work, and it is also the only reason the rest of this article exists. I could change how a count is stored because the count was mine to change. None of the optimization below is reachable on a platform you rent by the month and tune through a plugin settings page.</p>
+<p>So I built it myself, on Cloudflare’s edge, for reasons I will come back to once the constraints that choice imposes have shown their teeth.</p>
+</section>
+<section id="what-got-built" class="level2">
+<h2 class="anchored" data-anchor-id="what-got-built">What Got Built</h2>
+<p>Everything after this is about making the forum cheap and correct to run, and it is easy to lose sight of how much forum there is to run. Before the hardening, here is the surface area it sits on, in one table. The rest of the article picks a handful of these and digs in.</p>
+<table class="table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Area</th>
+<th>What is in it</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Structure</td>
+<td>Categories hold threads which hold posts. Per-category visibility and access (hidden, read-only, full), with per-group and per-user overrides.</td>
+</tr>
+<tr class="even">
+<td>Writing</td>
+<td>A Markdown editor with live preview, posts up to forty thousand characters, quoting that handles whole posts, partial selections, several paragraphs, and nested quotes that collapse, an arrow-coercion shortcut, and a formatting cheat sheet.</td>
+</tr>
+<tr class="odd">
+<td>Drafts</td>
+<td>Autosaved per-thread drafts, title included, up to three kept at once behind a picker, with blank ones ignored so they do not eat a slot.</td>
+</tr>
+<tr class="even">
+<td>Reading</td>
+<td>Unread tracking that drops you at your first unread post and marks where new replies begin, watching and a Watching page, relative timestamps with the exact time on hover, First and Last page jumps, scroll-position restore on back and forward, and a back-to-top button.</td>
+</tr>
+<tr class="odd">
+<td>Reacting</td>
+<td>Per-post reactions with notification pile-ons collapsed into one entry, polls with editable votes, a private saved-posts list, and bookmarks.</td>
+</tr>
+<tr class="even">
+<td>Media</td>
+<td>Image upload to R2 (magic-byte checked, EXIF stripped, served from a category-private proxy), external image embeds, a click-to-zoom lightbox, lazy loading, and horizontal scroll for wide tables.</td>
+</tr>
+<tr class="odd">
+<td>Messaging</td>
+<td>Private one-to-one direct messages with Markdown, an unread count, and mutual blocking. The privacy policy says plainly that messages live in the database and an administrator with direct access could read them.</td>
+</tr>
+<tr class="even">
+<td>Notifications</td>
+<td>In-app notifications for replies, mentions, reactions, and staff actions, plus an opt-in daily or weekly email digest, coalesced per thread, with an unsubscribe link that works without logging in.</td>
+</tr>
+<tr class="odd">
+<td>Mentions</td>
+<td>An <span class="citation" data-cites="mention">@mention</span> autocomplete backed by the cap-and-handoff roster from later in this article.</td>
+</tr>
+<tr class="even">
+<td>Moderation</td>
+<td>A report-a-post queue with a count badge, soft delete with a trash and restore, post edit history (the last ten versions), thread lock, resolve, and reopen, and per-thread notification mute.</td>
+</tr>
+<tr class="odd">
+<td>Admin</td>
+<td>Category, group, and user management, a media manager, settings, a moderation dashboard, a send-test-digest button, and a server-side demo mode that swaps every real post for a stand-in so screenshots leak nothing.</td>
+</tr>
+<tr class="even">
+<td>Accounts and legal</td>
+<td>Identity through Cloudflare Access, roles for member, moderator, and admin, versioned rules and privacy policy with re-acceptance and a “what changed” summary, and full account anonymization.</td>
+</tr>
+<tr class="odd">
+<td>Reliability</td>
+<td>Per-user daily write ceilings, Sentry error reporting, a health endpoint, weekly encrypted off-site backups with a monthly restore check, friendly error pages, and a front-end test suite.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="the-rows-read-budget" class="level2">
+<h2 class="anchored" data-anchor-id="the-rows-read-budget">The Rows-Read Budget</h2>
+<p>D1’s free tier gives you five million rows read per day, and a Worker on the free plan gets fifty subrequests per invocation. This means the priority is optimizing those two numbers, not latency or CPU time. More specifically, rows read.</p>
+<p>That one fact shaped more of this project than any framework choice. A query that returns a single row but reads a million still costs a million against the daily budget. So the question I started asking about every hot query was not “is this fast?” It was “how many rows does this touch to do its job?”</p>
+</section>
+<section id="the-worst-query-in-the-app" class="level2">
+<h2 class="anchored" data-anchor-id="the-worst-query-in-the-app">The Worst Query in the App</h2>
+<p>Every thread page shows each author’s lifetime post count next to their name. The member directory shows it too. That count was computed at read time, with a <code>COUNT(*)</code> over the author’s entire post history, on every page load.</p>
+<p>On the latency dashboard, this query was nothing. About one percent of runtime, sub-millisecond at the median. If I had only been watching latency, I would never have found it.</p>
+<p>On the rows-read dashboard, it was the single heaviest pattern in the application. Ninety rows read for every row returned. The member directory was worse, because it ran a correlated subquery per member and counted each one’s whole history on every page of the list.</p>
+<p>The obvious fix is a better index. The obvious fix is wrong. There is no index that makes counting cheap. Counting is reading. To produce the number “412 posts,” the database has to walk 412 rows, and an index only changes which 412 rows it walks. Batching the per-member subqueries into one grouped query felt like progress, but it reads the identical rows. It just reads them in one statement instead of many.</p>
+<p>The only way to stop reading a thousand rows to produce one number is to stop counting at read time.</p>
+<p>So I stored the count. One migration adds two columns to the users table and backfills them from the real data in a single statement:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource sql number-lines code-with-copy"><code class="sourceCode sql"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> users <span class="kw">ADD</span> <span class="kw">COLUMN</span> post_count   <span class="dt">INTEGER</span> <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">DEFAULT</span> <span class="dv">0</span>;</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> users <span class="kw">ADD</span> <span class="kw">COLUMN</span> thread_count <span class="dt">INTEGER</span> <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">DEFAULT</span> <span class="dv">0</span>;</span>
+<span id="cb1-3"><a href="#cb1-3"></a></span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="kw">UPDATE</span> users <span class="kw">SET</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a>  post_count <span class="op">=</span> (<span class="kw">SELECT</span> <span class="fu">COUNT</span>(<span class="op">*</span>) <span class="kw">FROM</span> posts p <span class="kw">JOIN</span> threads t <span class="kw">ON</span> t.<span class="kw">id</span> <span class="op">=</span> p.thread_id</span>
+<span id="cb1-6"><a href="#cb1-6"></a>                 <span class="kw">WHERE</span> p.author_id <span class="op">=</span> users.<span class="kw">id</span> <span class="kw">AND</span> p.deleted_at <span class="kw">IS</span> <span class="kw">NULL</span> <span class="kw">AND</span> t.deleted_at <span class="kw">IS</span> <span class="kw">NULL</span>),</span>
+<span id="cb1-7"><a href="#cb1-7"></a>  thread_count <span class="op">=</span> (<span class="kw">SELECT</span> <span class="fu">COUNT</span>(<span class="op">*</span>) <span class="kw">FROM</span> threads t</span>
+<span id="cb1-8"><a href="#cb1-8"></a>                   <span class="kw">WHERE</span> t.author_id <span class="op">=</span> users.<span class="kw">id</span> <span class="kw">AND</span> t.deleted_at <span class="kw">IS</span> <span class="kw">NULL</span>);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Look at the join in the <code>post_count</code> subquery. A post counts only if its own row is live and its thread is live. A reply sitting in a soft-deleted thread reads as not there, which is exactly what the old read-time <code>COUNT(*)</code> produced. Getting that predicate identical to the query I was replacing is the whole reason the backfilled numbers came out right. The tables were altered in place over time. If this ever becomes a clonable, deployable repo, the schema will ship with these columns built in.</p>
+<p>The read sites turned into a column read. The thread page already joins the users table, so it gets the number for free. The directory dropped its subquery entirely. The interesting part of denormalizing the counter was not the counter. It was keeping the count honest.</p>
+<p>I did not decrement on delete. The maintenance splits by how risky the path is. The hot path, posting, takes a cheap increment. The rare paths, delete and restore, recompute from the actual rows.</p>
+<p>A new thread gives its author one post (the opener) and one thread, unconditionally, because that increment rides in the same transaction as the opener insert and commits only if the thread does:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource sql number-lines code-with-copy"><code class="sourceCode sql"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">UPDATE</span> users <span class="kw">SET</span> post_count <span class="op">=</span> post_count <span class="op">+</span> <span class="dv">1</span>, thread_count <span class="op">=</span> thread_count <span class="op">+</span> <span class="dv">1</span> <span class="kw">WHERE</span> <span class="kw">id</span> <span class="op">=</span> ?<span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>A reply is trickier, because the reply insert is itself guarded. You can only reply to an open thread in an active category, and if that guard rejects the insert, the count must not move. So the increment re-encodes the same guard as an <code>EXISTS</code> and fires only if a real reply could have landed:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource sql number-lines code-with-copy"><code class="sourceCode sql"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">UPDATE</span> users <span class="kw">SET</span> post_count <span class="op">=</span> post_count <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>  <span class="kw">WHERE</span> <span class="kw">id</span> <span class="op">=</span> ?<span class="dv">1</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a>    <span class="kw">AND</span> <span class="kw">EXISTS</span> (<span class="kw">SELECT</span> <span class="dv">1</span> <span class="kw">FROM</span> threads t <span class="kw">JOIN</span> categories c <span class="kw">ON</span> c.<span class="kw">id</span> <span class="op">=</span> t.category_id</span>
+<span id="cb3-4"><a href="#cb3-4"></a>                 <span class="kw">WHERE</span> t.<span class="kw">id</span> <span class="op">=</span> ?<span class="dv">2</span> <span class="kw">AND</span> t.status <span class="op">=</span> <span class="st">'open'</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a>                   <span class="kw">AND</span> t.deleted_at <span class="kw">IS</span> <span class="kw">NULL</span> <span class="kw">AND</span> c.visibility <span class="op">=</span> <span class="st">'active'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>That <code>EXISTS</code> is the kind of correctness you only reach because the count is yours. A plugin hook firing on “reply submitted” would have drifted every time the insert underneath it was a no-op, and nobody would have noticed until the numbers were visibly wrong.</p>
+<p>On delete or restore I do not adjust the number at all. I recompute it from canonical rows:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource sql number-lines code-with-copy"><code class="sourceCode sql"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">UPDATE</span> users <span class="kw">SET</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a>  post_count <span class="op">=</span> (<span class="kw">SELECT</span> <span class="fu">COUNT</span>(<span class="op">*</span>) <span class="kw">FROM</span> posts p <span class="kw">JOIN</span> threads t <span class="kw">ON</span> t.<span class="kw">id</span> <span class="op">=</span> p.thread_id</span>
+<span id="cb4-3"><a href="#cb4-3"></a>                 <span class="kw">WHERE</span> p.author_id <span class="op">=</span> users.<span class="kw">id</span> <span class="kw">AND</span> p.deleted_at <span class="kw">IS</span> <span class="kw">NULL</span> <span class="kw">AND</span> t.deleted_at <span class="kw">IS</span> <span class="kw">NULL</span>),</span>
+<span id="cb4-4"><a href="#cb4-4"></a>  thread_count <span class="op">=</span> (<span class="kw">SELECT</span> <span class="fu">COUNT</span>(<span class="op">*</span>) <span class="kw">FROM</span> threads t</span>
+<span id="cb4-5"><a href="#cb4-5"></a>                   <span class="kw">WHERE</span> t.author_id <span class="op">=</span> users.<span class="kw">id</span> <span class="kw">AND</span> t.deleted_at <span class="kw">IS</span> <span class="kw">NULL</span>)</span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="kw">WHERE</span> <span class="kw">id</span> <span class="kw">IN</span> (<span class="co">/* the affected author ids */</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Recompute cannot drift. It also sidesteps every “but was the parent thread also deleted?” edge case automatically, because it just asks the database what is true right now.</p>
+<p>There was one case that took real care. Soft-deleting a thread does not stamp its replies as deleted, because a restore has to bring the whole thread back intact. But while the thread is gone, those replies have to stop counting toward their authors’ totals. A thread is not one author’s content. So the delete and restore path recomputes for every distinct author who has a post in the thread, not just the person who started it:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource sql number-lines code-with-copy"><code class="sourceCode sql"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">UPDATE</span> users <span class="kw">SET</span> <span class="co">/* the same recompute as above */</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a> <span class="kw">WHERE</span> <span class="kw">id</span> <span class="kw">IN</span> (<span class="kw">SELECT</span> <span class="kw">DISTINCT</span> author_id <span class="kw">FROM</span> posts <span class="kw">WHERE</span> thread_id <span class="op">=</span> ?<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Recompute for only the thread’s author and a deleted thread leaves every replier’s count one too high, with nothing to flag it, because the number still looks plausible. Painful to reason out, rare in practice, and still worth handling.</p>
+<p>Before I let anything read the new columns, I ran the backfill and then checked it against the truth it came from. The check is just the backfill’s own expressions in a not-equal comparison:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode numberSource sql number-lines code-with-copy"><code class="sourceCode sql"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">SELECT</span> <span class="fu">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> mismatches <span class="kw">FROM</span> users u</span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="kw">WHERE</span> u.post_count <span class="op">&lt;&gt;</span> (<span class="kw">SELECT</span> <span class="fu">COUNT</span>(<span class="op">*</span>) <span class="kw">FROM</span> posts p <span class="kw">JOIN</span> threads t <span class="kw">ON</span> t.<span class="kw">id</span> <span class="op">=</span> p.thread_id</span>
+<span id="cb6-3"><a href="#cb6-3"></a>                        <span class="kw">WHERE</span> p.author_id <span class="op">=</span> u.<span class="kw">id</span> <span class="kw">AND</span> p.deleted_at <span class="kw">IS</span> <span class="kw">NULL</span> <span class="kw">AND</span> t.deleted_at <span class="kw">IS</span> <span class="kw">NULL</span>)</span>
+<span id="cb6-4"><a href="#cb6-4"></a>   <span class="kw">OR</span> u.thread_count <span class="op">&lt;&gt;</span> (<span class="kw">SELECT</span> <span class="fu">COUNT</span>(<span class="op">*</span>) <span class="kw">FROM</span> threads t</span>
+<span id="cb6-5"><a href="#cb6-5"></a>                          <span class="kw">WHERE</span> t.author_id <span class="op">=</span> u.<span class="kw">id</span> <span class="kw">AND</span> t.deleted_at <span class="kw">IS</span> <span class="kw">NULL</span>);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>It had to return zero before the reader shipped. It did.</p>
+<p>The heaviest rows-read pattern in the app is now a column read.</p>
+<p>Putting numbers on it: at the forum’s traffic, on a working estimate of a thousand thread views and eighty directory loads a day, those unchanging counts were reading on the order of two million rows a day. Call it forty percent of the five-million-row budget, spent reprinting numbers nobody had touched. Denormalizing them took that to near zero. Every other change in this article saved a few percent at most.</p>
+<p>The shape of the win, before and after:</p>
+<table class="table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>Before: read-time <code>COUNT</code></th>
+<th>After: stored counter</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>To show one author’s total</td>
+<td>walk the author’s whole post history</td>
+<td>read one column off the <code>users</code> join</td>
+</tr>
+<tr class="even">
+<td>Rows read per row returned</td>
+<td>about 90</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>Footprint on the runtime dashboard</td>
+<td>about 1 percent, invisible</td>
+<td>negligible</td>
+</tr>
+<tr class="even">
+<td>Share of the 5M daily rows-read budget</td>
+<td>roughly 40 percent</td>
+<td>near zero</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="paying-for-two-trips-when-one-would-do" class="level2">
+<h2 class="anchored" data-anchor-id="paying-for-two-trips-when-one-would-do">Paying for Two Trips When One Would Do</h2>
+<p>Almost every list in the forum is paginated, and almost every paginated endpoint did the same thing. It awaited the total-count query. Then it awaited the page-of-rows query. Two database round-trips, one after the other, with the second query having no dependence on the first.</p>
+<p>On the edge, every database call is a network hop. Two sequential awaits that do not depend on each other are two trips for one logical step, and the request waits for the sum of both instead of the longer of the two. So I fired them together.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode numberSource ts number-lines code-with-copy"><code class="sourceCode typescript"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">const</span> [totalRow<span class="op">,</span> rows] <span class="op">=</span> <span class="cf">await</span> <span class="bu">Promise</span><span class="op">.</span><span class="fu">all</span>([</span>
+<span id="cb7-2"><a href="#cb7-2"></a>  c<span class="op">.</span><span class="at">env</span><span class="op">.</span><span class="at">DB</span><span class="op">.</span><span class="fu">prepare</span>(countSql)<span class="op">.</span><span class="fu">bind</span>(<span class="op">...</span>)<span class="op">.</span><span class="fu">first</span><span class="op">&lt;</span>{ n<span class="op">:</span> <span class="dt">number</span> }<span class="op">&gt;</span>()<span class="op">,</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a>  c<span class="op">.</span><span class="at">env</span><span class="op">.</span><span class="at">DB</span><span class="op">.</span><span class="fu">prepare</span>(pageSql)<span class="op">.</span><span class="fu">bind</span>(<span class="op">...</span>)<span class="op">.</span><span class="fu">all</span><span class="op">&lt;</span>RowType<span class="op">&gt;</span>()<span class="op">,</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a>])<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>That went across every paginated route. Recent, watching, category threads, the member directory, profiles, bookmarks, notifications, the admin tables. Search was the best case, because its total, its body-text matches, and its title matches were three independent queries run one after another. They now fire together, and three trips became one.</p>
+<p>I used <code>Promise.all</code> rather than D1’s <code>batch</code>, and the reason is small. The count and the page return different row shapes, and <code>Promise.all</code> keeps each one’s types intact while <code>batch</code> hands you back a uniform array you then have to index and re-cast. The forum is nowhere near the fifty-subrequest limit, so the extra subrequest costs nothing. If I were subrequest-bound, the answer would flip. That is not to say I never will be, but the design is aimed at a relatively small, private user base.</p>
+<p>Then there was the part I almost left alone.</p>
+<p>The thread lists also show an unread dot. That dot came from a third query, run after the page loaded, that looked up the reader’s position in each thread on the page. It depends on the page results, so it cannot join the parallel batch. I assumed that made it a permanent third trip.</p>
+<p>It does not. “Needs the rows” only rules out running it in parallel. It does not rule out doing the work inside the page query itself. The unread dot is just a comparison between a thread’s latest post and where the reader left off, which is a join and a computed column:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode numberSource sql number-lines code-with-copy"><code class="sourceCode sql"><span id="cb8-1"><a href="#cb8-1"></a><span class="kw">SELECT</span> t.<span class="op">*</span>, u.display_name <span class="kw">AS</span> author_name, c.name <span class="kw">AS</span> category_name,</span>
+<span id="cb8-2"><a href="#cb8-2"></a>       (t.last_post_id <span class="kw">IS</span> <span class="kw">NOT</span> <span class="kw">NULL</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a>        <span class="kw">AND</span> t.last_post_id <span class="op">&gt;</span> <span class="fu">COALESCE</span>(tr.last_read_post_id, <span class="dv">0</span>)) <span class="kw">AS</span> unread</span>
+<span id="cb8-4"><a href="#cb8-4"></a>  <span class="kw">FROM</span> threads t</span>
+<span id="cb8-5"><a href="#cb8-5"></a>  <span class="kw">JOIN</span> users u <span class="kw">ON</span> u.<span class="kw">id</span> <span class="op">=</span> t.author_id</span>
+<span id="cb8-6"><a href="#cb8-6"></a>  <span class="kw">JOIN</span> categories c <span class="kw">ON</span> c.<span class="kw">id</span> <span class="op">=</span> t.category_id</span>
+<span id="cb8-7"><a href="#cb8-7"></a>  <span class="kw">LEFT</span> <span class="kw">JOIN</span> thread_reads tr <span class="kw">ON</span> tr.thread_id <span class="op">=</span> t.<span class="kw">id</span> <span class="kw">AND</span> tr.user_id <span class="op">=</span> <span class="ch">:uid</span></span>
+<span id="cb8-8"><a href="#cb8-8"></a> <span class="kw">WHERE</span> c.visibility <span class="op">=</span> <span class="st">'active'</span> <span class="kw">AND</span> t.deleted_at <span class="kw">IS</span> <span class="kw">NULL</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a> <span class="kw">ORDER</span> <span class="kw">BY</span> t.last_post_at <span class="kw">DESC</span></span>
+<span id="cb8-10"><a href="#cb8-10"></a> <span class="kw">LIMIT</span> <span class="ch">:n</span> OFFSET <span class="ch">:off</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The <code>LEFT JOIN</code> is doing the work. A thread the reader has opened has a matching <code>thread_reads</code> row, so the comparison against <code>last_read_post_id</code> resolves normally. A thread they have never opened has no row at all, <code>COALESCE</code> supplies a zero, and any thread that has a post comes back unread. One query, correct for both cases, and it rides the <code>thread_reads</code> primary key on <code>(user_id, thread_id)</code> so the join costs nothing.</p>
+<p>That is the exact comparison the unread-count badge already ran, so I knew the shape worked. The three busiest thread lists went from three trips to one, and two helper functions that existed only to run that third query got deleted.</p>
+<p>If a second query only reads something the first already returned, fold it into the first query’s SQL. Keep a separate query only when the code has to do something with the rows that SQL cannot express.</p>
+</section>
+<section id="caching-free-until-it-guards-a-door" class="level2">
+<h2 class="anchored" data-anchor-id="caching-free-until-it-guards-a-door">Caching: Free Until It Guards a Door</h2>
+<p>The category list gets read on nearly every request, because deciding what a user can see starts with knowing what categories exist. It is a tiny table that changes when an admin adds or edits a category, which is to say almost never. It was being read from the database on every request anyway.</p>
+<p>So I cached it in the Worker, with a ten-second lifetime and an explicit clear whenever a category is created, edited, or deleted. About a tenth of the database runtime, gone, for a cache and a clear-on-write.</p>
+<p>That win shows up in runtime, and the unit matters here. The category table is small enough that reading it barely registers against the rows-read budget. What caching it saves is a round-trip and the CPU to run the query, on nearly every request. This is the rare fix that moves the latency and subrequest meters and leaves the rows-read one alone.</p>
+<p>There is a catch worth naming.</p>
+<p>Reading the category list to decide what a user can see is safe to cache. A ten-second-stale view of which categories exist hurts nobody. But the same data also decides whether a user is allowed to post somewhere, and caching that means a write-permission decision can be up to ten seconds stale. That is a different kind of risk than a stale read.</p>
+<p>I made that call deliberately, at a quiet hour, knowing the write path re-checks the category in the insert itself as a backstop. Caching a read is free. Caching anything that guards a write is a decision and I feel that this was the write one (get it?).</p>
+</section>
+<section id="the-download-budget" class="level2">
+<h2 class="anchored" data-anchor-id="the-download-budget">The Download Budget</h2>
+<p>Every optimization so far was about the database. There is a second budget the database never sees: how much code the browser has to download before the page is usable.</p>
+<p>A forum has a lot of screens most people never open. The admin console, the moderation queue, the media manager, the group editor. And it has one screen that is heavy for everyone and used only in bursts, the Markdown editor, which drags in a parser and its linkify and highlighting pieces. Bundled together, all of that is one download that every visitor pays on first load, including the member who only ever reads.</p>
+<p>So none of it loads until it is asked for. Every route is a lazy import behind a loading boundary, and the editor is split out the same way. Open the forum and you get the shell, the thread list, and the reader. The editor arrives the first time you go to write something. The admin code never arrives at all unless you are an admin who opens an admin page. The initial download came down by about forty-five percent.</p>
+<p>It is the rows-read lesson aimed at a different meter. The important cost is not the total size of the app, but the size of what you need to do the thing you came for. A reader should not have to download the editor, and nobody but an admin should ever download the admin panel.</p>
+</section>
+<section id="holding-the-phone" class="level2">
+<h2 class="anchored" data-anchor-id="holding-the-phone">Holding the Phone</h2>
+<p>Profiling finds what is slow. It did not find any of what was wrong with the forum on a phone.</p>
+<p>The first thing it caught was the editor. I went to type a reply on my phone one evening and the thing could not keep up with my thumbs. Letters landed a beat late and the whole box stuttered as I typed. On my desktop it had always felt fine, so I had never once noticed.</p>
+<p>Two things were firing on every keystroke. The Markdown preview was re-rendering the whole post even while I sat on the Write tab, where the preview is not on screen at all. And the draft autosave was writing the entire body to local storage one character at a time. On a desktop you cannot feel that. On a phone you feel every bit of it.</p>
+<p>The fix was to stop doing work nobody asked for. The preview only renders when you are looking at the Preview tab. The autosave waits until you stop, debounced to six hundred milliseconds, instead of running on every letter. Neither change can lose a draft, because the save still flushes when you leave the page, switch tabs, or send the app to the background, and submitting cancels any pending save so a posted draft cannot come back from the dead. Typing on a phone went back to feeling like typing.</p>
+<p>As a side note, I am not happy with Substack and whatever degree of autosaving sans debouncing is going on over there. It is legitimately painful to type on that platform. :(</p>
+<p>The mobile navigation was a single row that scrolled sideways, and the scrollbar was hidden. So you had to swipe through eight to sixteen destinations, and nothing on screen told you there was anything past the right edge. It was the kind of thing that is invisible in a screenshot and obvious in your hand.</p>
+<p>I replaced it with a normal slide-out drawer behind a menu button. Everything stacked vertically, nothing to swipe, room for every link a moderator or admin sees.</p>
+<!-- IMAGE (demo mode, so no real member content): the current mobile nav drawer. -->
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="TODO-images/mobile-nav-drawer.png" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="quarto-lightbox-gallery-2" title="The mobile navigation drawer, slid open from the menu button: every destination stacked vertically, nothing to swipe past. Captured in demo mode, so none of the content is real."><img src="TODO-images/mobile-nav-drawer.png" class="img-fluid figure-img" alt="The mobile navigation drawer, slid open from the menu button: every destination stacked vertically, nothing to swipe past. Captured in demo mode, so none of the content is real."></a></p>
+<figcaption>The mobile navigation drawer, slid open from the menu button: every destination stacked vertically, nothing to swipe past. Captured in demo mode, so none of the content is real.</figcaption>
+</figure>
+</div>
+<p>The one part that fought me was a layout trap I had to learn by breaking it. The header slides out of the way as you scroll, which it does with a CSS transform. An element with a transform becomes the anchor for any fixed-position element inside it. So when I put the drawer inside the header, the drawer anchored itself to the header’s little box instead of the whole screen. Moving the drawer out of the header, as a sibling, fixed it completely.</p>
+<p>The desktop version had a quieter version of the same crowding. An admin with every staff link visible saw sixteen items wrap onto three rows. I collapsed the moderation and admin links into one dropdown, so the bar went back to one clean row, and I put the open-reports count on the dropdown itself so urgent moderation work does not hide behind a click.</p>
+<!-- IMAGE (demo mode): the current desktop nav with the Staff dropdown. -->
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="TODO-images/desktop-nav-staff-dropdown.png" class="lightbox" data-glightbox="description: .lightbox-desc-3" data-gallery="quarto-lightbox-gallery-3" title="Desktop navigation for an admin: one clean row, with the moderation and admin links collapsed behind a single Staff dropdown that carries the open-reports count as a badge. Captured in demo mode."><img src="TODO-images/desktop-nav-staff-dropdown.png" class="img-fluid figure-img" alt="Desktop navigation for an admin: one clean row, with the moderation and admin links collapsed behind a single Staff dropdown that carries the open-reports count as a badge. Captured in demo mode."></a></p>
+<figcaption>Desktop navigation for an admin: one clean row, with the moderation and admin links collapsed behind a single Staff dropdown that carries the open-reports count as a badge. Captured in demo mode.</figcaption>
+</figure>
+</div>
+</section>
+<section id="the-mention-roster" class="level2">
+<h2 class="anchored" data-anchor-id="the-mention-roster">The <span class="citation" data-cites="Mention">@Mention</span> Roster</h2>
+<p>The forum has a mention feature. Type an at-sign, get a list of members to autocomplete against. To do that, the editor fetched every member once when you opened it, kept the list, and filtered it locally as you typed.</p>
+<p>The reflex when you read “it fetches every member” is to want to fix it. I had to argue myself out of that.</p>
+<p>Fetching everyone and filtering in the browser is not a problem to fix at this size. It is the correct design. The list is a few kilobytes, the matches appear instantly, and it costs zero requests per keystroke. The alternative, asking the server on every keystroke, is slower for the person typing. Building it now would make the feature worse to use, in exchange for solving a problem the forum does not have.</p>
+<p>You also cannot just paginate it. The member directory is paginated already. But this is a typeahead, and a typeahead is not a list you scroll. You either hold all the candidates or you search on the server. There is no third option.</p>
+<p>So I made the simple version aware of its own ceiling. The full-roster fetch asks for one row more than the cap of a thousand, which makes the “is this everybody?” flag exact and costs nothing extra:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode numberSource sql number-lines code-with-copy"><code class="sourceCode sql"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">SELECT</span> <span class="kw">id</span>, display_name <span class="kw">FROM</span> users <span class="kw">ORDER</span> <span class="kw">BY</span> display_name_lower <span class="kw">LIMIT</span> <span class="dv">1001</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>If that thousand-and-first row comes back, there is at least one more member than the client should try to hold, so the response is marked <code>complete: false</code> and trimmed to a thousand. Under the cap, the client filters locally exactly as before, instant and free. Over the cap, the flag flips and the client switches to asking the server as you type, debounced. The server side is a prefix match written as a range scan so it rides the existing unique index on the lowercased name instead of scanning the table:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode numberSource sql number-lines code-with-copy"><code class="sourceCode sql"><span id="cb10-1"><a href="#cb10-1"></a><span class="kw">SELECT</span> <span class="kw">id</span>, display_name <span class="kw">FROM</span> users</span>
+<span id="cb10-2"><a href="#cb10-2"></a> <span class="kw">WHERE</span> display_name_lower <span class="op">&gt;=</span> ?<span class="dv">1</span> <span class="kw">AND</span> display_name_lower <span class="op">&lt;</span> ?<span class="dv">2</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a> <span class="kw">ORDER</span> <span class="kw">BY</span> display_name_lower <span class="kw">LIMIT</span> <span class="dv">10</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The two bound values are the typed prefix and that same prefix with U+FFFF appended, the highest character in Unicode’s basic plane, so a query for <code>al</code> matches every name from <code>al</code> up to but not including that upper bound. A <code>LIKE 'al%'</code> would have meant a scan. The range bound turns the same question into an index seek.</p>
+<p>The handoff is automatic. There is no setting to change later. The payload and the rows read stay bounded no matter how large the forum gets, and I paid nothing in user experience to get there, because the better-feeling version stays in charge right up until it cannot.</p>
+<p>Do not pre-build the scale solution when the simple one is both easier and nicer below the threshold. Teach the simple one to notice the threshold and hand off.</p>
+</section>
+<section id="why-cloudflare" class="level2">
+<h2 class="anchored" data-anchor-id="why-cloudflare">Why Cloudflare</h2>
+<p>I have spent most of this article fighting a platform’s constraints. It is fair to ask why I chose a platform whose constraints were going to be the work.</p>
+<p>I did not pick Cloudflare because it is trendy. I picked it because I did not want to think about it after it was running. Plus I have used Cloudflare across various fire-and-forget projects and have never had any issues.</p>
+<p>The forum is a side project, and the thing I am least willing to spend on a side project is operations. A virtual server means I am now in the business of patching it, watching it, and being the reason it is down at 2am. A managed database plus a separate frontend host means two bills and two dashboards to keep in sync. Both are fine. Neither is what I wanted to be doing.</p>
+<p>Cloudflare let me run the whole thing without operating anything. The Worker, the static site, the database, the image storage, and the login wall are all one platform, on one dashboard, billed as one thing. At this size that one thing is zero dollars, and it stays near zero as the forum grows, because the pricing is per use and the use is small.</p>
+<p>There is a quieter reason, and it is about trust. I have used AWS. AWS has a way of growing fees you did not ask for. A monitoring line item here, a thing that bills per request there, and when you finally want to turn it off you spend an afternoon learning which of a dozen consoles owns the switch. I did not want a platform I had to defend myself against. Cloudflare’s free tier has hard, legible limits, and when I reach one it tells me instead of quietly charging me for it. GCP is marginally better than AWS and we don’t talk about Azure…</p>
+<p>That last part connects back to everything above. A platform that charges by the row, and counts every one, is the same platform that will never surprise me with a bill. The five-million-row ceiling that sent me hunting for a hidden <code>COUNT</code> is the same reason I have never once logged in worried about what last month cost. A ceiling I can see is a thing I can design against.</p>
+<p>The domain, the DNS, and the login layer were already here too. So the real comparison was never “Cloudflare versus AWS.” It was “use what is already under my domain and costs nothing” against “go stand up a server I will have to babysit.” Put that way, it was not a hard call.</p>
+<p>I gave things up for it, and it is worth saying so. D1 is SQLite under the hood, so I do without the richer Postgres feature set. The Workers runtime runs in short-lived isolates. There is no long-running server underneath, so no process memory that outlives a request and no connection pool to keep warm. Those constraints are real. They are also, as the last several sections show, where nearly all the interesting decisions came from. A platform with no hard edges would have let me ship the same forum without ever once having to think this hard.</p>
+</section>
+<section id="operations" class="level2">
+<h2 class="anchored" data-anchor-id="operations">Operations</h2>
+<p>I said I did not want to operate anything. That was the goal. A forum with real members still has to be backed up, watched, and reachable, and none of that comes free just because the platform is managed. So I built each piece once and made it run without me in the loop.</p>
+<p>Start with the data, because it is the one thing the platform does not hand back to me on its own. D1 is durable, but a database I cannot restore is not a backup, it is hope at best. Once a week the whole thing is exported, encrypted, and pushed off-site. That part is ordinary. The part I care about is that once a month a job pulls the latest backup, restores it into a throwaway database, and checks that it actually came back. A backup you have never restored is risky. I would rather learn it is broken on a quiet Tuesday, in a scratch copy, than on the one day I need it for real.</p>
+<p>Deletion is staged, for a reason close to why the backups exist. Nothing a member removes is destroyed on the spot. A delete hides the content at once but keeps the row for thirty days, and only then does the nightly maintenance job purge it for good. Someone who deletes a post in a bad moment has a month to undo it, and after that it is genuinely gone, which is what the privacy policy promises. The same nightly job reclaims any uploaded file that never got attached to a post, so storage does not slowly fill with abandoned images.</p>
+<p>For knowing when something breaks, the app reports itself. The Worker is wrapped so that any unexpected error in a request, or in the nightly cron, is captured and sent to Sentry with a stack trace, and the browser app does the same for crashes in someone’s tab. I hear about a bug from a dashboard now, not from a member telling me the site is acting weird. Two details I am quietly pleased with: with no DSN configured the whole thing compiles down to a no-op, so the code shipped before the monitoring existed, and it never sends personally identifying data, because the Worker handles members’ writing and that is none of Sentry’s business. That Sentry ingest host is also the one outside origin the content policy lets the browser reach, which is the entire reason <code>connect-src</code> in the content policy later in this article is not just <code>'self'</code>.</p>
+<p>The front door has its own check, and it is deliberately dumb. A health endpoint answers <code>{ ok: true }</code> and nothing else, so an uptime monitor can ping it on a schedule and confirm the Worker is alive without ever touching real data.</p>
+<p>Email runs the same way. The digest goes out through Resend on a scheduled cron, in small hourly batches sized to stay under the free plan’s send limits, and the one part with teeth is the signed bounce webhook from the security section. A hard bounce or a spam complaint comes back signed, the app checks the signature, and that address quietly stops getting mail. I do not run a mail server, I do not chase bounces by hand, and one bad address cannot drag the rest of my sending down with it.</p>
+<p>The first time one of those notifications pulled someone who was not me back into a thread, the forum quietly stopped being a side project and became a place. That is the only metric in this whole article I did not profile.</p>
+<!-- IMAGE (demo mode): the admin panel. -->
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="TODO-images/admin-panel.png" class="lightbox" data-glightbox="description: .lightbox-desc-4" data-gallery="quarto-lightbox-gallery-4" title="The admin panel: the moderation queue with its open-reports badge, the backup and email controls, and the demo mode that made the rest of these screenshots safe to publish."><img src="TODO-images/admin-panel.png" class="img-fluid figure-img" alt="The admin panel: the moderation queue with its open-reports badge, the backup and email controls, and the demo mode that made the rest of these screenshots safe to publish."></a></p>
+<figcaption>The admin panel: the moderation queue with its open-reports badge, the backup and email controls, and the demo mode that made the rest of these screenshots safe to publish.</figcaption>
+</figure>
+</div>
+<p>None of this is much code. It is the smallest amount of operating that lets a side project hold real people’s writing without turning into a second job.</p>
+</section>
+<section id="the-tests-and-the-one-that-fought-back" class="level2">
+<h2 class="anchored" data-anchor-id="the-tests-and-the-one-that-fought-back">The Tests, and the One That Fought Back</h2>
+<p>I over-test by temperament. A numerics library I wrote has a suite that borders on paranoid, and the forum inherited the reflex. The denormalized counters, the access rules, the CSRF guard, and the search tokenizer all have tests whose only job is to fail loudly the day I break them by accident.</p>
+<p>Two are worth naming, because each guards against a specific future mistake rather than a present one. The first reads the live <code>users</code> schema and forces every column to be classified as either scrubbed or kept when an account is anonymized. A later migration cannot quietly add a column of personal data that the privacy scrubber then forgets about, because the test goes red the moment a column shows up unclassified. The second drives the counter maintenance through its worst path: create, a single reply deleted and restored, and then the whole-thread delete and restore where several authors lose and regain a post at once. That multi-author case is the one I was most likely to get wrong, so it is the one with the most tests pointed at it.</p>
+<p>Then there was the test failure that was not a bug.</p>
+<p>The API suite runs on Cloudflare’s <code>vitest-pool-workers</code>, which stands up the real Worker runtime for each test file. On Windows, the full suite started failing at random. A different module would fail to load every run, there were zero assertion failures, and every test that did load passed. It looked exactly like flaky code.</p>
+<p>It was not the code. The pool does not bundle dependencies. It lazy-fetches every unbundled module over a loopback socket, and with all the test files sharing one host process those connections pile up until Windows starts refusing them. The failure was the harness, not the forum. The fix was a runner that spawns one fresh process per test file, so the sockets are released between files. If I had assumed the red was mine, I would have spent a day hunting a bug that did not exist. It cost five minutes the second time because I wrote down, in plain words, how to tell this particular red apart from a real one.</p>
+</section>
+<section id="where-it-breaks-next" class="level2">
+<h2 class="anchored" data-anchor-id="where-it-breaks-next">Where It Breaks Next</h2>
+<p>The roster handoff future-proofed one feature. It is worth being clear about where the rest of the system runs out of room, because pretending it scales forever is the opposite of the point.</p>
+<p>It helps to say what this was built to be. It was always meant to be a small, invite-only community for people who mostly already know each other. The design was never pointed at a hundred thousand strangers, so the walls below sit a long way out, and they sit there on purpose. Designing for more would cost money and buy nothing the community needs.</p>
+<p>The most concrete ceiling has nothing to do with rows read. It is the front door. The whole forum sits behind Cloudflare Access, which is free up to fifty seats. The fifty-first member is where that ends, and the pricing does not ease you across it. Crossing fifty moves the entire account onto the paid tier at seven dollars per user per month, billed for everyone at once, so the day a fifty-first person joins, the login layer jumps from zero to roughly three hundred and fifty dollars a month. At the size this was built for, that is free. Anywhere past it, the auth layer becomes the first bill I would ever have to think about, which is its own argument for keeping the room small.</p>
+<p>The other walls are about load rather than headcount, and they sit further out. I will take them in rough order of how soon they would matter.</p>
+<p>Closest is the rows-read budget itself. Everything above bought real headroom against it, but headroom is not infinity. If the forum gets popular enough, five million rows a day is a wall, and the fix is not cleverness. It is paying for more. That is the cheapest wall to hit, because it is a number on a billing page and not a rewrite.</p>
+<p>Behind it is notification fan-out, which leans on the scarcer budget. Reads get five million rows a day. Writes get only a hundred thousand. When someone replies to a thread, everyone watching that thread gets a notification row written. A normal thread is nothing. A thread that four hundred people are watching writes four hundred rows on a single reply, which is four tenths of a percent of the entire daily write budget spent on one post. A few hundred replies like that in a day would spend all of it. For a community this size that is a comfortable margin, and it is still the first thing I would move to a queue, or to a fan-out-on-read query, if it ever stopped being comfortable.</p>
+<p>Then search. D1’s build of SQLite full-text search does not include the function that builds result snippets, so I build them in code, which means search pulls up to a thousand candidate rows per query and trims them in the Worker. It is fast and bounded now. It is the kind of thing that stops being fast when the archive is ten times larger.</p>
+<p>Last is the cache. The category cache lives inside one Worker isolate, so it helps within that isolate’s short life and does nothing across isolates. Every cold isolate still pays one database read to warm up. If cache hit rate ever becomes the bottleneck, the answer is a shared cache layer, which is real work I have not needed to do.</p>
+<p>None of these are on fire. I name them so that when one starts smoking, I am not surprised by where it came from.</p>
+<p>And there is a cheap valve under all of it. If a wall ever did get close, getting past it means flipping to the paid plan and nothing more. That plan includes twenty-five billion reads a month, and anything beyond it runs a tenth of a cent per million rows read and a dollar per million written. For a community this small, that is the difference between paying nothing and paying for lunch. The whole design was meant to keep the forum on the free tier for as long as it stays small, and if it ever outgrows that, the cost is a few dollars a month and no rewrite at all.</p>
+</section>
+<section id="the-security-posture" class="level2">
+<h2 class="anchored" data-anchor-id="the-security-posture">The Security Posture</h2>
+<p>Most of the security work happened before this hardening pass, which is the right time to do it. I will state the posture plainly rather than dress it up.</p>
+<p>Login is not my problem, on purpose. Cloudflare Access sits in front of everything and proves who you are before a request ever reaches my code. I do not store passwords. I do not run a session system. What reaches the Worker is a signed JWT from Access, and the Worker does not take it on faith. It verifies the signature against Access’s published keys, checks that the issuer and the audience tag match my application, and pins the algorithm to RS256, which closes the algorithm-confusion trick where a verifier is talked into accepting a token that was signed some weaker way or not signed at all. That verification is the answer to the obvious question, which is what stops someone from skipping the login page and calling the Worker directly with a forged header. A forged token does not survive the check. Handing identity to a layer that does it for a living is one of the better decisions in the project, because the auth bugs I am most likely to write are the ones I now do not have to write.</p>
+<p>The browser side runs under a tight content policy. The line that earns its keep is <code>script-src 'self'</code> with no <code>unsafe-inline</code>. There is no inline script anywhere in the app, so the policy can refuse all of it:</p>
+<pre><code>Content-Security-Policy:
+  default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';
+  img-src 'self' https:; font-src 'self'; connect-src 'self' https://*.ingest.us.sentry.io;
+  object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'</code></pre>
+<p>An injected <code>&lt;script&gt;</code> tag or an <code>onerror=</code> attribute does not execute, because the page only runs code served from its own origin. <code>frame-ancestors 'none'</code> blocks clickjacking, and <code>object-src 'none'</code> with <code>base-uri 'self'</code> closes the older tricks.</p>
+<p>The policy does relax in two places, and it is worth being straight about them rather than calling it airtight. <code>img-src</code> allows any <code>https:</code> host, because letting members embed an image from anywhere is a feature, not an oversight. And <code>style-src</code> allows <code>'unsafe-inline'</code>, because the frontend sets inline style attributes and there is no clean way around that. Inline styles are a much smaller risk than inline script. A style attribute cannot run code. The directive that can, <code>script-src</code>, is the one with no exceptions, and it is the one that has to be airtight. A strict policy does not mean no loosening anywhere. It means none on the part that can execute code, and a reason you can say out loud for the parts that cannot.</p>
+<p>Anywhere user text reaches the database it goes through a bound parameter, never a glued-together string. The one risky surface is search, because full-text search has its own query language a person could try to abuse. So a search string never reaches the engine as typed. It is cut into bare alphanumeric words, each quoted as a literal, and recombined:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode numberSource ts number-lines code-with-copy"><code class="sourceCode typescript"><span id="cb12-1"><a href="#cb12-1"></a><span class="co">// letters, numbers, underscore only. max 12 terms, each quoted as a literal</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="kw">const</span> terms <span class="op">=</span> (q<span class="op">.</span><span class="fu">match</span>(<span class="ss">/</span><span class="sc">[\p{L}\p{N}_]+</span><span class="ss">/gu</span>) <span class="op">??</span> [])<span class="op">.</span><span class="fu">slice</span>(<span class="dv">0</span><span class="op">,</span> <span class="dv">12</span>)<span class="op">;</span></span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="kw">const</span> match <span class="op">=</span> terms<span class="op">.</span><span class="fu">map</span>((t) <span class="kw">=&gt;</span> <span class="vs">`"</span><span class="sc">${</span>t<span class="sc">}</span><span class="vs">"`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">" "</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>An attacker’s quotes, operators, and column filters do not survive that, because anything that is not a letter or a number is not a term. The only values I ever paste straight into SQL are integer ids that came from my own database, parsed by a function that rejects anything non-numeric, and an integer cannot carry an injection.</p>
+<p>Uploads are their own surface, and the most dangerous one, because a file the browser renders inline can carry script. So an upload is never trusted to be what it claims. The server ignores the browser’s stated content type and reads the file’s own magic bytes. A JPEG, PNG, GIF, or WebP keeps its real type and serves inline, and a PDF serves inline. Anything else, an SVG or an HTML file wearing an image’s name, is reclassified to a generic binary and served as a forced download, so it can never run as script on the forum’s own origin. That one rule closes the classic “upload an SVG, get stored XSS” hole.</p>
+<p>Two more things happen on the way in. Images have their EXIF stripped, so a member’s photo does not quietly publish the GPS coordinates of where it was taken. And the filename is cut down to something safe, with control characters and line breaks removed, because the filename rides into a response header and a stray newline there is a header-injection trick.</p>
+<p>The files are never public. R2 sits behind a proxy in the Worker, and a request for an image checks that the viewer is actually allowed to see it: staff, or the uploader, or an avatar, or a post that embeds the image and lives in a category the viewer can read. Fail that and the answer is a 404, not a 403, so the proxy does not even confirm the file exists. An image in a private thread is as private as the thread.</p>
+<p>There are smaller guards underneath, and two are worth showing because the reasoning is the interesting part.</p>
+<p>Every mutating request has to carry a custom header that only the app’s own code sets:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode numberSource ts number-lines code-with-copy"><code class="sourceCode typescript"><span id="cb13-1"><a href="#cb13-1"></a><span class="cf">if</span> (c<span class="op">.</span><span class="at">req</span><span class="op">.</span><span class="fu">header</span>(MUTATION_HEADER) <span class="op">!==</span> MUTATION_HEADER_VALUE) <span class="cf">throw</span> Errors<span class="op">.</span><span class="fu">csrf</span>()<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>That one line closes the classic cross-site request trick. A malicious page can make your browser fire a POST at my API, but it cannot add a custom header to that request, so the request is rejected before it reaches any handler. A same-origin check and a JSON-content-type requirement sit alongside it as backstops.</p>
+<p>Every member also has a per-day write ceiling, and the check is a single statement so two concurrent requests cannot both slip under it:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode numberSource sql number-lines code-with-copy"><code class="sourceCode sql"><span id="cb14-1"><a href="#cb14-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> write_counters (user_id, <span class="dt">day</span>, action, <span class="fu">count</span>) <span class="kw">VALUES</span> (?<span class="dv">1</span>, ?<span class="dv">2</span>, ?<span class="dv">3</span>, <span class="dv">1</span>)</span>
+<span id="cb14-2"><a href="#cb14-2"></a><span class="kw">ON</span> CONFLICT(user_id, <span class="dt">day</span>, action) DO <span class="kw">UPDATE</span> <span class="kw">SET</span> <span class="fu">count</span> <span class="op">=</span> <span class="fu">count</span> <span class="op">+</span> <span class="dv">1</span> <span class="kw">WHERE</span> <span class="fu">count</span> <span class="op">&lt;</span> ?<span class="dv">4</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>If the conflicting update changes no row, the ceiling was already reached, and the write is refused with a 429. The increment and the check are the same atomic operation, so there is no window between them for a flood to exploit. The slot is reserved before the write and refunded if the write fails, which keeps the counter honest without an interactive transaction, something D1 does not offer.</p>
+<p>The unsubscribe links in emails are signed with an HMAC, so they work without a login but cannot be forged. The link itself only validates the token and shows a confirm button. It does not unsubscribe on its own, because mail clients and security scanners follow links in the background, and a GET that mutated would unsubscribe people who never clicked anything. The real unsubscribe is the POST behind the confirm button. The bounce webhook checks its signature before it believes a word of the payload.</p>
+<p>That is the posture. Identity at the edge, a content policy strict enough to refuse inline script, bound parameters with the one risky surface reduced to bare words, a custom header on every write, ceilings that cannot be raced, and signed links that refuse to mutate on a background GET. Then there is the one piece of standard advice I looked at and decided against.</p>
+</section>
+<section id="hsts-the-one-i-left-out" class="level2">
+<h2 class="anchored" data-anchor-id="hsts-the-one-i-left-out">HSTS: The One I Left Out</h2>
+<p>While I was hardening things, I checked the security headers. They were already strong. A tight content policy, no inline scripts, clickjacking blocked, the usual list. One thing was missing, and the missing thing turned out to be a better example than anything that was present.</p>
+<p>There was no HSTS header. HSTS tells a browser to refuse plain HTTP for your domain, which closes a real gap. The standard advice is to add it. For most sites, add it.</p>
+<p>I have about fifteen subdomains under this domain.</p>
+<p>HSTS is one of the few web headers that is hard to take back. The browser remembers it for as long as you told it to, and the option that extends it to every subdomain will break any subdomain that is not fully on HTTPS, with no quick undo. The Cloudflare dashboard switch for it is domain-wide and has exactly that option. For someone with fifteen subdomains, that switch is a foot-gun.</p>
+<p>A version scoped to only the forum’s own hostname would be safe, because it cannot touch the other subdomains. But the real-world gain over the redirect-to-HTTPS that is already in place, for a forum that already sits behind a login wall, is small.</p>
+<p>So I left it off. On purpose. “Obviously add HSTS” is the right advice for most sites and the wrong advice for this one.</p>
+</section>
+<section id="none-of-this-was-clever" class="level2">
+<h2 class="anchored" data-anchor-id="none-of-this-was-clever">None of This Was Clever</h2>
+<p>That is the whole of the engineering. The performance work was a cache, a stored counter, a handful of parallel queries, and one extra join. The scale work was a flag and a fallback. The security work was mostly confirming things were already fine and then deciding, with a reason, to skip the one thing that was missing.</p>
+<p>The hard part was never the code. On a platform that bills by the row, the query that looks free on the latency graph can be the most expensive thing you run, and the fix is not a faster version of it. It is not running it at all. But knowing that only mattered because the query was mine to change.</p>
+<p>I could have skipped all of it. I could have rented a small server, installed a forum that already exists, and had something running in a weekend. It would have worked. But I would have owned a config file and a monthly bill and not much else. I could not have changed how a count is stored, or folded an unread flag into a query, or decided that a slightly stale cache was a fair trade at a quiet hour, because none of those knobs would have been mine to turn.</p>
+<p>That is the trade, and I think it is the right one. Owning the whole stack means living inside its limits. A database that charges by the row. A runtime with no memory between requests. A free tier whose edges are hard and visible. Those limits are not the price of ownership. They are the thing that made the work worth doing, because every one of them forced a decision I had to understand. A rented stack would have made those calls for me, and I would never have known they were calls at all.</p>
+<p>The training groups I run now have somewhere to post tidbits, useful links, and longer arguments without cluttering up a group chat, and what they write there stays theirs.</p>
+<p>Thanks for reading,</p>
+<p>Jesse</p>
+
+
+<div class="hidden" aria-hidden="true">
+<span class="glightbox-desc lightbox-desc-1">One crawler, one day. blog.jesse-anderson.net served over three hundred thousand requests in a single twenty-four-hour span to one crawler trying to train on everything I had written. This is the reason the forum sits behind a login wall.</span>
+<span class="glightbox-desc lightbox-desc-2">The mobile navigation drawer, slid open from the menu button: every destination stacked vertically, nothing to swipe past. Captured in demo mode, so none of the content is real.</span>
+<span class="glightbox-desc lightbox-desc-3">Desktop navigation for an admin: one clean row, with the moderation and admin links collapsed behind a single Staff dropdown that carries the open-reports count as a badge. Captured in demo mode.</span>
+<span class="glightbox-desc lightbox-desc-4">The admin panel: the moderation queue with its open-reports badge, the backup and email controls, and the demo mode that made the rest of these screenshots safe to publish.</span>
+</div>
+</section>
+</section>
+
+</main> <!-- /main -->
+<section class="blog-comments" data-comments=""></section>
+
+<div class="latest-posts" data-latest-posts=""></div>
+
+<div class="blog-footer-actions">
+    <hr>
+    <h3 class="centered-text">Support my work with a Coffee/Monster</h3>
+    <div class="centered-content">
+        <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="jesseanderson" data-color="#06436e" data-emoji="" data-font="Lato" data-text="Support me" data-outline-color="#ffffff" data-font-color="#ffffff" data-coffee-color="#FFDD00" data-height="40px"></script>
+    </div>
+
+    <h3 class="centered-text">Share</h3>
+    <div id="share-buttons" class="centered-content">
+        <a href="#" class="share-button twitter-share-button" data-size="large" data-hashtags="computerscience" data-via="JesseA7C5" data-show-count="false">Tweet</a>
+        <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+        <div id="fb-root"></div>
+        <script id="facebook-jssdk" async="" defer="" crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&amp;version=v10.0"></script>
+        <div class="fb-share-button share-button" data-href="" data-layout="button_count">
+        </div>
+
+        <script src="https://platform.linkedin.com/in.js" type="text/javascript">lang: en_US</script>
+        <script type="IN/Share" data-url=""></script>
+
+        <a href="#" class="share-button email-share-button" aria-label="Share by email"><i class="bi bi-envelope"></i></a>
+    </div>
+</div>
+
+<footer class="centered-text">
+    <p>Copyright © 2024-<span id="copyright-year"></span> Jesse Anderson</p>
+</footer>
+
+<script>
+    function generateNonce(length = 16) {
+        const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        let text = "";
+        for (let i = 0; i < length; i++) {
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+        }
+        return text;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const facebookSDKScript = document.getElementById('facebook-jssdk');
+        if (facebookSDKScript) {
+            facebookSDKScript.setAttribute('nonce', generateNonce());
+        }
+
+        const currentUrl = window.location.href;
+        const currentTitle = document.title;
+
+        document.querySelectorAll('script[type="IN/Share"]').forEach(elem => {
+            elem.setAttribute('data-url', currentUrl);
+        });
+
+        const facebookButton = document.querySelector('.fb-share-button');
+        if (facebookButton) {
+            facebookButton.setAttribute('data-href', currentUrl);
+        }
+
+        const twitterButton = document.querySelector('.twitter-share-button');
+        if (twitterButton) {
+            twitterButton.setAttribute('href', 'https://twitter.com/share?url=' + encodeURIComponent(currentUrl) + '&hashtags=rstats');
+        }
+
+        const emailButton = document.querySelector('.email-share-button');
+        if (emailButton) {
+            emailButton.setAttribute('href', `mailto:?subject=${encodeURIComponent(currentTitle)}&body=Check out this link: ${encodeURIComponent(currentUrl)}`);
+        }
+
+        const copyrightYear = document.getElementById('copyright-year');
+        if (copyrightYear) {
+            copyrightYear.textContent = new Date().getFullYear();
+        }
+    });
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+
+<div class="cookie-consent-footer"><a href="#" id="open_preferences_center">Cookie Preferences</a></div></div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","loop":false,"descPosition":"bottom","selector":".lightbox","openEffect":"zoom"});
+window.onload = () => {
+  lightboxQuarto.on('slide_before_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    const href = trigger.getAttribute('href');
+    if (href !== null) {
+      const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+      if (imgEl !== null) {
+        const srcAttr = imgEl.getAttribute("src");
+        if (srcAttr && srcAttr.startsWith("data:")) {
+          slideConfig.href = srcAttr;
+        }
+      }
+    } 
+  });
+
+  lightboxQuarto.on('slide_after_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    if (window.Quarto?.typesetMath) {
+      window.Quarto.typesetMath(slideNode);
+    }
+  });
+
+};
+          </script>
+
+
+
+
+</body></html>

@@ -68,5 +68,20 @@
   },
   "posts/OP-Crime-Dashboard-Doc/index.qmd": {
     "index.html": "0071c8e9"
+  },
+  "posts/Chicago_Job_Scraper/blog_draft_chicagoland_job_scraper.md": {
+    "blog_draft_chicagoland_job_scraper.html": "90de6896"
+  },
+  "posts/Job_Curation_AI/blog_draft_2_resume_tailor.md": {
+    "blog_draft_2_resume_tailor.html": "de603862"
+  },
+  "posts/Chicago_Job_Scraper/index.qmd": {
+    "index.html": "cfac339a"
+  },
+  "posts/forum/index.qmd": {
+    "index.html": "deb34b34"
+  },
+  "posts/Job_Curation_AI/index.qmd": {
+    "index.html": "34a4b8b1"
   }
 }
