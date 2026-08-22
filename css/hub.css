@@ -652,6 +652,10 @@ main {
     border-bottom: 1px solid var(--border-color);
 }
 
+/* Deliberately not a link. The destination cards get away with wrapping the whole
+   tile in an <a> because they read as tiles; this one is full width and holds a data
+   table, so the same trick reads as content that moves when you click it. The link is
+   an explicit one inside, and it names where it goes. */
 .live-card {
     display: grid;
     grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
@@ -660,13 +664,6 @@ main {
     background-color: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
-    transition: border-color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base);
-}
-
-.live-card:hover {
-    border-color: var(--accent-engineering);
-    box-shadow: var(--shadow-md);
-    transform: translateY(-2px);
 }
 
 .live-badge {
@@ -706,13 +703,32 @@ main {
 .live-cta {
     font-family: var(--font-mono);
     font-size: 0.8125rem;
-    font-weight: 500;
-    color: var(--text-secondary);
-    transition: color var(--transition-fast);
+    color: var(--text-muted);
+    margin: 0;
 }
 
-.live-card:hover .live-cta {
-    color: var(--accent-engineering);
+/* The page strips link styling globally, so this opts back in: it is the one control
+   in the block and should be unmistakable as such. */
+.live-link {
+    color: var(--accent-primary);
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    word-break: break-word;
+    transition: color var(--transition-fast), text-decoration-thickness var(--transition-fast);
+}
+
+.live-link:hover,
+.live-link:focus-visible {
+    color: var(--accent-secondary);
+    text-decoration-thickness: 2px;
+}
+
+.live-link:focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 3px;
+    border-radius: 2px;
 }
 
 .live-specs {
