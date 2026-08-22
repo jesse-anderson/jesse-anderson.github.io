@@ -194,6 +194,20 @@
                             when anyone is home. Readings sit alongside an outdoor baseline drawn from the
                             city sensor network, which is what turns an indoor number into a ratio.
                         </p>
+                        <!-- Populated by js/hub.js; stays hidden if the fetch fails. -->
+                        <figure class="spark" data-spark hidden>
+                            <div class="spark-chart" data-spark-chart></div>
+                            <figcaption class="spark-caption">
+                                <span class="spark-key">
+                                    <span class="spark-swatch spark-swatch--indoor"></span>indoor
+                                    <span class="spark-swatch spark-swatch--outdoor"></span>outdoor
+                                </span>
+                                <span class="spark-meta">
+                                    daily mean PM2.5, <span data-spark-range></span> ·
+                                    published through <span data-spark-through></span>
+                                </span>
+                            </figcaption>
+                        </figure>
                         <p class="live-cta">
                             Public statistics:
                             <a href="https://sensors.jesse-anderson.net/public" class="live-link">sensors.jesse-anderson.net/public</a>

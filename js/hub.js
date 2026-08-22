@@ -11,6 +11,11 @@
   const BLOG_ORIGIN = "https://blog.jesse-anderson.net";
   const BLOG_HOME = BLOG_ORIGIN + "/";
 
+  const SENSORS_ORIGIN = "https://sensors.jesse-anderson.net";
+  // Few-KB extract built for exactly this chart. The full daily-stats artifact is
+  // ~256 KB, which is not a sane download for one sparkline.
+  const SENSORS_SUMMARY_URL = SENSORS_ORIGIN + "/data/public/summary.json";
+
   // Quarto homepage contains post listing markup
   const BLOG_LISTING_URL = BLOG_HOME;
 
@@ -348,9 +353,88 @@
       }
     });
   }
+  /* ---- Sensor sparkline -------------------------------------------------
+     Indoor vs outdoor daily mean PM2.5. Plotted together on purpose: indoor PM
+     on its own cannot tell a stove from regional smoke, and the pair can.
+     The data is published on a 30-day delay, so this shows the depth of the
+     record, NOT current liveness — the caption has to say so.
+     Static-first like the rest of this file: the block stays hidden unless real
+     data arrives, so a failed fetch leaves no empty chart behind.
+  */
+  function sparkPath(values, w, h, pad, lo, hi) {
+    const span = hi - lo || 1;
+    const step = values.length > 1 ? (w - pad * 2) / (values.length - 1) : 0;
+    let d = "";
+    let pen = false;
+    values.forEach((v, i) => {
+      if (v === null || v === undefined) { pen = false; return; }   // gaps stay gaps
+      const x = pad + i * step;
+      const y = h - pad - ((v - lo) / span) * (h - pad * 2);
+      d += (pen ? "L" : "M") + x.toFixed(1) + " " + y.toFixed(1) + " ";
+      pen = true;
+    });
+    return d.trim();
+  }
+
+  function renderSparkline(box, data) {
+    const t = data.t || [];
+    const inv = data.indoor_pm25 || [];
+    const outv = data.outdoor_pm25 || [];
+    const present = inv.concat(outv).filter((v) => typeof v === "number");
+    if (!t.length || !present.length) return false;
+
+    const W = 520, H = 96, PAD = 6;
+    const lo = Math.min.apply(null, present);
+    const hi = Math.max.apply(null, present);
+    const svgns = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(svgns, "svg");
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    svg.setAttribute("preserveAspectRatio", "none");
+    svg.setAttribute("class", "spark-svg");
+    svg.setAttribute("role", "img");
+    svg.setAttribute("aria-label",
+      "Daily mean PM2.5, indoor versus outdoor, " + t[0] + " to " + t[t.length - 1]);
+
+    [["outdoor", outv], ["indoor", inv]].forEach(function (pair) {
+      const d = sparkPath(pair[1], W, H, PAD, lo, hi);
+      if (!d) return;
+      const p = document.createElementNS(svgns, "path");
+      p.setAttribute("d", d);
+      p.setAttribute("fill", "none");
+      p.setAttribute("class", "spark-line spark-line--" + pair[0]);
+      svg.appendChild(p);
+    });
+
+    box.querySelector("[data-spark-chart]").appendChild(svg);
+    box.querySelector("[data-spark-range]").textContent =
+      Math.round(lo) + "–" + Math.round(hi) + " µg/m³";
+    box.querySelector("[data-spark-through]").textContent = data.published_through || "";
+    box.hidden = false;
+    return true;
+  }
+
+  async function loadSensorSparkline() {
+    const box = document.querySelector("[data-spark]");
+    if (!box) return;
+    const { controller, cancel } = withTimeout(4500);
+    try {
+      const resp = await fetch(SENSORS_SUMMARY_URL, {
+        method: "GET", mode: "cors", cache: "no-store",
+        redirect: "follow", signal: controller.signal
+      });
+      if (!resp.ok) throw new Error("Fetch failed: " + resp.status);
+      renderSparkline(box, await resp.json());
+    } catch (err) {
+      console.error("Error fetching sensor summary:", err);   // block stays hidden
+    } finally {
+      cancel();
+    }
+  }
+
   window.addEventListener("DOMContentLoaded", () => {
     loadLatestWriting();
     loadToolsStats();
+    loadSensorSparkline();
     initMobileMenu();
     initThemeToggle();
   });
