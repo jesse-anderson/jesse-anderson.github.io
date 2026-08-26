@@ -442,9 +442,27 @@ Electrochemical and MOS chips are inexpensive and socket-friendly but drift over
 </section>
 
 </main> <!-- /main -->
-<section class="blog-comments" data-comments=""></section>
+<section class="blog-comments" data-comments>
+    <h3>Comments</h3>
+    <div id="cusdis_thread"
+         data-host="https://cusdis.com"
+         data-app-id="73a29664-ef73-4158-a3a9-3850647de254"
+         data-page-id="/posts/PMS7003/"
+         data-page-url="https://blog.jesse-anderson.net/posts/PMS7003/"
+         data-page-title="Jesse Anderson’s Blog - PMS7003: Or is your air filled with particulate?"
+         data-theme="auto"></div>
+    <script async defer src="https://cusdis.com/js/cusdis.es.js"></script>
+</section>
 
-<div class="latest-posts" data-latest-posts=""></div>
+<div class="latest-posts" data-latest-posts>
+    <h3>Latest Posts</h3>
+    <ul id="latest-posts-list">
+        <li><a href="../intro_to_yogurt/index.html"><span>Intro to Yogurt: A Pot, A Thermometer, and Some Patience</span></a></li>
+        <li><a href="../Job_Curation_AI/index.html"><img src="../Job_Curation_AI/image.png" alt="" class="latest-post-thumbnail" width="56" height="42" loading="lazy" decoding="async"><span>Atoms of Experience: Tailoring Job Applications With an LLM and a Ground Truth</span></a></li>
+        <li><a href="../Chicago_Job_Scraper/index.html"><img src="../Chicago_Job_Scraper/image.png" alt="" class="latest-post-thumbnail" width="56" height="42" loading="lazy" decoding="async"><span>Scraping My Own Job Search: A Nightly Dashboard for Chicagoland Engineering Jobs</span></a></li>
+        <li><a href="../forum/index.html"><img src="../forum/image.png" alt="" class="latest-post-thumbnail" width="56" height="42" loading="lazy" decoding="async"><span>No Cost Private Forums</span></a></li>
+    </ul>
+</div>
 
 <div class="blog-footer-actions">
     <hr>
@@ -941,7 +959,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"descPosition":"bottom","loop":false,"closeEffect":"zoom","selector":".lightbox","openEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","closeEffect":"zoom","selector":".lightbox","descPosition":"bottom","loop":false});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

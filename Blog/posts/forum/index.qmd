@@ -19,10 +19,6 @@ I wanted a private place for the training community I write for. Somewhere peopl
 
 There was a colder reason too. One AI crawler hit my personal blog with over three hundred thousand requests in a single day, trying to swallow everything I had ever written. That is not a typo, and it was one crawler on one day. The open web is being strip-mined for training data, and I did not want the community's conversations to be the next thing fed into a model without anyone asking. A login wall in front of the whole thing settles it. What members write stays theirs.
 
-<!-- IMAGE (the AI spam): swap the TODO path for the real screenshot. The alt text doubles as the caption. -->
-
-![One crawler, one day. blog.jesse-anderson.net served over three hundred thousand requests in a single twenty-four-hour span to one crawler trying to train on everything I had written. This is the reason the forum sits behind a login wall.](TODO-images/ai-crawler-spike.png)
-
 So I built a forum for people to post training-related musings.
 
 It works. People post, reply, react, get notified, search, upload images, and read it on their phones. But "it works" is not the same as "it runs well on a platform that bills by the row," and the second is where the engineering starts.
@@ -134,7 +130,7 @@ UPDATE users SET /* the same recompute as above */
  WHERE id IN (SELECT DISTINCT author_id FROM posts WHERE thread_id = ?1)
 ```
 
-Recompute for only the thread's author and a deleted thread leaves every replier's count one too high, with nothing to flag it, because the number still looks plausible. Painful to reason out, rare in practice, and still worth handling.
+Recompute for only the thread's author and a deleted thread leaves every replier's count one too high, with nothing to flag it, because the number still looks plausible. Rare in practice, and still worth handling.
 
 Before I let anything read the new columns, I ran the backfill and then checked it against the truth it came from. The check is just the backfill's own expressions in a not-equal comparison:
 
@@ -178,8 +174,6 @@ That went across every paginated route. Recent, watching, category threads, the 
 
 I used `Promise.all` rather than D1's `batch`, and the reason is small. The count and the page return different row shapes, and `Promise.all` keeps each one's types intact while `batch` hands you back a uniform array you then have to index and re-cast. The forum is nowhere near the fifty-subrequest limit, so the extra subrequest costs nothing. If I were subrequest-bound, the answer would flip. That is not to say I never will be, but the design is aimed at a relatively small, private user base.
 
-Then there was the part I almost left alone.
-
 The thread lists also show an unread dot. That dot came from a third query, run after the page loaded, that looked up the reader's position in each thread on the page. It depends on the page results, so it cannot join the parallel batch. I assumed that made it a permanent third trip.
 
 It does not. "Needs the rows" only rules out running it in parallel. It does not rule out doing the work inside the page query itself. The unread dot is just a comparison between a thread's latest post and where the reader left off, which is a join and a computed column:
@@ -211,7 +205,7 @@ So I cached it in the Worker, with a ten-second lifetime and an explicit clear w
 
 That win shows up in runtime, and the unit matters here. The category table is small enough that reading it barely registers against the rows-read budget. What caching it saves is a round-trip and the CPU to run the query, on nearly every request. This is the rare fix that moves the latency and subrequest meters and leaves the rows-read one alone.
 
-There is a catch worth naming.
+There is a catch.
 
 Reading the category list to decide what a user can see is safe to cache. A ten-second-stale view of which categories exist hurts nobody. But the same data also decides whether a user is allowed to post somewhere, and caching that means a write-permission decision can be up to ten seconds stale. That is a different kind of risk than a stale read.
 
@@ -225,7 +219,7 @@ A forum has a lot of screens most people never open. The admin console, the mode
 
 So none of it loads until it is asked for. Every route is a lazy import behind a loading boundary, and the editor is split out the same way. Open the forum and you get the shell, the thread list, and the reader. The editor arrives the first time you go to write something. The admin code never arrives at all unless you are an admin who opens an admin page. The initial download came down by about forty-five percent.
 
-It is the rows-read lesson aimed at a different meter. The important cost is not the total size of the app, but the size of what you need to do the thing you came for. A reader should not have to download the editor, and nobody but an admin should ever download the admin panel.
+It is the rows-read lesson aimed at a different meter. What costs you is the size of what you need in order to do the thing you came for. A reader should not have to download the editor, and nobody but an admin should ever download the admin panel.
 
 ## Holding the Phone
 
@@ -243,17 +237,13 @@ The mobile navigation was a single row that scrolled sideways, and the scrollbar
 
 I replaced it with a normal slide-out drawer behind a menu button. Everything stacked vertically, nothing to swipe, room for every link a moderator or admin sees.
 
-<!-- IMAGE (demo mode, so no real member content): the current mobile nav drawer. -->
-
-![The mobile navigation drawer, slid open from the menu button: every destination stacked vertically, nothing to swipe past. Captured in demo mode, so none of the content is real.](TODO-images/mobile-nav-drawer.png)
+![The mobile navigation drawer, slid open from the menu button: sixteen destinations stacked vertically, nothing to swipe past. Captured in demo mode, so none of the content is real.](mobile-nav-drawer.png)
 
 The one part that fought me was a layout trap I had to learn by breaking it. The header slides out of the way as you scroll, which it does with a CSS transform. An element with a transform becomes the anchor for any fixed-position element inside it. So when I put the drawer inside the header, the drawer anchored itself to the header's little box instead of the whole screen. Moving the drawer out of the header, as a sibling, fixed it completely.
 
 The desktop version had a quieter version of the same crowding. An admin with every staff link visible saw sixteen items wrap onto three rows. I collapsed the moderation and admin links into one dropdown, so the bar went back to one clean row, and I put the open-reports count on the dropdown itself so urgent moderation work does not hide behind a click.
 
-<!-- IMAGE (demo mode): the current desktop nav with the Staff dropdown. -->
-
-![Desktop navigation for an admin: one clean row, with the moderation and admin links collapsed behind a single Staff dropdown that carries the open-reports count as a badge. Captured in demo mode.](TODO-images/desktop-nav-staff-dropdown.png)
+![Desktop navigation for an admin: one clean row, with the eight moderation and admin links collapsed behind a single Staff dropdown. The open-reports count rides on the dropdown itself when something is waiting; demo mode has nothing open, so there is no badge here. Captured in demo mode.](desktop-nav-staff-dropdown.png)
 
 ## The @Mention Roster
 
@@ -261,7 +251,7 @@ The forum has a mention feature. Type an at-sign, get a list of members to autoc
 
 The reflex when you read "it fetches every member" is to want to fix it. I had to argue myself out of that.
 
-Fetching everyone and filtering in the browser is not a problem to fix at this size. It is the correct design. The list is a few kilobytes, the matches appear instantly, and it costs zero requests per keystroke. The alternative, asking the server on every keystroke, is slower for the person typing. Building it now would make the feature worse to use, in exchange for solving a problem the forum does not have.
+Fetching everyone and filtering in the browser is the correct design at this size. The list is a few kilobytes, the matches appear instantly, and it costs zero requests per keystroke. The alternative, asking the server on every keystroke, is slower for the person typing. Building it now would make the feature worse to use, in exchange for solving a problem the forum does not have.
 
 You also cannot just paginate it. The member directory is paginated already. But this is a typeahead, and a typeahead is not a list you scroll. You either hold all the candidates or you search on the server. There is no third option.
 
@@ -301,13 +291,13 @@ That last part connects back to everything above. A platform that charges by the
 
 The domain, the DNS, and the login layer were already here too. So the real comparison was never "Cloudflare versus AWS." It was "use what is already under my domain and costs nothing" against "go stand up a server I will have to babysit." Put that way, it was not a hard call.
 
-I gave things up for it, and it is worth saying so. D1 is SQLite under the hood, so I do without the richer Postgres feature set. The Workers runtime runs in short-lived isolates. There is no long-running server underneath, so no process memory that outlives a request and no connection pool to keep warm. Those constraints are real. They are also, as the last several sections show, where nearly all the interesting decisions came from. A platform with no hard edges would have let me ship the same forum without ever once having to think this hard.
+I gave things up for it. D1 is SQLite under the hood, so I do without the richer Postgres feature set. The Workers runtime runs in short-lived isolates. There is no long-running server underneath, so no process memory that outlives a request and no connection pool to keep warm. Those constraints are real. They are also, as the last several sections show, where nearly all the interesting decisions came from. A platform with no hard edges would have let me ship the same forum without ever once having to think this hard.
 
 ## Operations
 
 I said I did not want to operate anything. That was the goal. A forum with real members still has to be backed up, watched, and reachable, and none of that comes free just because the platform is managed. So I built each piece once and made it run without me in the loop.
 
-Start with the data, because it is the one thing the platform does not hand back to me on its own. D1 is durable, but a database I cannot restore is not a backup, it is hope at best. Once a week the whole thing is exported, encrypted, and pushed off-site. That part is ordinary. The part I care about is that once a month a job pulls the latest backup, restores it into a throwaway database, and checks that it actually came back. A backup you have never restored is risky. I would rather learn it is broken on a quiet Tuesday, in a scratch copy, than on the one day I need it for real.
+Start with the data, because it is the one thing the platform does not hand back to me on its own. D1 is durable, but that only covers the platform losing my data, not me destroying it myself. Once a week the whole thing is exported, encrypted, and pushed off-site. That part is ordinary. The part I care about is that once a month a job pulls the latest backup, restores it into a throwaway database, and checks that it actually came back. I would rather learn it is broken on a quiet Tuesday, in a scratch copy, than on the one day I need it for real.
 
 Deletion is staged, for a reason close to why the backups exist. Nothing a member removes is destroyed on the spot. A delete hides the content at once but keeps the row for thirty days, and only then does the nightly maintenance job purge it for good. Someone who deletes a post in a bad moment has a month to undo it, and after that it is genuinely gone, which is what the privacy policy promises. The same nightly job reclaims any uploaded file that never got attached to a post, so storage does not slowly fill with abandoned images.
 
@@ -319,9 +309,7 @@ Email runs the same way. The digest goes out through Resend on a scheduled cron,
 
 The first time one of those notifications pulled someone who was not me back into a thread, the forum quietly stopped being a side project and became a place. That is the only metric in this whole article I did not profile.
 
-<!-- IMAGE (demo mode): the admin panel. -->
-
-![The admin panel: the moderation queue with its open-reports badge, the backup and email controls, and the demo mode that made the rest of these screenshots safe to publish.](TODO-images/admin-panel.png)
+![Forum settings, captured in the demo mode that made the rest of these screenshots safe to publish. Maintenance mode blocks ordinary writes so a backup can be taken against a consistent database, the daily write ceilings are the ones the atomic counter in the security section enforces, and the two diagnostics buttons fire a deliberate client error and a deliberate server error to confirm Sentry is catching both sides.](admin-settings.png)
 
 None of this is much code. It is the smallest amount of operating that lets a side project hold real people's writing without turning into a second job.
 
@@ -339,7 +327,7 @@ It was not the code. The pool does not bundle dependencies. It lazy-fetches ever
 
 ## Where It Breaks Next
 
-The roster handoff future-proofed one feature. It is worth being clear about where the rest of the system runs out of room, because pretending it scales forever is the opposite of the point.
+The roster handoff future-proofed one feature. I should be clear about where the rest of the system runs out of room, because pretending it scales forever is the opposite of the point.
 
 It helps to say what this was built to be. It was always meant to be a small, invite-only community for people who mostly already know each other. The design was never pointed at a hundred thousand strangers, so the walls below sit a long way out, and they sit there on purpose. Designing for more would cost money and buy nothing the community needs.
 
@@ -347,7 +335,7 @@ The most concrete ceiling has nothing to do with rows read. It is the front door
 
 The other walls are about load rather than headcount, and they sit further out. I will take them in rough order of how soon they would matter.
 
-Closest is the rows-read budget itself. Everything above bought real headroom against it, but headroom is not infinity. If the forum gets popular enough, five million rows a day is a wall, and the fix is not cleverness. It is paying for more. That is the cheapest wall to hit, because it is a number on a billing page and not a rewrite.
+Closest is the rows-read budget itself. Everything above bought real headroom against it, but headroom is not infinity. If the forum gets popular enough, five million rows a day is a wall, and no amount of cleverness gets past it. You pay for more. That is the cheapest wall to hit, because it is a number on a billing page and not a rewrite.
 
 Behind it is notification fan-out, which leans on the scarcer budget. Reads get five million rows a day. Writes get only a hundred thousand. When someone replies to a thread, everyone watching that thread gets a notification row written. A normal thread is nothing. A thread that four hundred people are watching writes four hundred rows on a single reply, which is four tenths of a percent of the entire daily write budget spent on one post. A few hundred replies like that in a day would spend all of it. For a community this size that is a comfortable margin, and it is still the first thing I would move to a queue, or to a fan-out-on-read query, if it ever stopped being comfortable.
 
@@ -394,7 +382,7 @@ Two more things happen on the way in. Images have their EXIF stripped, so a memb
 
 The files are never public. R2 sits behind a proxy in the Worker, and a request for an image checks that the viewer is actually allowed to see it: staff, or the uploader, or an avatar, or a post that embeds the image and lives in a category the viewer can read. Fail that and the answer is a 404, not a 403, so the proxy does not even confirm the file exists. An image in a private thread is as private as the thread.
 
-There are smaller guards underneath, and two are worth showing because the reasoning is the interesting part.
+There are smaller guards underneath, and the reasoning behind two of them is the interesting part.
 
 Every mutating request has to carry a custom header that only the app's own code sets:
 
@@ -435,7 +423,7 @@ So I left it off. On purpose. "Obviously add HSTS" is the right advice for most 
 
 That is the whole of the engineering. The performance work was a cache, a stored counter, a handful of parallel queries, and one extra join. The scale work was a flag and a fallback. The security work was mostly confirming things were already fine and then deciding, with a reason, to skip the one thing that was missing.
 
-The hard part was never the code. On a platform that bills by the row, the query that looks free on the latency graph can be the most expensive thing you run, and the fix is not a faster version of it. It is not running it at all. But knowing that only mattered because the query was mine to change.
+The hard part was never the code. On a platform that bills by the row, the query that looks free on the latency graph can be the most expensive thing you run. You do not fix that by making it faster. You fix it by not running it. But knowing that only mattered because the query was mine to change.
 
 I could have skipped all of it. I could have rented a small server, installed a forum that already exists, and had something running in a weekend. It would have worked. But I would have owned a config file and a monthly bill and not much else. I could not have changed how a count is stored, or folded an unread flag into a query, or decided that a slightly stale cache was a fair trade at a quiet hour, because none of those knobs would have been mine to turn.
 

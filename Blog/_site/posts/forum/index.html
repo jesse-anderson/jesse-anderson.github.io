@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Jesse Anderson">
+<meta name="dcterms.date" content="2026-06-30">
 
-<title>Jesse Anderson’s Blog</title>
+<title>Jesse Anderson’s Blog - No Cost Private Forums</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -135,8 +137,9 @@ cookieconsent.run({
 
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="Jesse Anderson’s Blog">
+<meta property="og:title" content="Jesse Anderson’s Blog - No Cost Private Forums">
 <meta property="og:description" content="">
+<meta property="og:image" content="image.png">
 <meta property="og:site_name" content="Jesse Anderson's Blog">
 </head>
 
@@ -198,7 +201,38 @@ cookieconsent.run({
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">No Cost Private Forums</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">Data Engineering</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Jesse Anderson </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">June 30, 2026</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
     
@@ -208,17 +242,11 @@ cookieconsent.run({
 
 
 
+
 <section id="the-forum-was-the-easy-part" class="level1">
 <h1>The Forum Was the Easy Part</h1>
 <p>I wanted a private place for the training community I write for. Somewhere people could post, argue, share what they are working on, and find it again a month later. Not a Discord that scrolls into the void. Not a subreddit run on someone else’s rules and someone else’s ranking. Not a Facebook group. A real forum, invite-only, that I own.</p>
 <p>There was a colder reason too. One AI crawler hit my personal blog with over three hundred thousand requests in a single day, trying to swallow everything I had ever written. That is not a typo, and it was one crawler on one day. The open web is being strip-mined for training data, and I did not want the community’s conversations to be the next thing fed into a model without anyone asking. A login wall in front of the whole thing settles it. What members write stays theirs.</p>
-<!-- IMAGE (the AI spam): swap the TODO path for the real screenshot. The alt text doubles as the caption. -->
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="TODO-images/ai-crawler-spike.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1" title="One crawler, one day. blog.jesse-anderson.net served over three hundred thousand requests in a single twenty-four-hour span to one crawler trying to train on everything I had written. This is the reason the forum sits behind a login wall."><img src="TODO-images/ai-crawler-spike.png" class="img-fluid figure-img" alt="One crawler, one day. blog.jesse-anderson.net served over three hundred thousand requests in a single twenty-four-hour span to one crawler trying to train on everything I had written. This is the reason the forum sits behind a login wall."></a></p>
-<figcaption>One crawler, one day. blog.jesse-anderson.net served over three hundred thousand requests in a single twenty-four-hour span to one crawler trying to train on everything I had written. This is the reason the forum sits behind a login wall.</figcaption>
-</figure>
-</div>
 <p>So I built a forum for people to post training-related musings.</p>
 <p>It works. People post, reply, react, get notified, search, upload images, and read it on their phones. But “it works” is not the same as “it runs well on a platform that bills by the row,” and the second is where the engineering starts.</p>
 <p>I host the whole thing on Cloudflare’s edge. The API is a Worker, the frontend is on Pages, the database is D1 (their serverless SQLite), images sit in R2, and Cloudflare Access handles login. It is fast for the people using it, it fits inside the free tier, and at this size it costs nothing. Keeping it that way while the forum gets used is the part worth writing about.</p>
@@ -343,7 +371,7 @@ cookieconsent.run({
 <p>There was one case that took real care. Soft-deleting a thread does not stamp its replies as deleted, because a restore has to bring the whole thread back intact. But while the thread is gone, those replies have to stop counting toward their authors’ totals. A thread is not one author’s content. So the delete and restore path recomputes for every distinct author who has a post in the thread, not just the person who started it:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode numberSource sql number-lines code-with-copy"><code class="sourceCode sql"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">UPDATE</span> users <span class="kw">SET</span> <span class="co">/* the same recompute as above */</span></span>
 <span id="cb5-2"><a href="#cb5-2"></a> <span class="kw">WHERE</span> <span class="kw">id</span> <span class="kw">IN</span> (<span class="kw">SELECT</span> <span class="kw">DISTINCT</span> author_id <span class="kw">FROM</span> posts <span class="kw">WHERE</span> thread_id <span class="op">=</span> ?<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Recompute for only the thread’s author and a deleted thread leaves every replier’s count one too high, with nothing to flag it, because the number still looks plausible. Painful to reason out, rare in practice, and still worth handling.</p>
+<p>Recompute for only the thread’s author and a deleted thread leaves every replier’s count one too high, with nothing to flag it, because the number still looks plausible. Rare in practice, and still worth handling.</p>
 <p>Before I let anything read the new columns, I ran the backfill and then checked it against the truth it came from. The check is just the backfill’s own expressions in a not-equal comparison:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode numberSource sql number-lines code-with-copy"><code class="sourceCode sql"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">SELECT</span> <span class="fu">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> mismatches <span class="kw">FROM</span> users u</span>
 <span id="cb6-2"><a href="#cb6-2"></a><span class="kw">WHERE</span> u.post_count <span class="op">&lt;&gt;</span> (<span class="kw">SELECT</span> <span class="fu">COUNT</span>(<span class="op">*</span>) <span class="kw">FROM</span> posts p <span class="kw">JOIN</span> threads t <span class="kw">ON</span> t.<span class="kw">id</span> <span class="op">=</span> p.thread_id</span>
@@ -401,7 +429,6 @@ cookieconsent.run({
 <span id="cb7-4"><a href="#cb7-4"></a>])<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>That went across every paginated route. Recent, watching, category threads, the member directory, profiles, bookmarks, notifications, the admin tables. Search was the best case, because its total, its body-text matches, and its title matches were three independent queries run one after another. They now fire together, and three trips became one.</p>
 <p>I used <code>Promise.all</code> rather than D1’s <code>batch</code>, and the reason is small. The count and the page return different row shapes, and <code>Promise.all</code> keeps each one’s types intact while <code>batch</code> hands you back a uniform array you then have to index and re-cast. The forum is nowhere near the fifty-subrequest limit, so the extra subrequest costs nothing. If I were subrequest-bound, the answer would flip. That is not to say I never will be, but the design is aimed at a relatively small, private user base.</p>
-<p>Then there was the part I almost left alone.</p>
 <p>The thread lists also show an unread dot. That dot came from a third query, run after the page loaded, that looked up the reader’s position in each thread on the page. It depends on the page results, so it cannot join the parallel batch. I assumed that made it a permanent third trip.</p>
 <p>It does not. “Needs the rows” only rules out running it in parallel. It does not rule out doing the work inside the page query itself. The unread dot is just a comparison between a thread’s latest post and where the reader left off, which is a join and a computed column:</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode numberSource sql number-lines code-with-copy"><code class="sourceCode sql"><span id="cb8-1"><a href="#cb8-1"></a><span class="kw">SELECT</span> t.<span class="op">*</span>, u.display_name <span class="kw">AS</span> author_name, c.name <span class="kw">AS</span> category_name,</span>
@@ -423,7 +450,7 @@ cookieconsent.run({
 <p>The category list gets read on nearly every request, because deciding what a user can see starts with knowing what categories exist. It is a tiny table that changes when an admin adds or edits a category, which is to say almost never. It was being read from the database on every request anyway.</p>
 <p>So I cached it in the Worker, with a ten-second lifetime and an explicit clear whenever a category is created, edited, or deleted. About a tenth of the database runtime, gone, for a cache and a clear-on-write.</p>
 <p>That win shows up in runtime, and the unit matters here. The category table is small enough that reading it barely registers against the rows-read budget. What caching it saves is a round-trip and the CPU to run the query, on nearly every request. This is the rare fix that moves the latency and subrequest meters and leaves the rows-read one alone.</p>
-<p>There is a catch worth naming.</p>
+<p>There is a catch.</p>
 <p>Reading the category list to decide what a user can see is safe to cache. A ten-second-stale view of which categories exist hurts nobody. But the same data also decides whether a user is allowed to post somewhere, and caching that means a write-permission decision can be up to ten seconds stale. That is a different kind of risk than a stale read.</p>
 <p>I made that call deliberately, at a quiet hour, knowing the write path re-checks the category in the insert itself as a backstop. Caching a read is free. Caching anything that guards a write is a decision and I feel that this was the write one (get it?).</p>
 </section>
@@ -432,7 +459,7 @@ cookieconsent.run({
 <p>Every optimization so far was about the database. There is a second budget the database never sees: how much code the browser has to download before the page is usable.</p>
 <p>A forum has a lot of screens most people never open. The admin console, the moderation queue, the media manager, the group editor. And it has one screen that is heavy for everyone and used only in bursts, the Markdown editor, which drags in a parser and its linkify and highlighting pieces. Bundled together, all of that is one download that every visitor pays on first load, including the member who only ever reads.</p>
 <p>So none of it loads until it is asked for. Every route is a lazy import behind a loading boundary, and the editor is split out the same way. Open the forum and you get the shell, the thread list, and the reader. The editor arrives the first time you go to write something. The admin code never arrives at all unless you are an admin who opens an admin page. The initial download came down by about forty-five percent.</p>
-<p>It is the rows-read lesson aimed at a different meter. The important cost is not the total size of the app, but the size of what you need to do the thing you came for. A reader should not have to download the editor, and nobody but an admin should ever download the admin panel.</p>
+<p>It is the rows-read lesson aimed at a different meter. What costs you is the size of what you need in order to do the thing you came for. A reader should not have to download the editor, and nobody but an admin should ever download the admin panel.</p>
 </section>
 <section id="holding-the-phone" class="level2">
 <h2 class="anchored" data-anchor-id="holding-the-phone">Holding the Phone</h2>
@@ -443,20 +470,18 @@ cookieconsent.run({
 <p>As a side note, I am not happy with Substack and whatever degree of autosaving sans debouncing is going on over there. It is legitimately painful to type on that platform. :(</p>
 <p>The mobile navigation was a single row that scrolled sideways, and the scrollbar was hidden. So you had to swipe through eight to sixteen destinations, and nothing on screen told you there was anything past the right edge. It was the kind of thing that is invisible in a screenshot and obvious in your hand.</p>
 <p>I replaced it with a normal slide-out drawer behind a menu button. Everything stacked vertically, nothing to swipe, room for every link a moderator or admin sees.</p>
-<!-- IMAGE (demo mode, so no real member content): the current mobile nav drawer. -->
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="TODO-images/mobile-nav-drawer.png" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="quarto-lightbox-gallery-2" title="The mobile navigation drawer, slid open from the menu button: every destination stacked vertically, nothing to swipe past. Captured in demo mode, so none of the content is real."><img src="TODO-images/mobile-nav-drawer.png" class="img-fluid figure-img" alt="The mobile navigation drawer, slid open from the menu button: every destination stacked vertically, nothing to swipe past. Captured in demo mode, so none of the content is real."></a></p>
-<figcaption>The mobile navigation drawer, slid open from the menu button: every destination stacked vertically, nothing to swipe past. Captured in demo mode, so none of the content is real.</figcaption>
+<p><a href="mobile-nav-drawer.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1" title="The mobile navigation drawer, slid open from the menu button: sixteen destinations stacked vertically, nothing to swipe past. Captured in demo mode, so none of the content is real."><img src="mobile-nav-drawer.png" class="img-fluid figure-img" alt="The mobile navigation drawer, slid open from the menu button: sixteen destinations stacked vertically, nothing to swipe past. Captured in demo mode, so none of the content is real."></a></p>
+<figcaption>The mobile navigation drawer, slid open from the menu button: sixteen destinations stacked vertically, nothing to swipe past. Captured in demo mode, so none of the content is real.</figcaption>
 </figure>
 </div>
 <p>The one part that fought me was a layout trap I had to learn by breaking it. The header slides out of the way as you scroll, which it does with a CSS transform. An element with a transform becomes the anchor for any fixed-position element inside it. So when I put the drawer inside the header, the drawer anchored itself to the header’s little box instead of the whole screen. Moving the drawer out of the header, as a sibling, fixed it completely.</p>
 <p>The desktop version had a quieter version of the same crowding. An admin with every staff link visible saw sixteen items wrap onto three rows. I collapsed the moderation and admin links into one dropdown, so the bar went back to one clean row, and I put the open-reports count on the dropdown itself so urgent moderation work does not hide behind a click.</p>
-<!-- IMAGE (demo mode): the current desktop nav with the Staff dropdown. -->
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="TODO-images/desktop-nav-staff-dropdown.png" class="lightbox" data-glightbox="description: .lightbox-desc-3" data-gallery="quarto-lightbox-gallery-3" title="Desktop navigation for an admin: one clean row, with the moderation and admin links collapsed behind a single Staff dropdown that carries the open-reports count as a badge. Captured in demo mode."><img src="TODO-images/desktop-nav-staff-dropdown.png" class="img-fluid figure-img" alt="Desktop navigation for an admin: one clean row, with the moderation and admin links collapsed behind a single Staff dropdown that carries the open-reports count as a badge. Captured in demo mode."></a></p>
-<figcaption>Desktop navigation for an admin: one clean row, with the moderation and admin links collapsed behind a single Staff dropdown that carries the open-reports count as a badge. Captured in demo mode.</figcaption>
+<p><a href="desktop-nav-staff-dropdown.png" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="quarto-lightbox-gallery-2" title="Desktop navigation for an admin: one clean row, with the eight moderation and admin links collapsed behind a single Staff dropdown. The open-reports count rides on the dropdown itself when something is waiting; demo mode has nothing open, so there is no badge here. Captured in demo mode."><img src="desktop-nav-staff-dropdown.png" class="img-fluid figure-img" alt="Desktop navigation for an admin: one clean row, with the eight moderation and admin links collapsed behind a single Staff dropdown. The open-reports count rides on the dropdown itself when something is waiting; demo mode has nothing open, so there is no badge here. Captured in demo mode."></a></p>
+<figcaption>Desktop navigation for an admin: one clean row, with the eight moderation and admin links collapsed behind a single Staff dropdown. The open-reports count rides on the dropdown itself when something is waiting; demo mode has nothing open, so there is no badge here. Captured in demo mode.</figcaption>
 </figure>
 </div>
 </section>
@@ -464,7 +489,7 @@ cookieconsent.run({
 <h2 class="anchored" data-anchor-id="the-mention-roster">The <span class="citation" data-cites="Mention">@Mention</span> Roster</h2>
 <p>The forum has a mention feature. Type an at-sign, get a list of members to autocomplete against. To do that, the editor fetched every member once when you opened it, kept the list, and filtered it locally as you typed.</p>
 <p>The reflex when you read “it fetches every member” is to want to fix it. I had to argue myself out of that.</p>
-<p>Fetching everyone and filtering in the browser is not a problem to fix at this size. It is the correct design. The list is a few kilobytes, the matches appear instantly, and it costs zero requests per keystroke. The alternative, asking the server on every keystroke, is slower for the person typing. Building it now would make the feature worse to use, in exchange for solving a problem the forum does not have.</p>
+<p>Fetching everyone and filtering in the browser is the correct design at this size. The list is a few kilobytes, the matches appear instantly, and it costs zero requests per keystroke. The alternative, asking the server on every keystroke, is slower for the person typing. Building it now would make the feature worse to use, in exchange for solving a problem the forum does not have.</p>
 <p>You also cannot just paginate it. The member directory is paginated already. But this is a typeahead, and a typeahead is not a list you scroll. You either hold all the candidates or you search on the server. There is no third option.</p>
 <p>So I made the simple version aware of its own ceiling. The full-roster fetch asks for one row more than the cap of a thousand, which makes the “is this everybody?” flag exact and costs nothing extra:</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode numberSource sql number-lines code-with-copy"><code class="sourceCode sql"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">SELECT</span> <span class="kw">id</span>, display_name <span class="kw">FROM</span> users <span class="kw">ORDER</span> <span class="kw">BY</span> display_name_lower <span class="kw">LIMIT</span> <span class="dv">1001</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -485,22 +510,21 @@ cookieconsent.run({
 <p>There is a quieter reason, and it is about trust. I have used AWS. AWS has a way of growing fees you did not ask for. A monitoring line item here, a thing that bills per request there, and when you finally want to turn it off you spend an afternoon learning which of a dozen consoles owns the switch. I did not want a platform I had to defend myself against. Cloudflare’s free tier has hard, legible limits, and when I reach one it tells me instead of quietly charging me for it. GCP is marginally better than AWS and we don’t talk about Azure…</p>
 <p>That last part connects back to everything above. A platform that charges by the row, and counts every one, is the same platform that will never surprise me with a bill. The five-million-row ceiling that sent me hunting for a hidden <code>COUNT</code> is the same reason I have never once logged in worried about what last month cost. A ceiling I can see is a thing I can design against.</p>
 <p>The domain, the DNS, and the login layer were already here too. So the real comparison was never “Cloudflare versus AWS.” It was “use what is already under my domain and costs nothing” against “go stand up a server I will have to babysit.” Put that way, it was not a hard call.</p>
-<p>I gave things up for it, and it is worth saying so. D1 is SQLite under the hood, so I do without the richer Postgres feature set. The Workers runtime runs in short-lived isolates. There is no long-running server underneath, so no process memory that outlives a request and no connection pool to keep warm. Those constraints are real. They are also, as the last several sections show, where nearly all the interesting decisions came from. A platform with no hard edges would have let me ship the same forum without ever once having to think this hard.</p>
+<p>I gave things up for it. D1 is SQLite under the hood, so I do without the richer Postgres feature set. The Workers runtime runs in short-lived isolates. There is no long-running server underneath, so no process memory that outlives a request and no connection pool to keep warm. Those constraints are real. They are also, as the last several sections show, where nearly all the interesting decisions came from. A platform with no hard edges would have let me ship the same forum without ever once having to think this hard.</p>
 </section>
 <section id="operations" class="level2">
 <h2 class="anchored" data-anchor-id="operations">Operations</h2>
 <p>I said I did not want to operate anything. That was the goal. A forum with real members still has to be backed up, watched, and reachable, and none of that comes free just because the platform is managed. So I built each piece once and made it run without me in the loop.</p>
-<p>Start with the data, because it is the one thing the platform does not hand back to me on its own. D1 is durable, but a database I cannot restore is not a backup, it is hope at best. Once a week the whole thing is exported, encrypted, and pushed off-site. That part is ordinary. The part I care about is that once a month a job pulls the latest backup, restores it into a throwaway database, and checks that it actually came back. A backup you have never restored is risky. I would rather learn it is broken on a quiet Tuesday, in a scratch copy, than on the one day I need it for real.</p>
+<p>Start with the data, because it is the one thing the platform does not hand back to me on its own. D1 is durable, but that only covers the platform losing my data, not me destroying it myself. Once a week the whole thing is exported, encrypted, and pushed off-site. That part is ordinary. The part I care about is that once a month a job pulls the latest backup, restores it into a throwaway database, and checks that it actually came back. I would rather learn it is broken on a quiet Tuesday, in a scratch copy, than on the one day I need it for real.</p>
 <p>Deletion is staged, for a reason close to why the backups exist. Nothing a member removes is destroyed on the spot. A delete hides the content at once but keeps the row for thirty days, and only then does the nightly maintenance job purge it for good. Someone who deletes a post in a bad moment has a month to undo it, and after that it is genuinely gone, which is what the privacy policy promises. The same nightly job reclaims any uploaded file that never got attached to a post, so storage does not slowly fill with abandoned images.</p>
 <p>For knowing when something breaks, the app reports itself. The Worker is wrapped so that any unexpected error in a request, or in the nightly cron, is captured and sent to Sentry with a stack trace, and the browser app does the same for crashes in someone’s tab. I hear about a bug from a dashboard now, not from a member telling me the site is acting weird. Two details I am quietly pleased with: with no DSN configured the whole thing compiles down to a no-op, so the code shipped before the monitoring existed, and it never sends personally identifying data, because the Worker handles members’ writing and that is none of Sentry’s business. That Sentry ingest host is also the one outside origin the content policy lets the browser reach, which is the entire reason <code>connect-src</code> in the content policy later in this article is not just <code>'self'</code>.</p>
 <p>The front door has its own check, and it is deliberately dumb. A health endpoint answers <code>{ ok: true }</code> and nothing else, so an uptime monitor can ping it on a schedule and confirm the Worker is alive without ever touching real data.</p>
 <p>Email runs the same way. The digest goes out through Resend on a scheduled cron, in small hourly batches sized to stay under the free plan’s send limits, and the one part with teeth is the signed bounce webhook from the security section. A hard bounce or a spam complaint comes back signed, the app checks the signature, and that address quietly stops getting mail. I do not run a mail server, I do not chase bounces by hand, and one bad address cannot drag the rest of my sending down with it.</p>
 <p>The first time one of those notifications pulled someone who was not me back into a thread, the forum quietly stopped being a side project and became a place. That is the only metric in this whole article I did not profile.</p>
-<!-- IMAGE (demo mode): the admin panel. -->
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="TODO-images/admin-panel.png" class="lightbox" data-glightbox="description: .lightbox-desc-4" data-gallery="quarto-lightbox-gallery-4" title="The admin panel: the moderation queue with its open-reports badge, the backup and email controls, and the demo mode that made the rest of these screenshots safe to publish."><img src="TODO-images/admin-panel.png" class="img-fluid figure-img" alt="The admin panel: the moderation queue with its open-reports badge, the backup and email controls, and the demo mode that made the rest of these screenshots safe to publish."></a></p>
-<figcaption>The admin panel: the moderation queue with its open-reports badge, the backup and email controls, and the demo mode that made the rest of these screenshots safe to publish.</figcaption>
+<p><a href="admin-settings.png" class="lightbox" data-glightbox="description: .lightbox-desc-3" data-gallery="quarto-lightbox-gallery-3" title="Forum settings, captured in the demo mode that made the rest of these screenshots safe to publish. Maintenance mode blocks ordinary writes so a backup can be taken against a consistent database, the daily write ceilings are the ones the atomic counter in the security section enforces, and the two diagnostics buttons fire a deliberate client error and a deliberate server error to confirm Sentry is catching both sides."><img src="admin-settings.png" class="img-fluid figure-img" alt="Forum settings, captured in the demo mode that made the rest of these screenshots safe to publish. Maintenance mode blocks ordinary writes so a backup can be taken against a consistent database, the daily write ceilings are the ones the atomic counter in the security section enforces, and the two diagnostics buttons fire a deliberate client error and a deliberate server error to confirm Sentry is catching both sides."></a></p>
+<figcaption>Forum settings, captured in the demo mode that made the rest of these screenshots safe to publish. Maintenance mode blocks ordinary writes so a backup can be taken against a consistent database, the daily write ceilings are the ones the atomic counter in the security section enforces, and the two diagnostics buttons fire a deliberate client error and a deliberate server error to confirm Sentry is catching both sides.</figcaption>
 </figure>
 </div>
 <p>None of this is much code. It is the smallest amount of operating that lets a side project hold real people’s writing without turning into a second job.</p>
@@ -515,11 +539,11 @@ cookieconsent.run({
 </section>
 <section id="where-it-breaks-next" class="level2">
 <h2 class="anchored" data-anchor-id="where-it-breaks-next">Where It Breaks Next</h2>
-<p>The roster handoff future-proofed one feature. It is worth being clear about where the rest of the system runs out of room, because pretending it scales forever is the opposite of the point.</p>
+<p>The roster handoff future-proofed one feature. I should be clear about where the rest of the system runs out of room, because pretending it scales forever is the opposite of the point.</p>
 <p>It helps to say what this was built to be. It was always meant to be a small, invite-only community for people who mostly already know each other. The design was never pointed at a hundred thousand strangers, so the walls below sit a long way out, and they sit there on purpose. Designing for more would cost money and buy nothing the community needs.</p>
 <p>The most concrete ceiling has nothing to do with rows read. It is the front door. The whole forum sits behind Cloudflare Access, which is free up to fifty seats. The fifty-first member is where that ends, and the pricing does not ease you across it. Crossing fifty moves the entire account onto the paid tier at seven dollars per user per month, billed for everyone at once, so the day a fifty-first person joins, the login layer jumps from zero to roughly three hundred and fifty dollars a month. At the size this was built for, that is free. Anywhere past it, the auth layer becomes the first bill I would ever have to think about, which is its own argument for keeping the room small.</p>
 <p>The other walls are about load rather than headcount, and they sit further out. I will take them in rough order of how soon they would matter.</p>
-<p>Closest is the rows-read budget itself. Everything above bought real headroom against it, but headroom is not infinity. If the forum gets popular enough, five million rows a day is a wall, and the fix is not cleverness. It is paying for more. That is the cheapest wall to hit, because it is a number on a billing page and not a rewrite.</p>
+<p>Closest is the rows-read budget itself. Everything above bought real headroom against it, but headroom is not infinity. If the forum gets popular enough, five million rows a day is a wall, and no amount of cleverness gets past it. You pay for more. That is the cheapest wall to hit, because it is a number on a billing page and not a rewrite.</p>
 <p>Behind it is notification fan-out, which leans on the scarcer budget. Reads get five million rows a day. Writes get only a hundred thousand. When someone replies to a thread, everyone watching that thread gets a notification row written. A normal thread is nothing. A thread that four hundred people are watching writes four hundred rows on a single reply, which is four tenths of a percent of the entire daily write budget spent on one post. A few hundred replies like that in a day would spend all of it. For a community this size that is a comfortable margin, and it is still the first thing I would move to a queue, or to a fan-out-on-read query, if it ever stopped being comfortable.</p>
 <p>Then search. D1’s build of SQLite full-text search does not include the function that builds result snippets, so I build them in code, which means search pulls up to a thousand candidate rows per query and trims them in the Worker. It is fast and bounded now. It is the kind of thing that stops being fast when the archive is ten times larger.</p>
 <p>Last is the cache. The category cache lives inside one Worker isolate, so it helps within that isolate’s short life and does nothing across isolates. Every cold isolate still pays one database read to warm up. If cache hit rate ever becomes the bottleneck, the answer is a shared cache layer, which is real work I have not needed to do.</p>
@@ -545,7 +569,7 @@ cookieconsent.run({
 <p>Uploads are their own surface, and the most dangerous one, because a file the browser renders inline can carry script. So an upload is never trusted to be what it claims. The server ignores the browser’s stated content type and reads the file’s own magic bytes. A JPEG, PNG, GIF, or WebP keeps its real type and serves inline, and a PDF serves inline. Anything else, an SVG or an HTML file wearing an image’s name, is reclassified to a generic binary and served as a forced download, so it can never run as script on the forum’s own origin. That one rule closes the classic “upload an SVG, get stored XSS” hole.</p>
 <p>Two more things happen on the way in. Images have their EXIF stripped, so a member’s photo does not quietly publish the GPS coordinates of where it was taken. And the filename is cut down to something safe, with control characters and line breaks removed, because the filename rides into a response header and a stray newline there is a header-injection trick.</p>
 <p>The files are never public. R2 sits behind a proxy in the Worker, and a request for an image checks that the viewer is actually allowed to see it: staff, or the uploader, or an avatar, or a post that embeds the image and lives in a category the viewer can read. Fail that and the answer is a 404, not a 403, so the proxy does not even confirm the file exists. An image in a private thread is as private as the thread.</p>
-<p>There are smaller guards underneath, and two are worth showing because the reasoning is the interesting part.</p>
+<p>There are smaller guards underneath, and the reasoning behind two of them is the interesting part.</p>
 <p>Every mutating request has to carry a custom header that only the app’s own code sets:</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode numberSource ts number-lines code-with-copy"><code class="sourceCode typescript"><span id="cb13-1"><a href="#cb13-1"></a><span class="cf">if</span> (c<span class="op">.</span><span class="at">req</span><span class="op">.</span><span class="fu">header</span>(MUTATION_HEADER) <span class="op">!==</span> MUTATION_HEADER_VALUE) <span class="cf">throw</span> Errors<span class="op">.</span><span class="fu">csrf</span>()<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>That one line closes the classic cross-site request trick. A malicious page can make your browser fire a POST at my API, but it cannot add a custom header to that request, so the request is rejected before it reaches any handler. A same-origin check and a JSON-content-type requirement sit alongside it as backstops.</p>
@@ -568,7 +592,7 @@ cookieconsent.run({
 <section id="none-of-this-was-clever" class="level2">
 <h2 class="anchored" data-anchor-id="none-of-this-was-clever">None of This Was Clever</h2>
 <p>That is the whole of the engineering. The performance work was a cache, a stored counter, a handful of parallel queries, and one extra join. The scale work was a flag and a fallback. The security work was mostly confirming things were already fine and then deciding, with a reason, to skip the one thing that was missing.</p>
-<p>The hard part was never the code. On a platform that bills by the row, the query that looks free on the latency graph can be the most expensive thing you run, and the fix is not a faster version of it. It is not running it at all. But knowing that only mattered because the query was mine to change.</p>
+<p>The hard part was never the code. On a platform that bills by the row, the query that looks free on the latency graph can be the most expensive thing you run. You do not fix that by making it faster. You fix it by not running it. But knowing that only mattered because the query was mine to change.</p>
 <p>I could have skipped all of it. I could have rented a small server, installed a forum that already exists, and had something running in a weekend. It would have worked. But I would have owned a config file and a monthly bill and not much else. I could not have changed how a count is stored, or folded an unread flag into a query, or decided that a slightly stale cache was a fair trade at a quiet hour, because none of those knobs would have been mine to turn.</p>
 <p>That is the trade, and I think it is the right one. Owning the whole stack means living inside its limits. A database that charges by the row. A runtime with no memory between requests. A free tier whose edges are hard and visible. Those limits are not the price of ownership. They are the thing that made the work worth doing, because every one of them forced a decision I had to understand. A rented stack would have made those calls for me, and I would never have known they were calls at all.</p>
 <p>The training groups I run now have somewhere to post tidbits, useful links, and longer arguments without cluttering up a group chat, and what they write there stays theirs.</p>
@@ -577,18 +601,35 @@ cookieconsent.run({
 
 
 <div class="hidden" aria-hidden="true">
-<span class="glightbox-desc lightbox-desc-1">One crawler, one day. blog.jesse-anderson.net served over three hundred thousand requests in a single twenty-four-hour span to one crawler trying to train on everything I had written. This is the reason the forum sits behind a login wall.</span>
-<span class="glightbox-desc lightbox-desc-2">The mobile navigation drawer, slid open from the menu button: every destination stacked vertically, nothing to swipe past. Captured in demo mode, so none of the content is real.</span>
-<span class="glightbox-desc lightbox-desc-3">Desktop navigation for an admin: one clean row, with the moderation and admin links collapsed behind a single Staff dropdown that carries the open-reports count as a badge. Captured in demo mode.</span>
-<span class="glightbox-desc lightbox-desc-4">The admin panel: the moderation queue with its open-reports badge, the backup and email controls, and the demo mode that made the rest of these screenshots safe to publish.</span>
+<span class="glightbox-desc lightbox-desc-1">The mobile navigation drawer, slid open from the menu button: sixteen destinations stacked vertically, nothing to swipe past. Captured in demo mode, so none of the content is real.</span>
+<span class="glightbox-desc lightbox-desc-2">Desktop navigation for an admin: one clean row, with the eight moderation and admin links collapsed behind a single Staff dropdown. The open-reports count rides on the dropdown itself when something is waiting; demo mode has nothing open, so there is no badge here. Captured in demo mode.</span>
+<span class="glightbox-desc lightbox-desc-3">Forum settings, captured in the demo mode that made the rest of these screenshots safe to publish. Maintenance mode blocks ordinary writes so a backup can be taken against a consistent database, the daily write ceilings are the ones the atomic counter in the security section enforces, and the two diagnostics buttons fire a deliberate client error and a deliberate server error to confirm Sentry is catching both sides.</span>
 </div>
 </section>
 </section>
 
 </main> <!-- /main -->
-<section class="blog-comments" data-comments=""></section>
+<section class="blog-comments" data-comments>
+    <h3>Comments</h3>
+    <div id="cusdis_thread"
+         data-host="https://cusdis.com"
+         data-app-id="73a29664-ef73-4158-a3a9-3850647de254"
+         data-page-id="/posts/forum/"
+         data-page-url="https://blog.jesse-anderson.net/posts/forum/"
+         data-page-title="Jesse Anderson’s Blog - No Cost Private Forums"
+         data-theme="auto"></div>
+    <script async defer src="https://cusdis.com/js/cusdis.es.js"></script>
+</section>
 
-<div class="latest-posts" data-latest-posts=""></div>
+<div class="latest-posts" data-latest-posts>
+    <h3>Latest Posts</h3>
+    <ul id="latest-posts-list">
+        <li><a href="../intro_to_yogurt/index.html"><span>Intro to Yogurt: A Pot, A Thermometer, and Some Patience</span></a></li>
+        <li><a href="../Job_Curation_AI/index.html"><img src="../Job_Curation_AI/image.png" alt="" class="latest-post-thumbnail" width="56" height="42" loading="lazy" decoding="async"><span>Atoms of Experience: Tailoring Job Applications With an LLM and a Ground Truth</span></a></li>
+        <li><a href="../Chicago_Job_Scraper/index.html"><img src="../Chicago_Job_Scraper/image.png" alt="" class="latest-post-thumbnail" width="56" height="42" loading="lazy" decoding="async"><span>Scraping My Own Job Search: A Nightly Dashboard for Chicagoland Engineering Jobs</span></a></li>
+        <li><a href="index.html"><img src="image.png" alt="" class="latest-post-thumbnail" width="56" height="42" loading="lazy" decoding="async"><span>No Cost Private Forums</span></a></li>
+    </ul>
+</div>
 
 <div class="blog-footer-actions">
     <hr>
@@ -1085,7 +1126,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","loop":false,"descPosition":"bottom","selector":".lightbox","openEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"descPosition":"bottom","selector":".lightbox","loop":false,"openEffect":"zoom","closeEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

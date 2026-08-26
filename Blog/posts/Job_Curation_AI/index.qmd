@@ -13,83 +13,47 @@ execute:
 #Delete _freeze/posts/thisPost to re render it. Its such a pain but oh well...
 ---
 
-> Companion to the scraper post. That one touched other people's servers, so it stayed careful and
-> abstract. This side of the project only ever touches my own experience, so I can be concrete. The
-> code snippets are lightly simplified from the real modules under `tailor/`, and the atom IDs are
-> the real scheme.
+> Companion to the scraper post. That one touched other people's servers, so it stayed careful and abstract. This side of the project only ever touches my own experience, so I can be concrete. The code snippets are lightly simplified from the real modules under `tailor/`, and the atom IDs are the real scheme.
 
 ## Where the last post left off
 
-The scraper from the previous post hands me a nightly list of engineering jobs worth applying to.
-That settles the finding problem and immediately raises the next one. Applying well to thirty
-roles means thirty tailored resumes and thirty tailored cover letters, each reading as though it
-was written for that one company. By hand that is most of a weekend per batch. Done carelessly it
-is thirty copies of the same generic document, which is exactly what keyword screens exist to
-throw away.
+The scraper from the previous post hands me a nightly list of engineering jobs worth applying to. That settles the finding problem and immediately raises the next one. Applying well to thirty roles means thirty tailored resumes and thirty tailored cover letters, each reading as though it was written for that one company. By hand that is most of a weekend per batch. Done carelessly it is thirty copies of the same generic document, which is exactly what keyword screens exist to throw away.
 
-The obvious tool to reach for is an LLM. Paste the job description, paste my resume, ask for a
-tailored version. Generally that would have worked at the start of LLMs, but now unfortunately it does not.
+The obvious tool to reach for is an LLM. Paste the job description, paste my resume, ask for a tailored version. Generally that would have worked at the start of LLMs, but now unfortunately it does not.
 
 ## The hallucination problem
 
-Ask a language model to write a resume for a job and it will write a good one. That is the
-problem. A strong resume for a robotics role talks about robotics, so the model adds some. It
-rounds "studied control systems in a course" up into "built control systems." It supplies a
-metric because bullets with numbers read better, and it has no way of knowing the number is
-invented. None of this is the model misbehaving. It was asked to produce text that fits the
-target, and it has no stake in whether the text is true.
+Ask a language model to write a resume for a job and it will write a good one. That is the problem. A strong resume for a robotics role talks about robotics, so the model adds some. It rounds "studied control systems in a course" up into "built control systems." It supplies a metric because bullets with numbers read better, and it has no way of knowing the number is invented. None of this is the model misbehaving. It was asked to produce text that fits the target, and it has no stake in whether the text is true.
 
-For most writing tasks a little embellishment costs nothing. On a job application it is the kind
-of thing that ends a candidacy when someone checks a claim in an interview, and people do check.
-So I needed the tailoring to be aggressive about choosing what to emphasize while being
-structurally unable to fabricate. Those are two different jobs, and the whole system comes from
-pulling them apart.
+For most writing tasks a little embellishment costs nothing. On a job application it is the kind of thing that ends a candidacy when someone checks a claim in an interview, and people do check. So I needed the tailoring to be aggressive about choosing what to emphasize while being structurally unable to fabricate. Those are two different jobs, and the whole system comes from pulling them apart.
 
 ## The reframe: selection over generation
 
-Here is the idea everything else rests on. Rather than have the model write my experience, I have
-it choose from experience I have already written down and verified. If the only raw material
-available is a fixed set of true statements, the worst mistake the model can make is a weak
-choice. It cannot invent a job I never held, because there is no mechanism for a new fact to
-enter the process at all.
+Everything else rests on one idea. Rather than have the model write my experience, I have it choose from experience I have already written down and verified. If the only raw material available is a fixed set of true statements, the worst mistake the model can make is a weak choice. It cannot invent a job I never held, because there is no mechanism for a new fact to enter the process at all.
 
-So before any tailoring happens, I break my whole career into small, self-contained units. I call
-them atoms. Each atom is one verified claim with a stable ID, and the IDs follow a flat namespace:
-`exp.*` for experience bullets, `proj.*` for projects, `pub.*` for publications, `skills.*` for
-skills lines, and so on. A bullet under a role is just the role ID with a suffix:
+So before any tailoring happens, I break my whole career into small, self-contained units. I call them atoms. Each atom is one verified claim with a stable ID, and the IDs follow a flat namespace: `exp.*` for experience bullets, `proj.*` for projects, `pub.*` for publications, `skills.*` for skills lines, and so on. A bullet under a role is just the role ID with a suffix:
 
-```latex
+``` latex
 %% ID: exp.ul_solutions.b3
 \item EXAMPLE: Replaced a manual analytical workflow with a typed pipeline, cutting a
       recurring multi-day task down to roughly an hour.
 ```
 
-An atom is the smallest thing I would defend out loud in an interview. A single resume bullet. One
-project with its one-line description. A publication. A line of skills. The content gets written
-once, by me, and checked once, by me. After that it is frozen, and nothing downstream is allowed
-to reword it.
+An atom is the smallest thing I would defend out loud in an interview: a single resume bullet, one project with its one-line description, a publication, a line of skills. The content gets written once, by me, and checked once, by me. After that it is frozen, and nothing downstream is allowed to reword it.
 
 The atoms come from four sources, loaded into one ID-keyed inventory by `tailor/atoms.py`:
 
-- `resume/source/master.tex` is my actual one-page resume, and it doubles as the atom store. The
-  loader splits it on `%% ID:` comments, so every bullet, summary, and skills line is addressable.
-  The same file renders as a standalone PDF and feeds the tailor, which keeps the two from drifting
-  apart.
-- `projects.yaml` and `publications.yaml` hold structured entries with tiers, one-liners, signal
-  tags, and public URLs.
-- `master_private.yaml` holds audit-confirmed facts that are true but not on the public resume,
-  the kind of thing worth raising in a cover letter but not worth a permanent resume line. It also
-  holds the list described next.
+-   `resume/source/master.tex` is my actual one-page resume, and it doubles as the atom store. The loader splits it on `%% ID:` comments, so every bullet, summary, and skills line is addressable. The same file renders as a standalone PDF and feeds the tailor, which keeps the two from drifting apart.
+-   `projects.yaml` and `publications.yaml` hold structured entries with tiers, one-liners, signal tags, and public URLs.
+-   `master_private.yaml` holds audit-confirmed facts that are true but not on the public resume, the kind of thing worth raising in a cover letter but not worth a permanent resume line. It also holds the list described next.
 
 ## Encoding what I do not have
 
-Selection alone still leaves a hole. A model told to pick the most relevant true statements will
-reach for the nearest available match when a job asks for something I lack, and "nearest match"
-is how overclaiming creeps back in. The fix is to make my gaps part of the ground truth as well.
+Selection alone still leaves a hole. A model told to pick the most relevant true statements will reach for the nearest available match when a job asks for something I lack, and "nearest match" is how overclaiming creeps back in. The fix is to make my gaps part of the ground truth as well.
 
 `master_private.yaml` carries an `explicitly_not_held` list. A condensed sample:
 
-```yaml
+``` yaml
 explicitly_not_held:
   - Ladder logic or Structured Text PLC programming
   - SCADA / HMI authoring (FactoryTalk, Wonderware, Ignition)
@@ -97,46 +61,27 @@ explicitly_not_held:
   - ISO 9001 / 13485 / 27001 formal certification
 ```
 
-The system prompt is blunt about this list: even when the job description names one of these
-skills directly, the model may not imply I have it, and it has to record the gap in a `gaps` field
-instead. That field is debugging output for me. The hiring manager never sees it. My missing
-skills are as much a part of the record as my real ones, and writing them down explicitly is what
-keeps the model from quietly papering over them. The full list is longer than the sample above,
-and it moves over time.
+The system prompt is blunt about this list: even when the job description names one of these skills directly, the model may not imply I have it, and it has to record the gap in a `gaps` field instead. That field is debugging output for me. The hiring manager never sees it. My missing skills are as much a part of the record as my real ones, and writing them down explicitly is what keeps the model from quietly papering over them. The full list is longer than the sample above, and it moves over time.
 
-There is a second kind of negative constraint sitting next to the skills gaps: a list of employers
-and industries I would rather not work for. I am leaving the specifics out here, but the mechanism
-is the same as the not-held list. The constraint is written down once as ground truth, and the
-model does not get to argue with it. A role at one of those employers comes back graded as a
-non-starter no matter how cleanly my atoms line up against the posting.
+There is a second kind of negative constraint sitting next to the skills gaps: a list of employers and industries I would rather not work for. I am leaving the specifics out here, but the mechanism is the same as the not-held list. The constraint is written down once as ground truth, and the model does not get to argue with it. A role at one of those employers comes back graded as a non-starter no matter how cleanly my atoms line up against the posting.
 
 ## The pipeline, and the orchestrator/worker split
 
 The flow has four stages, with a worker agent sitting in the middle of it:
 
-```
+```         
 search -> prepare -> [worker writes plan.json] -> apply -> assess
 ```
 
-`prepare` pulls the chosen job out of the SQLite database the scraper populates and writes a
-working folder under `data/applications/<company>__<title>__<date>/`. Two files land there: the raw
-job description as `job.json`, and a `prompt.md` that already embeds the full system prompt, the
-serialized atom inventory, and the job description, ready to hand to a model with no other context
-required.
+`prepare` pulls the chosen job out of the SQLite database the scraper populates and writes a working folder under `data/applications/<company>__<title>__<date>/`. Two files land there: the raw job description as `job.json`, and a `prompt.md` that already embeds the full system prompt, the serialized atom inventory, and the job description, ready to hand to a model with no other context required.
 
-The plan itself is written by a separate worker agent, not by the orchestrator. The orchestrator
-spawns a general-purpose agent whose entire brief is to read `prompt.md`, follow its contract, and
-write `plan.json`. The worker sees the atoms, the not-held list, and the job description, and
-nothing else about my setup. That separation is deliberate. The component allowed to be creative is
-sandboxed down to one job with one output file, and the component that compiles and judges the
-result is a different process with different rules.
+The plan itself is written by a separate worker agent, not by the orchestrator. The orchestrator spawns a general-purpose agent whose entire brief is to read `prompt.md`, follow its contract, and write `plan.json`. The worker sees the atoms, the not-held list, and the job description, and nothing else about my setup. That separation is deliberate. The component allowed to be creative is sandboxed down to one job with one output file, and the component that compiles and judges the result is a different process with different rules.
 
 ## The model returns a plan
 
-The worker's entire output is `plan.json`, a strict JSON object naming which atoms to include and
-in what order:
+The worker's entire output is `plan.json`, a strict JSON object naming which atoms to include and in what order:
 
-```json
+``` json
 {
   "version": 1,
   "summary_id": "summary.default",
@@ -161,41 +106,26 @@ in what order:
 }
 ```
 
-Exactly three operations are allowed on atoms. The worker may select an atom by referencing its ID,
-reorder atoms within a section, and omit atoms that do not help. Rewriting an atom's text is off
-the table. Resume bullets render verbatim from `master.tex`, so whatever the worker selects is word
-for word what I wrote and approved.
+Exactly three operations are allowed on atoms. The worker may select an atom by referencing its ID, reorder atoms within a section, and omit atoms that do not help. Rewriting an atom's text is off the table. Resume bullets render verbatim from `master.tex`, so whatever the worker selects is word for word what I wrote and approved.
 
-That is what makes the risky step safe. The model's cleverness is aimed at a question that cannot
-hurt me, which is which of these true facts matter most for this job and in what order they should
-appear.
+That is what makes the risky step safe. The model's cleverness is aimed at a question that cannot hurt me: which of these true facts matter most for this job, and in what order they should appear.
 
 ## The validator is where "it cannot lie" becomes real
 
-An instruction in a prompt is a request, not a guarantee. A model can be told never to invent a
-fact and then do it anyway on the one run nobody inspects. So the prompt is not the enforcement
-layer. `tailor/validate.py` sits between the worker's plan and any rendered output, and `apply`
-refuses to compile a plan that fails it. The real checks include:
+An instruction in a prompt is a request, not a guarantee. A model can be told never to invent a fact and then do it anyway on the one run nobody inspects. So the prompt is not the enforcement layer. `tailor/validate.py` sits between the worker's plan and any rendered output, and `apply` refuses to compile a plan that fails it. The real checks include:
 
-- Every ID referenced anywhere in the plan exists in the inventory. An unknown ID is a hard fail.
-- A bullet ID has to be nested under the role or project it sits in, so `exp.ul_solutions.b3` is
-  only valid inside the `exp.ul_solutions` block.
-- Nothing on `explicitly_not_held` may appear in the plan or in the cover-letter text.
-- The resume must compile to exactly one page. The page count is parsed out of the LaTeX log, and a
-  two-page result fails the build and goes back to the worker for trimming.
+-   Every ID referenced anywhere in the plan exists in the inventory. An unknown ID is a hard fail.
+-   A bullet ID has to be nested under the role or project it sits in, so `exp.ul_solutions.b3` is only valid inside the `exp.ul_solutions` block.
+-   Nothing on `explicitly_not_held` may appear in the plan or in the cover-letter text.
+-   The resume must compile to exactly one page. The page count is parsed out of the LaTeX log, and a two-page result fails the build and goes back to the worker for trimming.
 
-Because the validator is ordinary Python instead of a model, there is no judgment to talk it out of
-a rejection. A plan that references an atom I never wrote simply fails to build, and the errors
-land in `validation.json` for the next worker pass to fix.
+Because the validator is ordinary Python instead of a model, there is no judgment to talk it out of a rejection. A plan that references an atom I never wrote simply fails to build, and the errors land in `validation.json` for the next worker pass to fix.
 
 ## Bridge atoms: the honest version of "I could pick that up"
 
-Strict selection has a failure mode pointing the other way. Real candidates learn adjacent tools in
-a few days, and a system that can only state what is literally on the resume will undersell a
-genuine fit. When a job wants a tool I have not used but that is a close cousin of something I
-already ship, I allow a narrow, capped exception called a bridge:
+Strict selection has a failure mode pointing the other way. Real candidates learn adjacent tools in a few days, and a system that can only state what is literally on the resume will undersell a genuine fit. When a job wants a tool I have not used but that is a close cousin of something I already ship, I allow a narrow, capped exception called a bridge:
 
-```json
+``` json
 {
   "tool": "SQLite",
   "adjacent_to": "proj.opcrime",
@@ -204,60 +134,24 @@ already ship, I allow a narrow, capped exception called a bridge:
 }
 ```
 
-A bridge is permitted at most three times per application, and it has to declare the real atom it
-is adjacent to and name the specific overlap. The framing has rules: I can say I have not shipped
-the tool directly but do ship a close relative, with the overlap spelled out. I
-cannot say I am "experienced in" or "proficient in" it, and the validator rejects those phrasings
-on sight. Whole categories are off-limits for bridging: any programming language I do not actually
-have, any regulatory framework, and specialty commercial software with deep workflow vocabularies,
-because no amount of syntactic similarity makes "knows Go" a true sentence. Those land in the gaps
-list where they belong.
+A bridge is permitted at most three times per application, and it has to declare the real atom it is adjacent to and name the specific overlap. The framing has rules: I can say I have not shipped the tool directly but do ship a close relative, with the overlap spelled out. I cannot say I am "experienced in" or "proficient in" it, and the validator rejects those phrasings on sight. Whole categories are off-limits for bridging: any programming language I do not actually have, any regulatory framework, and specialty commercial software with deep workflow vocabularies, because no amount of syntactic similarity makes "knows Go" a true sentence. Those land in the gaps list where they belong.
 
 ## The cover letter, and a validator that hates AI writing
 
-The one freeform section is the cover letter, and even there the leash is short. Every factual
-claim in it has to cite an atom in `body_atoms`, the same way the resume does. If the letter
-name-drops a public project, the validator requires that project's URL to appear inline, so a
-reader can click through and check the claim against ground truth. Name a project with no
-verifiable URL and the build fails.
+The one freeform section is the cover letter, and even there the leash is short. Every factual claim in it has to cite an atom in `body_atoms`, the same way the resume does. If the letter name-drops a public project, the validator requires that project's URL to appear inline, so a reader can click through and check the claim against ground truth. Name a project with no verifiable URL and the build fails.
 
-The validator also enforces voice, which is where this loops back to something I care about. It
-rejects em-dashes and en-dashes outright. It carries a list of words that mark machine-written
-prose, things like "leverage," "robust," "seamless," "passionate," and "ecosystem," and it fails
-any letter that uses them. It bans the stock enthusiasm openers and the empty closers, and it
-strips out the habit some workers have of dropping atom IDs like `(exp.ul_solutions.b3)` into the
-prose as if they were citations. A cover letter that reads like a language model wrote it gets
-bounced before I ever see it. The output is supposed to sound like a person who happens to be me.
+The validator also enforces voice, which is where this loops back to something I care about. It rejects em-dashes and en-dashes outright. It carries a list of words that mark machine-written prose, things like "leverage," "robust," "seamless," "passionate," and "ecosystem," and it fails any letter that uses them. It bans the stock enthusiasm openers and the empty closers, and it strips out the habit some workers have of dropping atom IDs like `(exp.ul_solutions.b3)` into the prose as if they were citations. A cover letter that reads like a language model wrote it gets bounced before I ever see it. The output is supposed to sound like a person who happens to be me.
 
 ## The assess step
 
-After `apply` compiles clean PDFs, the orchestrator reads them back and writes an assessment.
-This is the second place a model is allowed to think, and again it is pointed somewhere safe. It
-does not edit anything. It reports on whether the plan actually covered the job's must-have
-requirements, whether the worker led with the strongest-signal bullets or just defaulted to the
-template, whether experience stayed reverse-chronological, and whether the `fit_score` is honest
-given the shape of the role. Anything it would change, it flags for me to decide. The worker
-proposes, the validator enforces, and the assessor critiques, and none of the three is trusted to
-both generate and approve its own output.
+After `apply` compiles clean PDFs, the orchestrator reads them back and writes an assessment. This is the second place a model is allowed to think, and again its scope is narrow. It does not edit anything. It reports on whether the plan actually covered the job's must-have requirements, whether the worker led with the strongest-signal bullets or just defaulted to the template, whether experience stayed reverse-chronological, and whether the `fit_score` is honest given the shape of the role. Anything it would change, it flags for me to decide. The worker proposes, the validator enforces, and the assessor critiques, and none of the three is trusted to both generate and approve its own output.
 
 ## The PDF is the bonus
 
-Everything so far is about keeping the content true. The part most people picture as the product, a
-clean one-page resume and a matching cover letter compiled to PDF, sits on top of that and is the
-easy half. `apply` takes the validated plan, pulls each selected atom's verbatim text, fills the
-LaTeX templates, and compiles both documents under the one-page gate. Good typesetting is worth
-having, and it is downstream of the work that actually mattered, which was writing my experience
-down as verifiable units to begin with.
+Everything so far is about keeping the content true. The part most people picture as the product, a clean one-page resume and a matching cover letter compiled to PDF AND .docx, sits on top of that and is the easy half. `apply` takes the validated plan, pulls each selected atom's verbatim text, fills the LaTeX templates, and compiles both documents under the one-page gate. Good typesetting is worth having, and it is downstream of the work that actually mattered, which was writing my experience down as verifiable units to begin with.
 
 ## What I actually built
 
-It would be fair to call this a resume generator, and that label would miss the point. The renderer
-is a few hundred lines. The real artifact is the ground truth: a complete, ID-keyed inventory of
-what I have done and what I have not, written carefully enough that a model can be turned loose
-inside it without any way to lie. Once that exists, the LLM is no longer a fabrication risk; it is
-a fast and tireless editor working strictly within lines I drew.
+It would be fair to call this a resume generator, and that label would miss the point. The renderer is a few hundred lines. The real artifact is the ground truth: a complete, ID-keyed inventory of what I have done and what I have not, written carefully enough that a model can be turned loose inside it without any way to lie. Once that exists, the LLM is no longer a fabrication risk; it is a fast editor working strictly within lines I drew.
 
-The lesson matches the scraper post's. There, the gain came from finding the shared structure
-underneath 150 career pages. Here, it comes from handing an unreliable narrator a script it cannot
-depart from. Both times the interesting work sat upstream of the automation, in deciding exactly
-what the machine was allowed to touch.
+The lesson matches the scraper post's. There, the gain came from finding the shared structure underneath 150 career pages. Here, it comes from handing an unreliable narrator a script it cannot depart from. Both times the interesting work sat upstream of the automation, in deciding exactly what the machine was allowed to touch.
