@@ -1,5 +1,6 @@
 ---
 title: "From DLL to XLL: Building an Excel Add-in in Pure Rust"
+description: "Build an Excel XLL add-in in pure Rust with no SDK or C compiler: XLOPER12 types, memory ownership, UDF registration, and shipping 27 worksheet functions."
 author: Jesse Anderson
 date: '2026-02-25'
 categories:

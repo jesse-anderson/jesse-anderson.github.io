@@ -1,5 +1,6 @@
 ---
 title: "Build Custom Excel Functions in Rust with xllgen"
+description: "A tutorial for the xllgen template: write plain Rust functions, tag them with an attribute, and load them into Excel as an XLL without hand-written registration code."
 author: Jesse Anderson
 date: '2026-03-12'
 categories:

@@ -8,6 +8,7 @@
 
 <meta name="author" content="Jesse Anderson">
 <meta name="dcterms.date" content="2026-07-06">
+<meta name="description" content="Tailoring resumes and cover letters with an LLM that can only select from verified atoms of experience, so it can choose what to emphasize but cannot fabricate.">
 
 <title>Jesse Anderson’s Blog - Atoms of Experience: Tailoring Job Applications With an LLM and a Ground Truth</title>
 <style>
@@ -135,9 +136,14 @@ cookieconsent.run({
 
 <link rel="stylesheet" href="../../styles.css">
 <meta property="og:title" content="Jesse Anderson’s Blog - Atoms of Experience: Tailoring Job Applications With an LLM and a Ground Truth">
-<meta property="og:description" content="">
-<meta property="og:image" content="image.png">
+<meta property="og:description" content="Tailoring resumes and cover letters with an LLM that can only select from verified atoms of experience, so it can choose what to emphasize but cannot fabricate.">
+<meta property="og:image" content="https://blog.jesse-anderson.net/posts/Job_Curation_AI/image.png">
 <meta property="og:site_name" content="Jesse Anderson's Blog">
+<meta name="twitter:title" content="Jesse Anderson’s Blog - Atoms of Experience: Tailoring Job Applications With an LLM and a Ground Truth">
+<meta name="twitter:description" content="Tailoring resumes and cover letters with an LLM that can only select from verified atoms of experience, so it can choose what to emphasize but cannot fabricate.">
+<meta name="twitter:image" content="https://blog.jesse-anderson.net/posts/Job_Curation_AI/image.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://blog.jesse-anderson.net/posts/Job_Curation_AI/">
 </head>
 
 <body class="nav-fixed fullcontent">
@@ -202,7 +208,12 @@ cookieconsent.run({
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
       <h1 class="title">Atoms of Experience: Tailoring Job Applications With an LLM and a Ground Truth</h1>
-                                <div class="quarto-categories">
+                  <div>
+        <div class="description">
+          Tailoring resumes and cover letters with an LLM that can only select from verified atoms of experience, so it can choose what to emphasize but cannot fabricate.
+        </div>
+      </div>
+                          <div class="quarto-categories">
                 <div class="quarto-category">AI</div>
               </div>
                   </div>
@@ -534,7 +545,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
+      var filterRegex = new RegExp("https:\/\/blog\.jesse-anderson\.net");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }

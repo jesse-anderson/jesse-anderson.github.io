@@ -1,5 +1,6 @@
 ---
 title: "SCD41: On Demand CO2 Sensor"
+description: "The SCD41 CO2 sensor: how it works, its accuracy specs and limitations, and MicroPython code for running it on an ESP32 with an OLED display and alarm buzzer."
 author: Jesse Anderson
 date: '2024-09-02'
 categories:

@@ -1,5 +1,6 @@
 ---
 title: "Archive"
+description-meta: "Every post on Jesse Anderson's blog, newest first."
 page-layout: full
 listing:
   contents: posts/**/*.qmd

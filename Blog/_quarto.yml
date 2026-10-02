@@ -1,12 +1,19 @@
 project:
   type: website
   output-dir: _site
+  render:
+    - "*.qmd"
+    - "*.md"
+    - "!readme.md"
   resources:
   - "*.ipynb"
   post-render: copy_output.py
 website:
   title: "Jesse Anderson's Blog"
+  site-url: https://blog.jesse-anderson.net
+  description: "Long-form writeups of engineering projects: ESP32 and Raspberry Pi sensor builds, civic data dashboards, clustering algorithms, and Rust/Excel interop."
   open-graph: true
+  twitter-card: true
   google-analytics: "G-5CSPYCMY55"
   cookie-consent:
     type: express
@@ -35,6 +42,7 @@ format:
   html:
     theme: cosmo
     css: styles.css
+    canonical-url: true
     grid:
       sidebar-width: 100px
       body-width: 1100px

@@ -1,6 +1,7 @@
 ---
 title: Efficient Data Logging with ESP32
 subtitle: A  Guide to Using Google Sheets/MongoDB/PostgreSQL/ThingSpeak for IoT
+description: "Logging sensor data from a low-cost ESP32-WROOM-32 in MicroPython to Google Sheets, MongoDB, PostgreSQL, and ThingSpeak."
 author: Jesse Anderson
 date: '2024-05-26'
 categories:

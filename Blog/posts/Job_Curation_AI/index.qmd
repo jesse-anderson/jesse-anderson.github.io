@@ -1,5 +1,6 @@
 ---
 title: "Atoms of Experience: Tailoring Job Applications With an LLM and a Ground Truth"
+description: "Tailoring resumes and cover letters with an LLM that can only select from verified atoms of experience, so it can choose what to emphasize but cannot fabricate."
 author: "Jesse Anderson"
 date: "2026-07-06"
 categories:

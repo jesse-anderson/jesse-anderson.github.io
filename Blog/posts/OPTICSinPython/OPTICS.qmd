@@ -1,5 +1,6 @@
 ---
 title: OPTICS in Python
+description: "OPTICS clustering in Python with scikit-learn, step by step: blob data, reachability and elbow plots, and convex hulls around the resulting clusters."
 author: Jesse Anderson
 date: '2024-05-12'
 categories:

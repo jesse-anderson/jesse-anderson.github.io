@@ -1,5 +1,6 @@
 ---
 title: "Building an Oak Park Crime Data Science Dashboard"
+description: "Building a data science dashboard on top of the Oak Park crime map dataset: year-to-date totals, pulse windows, and date-range comparisons from public police reports."
 author: "Jesse Anderson"
 date: "2026-04-28"
 categories:

@@ -1,5 +1,6 @@
 ---
 title: "Building an Oak Park Crime Map from Public PDFs"
+description: "How public Oak Park police activity PDFs became a searchable crime map: scraping, PDF parsing, geocoding, and a static Leaflet app backed by DuckDB-WASM."
 author: "Jesse Anderson"
 date: "2026-04-27"
 categories:

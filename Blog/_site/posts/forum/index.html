@@ -8,6 +8,7 @@
 
 <meta name="author" content="Jesse Anderson">
 <meta name="dcterms.date" content="2026-06-30">
+<meta name="description" content="Building an invite-only forum on Cloudflare Workers, Pages, D1, R2, and Access, and the engineering it takes to keep it inside the free tier.">
 
 <title>Jesse Anderson’s Blog - No Cost Private Forums</title>
 <style>
@@ -138,9 +139,18 @@ cookieconsent.run({
 
 <link rel="stylesheet" href="../../styles.css">
 <meta property="og:title" content="Jesse Anderson’s Blog - No Cost Private Forums">
-<meta property="og:description" content="">
-<meta property="og:image" content="image.png">
+<meta property="og:description" content="Building an invite-only forum on Cloudflare Workers, Pages, D1, R2, and Access, and the engineering it takes to keep it inside the free tier.">
+<meta property="og:image" content="https://blog.jesse-anderson.net/posts/forum/image.png">
 <meta property="og:site_name" content="Jesse Anderson's Blog">
+<meta property="og:image:height" content="506">
+<meta property="og:image:width" content="828">
+<meta name="twitter:title" content="Jesse Anderson’s Blog - No Cost Private Forums">
+<meta name="twitter:description" content="Building an invite-only forum on Cloudflare Workers, Pages, D1, R2, and Access, and the engineering it takes to keep it inside the free tier.">
+<meta name="twitter:image" content="https://blog.jesse-anderson.net/posts/forum/image.png">
+<meta name="twitter:image-height" content="506">
+<meta name="twitter:image-width" content="828">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://blog.jesse-anderson.net/posts/forum/">
 </head>
 
 <body class="nav-fixed fullcontent">
@@ -205,7 +215,12 @@ cookieconsent.run({
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
       <h1 class="title">No Cost Private Forums</h1>
-                                <div class="quarto-categories">
+                  <div>
+        <div class="description">
+          Building an invite-only forum on Cloudflare Workers, Pages, D1, R2, and Access, and the engineering it takes to keep it inside the free tier.
+        </div>
+      </div>
+                          <div class="quarto-categories">
                 <div class="quarto-category">Data Engineering</div>
               </div>
                   </div>
@@ -472,7 +487,7 @@ cookieconsent.run({
 <p>I replaced it with a normal slide-out drawer behind a menu button. Everything stacked vertically, nothing to swipe, room for every link a moderator or admin sees.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="mobile-nav-drawer.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1" title="The mobile navigation drawer, slid open from the menu button: sixteen destinations stacked vertically, nothing to swipe past. Captured in demo mode, so none of the content is real."><img src="mobile-nav-drawer.png" class="img-fluid figure-img" alt="The mobile navigation drawer, slid open from the menu button: sixteen destinations stacked vertically, nothing to swipe past. Captured in demo mode, so none of the content is real."></a></p>
+<p><a href="mobile-nav-drawer.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1" title="The mobile navigation drawer, slid open from the menu button: sixteen destinations stacked vertically, nothing to swipe past. Captured in demo mode, so none of the content is real."><img src="mobile-nav-drawer.png" class="img-fluid figure-img" alt="The mobile navigation drawer, slid open from the menu button: sixteen destinations stacked vertically, nothing to swipe past. Captured in demo mode, so none of the content is real."></a></p>
 <figcaption>The mobile navigation drawer, slid open from the menu button: sixteen destinations stacked vertically, nothing to swipe past. Captured in demo mode, so none of the content is real.</figcaption>
 </figure>
 </div>
@@ -480,7 +495,7 @@ cookieconsent.run({
 <p>The desktop version had a quieter version of the same crowding. An admin with every staff link visible saw sixteen items wrap onto three rows. I collapsed the moderation and admin links into one dropdown, so the bar went back to one clean row, and I put the open-reports count on the dropdown itself so urgent moderation work does not hide behind a click.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="desktop-nav-staff-dropdown.png" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="quarto-lightbox-gallery-2" title="Desktop navigation for an admin: one clean row, with the eight moderation and admin links collapsed behind a single Staff dropdown. The open-reports count rides on the dropdown itself when something is waiting; demo mode has nothing open, so there is no badge here. Captured in demo mode."><img src="desktop-nav-staff-dropdown.png" class="img-fluid figure-img" alt="Desktop navigation for an admin: one clean row, with the eight moderation and admin links collapsed behind a single Staff dropdown. The open-reports count rides on the dropdown itself when something is waiting; demo mode has nothing open, so there is no badge here. Captured in demo mode."></a></p>
+<p><a href="desktop-nav-staff-dropdown.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" data-glightbox="description: .lightbox-desc-2" title="Desktop navigation for an admin: one clean row, with the eight moderation and admin links collapsed behind a single Staff dropdown. The open-reports count rides on the dropdown itself when something is waiting; demo mode has nothing open, so there is no badge here. Captured in demo mode."><img src="desktop-nav-staff-dropdown.png" class="img-fluid figure-img" alt="Desktop navigation for an admin: one clean row, with the eight moderation and admin links collapsed behind a single Staff dropdown. The open-reports count rides on the dropdown itself when something is waiting; demo mode has nothing open, so there is no badge here. Captured in demo mode."></a></p>
 <figcaption>Desktop navigation for an admin: one clean row, with the eight moderation and admin links collapsed behind a single Staff dropdown. The open-reports count rides on the dropdown itself when something is waiting; demo mode has nothing open, so there is no badge here. Captured in demo mode.</figcaption>
 </figure>
 </div>
@@ -523,7 +538,7 @@ cookieconsent.run({
 <p>The first time one of those notifications pulled someone who was not me back into a thread, the forum quietly stopped being a side project and became a place. That is the only metric in this whole article I did not profile.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="admin-settings.png" class="lightbox" data-glightbox="description: .lightbox-desc-3" data-gallery="quarto-lightbox-gallery-3" title="Forum settings, captured in the demo mode that made the rest of these screenshots safe to publish. Maintenance mode blocks ordinary writes so a backup can be taken against a consistent database, the daily write ceilings are the ones the atomic counter in the security section enforces, and the two diagnostics buttons fire a deliberate client error and a deliberate server error to confirm Sentry is catching both sides."><img src="admin-settings.png" class="img-fluid figure-img" alt="Forum settings, captured in the demo mode that made the rest of these screenshots safe to publish. Maintenance mode blocks ordinary writes so a backup can be taken against a consistent database, the daily write ceilings are the ones the atomic counter in the security section enforces, and the two diagnostics buttons fire a deliberate client error and a deliberate server error to confirm Sentry is catching both sides."></a></p>
+<p><a href="admin-settings.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" data-glightbox="description: .lightbox-desc-3" title="Forum settings, captured in the demo mode that made the rest of these screenshots safe to publish. Maintenance mode blocks ordinary writes so a backup can be taken against a consistent database, the daily write ceilings are the ones the atomic counter in the security section enforces, and the two diagnostics buttons fire a deliberate client error and a deliberate server error to confirm Sentry is catching both sides."><img src="admin-settings.png" class="img-fluid figure-img" alt="Forum settings, captured in the demo mode that made the rest of these screenshots safe to publish. Maintenance mode blocks ordinary writes so a backup can be taken against a consistent database, the daily write ceilings are the ones the atomic counter in the security section enforces, and the two diagnostics buttons fire a deliberate client error and a deliberate server error to confirm Sentry is catching both sides."></a></p>
 <figcaption>Forum settings, captured in the demo mode that made the rest of these screenshots safe to publish. Maintenance mode blocks ordinary writes so a backup can be taken against a consistent database, the daily write ceilings are the ones the atomic counter in the security section enforces, and the two diagnostics buttons fire a deliberate client error and a deliberate server error to confirm Sentry is catching both sides.</figcaption>
 </figure>
 </div>
@@ -784,7 +799,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
+      var filterRegex = new RegExp("https:\/\/blog\.jesse-anderson\.net");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
@@ -1126,7 +1141,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"descPosition":"bottom","selector":".lightbox","loop":false,"openEffect":"zoom","closeEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","openEffect":"zoom","selector":".lightbox","loop":false,"descPosition":"bottom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

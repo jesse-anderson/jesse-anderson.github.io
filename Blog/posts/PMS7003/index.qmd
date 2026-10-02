@@ -1,5 +1,6 @@
 ---
 title: "PMS7003: Or is your air filled with particulate?"
+description: "Why particulate matter (PM1, PM2.5, PM10) deserves attention, and how to build a PM sensor from a PMS7003 and an ESP32 with easily found components."
 author: Jesse Anderson
 date: '2025-07-06'
 categories:

@@ -8,6 +8,7 @@
 
 <meta name="author" content="Jesse Anderson">
 <meta name="dcterms.date" content="2026-03-12">
+<meta name="description" content="A tutorial for the xllgen template: write plain Rust functions, tag them with an attribute, and load them into Excel as an XLL without hand-written registration code.">
 
 <title>Jesse Anderson’s Blog - Build Custom Excel Functions in Rust with xllgen</title>
 <style>
@@ -138,9 +139,18 @@ cookieconsent.run({
 
 <link rel="stylesheet" href="../../styles.css">
 <meta property="og:title" content="Jesse Anderson’s Blog - Build Custom Excel Functions in Rust with xllgen">
-<meta property="og:description" content="">
-<meta property="og:image" content="Excel_Insert_Function.png">
+<meta property="og:description" content="A tutorial for the xllgen template: write plain Rust functions, tag them with an attribute, and load them into Excel as an XLL without hand-written registration code.">
+<meta property="og:image" content="https://blog.jesse-anderson.net/posts/XLLGen_Cargo_Generate/Excel_Insert_Function.png">
 <meta property="og:site_name" content="Jesse Anderson's Blog">
+<meta property="og:image:height" content="369">
+<meta property="og:image:width" content="419">
+<meta name="twitter:title" content="Jesse Anderson’s Blog - Build Custom Excel Functions in Rust with xllgen">
+<meta name="twitter:description" content="A tutorial for the xllgen template: write plain Rust functions, tag them with an attribute, and load them into Excel as an XLL without hand-written registration code.">
+<meta name="twitter:image" content="https://blog.jesse-anderson.net/posts/XLLGen_Cargo_Generate/Excel_Insert_Function.png">
+<meta name="twitter:image-height" content="369">
+<meta name="twitter:image-width" content="419">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://blog.jesse-anderson.net/posts/XLLGen_Cargo_Generate/Rust_XLLGen_Template_Tutorial">
 </head>
 
 <body class="nav-fixed fullcontent">
@@ -205,7 +215,12 @@ cookieconsent.run({
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
       <h1 class="title">Build Custom Excel Functions in Rust with xllgen</h1>
-                                <div class="quarto-categories">
+                  <div>
+        <div class="description">
+          A tutorial for the xllgen template: write plain Rust functions, tag them with an attribute, and load them into Excel as an XLL without hand-written registration code.
+        </div>
+      </div>
+                          <div class="quarto-categories">
                 <div class="quarto-category">Rust</div>
                 <div class="quarto-category">Excel</div>
                 <div class="quarto-category">XLL</div>
@@ -1018,7 +1033,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
+      var filterRegex = new RegExp("https:\/\/blog\.jesse-anderson\.net");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
@@ -1360,7 +1375,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"descPosition":"bottom","openEffect":"zoom","closeEffect":"zoom","selector":".lightbox","loop":false});
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","openEffect":"zoom","loop":false,"closeEffect":"zoom","descPosition":"bottom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

@@ -1,5 +1,6 @@
 ---
 title: "No Cost Private Forums"
+description: "Building an invite-only forum on Cloudflare Workers, Pages, D1, R2, and Access, and the engineering it takes to keep it inside the free tier."
 author: "Jesse Anderson"
 date: "2026-06-30"
 categories:

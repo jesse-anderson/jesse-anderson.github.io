@@ -1,0 +1,11 @@
+---
+title: "Page Not Found"
+description-meta: "That page doesn't exist on Jesse Anderson's blog."
+canonical-url: false
+search: false
+---
+
+There's nothing at this address. The post may have moved, or the link may be wrong.
+
+- [Latest posts](index.qmd)
+- [Archive of every post](archive.qmd)

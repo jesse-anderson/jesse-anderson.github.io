@@ -1,5 +1,6 @@
 ---
 title: "Engineering/Science/Tech Blog"
+description-meta: "Long-form writeups of engineering projects: ESP32 and Raspberry Pi sensor builds, civic data dashboards, clustering algorithms, and Rust/Excel interop."
 listing:
   contents: posts
   sort: "date desc"

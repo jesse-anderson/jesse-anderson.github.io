@@ -1,5 +1,6 @@
 ---
 title: "Calling Rust from Excel: Building a Native DLL for VBA"
+description: "Build a native Rust DLL that Excel calls through VBA: calling conventions, 32-bit stdcall name decoration, a handle-based FFI, and a VBA wrapper layer."
 author: Jesse Anderson
 date: '2026-02-20'
 categories:

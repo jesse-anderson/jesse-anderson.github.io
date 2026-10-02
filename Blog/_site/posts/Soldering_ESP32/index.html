@@ -8,6 +8,7 @@
 
 <meta name="author" content="Jesse Anderson">
 <meta name="dcterms.date" content="2024-05-31">
+<meta name="description" content="Moving an ESP32 sensor build from breadboard to soldered protoboard, then adding a buck-boost module, AA battery pack, and OLED for about 28 hours of runtime.">
 
 <title>Jesse Anderson’s Blog - ESP32 Project: Sensor Reliability/Power Efficiency</title>
 <style>
@@ -138,9 +139,14 @@ cookieconsent.run({
 
 <link rel="stylesheet" href="../../styles.css">
 <meta property="og:title" content="Jesse Anderson’s Blog - ESP32 Project: Sensor Reliability/Power Efficiency">
-<meta property="og:description" content="Batteries/BuckBoost/OLEDs">
-<meta property="og:image" content="images/PCB_TOP.jpg">
+<meta property="og:description" content="Moving an ESP32 sensor build from breadboard to soldered protoboard, then adding a buck-boost module, AA battery pack, and OLED for about 28 hours of runtime.">
+<meta property="og:image" content="https://blog.jesse-anderson.net/posts/Soldering_ESP32/images/PCB_TOP.jpg">
 <meta property="og:site_name" content="Jesse Anderson's Blog">
+<meta name="twitter:title" content="Jesse Anderson’s Blog - ESP32 Project: Sensor Reliability/Power Efficiency">
+<meta name="twitter:description" content="Moving an ESP32 sensor build from breadboard to soldered protoboard, then adding a buck-boost module, AA battery pack, and OLED for about 28 hours of runtime.">
+<meta name="twitter:image" content="https://blog.jesse-anderson.net/posts/Soldering_ESP32/images/PCB_TOP.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://blog.jesse-anderson.net/posts/Soldering_ESP32/">
 </head>
 
 <body class="nav-fixed fullcontent">
@@ -206,7 +212,12 @@ cookieconsent.run({
     <div class="quarto-title column-body">
       <h1 class="title">ESP32 Project: Sensor Reliability/Power Efficiency</h1>
             <p class="subtitle lead">Batteries/BuckBoost/OLEDs</p>
-                                <div class="quarto-categories">
+                  <div>
+        <div class="description">
+          Moving an ESP32 sensor build from breadboard to soldered protoboard, then adding a buck-boost module, AA battery pack, and OLED for about 28 hours of runtime.
+        </div>
+      </div>
+                          <div class="quarto-categories">
                 <div class="quarto-category">ESP32</div>
                 <div class="quarto-category">IoT</div>
               </div>
@@ -628,7 +639,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
+      var filterRegex = new RegExp("https:\/\/blog\.jesse-anderson\.net");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
@@ -970,7 +981,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"loop":false,"closeEffect":"zoom","descPosition":"bottom","selector":".lightbox","openEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","descPosition":"bottom","selector":".lightbox","loop":false,"closeEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

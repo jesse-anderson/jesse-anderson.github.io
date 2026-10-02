@@ -1,5 +1,6 @@
 ---
 title: "Generative Adventures: Exploring the Frontiers with VAEs, GANs, and VAE-GANs"
+description: "A tour of generative models from a UIUC applied machine learning project: variational autoencoders, denoising autoencoders, GANs, and the hybrid VAE-GAN."
 author: "Jesse Anderson"
 date: '2024-05-12'
 categories:

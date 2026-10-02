@@ -1,5 +1,6 @@
 ---
 title: "Raspberry Pi Sensor Server Project Part 2"
+description: "Part 2 of the Raspberry Pi sensor server: a simple Chart.js dashboard that plots the last few hours of sensor data from JSON, after Grafana proved a poor fit."
 author: "Jesse Anderson"
 date: "2024-05-18"
 categories: 

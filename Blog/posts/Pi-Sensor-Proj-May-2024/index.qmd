@@ -1,5 +1,6 @@
 ---
 title: "Raspberry Pi Sensor Server Project"
+description: "Wiring a DHT11 temperature and humidity sensor to a Raspberry Pi 4, reading it with Python, and logging the readings to a database."
 author: "Jesse Anderson"
 date: "2024-05-16"
 categories: 

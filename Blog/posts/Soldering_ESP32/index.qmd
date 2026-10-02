@@ -1,6 +1,7 @@
 ---
 title: "ESP32 Project: Sensor Reliability/Power Efficiency"
 subtitle: Batteries/BuckBoost/OLEDs
+description: "Moving an ESP32 sensor build from breadboard to soldered protoboard, then adding a buck-boost module, AA battery pack, and OLED for about 28 hours of runtime."
 author: Jesse Anderson
 date: '2024-05-31'
 categories:

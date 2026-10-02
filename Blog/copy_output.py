@@ -17,6 +17,8 @@ COMMENTS_PLACEHOLDER = re.compile(
 CUSDIS_APP_ID = os.environ.get("CUSDIS_APP_ID", "73a29664-ef73-4158-a3a9-3850647de254").strip()
 CUSDIS_HOST = os.environ.get("CUSDIS_HOST", "https://cusdis.com").rstrip("/")
 SITE_URL = os.environ.get("BLOG_SITE_URL", "https://blog.jesse-anderson.net").rstrip("/")
+CANONICAL_LINK = re.compile(r'<link rel="canonical" href="[^"]*">')
+SITEMAP_LOC = re.compile(r"<loc>([^<]*)</loc>")
 
 
 class ArchiveListingParser(HTMLParser):
@@ -222,6 +224,59 @@ def inject_latest_posts(site_root):
         print("Cusdis comments skipped: set CUSDIS_APP_ID to enable anonymous comments")
 
 
+def clean_url(url):
+    # Cloudflare Pages serves /dir/ and /page; the index.html and .html forms 308 to them
+    if url == "index.html" or url.endswith("/index.html"):
+        return url[:-len("index.html")]
+    if url.endswith(".html"):
+        return url[:-len(".html")]
+    return url
+
+
+def clean_canonical_links(site_root):
+    updated = 0
+    for root, _, files in os.walk(site_root):
+        for filename in files:
+            if not filename.endswith(".html"):
+                continue
+
+            html_path = os.path.join(root, filename)
+            with open(html_path, "r", encoding="utf-8") as html_file:
+                page = html_file.read()
+
+            site_path = os.path.relpath(html_path, site_root).replace(os.sep, "/")
+            canonical_url = f"{SITE_URL}/{clean_url(site_path)}"
+            canonical = f'<link rel="canonical" href="{html.escape(canonical_url, quote=True)}">'
+            cleaned = CANONICAL_LINK.sub(lambda _: canonical, page)
+            if cleaned == page:
+                continue
+
+            with open(html_path, "w", encoding="utf-8", newline="") as html_file:
+                html_file.write(cleaned)
+            updated += 1
+
+    print(f"Canonical links cleaned on {updated} page(s)")
+
+
+def clean_sitemap(site_root):
+    # Run on the published copy only: Quarto matches entries in _site/sitemap.xml
+    # by their original URLs on incremental renders.
+    sitemap_path = os.path.join(site_root, "sitemap.xml")
+    if not os.path.exists(sitemap_path):
+        print(f"Sitemap skipped: not found at {sitemap_path}")
+        return
+
+    with open(sitemap_path, "r", encoding="utf-8") as sitemap_file:
+        sitemap = sitemap_file.read()
+
+    sitemap = SITEMAP_LOC.sub(lambda match: f"<loc>{clean_url(match.group(1))}</loc>", sitemap)
+
+    with open(sitemap_path, "w", encoding="utf-8", newline="") as sitemap_file:
+        sitemap_file.write(sitemap)
+
+    print("Sitemap URLs cleaned")
+
+
 def copy_site(source_dir, destination_dir):
     if not os.path.exists(destination_dir):
         os.makedirs(destination_dir)
@@ -244,7 +299,9 @@ def main():
     print(destination_dir)
 
     inject_latest_posts(source_dir)
+    clean_canonical_links(source_dir)
     copy_site(source_dir, destination_dir)
+    clean_sitemap(destination_dir)
 
 
 if __name__ == "__main__":

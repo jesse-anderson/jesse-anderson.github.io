@@ -1,5 +1,6 @@
 ---
 title: "DBSCAN Intro"
+description: "How DBSCAN clusters by density, what epsilon and MinPts actually control, and how to tune both for spatiotemporal data using a k-distance elbow plot."
 author: "Jesse Anderson"
 date: "2024-04-19"
 categories: 

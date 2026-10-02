@@ -8,6 +8,7 @@
 
 <meta name="author" content="Jesse Anderson">
 <meta name="dcterms.date" content="2024-05-12">
+<meta name="description" content="A tour of generative models from a UIUC applied machine learning project: variational autoencoders, denoising autoencoders, GANs, and the hybrid VAE-GAN.">
 
 <title>Jesse Anderson’s Blog - Generative Adventures: Exploring the Frontiers with VAEs, GANs, and VAE-GANs</title>
 <style>
@@ -104,9 +105,18 @@ cookieconsent.run({
 
 <link rel="stylesheet" href="../../styles.css">
 <meta property="og:title" content="Jesse Anderson’s Blog - Generative Adventures: Exploring the Frontiers with VAEs, GANs, and VAE-GANs">
-<meta property="og:description" content="">
-<meta property="og:image" content="VAEDifferentDigits.png">
+<meta property="og:description" content="A tour of generative models from a UIUC applied machine learning project: variational autoencoders, denoising autoencoders, GANs, and the hybrid VAE-GAN.">
+<meta property="og:image" content="https://blog.jesse-anderson.net/posts/VAE_GAN/VAEDifferentDigits.png">
 <meta property="og:site_name" content="Jesse Anderson's Blog">
+<meta property="og:image:height" content="662">
+<meta property="og:image:width" content="1280">
+<meta name="twitter:title" content="Jesse Anderson’s Blog - Generative Adventures: Exploring the Frontiers with VAEs, GANs, and VAE-GANs">
+<meta name="twitter:description" content="A tour of generative models from a UIUC applied machine learning project: variational autoencoders, denoising autoencoders, GANs, and the hybrid VAE-GAN.">
+<meta name="twitter:image" content="https://blog.jesse-anderson.net/posts/VAE_GAN/VAEDifferentDigits.png">
+<meta name="twitter:image-height" content="662">
+<meta name="twitter:image-width" content="1280">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://blog.jesse-anderson.net/posts/VAE_GAN/VAEGAN">
 </head>
 
 <body class="nav-fixed fullcontent">
@@ -171,7 +181,12 @@ cookieconsent.run({
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
       <h1 class="title">Generative Adventures: Exploring the Frontiers with VAEs, GANs, and VAE-GANs</h1>
-                                <div class="quarto-categories">
+                  <div>
+        <div class="description">
+          A tour of generative models from a UIUC applied machine learning project: variational autoencoders, denoising autoencoders, GANs, and the hybrid VAE-GAN.
+        </div>
+      </div>
+                          <div class="quarto-categories">
                 <div class="quarto-category">ML</div>
                 <div class="quarto-category">Generative AI</div>
               </div>
@@ -556,7 +571,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
+      var filterRegex = new RegExp("https:\/\/blog\.jesse-anderson\.net");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
@@ -898,7 +913,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","descPosition":"bottom","closeEffect":"zoom","selector":".lightbox","loop":false});
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

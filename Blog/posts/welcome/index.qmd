@@ -1,5 +1,6 @@
 ---
 title: "Welcome To My Blog"
+description: "An introduction to Jesse Anderson, a chemical engineer turned computer scientist, and what this blog covers: optimization, automation, and data-driven projects."
 author: "Jesse Anderson"
 date: "2024-04-16"
 categories: [news]

@@ -8,6 +8,7 @@
 
 <meta name="author" content="Jesse Anderson">
 <meta name="dcterms.date" content="2024-05-26">
+<meta name="description" content="Logging sensor data from a low-cost ESP32-WROOM-32 in MicroPython to Google Sheets, MongoDB, PostgreSQL, and ThingSpeak.">
 
 <title>Jesse Anderson’s Blog - Efficient Data Logging with ESP32</title>
 <style>
@@ -138,9 +139,14 @@ cookieconsent.run({
 
 <link rel="stylesheet" href="../../styles.css">
 <meta property="og:title" content="Jesse Anderson’s Blog - Efficient Data Logging with ESP32">
-<meta property="og:description" content="A Guide to Using Google Sheets/MongoDB/PostgreSQL/ThingSpeak for IoT">
-<meta property="og:image" content="images/Real_Life_ESP32_Setup.jpg">
+<meta property="og:description" content="Logging sensor data from a low-cost ESP32-WROOM-32 in MicroPython to Google Sheets, MongoDB, PostgreSQL, and ThingSpeak.">
+<meta property="og:image" content="https://blog.jesse-anderson.net/posts/ESP32_Post_1/images/Real_Life_ESP32_Setup.jpg">
 <meta property="og:site_name" content="Jesse Anderson's Blog">
+<meta name="twitter:title" content="Jesse Anderson’s Blog - Efficient Data Logging with ESP32">
+<meta name="twitter:description" content="Logging sensor data from a low-cost ESP32-WROOM-32 in MicroPython to Google Sheets, MongoDB, PostgreSQL, and ThingSpeak.">
+<meta name="twitter:image" content="https://blog.jesse-anderson.net/posts/ESP32_Post_1/images/Real_Life_ESP32_Setup.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://blog.jesse-anderson.net/posts/ESP32_Post_1/">
 </head>
 
 <body class="nav-fixed fullcontent">
@@ -206,7 +212,12 @@ cookieconsent.run({
     <div class="quarto-title column-body">
       <h1 class="title">Efficient Data Logging with ESP32</h1>
             <p class="subtitle lead">A Guide to Using Google Sheets/MongoDB/PostgreSQL/ThingSpeak for IoT</p>
-                                <div class="quarto-categories">
+                  <div>
+        <div class="description">
+          Logging sensor data from a low-cost ESP32-WROOM-32 in MicroPython to Google Sheets, MongoDB, PostgreSQL, and ThingSpeak.
+        </div>
+      </div>
+                          <div class="quarto-categories">
                 <div class="quarto-category">ESP32</div>
                 <div class="quarto-category">IoT</div>
               </div>
@@ -2115,7 +2126,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
+      var filterRegex = new RegExp("https:\/\/blog\.jesse-anderson\.net");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
@@ -2457,7 +2468,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","loop":false,"selector":".lightbox","closeEffect":"zoom","descPosition":"bottom"});
+<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","closeEffect":"zoom","loop":false,"descPosition":"bottom","selector":".lightbox"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;
