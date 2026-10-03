@@ -2,6 +2,7 @@
 title: "About"
 description-meta: "Jesse Anderson is a chemical engineer turned computer scientist who writes up automation, data pipeline, dashboard, and IoT sensor projects in detail."
 image: profile.jpg
+image-alt: "Photo of Jesse Anderson"
 about:
   template: jolla
   links:

@@ -108,9 +108,11 @@ cookieconsent.run({
 <meta property="og:description" content="Why particulate matter (PM1, PM2.5, PM10) deserves attention, and how to build a PM sensor from a PMS7003 and an ESP32 with easily found components.">
 <meta property="og:image" content="https://blog.jesse-anderson.net/posts/PMS7003/pm2.5_scale_graphic-color_2.jpg">
 <meta property="og:site_name" content="Jesse Anderson's Blog">
+<meta property="og:image:alt" content="Preview image for PMS7003: Or is your air filled with particulate?">
 <meta name="twitter:title" content="Jesse Anderson’s Blog - PMS7003: Or is your air filled with particulate?">
 <meta name="twitter:description" content="Why particulate matter (PM1, PM2.5, PM10) deserves attention, and how to build a PM sensor from a PMS7003 and an ESP32 with easily found components.">
 <meta name="twitter:image" content="https://blog.jesse-anderson.net/posts/PMS7003/pm2.5_scale_graphic-color_2.jpg">
+<meta name="twitter:image:alt" content="Preview image for PMS7003: Or is your air filled with particulate?">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="https://blog.jesse-anderson.net/posts/PMS7003/">
 </head>
@@ -442,8 +444,8 @@ Electrochemical and MOS chips are inexpensive and socket-friendly but drift over
 <li><p>Xiang, Jianbang, et al.&nbsp;“Field Measurements of PM2.5 Infiltration Factor and Portable Air Cleaner Effectiveness during Wildfire Episodes in US Residences.” <em>Science of the Total Environment</em>, vol.&nbsp;773, June 2021, p.&nbsp;145642, https://doi.org/10.1016/j.scitotenv.2021.145642. Accessed 3 Feb.&nbsp;2022.</p></li>
 </ol>
 </section>
-<section id="actual-sensor" class="level1">
-<h1>Actual Sensor</h1>
+<section id="actual-sensor" class="level2">
+<h2 class="anchored" data-anchor-id="actual-sensor">Actual Sensor</h2>
 <p>So, I had originally intended to use a PMS7003, but after writing some C++ and running the PMS7003 against a Sensiron PM sensor I cannot in good faith recommend using the PMS7003. As such, I’ll just talk about the Sensiron SPS30(Not to be confused with the SEN5x) which has been calibrated to TSI DustTrak™ DRX 8533 Ambient Mode. It seems to hold up pretty well and is always within 80% of the actual value for PM2.5(a lot better than the randomness reported by PMS7003)[<a href="https://www.aqmd.gov/docs/default-source/aq-spec/summary/sensirion-sps30---summary-report.pdf?sfvrsn=8">Link</a>]. I preferred this one over the SEN5x since it’ll report the particle count and average while the 5x gives you humidity/temp/VOC/NOx index. I’d rather have this sensor + a standalone VOC/NOx sensor to decouple failure.</p>
 <p>Anyhow, here’s some insights below(they will be updated as I measure data):</p>
 <p>Soldering fume dissipation over time:<br>
@@ -970,7 +972,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"descPosition":"bottom","openEffect":"zoom","loop":false,"selector":".lightbox","closeEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","selector":".lightbox","descPosition":"bottom","loop":false,"openEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

@@ -10,13 +10,13 @@ categories:
 format: html
 jupyter: python3
 image: linreg_core_example_workbook.png
+image-alt: "Preview image for Calling Rust from Excel: Building a Native DLL for VBA"
 freeze: true
 execute:
   freeze: true
 #Delete _freeze/posts/thisPost to re render it. Its such a pain but oh well...
 ---
 
-# Calling Rust from Excel: Building a Native DLL for VBA
 
 Build a native Rust DLL that Excel can call directly through VBA, with a handle‑based FFI that stays safe across the boundary. This article walks from calling conventions and 32‑bit name decoration to a production‑ready VBA wrapper layer.
 

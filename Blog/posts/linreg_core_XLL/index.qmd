@@ -10,13 +10,13 @@ categories:
 format: html
 jupyter: python3
 image: linreg_core_example_workbook_XLL.png
+image-alt: "Preview image for From DLL to XLL: Building an Excel Add-in in Pure Rust"
 freeze: true
 execute:
   freeze: true
 #Delete _freeze/posts/thisPost to re render it. Its such a pain but oh well...
 ---
 
-# From DLL to XLL: Building an Excel Add-in in Pure Rust
 
 Skip VBA and call Rust from Excel formulas by building a pure‑Rust XLL add‑in. This article shows how XLLs work, how to bridge Excel’s XLOPER12 types, and how to ship 27 UDFs without the SDK.
 

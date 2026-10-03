@@ -8,6 +8,7 @@ categories:
 format: html
 jupyter: python3
 image: image.png
+image-alt: "Preview image for Atoms of Experience: Tailoring Job Applications With an LLM and a Ground Truth"
 freeze: true
 execute:
   freeze: true

@@ -10,6 +10,7 @@ categories:
 format: html
 jupyter: python3
 image: image.png
+image-alt: "Preview image for Building an Oak Park Crime Map from Public PDFs"
 freeze: true
 execute:
   freeze: true

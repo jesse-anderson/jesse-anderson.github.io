@@ -110,11 +110,13 @@ cookieconsent.run({
 <meta property="og:site_name" content="Jesse Anderson's Blog">
 <meta property="og:image:height" content="884">
 <meta property="og:image:width" content="1656">
+<meta property="og:image:alt" content="Preview image for Intro to OPTICS">
 <meta name="twitter:title" content="Jesse Anderson’s Blog - Intro to OPTICS">
 <meta name="twitter:description" content="An introduction to OPTICS clustering: reachability distance, cluster ordering, and why it handles varying densities and odd shapes better than DBSCAN.">
 <meta name="twitter:image" content="https://blog.jesse-anderson.net/posts/OPTICSWriteup/ClusterOrdering.png">
 <meta name="twitter:image-height" content="884">
 <meta name="twitter:image-width" content="1656">
+<meta name="twitter:image:alt" content="Preview image for Intro to OPTICS">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="https://blog.jesse-anderson.net/posts/OPTICSWriteup/">
 </head>
@@ -181,6 +183,7 @@ cookieconsent.run({
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
       <h1 class="title">Intro to OPTICS</h1>
+            <p class="subtitle lead">Clustering with OPTICS</p>
                   <div>
         <div class="description">
           An introduction to OPTICS clustering: reachability distance, cluster ordering, and why it handles varying densities and odd shapes better than DBSCAN.
@@ -226,8 +229,6 @@ cookieconsent.run({
 
 
 
-<section id="clustering-with-optics" class="level1">
-<h1>Clustering with OPTICS</h1>
 <p>Within the realm of unsupervised machine learning, clustering methods play a critical role in unraveling patterns and groupings within datasets where the labels are unknown. Among these clustering techniques, OPTICS(Ordering Points To Identify the Clustering Structure) stands out as a particularly powerful tool when dealing with complex datasets with varying densities or non-globular shapes. This exploration of OPTICS should get you up to speed on the basics of what OPTICS does and will help you understand its mechanics, benefits, and practical applications.</p>
 <section id="introduction-to-optics-clustering" class="level2">
 <h2 class="anchored" data-anchor-id="introduction-to-optics-clustering">Introduction to OPTICS Clustering</h2>
@@ -327,7 +328,6 @@ cookieconsent.run({
 <p>In conclusion, OPTICS stands as a formidable and versatile tool within the field of unsupervised machine learning, adept at uncovering intricate cluster patterns in complex datasets where traditional methods might falter. Its unique approach to handling varying densities and shapes of data clusters makes it invaluable for a wide array of practical applications, from ecological studies to advanced medical imaging and beyond. By integrating sophisticated metrics to evaluate its performance and extending its capabilities into higher dimensions, OPTICS not only meets the demands of modern data challenges but also opens new avenues for innovative data exploration and analysis. Whether dealing with 2D or multi-dimensional datasets, OPTICS offers a powerful, flexible solution for extracting meaningful insights from raw data, demonstrating its enduring relevance and utility in an increasingly data-driven world.</p>
 
 
-</section>
 </section>
 </section>
 
@@ -849,7 +849,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"selector":".lightbox","descPosition":"bottom","closeEffect":"zoom","openEffect":"zoom","loop":false});
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","loop":false,"openEffect":"zoom","descPosition":"bottom","selector":".lightbox"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

@@ -144,11 +144,13 @@ cookieconsent.run({
 <meta property="og:site_name" content="Jesse Anderson's Blog">
 <meta property="og:image:height" content="645">
 <meta property="og:image:width" content="1280">
+<meta property="og:image:alt" content="Preview image for SCD41: On Demand CO2 Sensor">
 <meta name="twitter:title" content="Jesse Anderson’s Blog - SCD41: On Demand CO2 Sensor">
 <meta name="twitter:description" content="The SCD41 CO2 sensor: how it works, its accuracy specs and limitations, and MicroPython code for running it on an ESP32 with an OLED display and alarm buzzer.">
 <meta name="twitter:image" content="https://blog.jesse-anderson.net/posts/SCD41/Mid-infrared_absorption_spectra_of_Gases.png">
 <meta name="twitter:image-height" content="645">
 <meta name="twitter:image-width" content="1280">
+<meta name="twitter:image:alt" content="Preview image for SCD41: On Demand CO2 Sensor">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="https://blog.jesse-anderson.net/posts/SCD41/">
 </head>
@@ -437,7 +439,7 @@ More Detailed Specifications…
 <p>From <a href="https://cambridgecarbonfootprint.org/what-we-do/carbon-dioxide-monitoring/">https://cambridgecarbonfootprint.org/</a>:</p>
 <p><a href="Cambridge_CO2.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="Cambridge_CO2.png" class="img-fluid"></a></p>
 <p>Now if we move to a more engineering based analysis we go to <a href="https://www.engineeringtoolbox.com/pollution-concentration-rooms-d_692.html" class="uri">https://www.engineeringtoolbox.com/pollution-concentration-rooms-d_692.html</a> and find that the carbon dioxide concentration in a room is a function of:</p>
-<h1>CO2 Concentration Calculation</h1>
+<h2 class="anchored" data-anchor-id="co2-levels-in-an-enclosed-space">CO2 Concentration Calculation</h2>
     <p>The carbon dioxide concentration in a room filled with persons after a time \( t \) can be calculated as:</p>
     <pre>c = (q / (n V)) [1 - (1 / e<sup>n t</sup>)] + (c<sub>0</sub> - c<sub>i</sub>) (1 / e<sup>n t</sup>) + c<sub>i</sub>                              
     </pre>
@@ -480,7 +482,7 @@ More Detailed Specifications…
     </style>
 
 
-    <h1>CO2 Concentration Calculator</h1>
+    <h2 class="anchored">CO2 Concentration Calculator</h2>
     <form id="co2-form">
         <label for="q">q - Carbon dioxide supplied to the room per person (m<sup>3</sup>/h person):</label>
         <input type="number" id="q" name="q" value="0.01" step="0.01" required=""><br><br>
@@ -506,7 +508,7 @@ More Detailed Specifications…
         <button type="button" onclick="calculateCO2()">Calculate</button>
     </form>
 
-    <h2 class="anchored" data-anchor-id="co2-levels-in-an-enclosed-space">CO2 concentration: <span id="result">0.00657 m<sup>3</sup>/m<sup>3</sup> (6574 ppm)</span></h2>
+    <h2 class="anchored">CO2 concentration: <span id="result">0.00657 m<sup>3</sup>/m<sup>3</sup> (6574 ppm)</span></h2>
 
     <script>
         function calculateCO2() {
@@ -2377,7 +2379,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","selector":".lightbox","loop":false,"closeEffect":"zoom","descPosition":"bottom"});
+<script>var lightboxQuarto = GLightbox({"loop":false,"closeEffect":"zoom","openEffect":"zoom","descPosition":"bottom","selector":".lightbox"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

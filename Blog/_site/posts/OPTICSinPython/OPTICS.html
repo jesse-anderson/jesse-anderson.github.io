@@ -150,11 +150,13 @@ cookieconsent.run({
 <meta property="og:site_name" content="Jesse Anderson's Blog">
 <meta property="og:image:height" content="463">
 <meta property="og:image:width" content="842">
+<meta property="og:image:alt" content="Preview image for OPTICS in Python">
 <meta name="twitter:title" content="Jesse Anderson’s Blog - OPTICS in Python">
 <meta name="twitter:description" content="OPTICS clustering in Python with scikit-learn, step by step: blob data, reachability and elbow plots, and convex hulls around the resulting clusters.">
 <meta name="twitter:image" content="https://blog.jesse-anderson.net/posts/OPTICSinPython/ElbowPlot.png">
 <meta name="twitter:image-height" content="463">
 <meta name="twitter:image-width" content="842">
+<meta name="twitter:image:alt" content="Preview image for OPTICS in Python">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="https://blog.jesse-anderson.net/posts/OPTICSinPython/OPTICS">
 </head>
@@ -280,8 +282,8 @@ cookieconsent.run({
 </div>
 <p>This block imports all necessary Python libraries. ‘numpy’ and ‘matplotlib’ are used for numerical operations and plotting(respectively). ‘sklearn’ provides the OPTICS clustering algorithm(for better or worse) and the blob generator. ‘kneed’ is used to identify the “knee”/“elbow” point of the data, but didn’t work in this case. We will explore alternatives below. ‘matplotlib.colors’ and ‘scipy.spatial’ help with the visualization and the convex hull calculations respectively.</p>
 </section>
-<section id="load-and-visualize-the-blob-data" class="level1">
-<h1>Load and Visualize the Blob Data</h1>
+<section id="load-and-visualize-the-blob-data" class="level2">
+<h2 class="anchored" data-anchor-id="load-and-visualize-the-blob-data">Load and Visualize the Blob Data</h2>
 <div id="124074ff" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Load example data</span></span>
 <span id="cb2-2"><a href="#cb2-2"></a>n_samples <span class="op">=</span> <span class="dv">1000</span></span>
@@ -306,8 +308,8 @@ cookieconsent.run({
 </div>
 <p>Synthetic blob data is generated using ‘make_blobs’ and we specify the number of points, centers(clusters) , random_state(for repeatability), and the cluster standard deviation(spread). The plot will help the user to get a feel for what the raw, unclustered data looks like. Keep in mind that we are using OPTICS to get to the “meat” of the cluster, there will be points identified as noise or otherwise of less significance than the core points.</p>
 </section>
-<section id="apply-sklearn-optics-clustering" class="level1">
-<h1>Apply sklearn OPTICS Clustering</h1>
+<section id="apply-sklearn-optics-clustering" class="level2">
+<h2 class="anchored" data-anchor-id="apply-sklearn-optics-clustering">Apply sklearn OPTICS Clustering</h2>
 <div id="343b4af4" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a><span class="co"># Step 1: Apply OPTICS</span></span>
 <span id="cb3-2"><a href="#cb3-2"></a>optics_model <span class="op">=</span> OPTICS(min_samples<span class="op">=</span>min_samples)</span>
@@ -1166,8 +1168,8 @@ forceTheme('sk-container-id-1');</script>
 </div>
 <p>OPTICS(Ordering Points to Identify Clustering Structure) is an algorithm similar enough to DBSCAN, but handles varying densities better. This block will initialize the OPTICS model with a min sample count per cluster and fit it to the dataset. This will allow us to extract the reachability distances later on, which will quantify the density connectivity of the data points.</p>
 </section>
-<section id="get-reachability-distances-handle-infinity-values" class="level1">
-<h1>Get Reachability Distances &amp; Handle Infinity Values</h1>
+<section id="get-reachability-distances-handle-infinity-values" class="level2">
+<h2 class="anchored" data-anchor-id="get-reachability-distances-handle-infinity-values">Get Reachability Distances &amp; Handle Infinity Values</h2>
 <div id="0e594696" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1"></a><span class="co"># Step 2: Plot the reachability diagram</span></span>
 <span id="cb4-2"><a href="#cb4-2"></a>space <span class="op">=</span> np.arange(<span class="bu">len</span>(data))</span>
@@ -1202,8 +1204,8 @@ forceTheme('sk-container-id-1');</script>
 </div>
 <p>This section will generate a plot of the unordered reachability distances and then further check that the reachability distances haven’t “exploded” to infinity. If they have they will be filtered out. the reachability plot is then plotted. Keep in mind that the reachability plot visualizes the distance at which each point becomes directly density-reachable from its predecessor in the ordered list. This will help you to understand the cluster structure and identify areas of high density(low reachability distance). You are looking for “waves” in which the reachability distance increases, drops off, and then begins to increase. Later on we will create an arbitrary cutoff for the reachability distance to identify each cluster.</p>
 </section>
-<section id="identify-the-elbow-point-in-the-sorted-reachability-plot" class="level1">
-<h1>Identify the “Elbow” Point in the Sorted Reachability Plot</h1>
+<section id="identify-the-elbow-point-in-the-sorted-reachability-plot" class="level2">
+<h2 class="anchored" data-anchor-id="identify-the-elbow-point-in-the-sorted-reachability-plot">Identify the “Elbow” Point in the Sorted Reachability Plot</h2>
 <div id="b473cdf8" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1"></a><span class="co"># Plot sorted reachability distances</span></span>
 <span id="cb6-2"><a href="#cb6-2"></a>sorted_reachability <span class="op">=</span> np.sort(reachability)</span>
@@ -1244,8 +1246,8 @@ forceTheme('sk-container-id-1');</script>
 <p><a href="ElbowPlot.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3"><img src="ElbowPlot.png" class="img-fluid"></a></p>
 <p>We plot the reachability distances sorted from least to greatest to get an idea of how the distribution looks. In this case we have a nice transition point where the distance explodes and that is roughly where we are aiming for our first “guess” of the reachability distance cutoff. We then implement a pretty basic algorithm wherein we find the maximum deviation point, that is the point farthest from the horizontal line drawn between the first and last reachability points. You will find a MATLAB based explaination <a href="https://www.mathworks.com/help/radar/ref/clusterdbscan.clusterdbscan.estimateepsilon.html">here</a>. Note that we do NOT use KneeLocator from the kneed library as it gives erroneous results in this case.</p>
 </section>
-<section id="trying-the-maximum-deviation-line-for-clustering" class="level1">
-<h1>Trying the Maximum Deviation Line for Clustering</h1>
+<section id="trying-the-maximum-deviation-line-for-clustering" class="level2">
+<h2 class="anchored" data-anchor-id="trying-the-maximum-deviation-line-for-clustering">Trying the Maximum Deviation Line for Clustering</h2>
 <div id="6510639f" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1"></a><span class="co">#  Create a list of colors to use for bars below the threshold, and black for above</span></span>
 <span id="cb7-2"><a href="#cb7-2"></a><span class="co"># We'll generate a color map to cycle through a set of colors for segments below the threshold</span></span>
@@ -2281,7 +2283,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","loop":false,"openEffect":"zoom","selector":".lightbox","descPosition":"bottom"});
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","openEffect":"zoom","closeEffect":"zoom","descPosition":"bottom","loop":false});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

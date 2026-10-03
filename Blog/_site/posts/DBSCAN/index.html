@@ -108,9 +108,11 @@ cookieconsent.run({
 <meta property="og:description" content="How DBSCAN clusters by density, what epsilon and MinPts actually control, and how to tune both for spatiotemporal data using a k-distance elbow plot.">
 <meta property="og:image" content="https://blog.jesse-anderson.net/posts/DBSCAN/image.jpg">
 <meta property="og:site_name" content="Jesse Anderson's Blog">
+<meta property="og:image:alt" content="Preview image for DBSCAN Intro">
 <meta name="twitter:title" content="Jesse Anderson’s Blog - DBSCAN Intro">
 <meta name="twitter:description" content="How DBSCAN clusters by density, what epsilon and MinPts actually control, and how to tune both for spatiotemporal data using a k-distance elbow plot.">
 <meta name="twitter:image" content="https://blog.jesse-anderson.net/posts/DBSCAN/image.jpg">
+<meta name="twitter:image:alt" content="Preview image for DBSCAN Intro">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="https://blog.jesse-anderson.net/posts/DBSCAN/">
 </head>
@@ -177,6 +179,7 @@ cookieconsent.run({
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
       <h1 class="title">DBSCAN Intro</h1>
+            <p class="subtitle lead">Understanding DBSCAN: Parameters and Adjustments for Spatiotemporal Data Clustering</p>
                   <div>
         <div class="description">
           How DBSCAN clusters by density, what epsilon and MinPts actually control, and how to tune both for spatiotemporal data using a k-distance elbow plot.
@@ -222,8 +225,6 @@ cookieconsent.run({
 
 
 
-<section id="understanding-dbscan-parameters-and-adjustments-for-spatiotemporal-data-clustering" class="level1">
-<h1><strong>Understanding DBSCAN: Parameters and Adjustments for Spatiotemporal Data Clustering</strong></h1>
 <p>Density-Based Spatial Clustering of Applications with Noise (DBSCAN) is a popular clustering algorithm notable for its proficiency in identifying clusters of varying shapes and sizes in large spatial datasets. This algorithm is especially useful in the field of spatiotemporal data analysis, where the goal is often to group similar data points that are in close proximity over time and space. In this blog post, we’ll delve into the mechanics of DBSCAN, discuss its critical parameters, and provide guidance on adjusting these parameters to achieve optimal clustering results for spatiotemporal data.</p>
 <section id="what-is-dbscan" class="level2">
 <h2 class="anchored" data-anchor-id="what-is-dbscan">What is DBSCAN?</h2>
@@ -284,7 +285,6 @@ cookieconsent.run({
 </article>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->
@@ -805,7 +805,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","loop":false,"descPosition":"bottom","selector":".lightbox","openEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","selector":".lightbox","openEffect":"zoom","loop":false});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

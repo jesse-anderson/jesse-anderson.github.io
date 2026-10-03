@@ -1,5 +1,6 @@
 ---
 title: "DBSCAN Intro"
+subtitle: "Understanding DBSCAN: Parameters and Adjustments for Spatiotemporal Data Clustering"
 description: "How DBSCAN clusters by density, what epsilon and MinPts actually control, and how to tune both for spatiotemporal data using a k-distance elbow plot."
 author: "Jesse Anderson"
 date: "2024-04-19"
@@ -8,9 +9,9 @@ categories:
     - Clustering
     - DBSCAN
 image: "image.jpg"
+image-alt: "Preview image for DBSCAN Intro"
 ---
 
-# **Understanding DBSCAN: Parameters and Adjustments for Spatiotemporal Data Clustering**
 
 Density-Based Spatial Clustering of Applications with Noise (DBSCAN) is a popular clustering algorithm notable for its proficiency in identifying clusters of varying shapes and sizes in large spatial datasets. This algorithm is especially useful in the field of spatiotemporal data analysis, where the goal is often to group similar data points that are in close proximity over time and space. In this blog post, we'll delve into the mechanics of DBSCAN, discuss its critical parameters, and provide guidance on adjusting these parameters to achieve optimal clustering results for spatiotemporal data.
 

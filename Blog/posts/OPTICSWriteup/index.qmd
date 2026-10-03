@@ -1,5 +1,6 @@
 ---
 title: "Intro to OPTICS"
+subtitle: "Clustering with OPTICS"
 description: "An introduction to OPTICS clustering: reachability distance, cluster ordering, and why it handles varying densities and odd shapes better than DBSCAN."
 author: "Jesse Anderson"
 date: '2024-05-11'
@@ -8,9 +9,9 @@ categories:
   - Clustering
   - OPTICS
 image: ClusterOrdering.png
+image-alt: "Preview image for Intro to OPTICS"
 ---
 
-# Clustering with OPTICS
 
 Within the realm of unsupervised machine learning, clustering methods play a critical role in unraveling patterns and groupings within datasets where the labels are unknown. Among these clustering techniques, OPTICS(Ordering Points To Identify the Clustering Structure) stands out as a particularly powerful tool when dealing with complex datasets with varying densities or non-globular shapes. This exploration of OPTICS should get you up to speed on the basics of what OPTICS does and will help you understand its mechanics, benefits, and practical applications.
 

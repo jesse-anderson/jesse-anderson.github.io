@@ -10,13 +10,13 @@ categories:
 format: html
 jupyter: python3
 image: Excel_Insert_Function.png
+image-alt: "Preview image for Build Custom Excel Functions in Rust with xllgen"
 freeze: true
 execute:
   freeze: true
 #Delete _freeze/posts/thisPost to re render it. Its such a pain but oh well...
 ---
 
-# Build Custom Excel Functions in Rust
 
 The [previous article](https://blog.jesse-anderson.net/posts/linreg_core_XLL/) ended with a working XLL add-in built in pure Rust. No C compiler, no external SDK, no import library. Just Rust, talking directly to Excel's [C API](https://learn.microsoft.com/en-us/office/client-developer/excel/programming-with-the-c-api-in-excel). I was genuinely happy with how it turned out.
 

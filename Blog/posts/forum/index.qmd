@@ -1,5 +1,6 @@
 ---
 title: "No Cost Private Forums"
+subtitle: "The Forum Was the Easy Part"
 description: "Building an invite-only forum on Cloudflare Workers, Pages, D1, R2, and Access, and the engineering it takes to keep it inside the free tier."
 author: "Jesse Anderson"
 date: "2026-06-30"
@@ -8,13 +9,13 @@ categories:
 format: html
 jupyter: python3
 image: image.png
+image-alt: "Preview image for No Cost Private Forums"
 freeze: true
 execute:
   freeze: true
 # Delete _freeze/posts/thisPost to re-render it. Still a pain.
 ---
 
-# The Forum Was the Easy Part
 
 I wanted a private place for the training community I write for. Somewhere people could post, argue, share what they are working on, and find it again a month later. Not a Discord that scrolls into the void. Not a subreddit run on someone else's rules and someone else's ranking. Not a Facebook group. A real forum, invite-only, that I own.
 

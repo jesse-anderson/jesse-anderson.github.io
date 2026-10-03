@@ -144,11 +144,13 @@ cookieconsent.run({
 <meta property="og:site_name" content="Jesse Anderson's Blog">
 <meta property="og:image:height" content="506">
 <meta property="og:image:width" content="828">
+<meta property="og:image:alt" content="Preview image for No Cost Private Forums">
 <meta name="twitter:title" content="Jesse Anderson’s Blog - No Cost Private Forums">
 <meta name="twitter:description" content="Building an invite-only forum on Cloudflare Workers, Pages, D1, R2, and Access, and the engineering it takes to keep it inside the free tier.">
 <meta name="twitter:image" content="https://blog.jesse-anderson.net/posts/forum/image.png">
 <meta name="twitter:image-height" content="506">
 <meta name="twitter:image-width" content="828">
+<meta name="twitter:image:alt" content="Preview image for No Cost Private Forums">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="https://blog.jesse-anderson.net/posts/forum/">
 </head>
@@ -215,6 +217,7 @@ cookieconsent.run({
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
       <h1 class="title">No Cost Private Forums</h1>
+            <p class="subtitle lead">The Forum Was the Easy Part</p>
                   <div>
         <div class="description">
           Building an invite-only forum on Cloudflare Workers, Pages, D1, R2, and Access, and the engineering it takes to keep it inside the free tier.
@@ -258,8 +261,6 @@ cookieconsent.run({
 
 
 
-<section id="the-forum-was-the-easy-part" class="level1">
-<h1>The Forum Was the Easy Part</h1>
 <p>I wanted a private place for the training community I write for. Somewhere people could post, argue, share what they are working on, and find it again a month later. Not a Discord that scrolls into the void. Not a subreddit run on someone else’s rules and someone else’s ranking. Not a Facebook group. A real forum, invite-only, that I own.</p>
 <p>There was a colder reason too. One AI crawler hit my personal blog with over three hundred thousand requests in a single day, trying to swallow everything I had ever written. That is not a typo, and it was one crawler on one day. The open web is being strip-mined for training data, and I did not want the community’s conversations to be the next thing fed into a model without anyone asking. A login wall in front of the whole thing settles it. What members write stays theirs.</p>
 <p>So I built a forum for people to post training-related musings.</p>
@@ -620,7 +621,6 @@ cookieconsent.run({
 <span class="glightbox-desc lightbox-desc-2">Desktop navigation for an admin: one clean row, with the eight moderation and admin links collapsed behind a single Staff dropdown. The open-reports count rides on the dropdown itself when something is waiting; demo mode has nothing open, so there is no badge here. Captured in demo mode.</span>
 <span class="glightbox-desc lightbox-desc-3">Forum settings, captured in the demo mode that made the rest of these screenshots safe to publish. Maintenance mode blocks ordinary writes so a backup can be taken against a consistent database, the daily write ceilings are the ones the atomic counter in the security section enforces, and the two diagnostics buttons fire a deliberate client error and a deliberate server error to confirm Sentry is catching both sides.</span>
 </div>
-</section>
 </section>
 
 </main> <!-- /main -->
@@ -1141,7 +1141,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","openEffect":"zoom","selector":".lightbox","loop":false,"descPosition":"bottom"});
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","selector":".lightbox","descPosition":"bottom","openEffect":"zoom","loop":false});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

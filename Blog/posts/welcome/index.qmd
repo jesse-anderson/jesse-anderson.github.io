@@ -5,6 +5,7 @@ author: "Jesse Anderson"
 date: "2024-04-16"
 categories: [news]
 image: "image.jpg"
+image-alt: "Preview image for Welcome To My Blog"
 ---
 
 Welcome to my inaugural Quarto post! Though this marks my official entry into the Quarto blogging sphere, it isn’t my first dive into writing here. I initially crafted an insightful(?) post about the Density-Based Spatial Clustering of Applications with Noise (DBSCAN), a fascinating clustering algorithm that piqued my interest due to its rigorous yet intuitive approach to handling complex data sets.

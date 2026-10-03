@@ -7,9 +7,9 @@ categories:
   - ML
   - Generative AI
 image: VAEDifferentDigits.png
+image-alt: "Preview image for Generative Adventures: Exploring the Frontiers with VAEs, GANs, and VAE-GANs"
 ---
 
-# Generative Adventures: Exploring the Frontiers with VAEs, GANs, and VAE-GANs
 
 During my time in the applied machine learning course(CS441) at the University of Illinois at Urbana-Champaign, I embarked on an ambitious journey into the realm of advanced machine learning technologies. The course required a comprehensive understanding of various machine learning concepts, providing both breadth and depth in our studies. For my final optional project, I chose to specialize in some of the most intriguing areas of generative models: Variational AutoEncoders (VAEs), Denoising AutoEncoders, Generative Adversarial Networks (GANs), and the innovative hybrid, Variational Autoencoder Generative Adversarial Networks (VAE-GANs). Here, I provide a high-level overview of each technology and discuss the outcomes of my experiments. For further information about the course please see [sample syllabus](https://ws.engr.illinois.edu/sitemanager/getfile.asp?id=2218).
 
@@ -136,7 +136,7 @@ I decided to go a bit further and try to get a Generative Adversarial Network ru
 </head>
 <body>
 
-<h1>Click to Play Video</h1>
+<h3>Click to Play Video</h3>
 
 <!-- Video container -->
 <video id="myVideo1" controls>
@@ -186,7 +186,7 @@ Final result image and video below:
 </head>
 <body>
 
-<h1>Click to Play Video</h1>
+<h3>Click to Play Video</h3>
 
 <!-- Video container -->
 <video id="myVideo2"controls>

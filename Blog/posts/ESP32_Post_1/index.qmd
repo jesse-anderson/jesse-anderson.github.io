@@ -10,6 +10,7 @@ categories:
 format: html
 jupyter: python3
 image: images/Real_Life_ESP32_Setup.jpg
+image-alt: "Preview image for Efficient Data Logging with ESP32"
 freeze: true
 execute:
   freeze: true

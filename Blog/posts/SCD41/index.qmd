@@ -9,6 +9,7 @@ categories:
 format: html
 jupyter: python3
 image: Mid-infrared_absorption_spectra_of_Gases.png
+image-alt: "Preview image for SCD41: On Demand CO2 Sensor"
 freeze: true
 execute:
   freeze: true
@@ -182,7 +183,7 @@ From [https://cambridgecarbonfootprint.org/](https://cambridgecarbonfootprint.or
 Now if we move to a more engineering based analysis we go to <https://www.engineeringtoolbox.com/pollution-concentration-rooms-d_692.html> and find that the carbon dioxide concentration in a room is a function of:
 
 ```{=html}
-<h1>CO2 Concentration Calculation</h1>
+<h2>CO2 Concentration Calculation</h2>
     <p>The carbon dioxide concentration in a room filled with persons after a time \( t \) can be calculated as:</p>
     <pre>
 c = (q / (n V)) [1 - (1 / e<sup>n t</sup>)] + (c<sub>0</sub> - c<sub>i</sub>) (1 / e<sup>n t</sup>) + c<sub>i</sub>                              
@@ -230,7 +231,7 @@ Calculator(the same formula as Engineering Toolbox): Defaults: 2 people, 10ft by
     </style>
 </head>
 <body>
-    <h1>CO2 Concentration Calculator</h1>
+    <h2>CO2 Concentration Calculator</h2>
     <form id="co2-form">
         <label for="q">q - Carbon dioxide supplied to the room per person (m<sup>3</sup>/h person):</label>
         <input type="number" id="q" name="q" value="0.01" step="0.01" required><br><br>

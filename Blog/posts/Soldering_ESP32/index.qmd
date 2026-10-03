@@ -10,6 +10,7 @@ categories:
 format: html
 jupyter: python3
 image: images/PCB_TOP.jpg
+image-alt: "Preview image for ESP32 Project: Sensor Reliability/Power Efficiency"
 freeze: true
 execute:
   freeze: true

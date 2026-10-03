@@ -10,6 +10,7 @@ categories:
 format: html
 jupyter: python3
 image: ElbowPlot.png
+image-alt: "Preview image for OPTICS in Python"
 freeze: true
 execute:
   freeze: true
@@ -30,7 +31,7 @@ from scipy.spatial import ConvexHull
 
 This block imports all necessary Python libraries. 'numpy' and 'matplotlib' are used for numerical operations and plotting(respectively). 'sklearn' provides the OPTICS clustering algorithm(for better or worse) and the blob generator. 'kneed' is used to identify the "knee"/"elbow" point of the data, but didn't work in this case. We will explore alternatives below. 'matplotlib.colors' and 'scipy.spatial' help with the visualization and the convex hull calculations respectively.
 
-# Load and Visualize the Blob Data
+## Load and Visualize the Blob Data
 
 ```{python}
 # Load example data
@@ -50,7 +51,7 @@ plt.show()
 
 Synthetic blob data is generated using 'make_blobs' and we specify the number of points, centers(clusters) , random_state(for repeatability), and the cluster standard deviation(spread). The plot will help the user to get a feel for what the raw, unclustered data looks like. Keep in mind that we are using OPTICS to get to the "meat" of the cluster, there will be points identified as noise or otherwise of less significance than the core points.
 
-# Apply sklearn OPTICS Clustering
+## Apply sklearn OPTICS Clustering
 
 ```{python}
 # Step 1: Apply OPTICS
@@ -60,7 +61,7 @@ optics_model.fit(data)
 
 OPTICS(Ordering Points to Identify Clustering Structure) is an algorithm similar enough to DBSCAN, but handles varying densities better. This block will initialize the OPTICS model with a min sample count per cluster and fit it to the dataset. This will allow us to extract the reachability distances later on, which will quantify the density connectivity of the data points.
 
-# Get Reachability Distances & Handle Infinity Values
+## Get Reachability Distances & Handle Infinity Values
 
 ```{python}
 # Step 2: Plot the reachability diagram
@@ -87,7 +88,7 @@ plt.show()
 
 This section will generate a plot of the unordered reachability distances and then further check that the reachability distances haven't "exploded" to infinity. If they have they will be filtered out. the reachability plot is then plotted. Keep in mind that the reachability plot visualizes the distance at which each point becomes directly density-reachable from its predecessor in the ordered list. This will help you to understand the cluster structure and identify areas of high density(low reachability distance). You are looking for "waves" in which the reachability distance increases, drops off, and then begins to increase. Later on we will create an arbitrary cutoff for the reachability distance to identify each cluster.
 
-# Identify the "Elbow" Point in the Sorted Reachability Plot
+## Identify the "Elbow" Point in the Sorted Reachability Plot
 
 ```{python}
 # Plot sorted reachability distances
@@ -131,7 +132,7 @@ elbow_cutoff = sorted_reachability[elbow_index]
 
 We plot the reachability distances sorted from least to greatest to get an idea of how the distribution looks. In this case we have a nice transition point where the distance explodes and that is roughly where we are aiming for our first "guess" of the reachability distance cutoff. We then implement a pretty basic algorithm wherein we find the maximum deviation point, that is the point farthest from the horizontal line drawn between the first and last reachability points. You will find a MATLAB based explaination [here](https://www.mathworks.com/help/radar/ref/clusterdbscan.clusterdbscan.estimateepsilon.html). Note that we do NOT use KneeLocator from the kneed library as it gives erroneous results in this case.
 
-# Trying the Maximum Deviation Line for Clustering
+## Trying the Maximum Deviation Line for Clustering
 
 ```{python}
 #  Create a list of colors to use for bars below the threshold, and black for above

@@ -8,6 +8,7 @@ categories:
 format: html
 jupyter: python3
 image: image.png
+image-alt: "Preview image for Scraping My Own Job Search: A Nightly Dashboard for Chicagoland Engineering Jobs"
 freeze: true
 execute:
   freeze: true
