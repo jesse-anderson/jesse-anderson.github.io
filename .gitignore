@@ -1,1 +1,11 @@
 .vscode
+/research/
+.vs/
+/OP-Crime-Maps/*
+!/OP-Crime-Maps/crime_map.html
+/images/*
+!/images/logo.png
+!/images/og-card.png
+/files/*
+!/files/resume.pdf
+!/files/CV.pdf
