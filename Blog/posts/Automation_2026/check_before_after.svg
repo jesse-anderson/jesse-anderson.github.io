@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 650" width="1200" height="650" font-family="Segoe UI, Arial, Helvetica, sans-serif">
+  <defs>
+    <marker id="arrow-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1f2a44"/>
+    </marker>
+    <marker id="arrow-rework" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#c2410c"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="650" fill="#ffffff"/>
+  <g transform="translate(25,0)">
+
+  <line x1="60" y1="348" x2="1090" y2="348" stroke="#cbd5e1" stroke-width="2"/>
+
+  <!-- ===== Before ===== -->
+  <text x="60" y="100" font-size="28" font-weight="700" fill="#1f2a44">Before</text>
+
+  <path d="M800,245 V290 H160 V219" fill="none" stroke="#c2410c" stroke-width="4" marker-end="url(#arrow-rework)"/>
+  <text x="480" y="320" text-anchor="middle" font-size="22" fill="#c2410c">1 in 10 fails: found late, every step redone</text>
+
+  <g stroke="#1f2a44" stroke-width="4" fill="none" marker-end="url(#arrow-ink)">
+    <path d="M260,180 H306"/>
+    <path d="M470,180 H516"/>
+    <path d="M680,180 H731"/>
+    <path d="M865,180 H926"/>
+  </g>
+  <text x="895" y="166" text-anchor="middle" font-size="20" fill="#1f2a44">yes</text>
+
+  <g fill="#f3f6fb" stroke="#1f2a44" stroke-width="4">
+    <rect x="60" y="145" width="200" height="70" rx="10"/>
+    <rect x="310" y="145" width="160" height="70" rx="10"/>
+    <rect x="520" y="145" width="160" height="70" rx="10"/>
+    <rect x="930" y="145" width="160" height="70" rx="10"/>
+  </g>
+  <polygon points="800,115 865,180 800,245 735,180" fill="#fff7ed" stroke="#1f2a44" stroke-width="4"/>
+
+  <g text-anchor="middle" fill="#1f2a44" font-size="22" font-weight="700">
+    <text x="160" y="188">Technician step</text>
+    <text x="390" y="188">Next step</text>
+    <text x="600" y="188">Later step</text>
+    <text x="800" y="188">OK?</text>
+    <text x="1010" y="188">Done</text>
+  </g>
+
+  <!-- ===== After ===== -->
+  <text x="60" y="390" font-size="28" font-weight="700" fill="#1f2a44">After</text>
+  <text x="380" y="393" text-anchor="middle" font-size="20" fill="#0f766e">automated check</text>
+
+  <path d="M380,535 V580 H160 V509" fill="none" stroke="#c2410c" stroke-width="4" marker-end="url(#arrow-rework)"/>
+  <text x="270" y="610" text-anchor="middle" font-size="22" fill="#c2410c">1 in 10 fails: caught at the step</text>
+
+  <g stroke="#1f2a44" stroke-width="4" fill="none" marker-end="url(#arrow-ink)">
+    <path d="M260,470 H311"/>
+    <path d="M445,470 H506"/>
+    <path d="M670,470 H716"/>
+    <path d="M880,470 H926"/>
+  </g>
+  <text x="475" y="456" text-anchor="middle" font-size="20" fill="#1f2a44">pass</text>
+
+  <g fill="#f3f6fb" stroke="#1f2a44" stroke-width="4">
+    <rect x="60" y="435" width="200" height="70" rx="10"/>
+    <rect x="510" y="435" width="160" height="70" rx="10"/>
+    <rect x="720" y="435" width="160" height="70" rx="10"/>
+    <rect x="930" y="435" width="160" height="70" rx="10"/>
+  </g>
+  <polygon points="380,405 445,470 380,535 315,470" fill="#ccfbf1" stroke="#0f766e" stroke-width="4"/>
+
+  <g text-anchor="middle" fill="#1f2a44" font-size="22" font-weight="700">
+    <text x="160" y="478">Technician step</text>
+    <text x="380" y="478">Check</text>
+    <text x="590" y="478">Next step</text>
+    <text x="800" y="478">Later step</text>
+    <text x="1010" y="478">Done</text>
+  </g>
+
+  </g>
+</svg>

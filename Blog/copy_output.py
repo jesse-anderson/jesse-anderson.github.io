@@ -277,30 +277,158 @@ def clean_sitemap(site_root):
     print("Sitemap URLs cleaned")
 
 
-def copy_site(source_dir, destination_dir):
+# Names that are allowed out even though they start with a dot or an underscore.
+PUBLISH_ALLOWED_PRIVATE = {".nojekyll"}
+DRAFT_FRONT_MATTER = re.compile(r"^draft:\s*true\s*$", re.MULTILINE)
+
+
+# Reasons a path is kept out, in the order they are reported. Drafts come first because they are
+# the one a person most often needs to act on.
+REASON_DRAFT = "DRAFT: `draft: true` in the post's front matter"
+REASON_SCRATCH = 'scratch folder: name starts with "_"'
+REASON_HIDDEN = 'hidden or cache: name starts with "."'
+REASON_COMPILED = "compiled Python (.pyc)"
+REASON_NOTEBOOK = "notebook (.ipynb)"
+REASON_ORDER = [REASON_DRAFT, REASON_SCRATCH, REASON_HIDDEN, REASON_COMPILED, REASON_NOTEBOOK]
+
+
+def private_reason(name):
+    # Scratch folders (_bench, _work), caches (.jupyter_cache, __pycache__) and compiled Python
+    # never belong in the published copy, whatever Quarto put in _site. Returns why, or None.
+    if name in PUBLISH_ALLOWED_PRIVATE:
+        return None
+    if name.endswith(".pyc"):
+        return REASON_COMPILED
+    if name.startswith("_"):
+        return REASON_SCRATCH
+    if name.startswith("."):
+        return REASON_HIDDEN
+    return None
+
+
+def is_private_name(name):
+    return private_reason(name) is not None
+
+
+def draft_post_dirs(project_dir):
+    # Quarto still writes a full page for a post marked `draft: true`; it only leaves it out of
+    # the listing, sitemap and search. Find those posts so their pages stay out of the copy.
+    # Returns {post folder name: source file that carries the flag}.
+    posts_dir = os.path.join(project_dir, "posts")
+    drafts = {}
+    if not os.path.isdir(posts_dir):
+        return drafts
+
+    for name in sorted(os.listdir(posts_dir)):
+        post_dir = os.path.join(posts_dir, name)
+        if not os.path.isdir(post_dir):
+            continue
+        for filename in sorted(os.listdir(post_dir)):
+            if not filename.endswith((".qmd", ".md")):
+                continue
+            with open(os.path.join(post_dir, filename), "r", encoding="utf-8", errors="replace") as source:
+                head = source.read(4000)
+            parts = head.split("---", 2)
+            if len(parts) >= 3 and DRAFT_FRONT_MATTER.search(parts[1]):
+                drafts.setdefault(name, f"posts/{name}/{filename}")
+    return drafts
+
+
+def print_grouped(heading, entries):
+    # entries: (path, reason, note). Printed under one heading, one group per reason.
+    if not entries:
+        return
+    print(f"{heading} ({len(entries)}):")
+    reasons = [r for r in REASON_ORDER if any(e[1] == r for e in entries)]
+    reasons += sorted({e[1] for e in entries} - set(reasons))
+    for reason in reasons:
+        group = sorted(e for e in entries if e[1] == reason)
+        print(f"  {reason} ({len(group)}):")
+        for entry_path, _, note in group:
+            print(f"    {entry_path}" + (f"   <- {note}" if note else ""))
+
+
+def copy_site(source_dir, destination_dir, project_dir=None):
     if not os.path.exists(destination_dir):
         os.makedirs(destination_dir)
 
+    drafts = draft_post_dirs(project_dir) if project_dir else {}
+    posts_root = os.path.join(source_dir, "posts")
+    skipped = []
+
+    def ignore(directory, names):
+        ignored = []
+        for name in names:
+            is_draft = os.path.normcase(directory) == os.path.normcase(posts_root) and name in drafts
+            reason = REASON_DRAFT if is_draft else private_reason(name)
+            if reason is None:
+                continue
+            ignored.append(name)
+            rel = os.path.relpath(os.path.join(directory, name), source_dir).replace(os.sep, "/")
+            note = f"set `draft: false` in {drafts[name]} to publish" if is_draft else ""
+            skipped.append((rel, reason, note))
+        return ignored
+
     for item in os.listdir(source_dir):
+        if item in ignore(source_dir, [item]):
+            continue
+
         source_item = os.path.join(source_dir, item)
         destination_item = os.path.join(destination_dir, item)
 
         if os.path.isdir(source_item):
-            shutil.copytree(source_item, destination_item, dirs_exist_ok=True)
+            shutil.copytree(source_item, destination_item, dirs_exist_ok=True, ignore=ignore)
         else:
             shutil.copy2(source_item, destination_item)
 
+    print_grouped("Kept out of the published copy", skipped)
+    if not skipped:
+        print("Kept out of the published copy (0)")
+
+    report_stale(destination_dir, drafts)
+
+
+def report_stale(destination_dir, drafts):
+    # The copy never deletes, so anything that reached the destination earlier is still there.
+    # Report it; removing it is a decision for a person.
+    stale = []
+    for root, dirs, files in os.walk(destination_dir):
+        if os.path.normcase(root) == os.path.normcase(destination_dir):
+            # Top-level dot folders (.git, .github) belong to the published repo itself.
+            dirs[:] = [d for d in dirs if not d.startswith(".")]
+        rel_root = os.path.relpath(root, destination_dir).replace(os.sep, "/")
+        prefix = "" if rel_root == "." else rel_root + "/"
+        for name in list(dirs):
+            is_draft = rel_root == "posts" and name in drafts
+            reason = REASON_DRAFT if is_draft else private_reason(name)
+            if reason is None:
+                continue
+            note = f"published earlier; {drafts[name]} is a draft now" if is_draft else ""
+            stale.append((f"{prefix}{name}/", reason, note))
+            dirs.remove(name)
+        for name in files:
+            if name.endswith(".pyc"):
+                stale.append((f"{prefix}{name}", REASON_COMPILED, ""))
+            elif name.endswith(".ipynb"):
+                stale.append((f"{prefix}{name}", REASON_NOTEBOOK, ""))
+
+    print_grouped("WARNING: already in the published copy and probably should not be", stale)
+
 
 def main():
-    source_dir = os.path.join(os.getcwd(), "_site")
-    destination_dir = os.path.abspath(os.path.join(os.getcwd(), "../../Blog"))
+    project_dir = os.getcwd()
+    source_dir = os.path.join(project_dir, "_site")
+    # BLOG_PUBLISH_DIR lets a test render publish somewhere harmless.
+    destination_dir = os.path.abspath(
+        os.environ.get("BLOG_PUBLISH_DIR") or os.path.join(project_dir, "../../Blog")
+    )
 
     print(source_dir)
     print(destination_dir)
 
     inject_latest_posts(source_dir)
     clean_canonical_links(source_dir)
-    copy_site(source_dir, destination_dir)
+    copy_site(source_dir, destination_dir, project_dir)
     clean_sitemap(destination_dir)
 
 

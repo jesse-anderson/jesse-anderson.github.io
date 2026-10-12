@@ -5,8 +5,6 @@ project:
     - "*.qmd"
     - "*.md"
     - "!readme.md"
-  resources:
-  - "*.ipynb"
   post-render: copy_output.py
 website:
   title: "Jesse Anderson's Blog"

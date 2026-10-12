@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675" font-family="Segoe UI, Arial, Helvetica, sans-serif">
+  <defs>
+    <marker id="arrow-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1f2a44"/>
+    </marker>
+    <marker id="arrow-loop" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#0f766e"/>
+    </marker>
+    <marker id="arrow-rework" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#c2410c"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="675" fill="#ffffff"/>
+  <g transform="translate(25,0)">
+
+  <!-- continuous improvement loop -->
+  <path d="M1005,285 V190 H135 V281" fill="none" stroke="#0f766e" stroke-width="4" stroke-dasharray="10 8" marker-end="url(#arrow-loop)"/>
+  <text x="570" y="172" text-anchor="middle" font-size="24" fill="#0f766e">improvement is never finished</text>
+
+  <!-- rework loop -->
+  <path d="M785,400 V475 H575 V379" fill="none" stroke="#c2410c" stroke-width="4" marker-end="url(#arrow-rework)"/>
+  <text x="680" y="506" text-anchor="middle" font-size="22" fill="#c2410c">no: try again</text>
+
+  <!-- forward arrows -->
+  <g stroke="#1f2a44" stroke-width="4" fill="none" marker-end="url(#arrow-ink)">
+    <path d="M220,330 H266"/>
+    <path d="M440,330 H486"/>
+    <path d="M660,330 H711"/>
+    <path d="M855,330 H906"/>
+  </g>
+  <text x="881" y="316" text-anchor="middle" font-size="20" fill="#1f2a44">yes</text>
+
+  <!-- steps -->
+  <g fill="#f3f6fb" stroke="#1f2a44" stroke-width="4">
+    <rect x="50" y="285" width="170" height="90" rx="10"/>
+    <rect x="270" y="285" width="170" height="90" rx="10"/>
+    <rect x="490" y="285" width="170" height="90" rx="10"/>
+    <rect x="910" y="285" width="190" height="90" rx="10"/>
+  </g>
+  <polygon points="785,260 855,330 785,400 715,330" fill="#fff7ed" stroke="#1f2a44" stroke-width="4"/>
+
+  <g text-anchor="middle" fill="#1f2a44">
+    <g font-size="26" font-weight="700">
+      <text x="135" y="326">Map</text>
+      <text x="355" y="326">Baseline</text>
+      <text x="575" y="326">Fix a step</text>
+      <text x="1005" y="326">Next target</text>
+    </g>
+    <g font-size="17" fill="#475569">
+      <text x="135" y="353">end to end</text>
+      <text x="355" y="353">prove the ROI</text>
+      <text x="575" y="353">risk, waits, rework</text>
+      <text x="1005" y="353">repeat</text>
+    </g>
+    <text x="785" y="338" font-size="22" font-weight="700">Better?</text>
+  </g>
+  </g>
+</svg>

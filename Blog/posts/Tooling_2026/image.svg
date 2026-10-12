@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#1f2933"/>
+    </marker>
+    <marker id="arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#b4532a"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="630" fill="#f7f5f0"/>
+
+  <text x="60" y="104" font-size="52" font-weight="700" fill="#1f2933">How I Build Tools</text>
+  <text x="60" y="150" font-size="24" fill="#52606d">From one clear goal to something that runs every day</text>
+
+  <!-- Stage boxes -->
+  <g fill="#ffffff" stroke="#1f2933" stroke-width="2">
+    <rect x="60" y="240" width="160" height="140" rx="10"/>
+    <rect x="244" y="240" width="160" height="140" rx="10"/>
+    <rect x="428" y="240" width="160" height="140" rx="10"/>
+    <rect x="612" y="240" width="160" height="140" rx="10"/>
+    <rect x="796" y="240" width="160" height="140" rx="10"/>
+    <rect x="980" y="240" width="160" height="140" rx="10"/>
+  </g>
+
+  <!-- Stage numbers -->
+  <g font-size="18" font-weight="700" fill="#b4532a" text-anchor="middle">
+    <text x="140" y="276">1</text>
+    <text x="324" y="276">2</text>
+    <text x="508" y="276">3</text>
+    <text x="692" y="276">4</text>
+    <text x="876" y="276">5</text>
+    <text x="1060" y="276">6</text>
+  </g>
+
+  <!-- Stage names -->
+  <g font-size="28" font-weight="700" fill="#1f2933" text-anchor="middle">
+    <text x="140" y="318">Goal</text>
+    <text x="324" y="318">Build</text>
+    <text x="508" y="318">Verify</text>
+    <text x="692" y="318">Accept</text>
+    <text x="876" y="318">Deploy</text>
+    <text x="1060" y="318">Maintain</text>
+  </g>
+
+  <!-- Stage captions -->
+  <g font-size="15" fill="#52606d" text-anchor="middle">
+    <text x="140" y="350">one sentence</text>
+    <text x="324" y="350">in phases</text>
+    <text x="508" y="350">me, then the user</text>
+    <text x="692" y="350">CI or sign-off</text>
+    <text x="876" y="350">where it gets used</text>
+    <text x="1060" y="350">runs, tests, docs</text>
+  </g>
+
+  <!-- Arrows between stages -->
+  <g stroke="#1f2933" stroke-width="2" marker-end="url(#arrow)">
+    <line x1="223" y1="310" x2="241" y2="310"/>
+    <line x1="407" y1="310" x2="425" y2="310"/>
+    <line x1="591" y1="310" x2="609" y2="310"/>
+    <line x1="775" y1="310" x2="793" y2="310"/>
+    <line x1="959" y1="310" x2="977" y2="310"/>
+  </g>
+
+  <!-- Loop from Maintain back to Build -->
+  <path d="M1060 384 V440 H324 V386" fill="none" stroke="#b4532a" stroke-width="2" stroke-dasharray="7 6" marker-end="url(#arrow-accent)"/>
+  <rect x="592" y="426" width="200" height="28" fill="#f7f5f0"/>
+  <text x="692" y="446" font-size="16" fill="#b4532a" text-anchor="middle">fixes and new features</text>
+
+  <line x1="60" y1="520" x2="1140" y2="520" stroke="#d9d4c7" stroke-width="2"/>
+  <text x="60" y="566" font-size="22" fill="#1f2933"><tspan font-weight="700">80/20:</tspan> ship at 80% of the result.</text>
+  <text x="1140" y="566" font-size="22" fill="#1f2933" text-anchor="end">Engineering first, tooling second.</text>
+</svg>

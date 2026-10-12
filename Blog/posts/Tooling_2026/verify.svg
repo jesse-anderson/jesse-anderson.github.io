@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="440" viewBox="0 0 1200 440" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#1f2933"/>
+    </marker>
+    <marker id="arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#b4532a"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="440" fill="#f7f5f0"/>
+
+  <!-- Lane bands -->
+  <g fill="#efebe1">
+    <rect x="40" y="40" width="1120" height="150" rx="12"/>
+    <rect x="40" y="250" width="1120" height="150" rx="12"/>
+  </g>
+
+  <!-- Lane labels -->
+  <g fill="#b4532a" font-size="15" font-weight="700" letter-spacing="1.5">
+    <text x="68" y="90">ROUND 1</text>
+    <text x="68" y="300">ROUND 2</text>
+  </g>
+  <g fill="#1f2933" font-size="28" font-weight="700">
+    <text x="68" y="124">Me</text>
+    <text x="68" y="334">The end user</text>
+  </g>
+  <g fill="#52606d" font-size="17">
+    <text x="68" y="154">Is the math right?</text>
+    <text x="68" y="364">Is the output usable?</text>
+  </g>
+
+  <!-- Step boxes -->
+  <g fill="#ffffff" stroke="#1f2933" stroke-width="2">
+    <rect x="330" y="70" width="240" height="90" rx="10"/>
+    <rect x="610" y="70" width="240" height="90" rx="10"/>
+    <rect x="330" y="280" width="240" height="90" rx="10"/>
+    <rect x="610" y="280" width="240" height="90" rx="10"/>
+  </g>
+  <g fill="#ffffff" stroke="#b4532a" stroke-width="2.5">
+    <rect x="890" y="70" width="240" height="90" rx="10"/>
+    <rect x="890" y="280" width="240" height="90" rx="10"/>
+  </g>
+
+  <!-- Step titles -->
+  <g fill="#1f2933" font-size="19" font-weight="700" text-anchor="middle">
+    <text x="450" y="110">Tool result</text>
+    <text x="730" y="110">Compare to a reference</text>
+    <text x="1010" y="110">Numbers match</text>
+    <text x="450" y="320">Tool result</text>
+    <text x="730" y="320">User exercises it</text>
+    <text x="1010" y="320">Output fits</text>
+  </g>
+
+  <!-- Step captions -->
+  <g fill="#52606d" font-size="14" text-anchor="middle">
+    <text x="450" y="136">known inputs</text>
+    <text x="730" y="136">SciPy, scikit-learn, public data</text>
+    <text x="1010" y="136">within tolerance</text>
+    <text x="450" y="346">handed over</text>
+    <text x="730" y="346">on their own work</text>
+    <text x="1010" y="346">CSV, PDF or Word, as needed</text>
+  </g>
+
+  <!-- Arrows within lanes -->
+  <g stroke="#1f2933" stroke-width="2" marker-end="url(#arrow)">
+    <line x1="574" y1="115" x2="606" y2="115"/>
+    <line x1="854" y1="115" x2="886" y2="115"/>
+    <line x1="574" y1="325" x2="606" y2="325"/>
+    <line x1="854" y1="325" x2="886" y2="325"/>
+  </g>
+
+  <!-- Round 1 leads to round 2 -->
+  <line x1="180" y1="196" x2="180" y2="244" stroke="#b4532a" stroke-width="2" stroke-dasharray="7 6" marker-end="url(#arrow-accent)"/>
+  <text x="196" y="226" font-size="16" fill="#b4532a">then</text>
+</svg>

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 318" width="760" height="318" role="img" aria-label="Per-frame cost at 20,000 particles: CPU step 0.19 ms, GPU submit 0.08 ms, GPU round trip 0.39 ms, building the draw mesh 2.0 ms.">
+<rect width="760" height="318" fill="#fcfcfb"/>
+<text x="20.0" y="28.0" font-size="16" fill="#0b0b0b" text-anchor="start" font-weight="600" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">At 20,000 particles, drawing costs ten times what stepping does</text>
+<text x="20.0" y="48.0" font-size="12.5" fill="#52514e" text-anchor="start" font-weight="400" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">Milliseconds per frame, native build with shipped settings. A 60 FPS frame is 16.7 ms.</text>
+<line x1="250.0" x2="250.0" y1="64" y2="270" stroke="#e4e3df" stroke-width="1"/>
+<text x="250.0" y="288.0" font-size="12" fill="#52514e" text-anchor="middle" font-weight="400" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">0 ms</text>
+<line x1="345.5" x2="345.5" y1="64" y2="270" stroke="#e4e3df" stroke-width="1"/>
+<text x="345.5" y="288.0" font-size="12" fill="#52514e" text-anchor="middle" font-weight="400" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">0.5 ms</text>
+<line x1="440.9" x2="440.9" y1="64" y2="270" stroke="#e4e3df" stroke-width="1"/>
+<text x="440.9" y="288.0" font-size="12" fill="#52514e" text-anchor="middle" font-weight="400" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">1 ms</text>
+<line x1="536.4" x2="536.4" y1="64" y2="270" stroke="#e4e3df" stroke-width="1"/>
+<text x="536.4" y="288.0" font-size="12" fill="#52514e" text-anchor="middle" font-weight="400" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">1.5 ms</text>
+<line x1="631.8" x2="631.8" y1="64" y2="270" stroke="#e4e3df" stroke-width="1"/>
+<text x="631.8" y="288.0" font-size="12" fill="#52514e" text-anchor="middle" font-weight="400" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">2 ms</text>
+<text x="240.0" y="82.0" font-size="13" fill="#0b0b0b" text-anchor="end" font-weight="400" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">Step on the CPU</text>
+<text x="240.0" y="97.0" font-size="11.5" fill="#52514e" text-anchor="end" font-weight="400" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">every particle, one thread</text>
+<path d="M250,70 h31.4 a4,4 0 0 1 4,4 v18 a4,4 0 0 1 -4,4 h-31.4 z" fill="#2a78d6"><title>Step on the CPU: 0.19 ms</title></path>
+<text x="293.4" y="88.0" font-size="13" fill="#0b0b0b" text-anchor="start" font-weight="600" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">0.19 ms</text>
+<text x="240.0" y="138.0" font-size="13" fill="#0b0b0b" text-anchor="end" font-weight="400" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">Step on the GPU: submit</text>
+<text x="240.0" y="153.0" font-size="11.5" fill="#52514e" text-anchor="end" font-weight="400" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">main-thread cost of handing it over</text>
+<path d="M250,126 h11.7 a4,4 0 0 1 4,4 v18 a4,4 0 0 1 -4,4 h-11.7 z" fill="#2a78d6"><title>Step on the GPU: submit: 0.08 ms</title></path>
+<text x="273.7" y="144.0" font-size="13" fill="#0b0b0b" text-anchor="start" font-weight="600" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">0.08 ms</text>
+<text x="240.0" y="194.0" font-size="13" fill="#0b0b0b" text-anchor="end" font-weight="400" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">Step on the GPU: wait for result</text>
+<text x="240.0" y="209.0" font-size="11.5" fill="#52514e" text-anchor="end" font-weight="400" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">submit, copy back, map, read</text>
+<path d="M250,182 h70.8 a4,4 0 0 1 4,4 v18 a4,4 0 0 1 -4,4 h-70.8 z" fill="#2a78d6"><title>Step on the GPU: wait for result: 0.39 ms</title></path>
+<text x="332.8" y="200.0" font-size="13" fill="#0b0b0b" text-anchor="start" font-weight="600" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">0.39 ms</text>
+<text x="240.0" y="250.0" font-size="13" fill="#0b0b0b" text-anchor="end" font-weight="400" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">Build the draw mesh</text>
+<text x="240.0" y="265.0" font-size="11.5" fill="#52514e" text-anchor="end" font-weight="400" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">one quad per particle for egui</text>
+<path d="M250,238 h380.5 a4,4 0 0 1 4,4 v18 a4,4 0 0 1 -4,4 h-380.5 z" fill="#2a78d6"><title>Build the draw mesh: 2.01 ms</title></path>
+<text x="642.5" y="256.0" font-size="13" fill="#0b0b0b" text-anchor="start" font-weight="600" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">2.01 ms</text>
+<line x1="250" x2="250" y1="64" y2="270" stroke="#52514e" stroke-width="1"/>
+</svg>

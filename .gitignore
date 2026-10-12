@@ -9,3 +9,7 @@
 /files/*
 !/files/resume.pdf
 !/files/CV.pdf
+
+# Per-post scratch folders: benchmarks, papers, and other files that should not be published
+_bench/
+_work/
