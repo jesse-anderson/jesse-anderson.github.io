@@ -1,0 +1,193 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1020" viewBox="0 0 1500 1020" role="img" aria-labelledby="title desc">
+  <title id="title">Oak Park Crime Cache Architecture</title>
+  <desc id="desc">A detailed browser cache architecture for the Oak Park Crime dashboard showing request routing, DuckDB runtime caching, DuckDB data caching, OpenStreetMap tile caching, bounded adjacent-tile look-ahead, and rendering buffers.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f7f8fb; }
+      .lane { fill: #ffffff; stroke: #c9d1dc; stroke-width: 1.2; }
+      .incoming { fill: #eef4ff; stroke: #5f7faa; stroke-width: 1.5; }
+      .policy { fill: #f3f7fb; stroke: #7c8a99; stroke-width: 1.5; }
+      .cache { fill: #edf8f1; stroke: #4f9b6e; stroke-width: 1.5; }
+      .tile { fill: #fff7df; stroke: #b58b27; stroke-width: 1.5; }
+      .app { fill: #ffffff; stroke: #6e7b87; stroke-width: 1.5; }
+      .warning { fill: #fff1ef; stroke: #bd6a5e; stroke-width: 1.5; }
+      .smallBox { fill: #ffffff; stroke: #bcc6d0; stroke-width: 1; }
+      .title { fill: #15202b; font-family: Arial, sans-serif; font-size: 30px; font-weight: 700; }
+      .subtitle { fill: #4d5b68; font-family: Arial, sans-serif; font-size: 15px; }
+      .colTitle { fill: #27323c; font-family: Arial, sans-serif; font-size: 15px; font-weight: 700; text-transform: uppercase; }
+      .rowTitle { fill: #17212b; font-family: Arial, sans-serif; font-size: 17px; font-weight: 700; }
+      .text { fill: #3d4a56; font-family: Arial, sans-serif; font-size: 13px; }
+      .small { fill: #53616e; font-family: Arial, sans-serif; font-size: 12px; }
+      .code { fill: #26323d; font-family: Consolas, monospace; font-size: 12px; }
+      .arrowLine { stroke: #46525e; stroke-width: 2.5; stroke-linecap: round; }
+      .arrowHead { fill: #46525e; }
+    </style>
+  </defs>
+
+  <rect class="bg" width="1500" height="1020"/>
+  <text class="title" x="48" y="52">Browser Cache Architecture</text>
+  <text class="subtitle" x="48" y="78">The dashboard separates runtime startup, data freshness, tile reuse, and pan/zoom rendering instead of treating them as one cache.</text>
+
+  <text class="colTitle" x="72" y="118">Incoming Request</text>
+  <text class="colTitle" x="390" y="118">Routing and Policy</text>
+  <text class="colTitle" x="732" y="118">Cache Tier</text>
+  <text class="colTitle" x="1114" y="118">User-Facing Result</text>
+
+  <rect class="lane" x="42" y="135" width="1416" height="154" rx="8"/>
+  <rect class="lane" x="42" y="318" width="1416" height="154" rx="8"/>
+  <rect class="lane" x="42" y="501" width="1416" height="166" rx="8"/>
+  <rect class="lane" x="42" y="696" width="1416" height="154" rx="8"/>
+
+  <!-- Row 1: DuckDB runtime -->
+  <rect class="incoming" x="64" y="160" width="250" height="104" rx="8"/>
+  <text class="rowTitle" x="84" y="189">DuckDB-WASM Runtime</text>
+  <text class="text" x="84" y="215">ES module</text>
+  <text class="text" x="84" y="235">worker script</text>
+  <text class="text" x="84" y="255">WASM binary</text>
+
+  <line class="arrowLine" x1="314" y1="212" x2="372" y2="212"/>
+  <polygon class="arrowHead" points="372,212 360,205 360,219"/>
+
+  <rect class="policy" x="372" y="160" width="280" height="104" rx="8"/>
+  <text class="rowTitle" x="392" y="189">Runtime Classifier</text>
+  <text class="text" x="392" y="215">match local DuckDB files</text>
+  <text class="text" x="392" y="235">support worker/WASM URLs</text>
+  <text class="small" x="392" y="255">SW registered before DuckDB init</text>
+
+  <line class="arrowLine" x1="652" y1="212" x2="710" y2="212"/>
+  <polygon class="arrowHead" points="710,212 698,205 698,219"/>
+
+  <rect class="cache" x="710" y="160" width="330" height="104" rx="8"/>
+  <text class="rowTitle" x="730" y="189">Runtime Cache</text>
+  <text class="code" x="730" y="215">op-crime-duckdb-runtime-v1</text>
+  <text class="text" x="730" y="235">TTL: 365 days</text>
+  <text class="small" x="730" y="255">WASM also served immutable by headers</text>
+
+  <line class="arrowLine" x1="1040" y1="212" x2="1098" y2="212"/>
+  <polygon class="arrowHead" points="1098,212 1086,205 1086,219"/>
+
+  <rect class="app" x="1098" y="160" width="330" height="104" rx="8"/>
+  <text class="rowTitle" x="1118" y="189">Faster Startup</text>
+  <text class="text" x="1118" y="215">repeat visits avoid refetching</text>
+  <text class="text" x="1118" y="235">DuckDB module, worker, and WASM</text>
+  <text class="small" x="1118" y="255">less cold-load friction before queries</text>
+
+  <!-- Row 2: DuckDB data -->
+  <rect class="incoming" x="64" y="343" width="250" height="104" rx="8"/>
+  <text class="rowTitle" x="84" y="372">Generated Database</text>
+  <text class="code" x="84" y="398">/db/*.duckdb</text>
+  <text class="text" x="84" y="418">published by ETL pipeline</text>
+  <text class="small" x="84" y="438">public data artifact only</text>
+
+  <line class="arrowLine" x1="314" y1="395" x2="372" y2="395"/>
+  <polygon class="arrowHead" points="372,395 360,388 360,402"/>
+
+  <rect class="policy" x="372" y="343" width="280" height="104" rx="8"/>
+  <text class="rowTitle" x="392" y="372">Data Freshness Policy</text>
+  <text class="text" x="392" y="398">fresh cache returns directly</text>
+  <text class="text" x="392" y="418">stale cache tries network first</text>
+  <text class="small" x="392" y="438">fallback to stale if refresh fails</text>
+
+  <line class="arrowLine" x1="652" y1="395" x2="710" y2="395"/>
+  <polygon class="arrowHead" points="710,395 698,388 698,402"/>
+
+  <rect class="cache" x="710" y="343" width="330" height="104" rx="8"/>
+  <text class="rowTitle" x="730" y="372">Data Cache</text>
+  <text class="code" x="730" y="398">op-crime-duckdb-data-v1</text>
+  <text class="text" x="730" y="418">TTL: 11 hours</text>
+  <text class="small" x="730" y="438">matches twice-daily public updates</text>
+
+  <line class="arrowLine" x1="1040" y1="395" x2="1098" y2="395"/>
+  <polygon class="arrowHead" points="1098,395 1086,388 1086,402"/>
+
+  <rect class="app" x="1098" y="343" width="330" height="104" rx="8"/>
+  <text class="rowTitle" x="1118" y="372">Read-Only Attach</text>
+  <text class="text" x="1118" y="398">browser opens DuckDB locally</text>
+  <text class="text" x="1118" y="418">no server-side query API</text>
+  <text class="small" x="1118" y="438">fast same-day repeat loads</text>
+
+  <!-- Row 3: OSM tiles -->
+  <rect class="incoming" x="64" y="526" width="250" height="116" rx="8"/>
+  <text class="rowTitle" x="84" y="555">OpenStreetMap Tiles</text>
+  <text class="text" x="84" y="581">tile.openstreetmap.org</text>
+  <text class="text" x="84" y="601">a/b/c tile subdomains</text>
+  <text class="small" x="84" y="621">GET requests only</text>
+
+  <line class="arrowLine" x1="314" y1="584" x2="372" y2="584"/>
+  <polygon class="arrowHead" points="372,584 360,577 360,591"/>
+
+  <rect class="policy" x="372" y="526" width="280" height="116" rx="8"/>
+  <text class="rowTitle" x="392" y="555">Tile Scope Check</text>
+  <text class="text" x="392" y="581">footprint intersects 5-mile radius</text>
+  <text class="text" x="392" y="601">zoom falls in cached bands</text>
+  <text class="small" x="392" y="621">outside scope: normal network fetch</text>
+
+  <line class="arrowLine" x1="652" y1="584" x2="710" y2="584"/>
+  <polygon class="arrowHead" points="710,584 698,577 698,591"/>
+
+  <rect class="tile" x="710" y="526" width="330" height="116" rx="8"/>
+  <text class="rowTitle" x="730" y="555">Two-Tier Tile Cache</text>
+  <rect class="smallBox" x="730" y="572" width="135" height="48" rx="6"/>
+  <text class="text" x="742" y="592">Backbone z9-13</text>
+  <text class="small" x="742" y="611">14 days, tiny</text>
+  <rect class="smallBox" x="882" y="572" width="138" height="48" rx="6"/>
+  <text class="text" x="894" y="592">Hot z14-18</text>
+  <text class="small" x="894" y="611">30 days, LRU</text>
+  <text class="small" x="730" y="635">hot cap: 5,000 tiles / about 85 MB</text>
+
+  <line class="arrowLine" x1="1040" y1="584" x2="1098" y2="584"/>
+  <polygon class="arrowHead" points="1098,584 1086,577 1086,591"/>
+
+  <rect class="app" x="1098" y="526" width="330" height="116" rx="8"/>
+  <text class="rowTitle" x="1118" y="555">Fast Pan and Zoom Reuse</text>
+  <text class="text" x="1118" y="581">cached tiles return immediately</text>
+  <text class="text" x="1118" y="601">stale tiles refresh in background</text>
+  <text class="small" x="1118" y="621">LRU touch tracking stays in memory</text>
+
+  <!-- Row 4: panning support -->
+  <rect class="incoming" x="64" y="721" width="250" height="104" rx="8"/>
+  <text class="rowTitle" x="84" y="750">Map Movement</text>
+  <text class="text" x="84" y="776">pan, zoom, moveend</text>
+  <text class="text" x="84" y="796">user can leave viewport quickly</text>
+  <text class="small" x="84" y="816">blank blocks are the failure mode</text>
+
+  <line class="arrowLine" x1="314" y1="773" x2="372" y2="773"/>
+  <polygon class="arrowHead" points="372,773 360,766 360,780"/>
+
+  <rect class="policy" x="372" y="721" width="280" height="104" rx="8"/>
+  <text class="rowTitle" x="392" y="750">Adjacent Look-Ahead and Buffers</text>
+  <text class="text" x="392" y="776">look-ahead after 1s idle pause</text>
+  <text class="text" x="392" y="796">outer ring center within radius + 500m</text>
+  <text class="small" x="392" y="816">desktop keepBuffer: 8</text>
+
+  <line class="arrowLine" x1="652" y1="773" x2="710" y2="773"/>
+  <polygon class="arrowHead" points="710,773 698,766 698,780"/>
+
+  <rect class="cache" x="710" y="721" width="330" height="104" rx="8"/>
+  <text class="rowTitle" x="730" y="750">Rendering Headroom</text>
+  <text class="text" x="730" y="776">heatmap canvas: viewport + 75%</text>
+  <text class="text" x="730" y="796">zone canvas padding: 1.0</text>
+  <text class="small" x="730" y="816">request persistent browser storage</text>
+
+  <line class="arrowLine" x1="1040" y1="773" x2="1098" y2="773"/>
+  <polygon class="arrowHead" points="1098,773 1086,766 1086,780"/>
+
+  <rect class="app" x="1098" y="721" width="330" height="104" rx="8"/>
+  <text class="rowTitle" x="1118" y="750">Less Visible Loading</text>
+  <text class="text" x="1118" y="776">more nearby tiles already resident</text>
+  <text class="text" x="1118" y="796">heatmap and zones repaint less often</text>
+  <text class="small" x="1118" y="816">memory traded for smoother browsing</text>
+
+  <!-- Footer notes -->
+  <rect class="warning" x="64" y="862" width="432" height="58" rx="8"/>
+  <text class="text" x="84" y="887">Guardrail: tile caching stays scoped around Oak Park.</text>
+  <text class="small" x="84" y="906">It is not a global browsing cache.</text>
+
+  <rect class="warning" x="534" y="862" width="432" height="58" rx="8"/>
+  <text class="text" x="554" y="887">Freshness: service worker writes sw-cached-at.</text>
+  <text class="small" x="554" y="906">Each cache tier applies its own TTL.</text>
+
+  <rect class="warning" x="1004" y="862" width="424" height="58" rx="8"/>
+  <text class="text" x="1024" y="887">Fallback: stale database is used only</text>
+  <text class="small" x="1024" y="906">when the network refresh fails.</text>
+</svg>

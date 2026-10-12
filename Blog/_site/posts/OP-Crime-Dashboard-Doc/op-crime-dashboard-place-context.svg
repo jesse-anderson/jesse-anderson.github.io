@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-labelledby="title desc">
+  <title id="title">Place page zone aggregation and census context</title>
+  <desc id="desc">The Place page aggregates incidents to current Oak Park policing zones, separately interpolates ACS tract context into those zones, and stops at zone-level comparisons rather than producing address or block risk scores.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f8fafc; }
+      .lane { fill: #ffffff; stroke: #e2e8f0; stroke-width: 1.5; rx: 12; }
+      .box { fill: #ffffff; stroke: #cbd5e1; stroke-width: 2; rx: 8; }
+      .source { fill: #eef2ff; stroke: #818cf8; }
+      .geo { fill: #ecfeff; stroke: #06b6d4; }
+      .zone { fill: #dcfce7; stroke: #22c55e; }
+      .context { fill: #fef3c7; stroke: #f59e0b; }
+      .guard { fill: #fff7ed; stroke: #fdba74; }
+      .title { font: 700 23px system-ui, -apple-system, Segoe UI, sans-serif; fill: #111827; }
+      .laneTitle { font: 700 13px system-ui, -apple-system, Segoe UI, sans-serif; fill: #64748b; text-transform: uppercase; letter-spacing: .06em; }
+      .label { font: 700 14px system-ui, -apple-system, Segoe UI, sans-serif; fill: #111827; }
+      .small { font: 12px system-ui, -apple-system, Segoe UI, sans-serif; fill: #475569; }
+      .note { font: 12px system-ui, -apple-system, Segoe UI, sans-serif; fill: #64748b; }
+      .arrow { stroke: #475569; stroke-width: 2.3; fill: none; marker-end: url(#head); }
+      .softArrow { stroke: #94a3b8; stroke-width: 2; fill: none; marker-end: url(#softHead); }
+      .no { stroke: #c2410c; stroke-width: 4; }
+    </style>
+    <marker id="head" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#475569"/>
+    </marker>
+    <marker id="softHead" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#94a3b8"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1280" height="640"/>
+  <text class="title" x="48" y="52">Place handling: zones are the analytical unit</text>
+  <text class="note" x="48" y="78">Incident locations and demographic context meet at the policing-zone level, not at an address-level score.</text>
+
+  <rect class="lane" x="40" y="112" width="1200" height="190"/>
+  <text class="laneTitle" x="64" y="142">Incident geography</text>
+
+  <rect class="box source" x="75" y="185" width="170" height="72"/>
+  <text class="label" x="98" y="215">Source location</text>
+  <text class="small" x="98" y="237">often block-level</text>
+
+  <rect class="box geo" x="315" y="185" width="170" height="72"/>
+  <text class="label" x="338" y="215">Geocode</text>
+  <text class="small" x="338" y="237">approximate point</text>
+
+  <rect class="box zone" x="555" y="185" width="190" height="72"/>
+  <text class="label" x="578" y="215">2024 police zone</text>
+  <text class="small" x="578" y="237">current boundary layer</text>
+
+  <rect class="box zone" x="815" y="185" width="225" height="72"/>
+  <text class="label" x="838" y="215">Zone incident panels</text>
+  <text class="small" x="838" y="237">counts, rates, lift, samples</text>
+
+  <path class="arrow" d="M245 221 H315"/>
+  <path class="arrow" d="M485 221 H555"/>
+  <path class="arrow" d="M745 221 H815"/>
+
+  <rect class="lane" x="40" y="340" width="1200" height="190"/>
+  <text class="laneTitle" x="64" y="370">Census context</text>
+
+  <rect class="box context" x="75" y="413" width="170" height="72"/>
+  <text class="label" x="98" y="443">ACS tracts</text>
+  <text class="small" x="98" y="465">Census context</text>
+
+  <rect class="box context" x="315" y="413" width="210" height="72"/>
+  <text class="label" x="338" y="443">Interpolate to zones</text>
+  <text class="small" x="338" y="465">area + population weights</text>
+
+  <rect class="box zone" x="595" y="413" width="210" height="72"/>
+  <text class="label" x="618" y="443">Zone context fields</text>
+  <text class="small" x="618" y="465">population, income, age</text>
+
+  <rect class="box guard" x="875" y="405" width="255" height="88"/>
+  <text class="label" x="900" y="435">Guardrail</text>
+  <text class="small" x="900" y="457">no per-address risk score</text>
+  <text class="small" x="900" y="477">no per-block prediction layer</text>
+  <line class="no" x1="1085" y1="420" x2="1115" y2="480"/>
+  <line class="no" x1="1115" y1="420" x2="1085" y2="480"/>
+
+  <path class="arrow" d="M245 449 H315"/>
+  <path class="arrow" d="M525 449 H595"/>
+  <path class="softArrow" d="M805 449 H875"/>
+
+  <text class="note" x="75" y="580">The dashboard can compare zones and explain context, but it deliberately avoids turning public records into house-by-house scoring.</text>
+</svg>

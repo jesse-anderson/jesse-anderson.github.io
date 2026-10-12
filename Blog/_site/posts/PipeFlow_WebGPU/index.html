@@ -1,0 +1,2182 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.553">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Jesse Anderson">
+<meta name="dcterms.date" content="2026-10-09">
+<meta name="description" content="A pipe network simulator in Rust and WebAssembly: why the first solver returned its own starting guess, what replaced it, how it is checked against EPANET and SciPy, and where the GPU turned out not to matter.">
+
+<title>Jesse Anderson’s Blog - PipeFlow: Fluids go brrrr</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/cookie-consent/cookie-consent.js"></script>
+<link href="../../site_libs/cookie-consent/cookie-consent.css" rel="stylesheet">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-5CSPYCMY55"></script>
+
+<script type="text/plain" cookie-consent="tracking">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-5CSPYCMY55', { 'anonymize_ip': true});
+</script>
+
+<script type="text/javascript" charset="UTF-8">
+document.addEventListener('DOMContentLoaded', function () {
+cookieconsent.run({
+  "notice_banner_type":"simple",
+  "consent_type":"express",
+  "palette":"light",
+  "language":"en",
+  "page_load_consent_levels":["strictly-necessary"],
+  "notice_banner_reject_button_hide":false,
+  "preferences_center_close_button_hide":false,
+  "website_name":""
+  ,
+"language":"en"
+  });
+});
+</script> 
+  
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="Jesse Anderson’s Blog - PipeFlow: Fluids go brrrr">
+<meta property="og:description" content="A pipe network simulator in Rust and WebAssembly: why the first solver returned its own starting guess, what replaced it, how it is checked against EPANET and SciPy, and where the GPU turned out not to matter.">
+<meta property="og:image" content="https://blog.jesse-anderson.net/posts/PipeFlow_WebGPU/app_simple_loop.png">
+<meta property="og:site_name" content="Jesse Anderson's Blog">
+<meta property="og:image:height" content="1377">
+<meta property="og:image:width" content="2560">
+<meta property="og:image:alt" content="Preview image for PipeFlow: Fluids go brrrr">
+<meta name="twitter:title" content="Jesse Anderson’s Blog - PipeFlow: Fluids go brrrr">
+<meta name="twitter:description" content="A pipe network simulator in Rust and WebAssembly: why the first solver returned its own starting guess, what replaced it, how it is checked against EPANET and SciPy, and where the GPU turned out not to matter.">
+<meta name="twitter:image" content="https://blog.jesse-anderson.net/posts/PipeFlow_WebGPU/app_simple_loop.png">
+<meta name="twitter:image-height" content="1377">
+<meta name="twitter:image-width" content="2560">
+<meta name="twitter:image:alt" content="Preview image for PipeFlow: Fluids go brrrr">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://blog.jesse-anderson.net/posts/PipeFlow_WebGPU/">
+</head>
+
+<body class="nav-fixed fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Jesse Anderson’s Blog</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../archive.html"> 
+<span class="menu-text">Archive</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://jesse-anderson.net/"> <i class="bi bi-house" role="img">
+</i> 
+<span class="menu-text">Main Site</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://portfolio.jesse-anderson.net/"> <i class="bi bi-folder-symlink-fill" role="img">
+</i> 
+<span class="menu-text">Portfolio</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://tools.jesse-anderson.net/"> <i class="bi bi-tools" role="img">
+</i> 
+<span class="menu-text">Tools</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/jesse-anderson/"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/jesse-anderson-a7c5/"> <i class="bi bi-linkedin" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">PipeFlow: Fluids go brrrr</h1>
+                  <div>
+        <div class="description">
+          A pipe network simulator in Rust and WebAssembly: why the first solver returned its own starting guess, what replaced it, how it is checked against EPANET and SciPy, and where the GPU turned out not to matter.
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">Rust</div>
+                <div class="quarto-category">WebAssembly</div>
+                <div class="quarto-category">WebGPU</div>
+                <div class="quarto-category">Fluid Mechanics</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Jesse Anderson </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">October 9, 2026</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+
+<!--
+-->
+<style>
+/* Keep wide equations and tables from making the whole page scroll sideways on a phone */
+mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+@media (max-width: 700px) { main table { display: block; overflow-x: auto; } }
+</style>
+<p><em>Disclaimer: Please note that the information presented in this article is for informational purposes only. It is not intended to serve as health advice, engineering advice, or any form of professional guidance. Readers should consult with qualified professionals for specific health or engineering concerns and should not rely solely on the content of this article for making decisions. The authors and publishers of this article are not responsible for any actions taken based on the information provided herein.</em></p>
+<p><strong>Live tool: <a href="https://pipetool.jesse-anderson.net" class="uri">https://pipetool.jesse-anderson.net</a></strong></p>
+<p>A pipe network solver in Rust, compiled to WebAssembly, with flow particles on WebGPU. This article covers the equations it solves and why each was chosen, the first solver that passed its tests while returning its own starting guess, how the replacement is checked against EPANET and SciPy, and measurements showing where the GPU does and does not earn its place.</p>
+<p><strong>TL;DR</strong></p>
+<ul>
+<li>PipeFlow is a free pipe network solver that runs in the browser: Rust compiled to WebAssembly, no backend, nothing uploaded.</li>
+<li>The first version’s solver passed its tests while returning its own starting guess. The tests checked that numbers fell inside wide bands; none compared against an answer from somewhere else. TLDR TLDR; my tests sucked.</li>
+<li>The replacement is the global gradient method, the one EPANET uses. It agrees with an independent SciPy solve to five digits and with EPANET to within 0.3% on flows and 0.6% on heads.</li>
+<li>Losses use Colebrook-White solved to convergence, Hooper 2-K for elbows and valves, Crane TP-410 for tees, and Borda-Carnot for expansions, all on total head. Section 3 has the equations and a pipe worked by hand.</li>
+<li>A 97-pipe network solves in 1.2 ms natively and about 5 ms in the browser. On a desktop with an RTX 3090 the browser holds 60 FPS with 20,000 particles on a small network.</li>
+<li>The WebGPU compute shader is not what makes it fast. The GPU and CPU particle paths ran at the same frame rate at every size I tried; the time goes to drawing.</li>
+<li>It is an MVP. Section 12 is what it is an MVP for.</li>
+</ul>
+<p><strong>Table of Contents</strong></p>
+<ol type="1">
+<li><a href="#Section1">Introduction</a></li>
+<li><a href="#Section2">What It Does</a></li>
+<li><a href="#Section3">The Equations</a></li>
+<li><a href="#Section4">The First Solver</a></li>
+<li><a href="#Section5">The Global Gradient Method</a></li>
+<li><a href="#Section6">The Loss Model</a></li>
+<li><a href="#Section7">Checking It Against Things I Did Not Write</a></li>
+<li><a href="#Section8">Where the GPU Ended Up</a></li>
+<li><a href="#Section9">Performance, Measured</a></li>
+<li><a href="#Section10">Keeping It Mine</a></li>
+<li><a href="#Section11">What It Does Not Do</a></li>
+<li><a href="#Section12">What Is Next</a></li>
+<li><a href="#Section13">Building It</a></li>
+<li><a href="#Section14">Conclusion</a></li>
+<li><a href="#Section15">References</a></li>
+</ol>
+<section id="Section1" class="level2">
+<h2 class="anchored" data-anchor-id="Section1">1. Introduction</h2>
+<p>PipeFlow is a pipe network simulator that runs in a browser tab. You draw a network or pick a template, choose a fluid and a flow, and it solves for the flow, velocity and pressure in every pipe, then shows the result with particles moving through the pipes at the speed the fluid actually moves.</p>
+<p>I built it for myself. There are plenty of fluids tools out there, but paying for a license to do a one-off calculation makes no sense to me, so what I generally do is calculate by hand and then pray I am close enough. Sizing the inlet and outlet pipes for a given flow is the usual case. It generally ends up in a spreadsheet, but I really like web apps, and I wanted one I could reach for on those one-off jobs and keep expanding as the work calls for it.</p>
+<p>It sat on the back burner for most of a year. The first commit with code in it is from January and its message is “webGPU Hell,” which was an accurate summary. I have now put the finishing touches on it, and “finishing” needs qualifying: this is an MVP, and Section 12 is the list of what it is an MVP <em>for</em>.</p>
+<p>This post is less about the features than about one finding. In January a cursory once-over seemed to show it was good enough. The tests passed. But doubt remained: I had not had time to validate anything properly, and what I was working with was a skeleton of sorts. When I finally did validate it, the network solver was returning its initial guess.</p>
+<p>The rest of the post is what was wrong, what replaced it, how I now know the answers are right, and an honest account of where the GPU helps. That last part is shorter than the project’s name suggests.</p>
+<section id="who-it-is-for" class="level3">
+<h3 class="anchored" data-anchor-id="who-it-is-for">Who It Is For</h3>
+<p>Two audiences share one app:</p>
+<ul>
+<li><strong>Engineers doing a sizing check.</strong> An “Advanced” toggle adds editable nodes and pipes, ASME pipe sizes, water at any temperature, pumps with curves and NPSH, design limits, Metric or US units, a printable report and share links.</li>
+<li><strong>Students of fluid mechanics.</strong> Templates, one fluid picker, one flow slider, and Reynolds number, friction factor and mass and energy balances that update as you drag. A “Worked Calculation” panel writes out the arithmetic for any pipe, step by step.</li>
+</ul>
+<p>The rule I held to: a new control goes behind the Advanced toggle unless a student needs it.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="app_simple_loop.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1" title="Figure 1: Standard mode with the Simple Loop template. 5 L/s enters at the top left and splits 1.80 L/s the long way round and 3.20 L/s down the short side. The white dots are the flow particles."><img src="app_simple_loop.png" class="img-fluid figure-img" alt="The PipeFlow app showing a rectangular loop of four pipes with white tracer particles in each, a pipe data table listing flow, velocity, Reynolds number, friction factor, pressure drop and head loss for each pipe, and conservation metrics showing a mass balance difference of zero."></a></p>
+<figcaption>Figure 1: Standard mode with the Simple Loop template. 5 L/s enters at the top left and splits 1.80 L/s the long way round and 3.20 L/s down the short side. The white dots are the flow particles.</figcaption>
+</figure>
+</div>
+</section>
+</section>
+<section id="Section2" class="level2">
+<h2 class="anchored" data-anchor-id="Section2">2. What It Does</h2>
+<table class="table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Area</th>
+<th>What is modeled</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Flow</td>
+<td>Steady, incompressible, single-phase. Any topology: branches, loops, several inlets and outlets, reversed flow</td>
+</tr>
+<tr class="even">
+<td>Friction</td>
+<td>Darcy-Weisbach, with Colebrook-White solved to convergence; 64/Re in laminar flow</td>
+</tr>
+<tr class="odd">
+<td>Fittings</td>
+<td>Hooper 2-K for elbows and valves; Crane TP-410 for tees and wyes; sudden expansions and contractions from the pipe diameters</td>
+</tr>
+<tr class="even">
+<td>Pumps</td>
+<td>Two-point curve or a table of 3 to 8 points, affinity-law speed changes, check valve, NPSH available</td>
+</tr>
+<tr class="odd">
+<td>Boundaries</td>
+<td>Fixed inflows, fixed-pressure outlets, open tanks</td>
+</tr>
+<tr class="even">
+<td>Fluids</td>
+<td>Water from 0 to 100 °C, preset oils, or entered properties</td>
+</tr>
+<tr class="odd">
+<td>Checks</td>
+<td>Velocity limits, pressure below vapor pressure, pump off its curve, NPSH margin</td>
+</tr>
+</tbody>
+</table>
+<p>The whole thing is about 23,000 lines of Rust including tests. The browser download is 2.8 MB of WebAssembly, 1.4 MB gzipped. Nothing is uploaded and there is no backend: a share link is the network itself, encoded into the URL fragment.</p>
+<section id="why-this-stack" class="level3">
+<h3 class="anchored" data-anchor-id="why-this-stack">Why This Stack</h3>
+<p>A spreadsheet would do these sums. Honestly, the draw was simply getting more familiar with WebGPU. My Rust regression library, <a href="https://blog.jesse-anderson.net/posts/linreg_core_XLL/">linreg-core</a>, is not as optimized as I would like it to be, and eventually I want something like GPU computing or parallelization in its engine to make it competent. I am fine with just using an off-the-shelf library for that, but that is a future problem. This project was a place to learn the machinery first, and Sections 8 and 9 are what I learned.</p>
+<p>The other half is the web itself. I like its openness, and I like not having to install a complicated chain of dependencies which break all the time. Looking at you, Python.</p>
+<p>I was likely a bit excessive in reaching for Rust and WebAssembly. But I did not want to write a bunch of JavaScript only to run into the language itself being the inefficient part. And more than anything, this project was just meant to keep the engineering brain going.</p>
+</section>
+<section id="one-codebase-two-targets" class="level3">
+<h3 class="anchored" data-anchor-id="one-codebase-two-targets">One Codebase, Two Targets</h3>
+<p>The January version had a Rust physics core and a JavaScript interface: vanilla JS, an HTML canvas, Chart.js for plots, and JSON passed across the WebAssembly boundary. The interface is where I could not test anything. A wrong label or a unit mix-up on the JavaScript side was invisible to <code>cargo test</code>.</p>
+<p>The interface is now Rust too, written with egui. The same code builds as a native desktop app and as the browser app, and interface logic is covered by the same test run as the physics. The old JavaScript is still sitting in the project with <code>.deprecated</code> on the end of each file name.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="architecture.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-2" data-glightbox="description: .lightbox-desc-2" title="Figure 2: What runs when. The solve happens only when the network changes; only the particles are per-frame work."><img src="architecture.svg" class="img-fluid figure-img" alt="Data flow diagram. When the network changes: the network goes to a global gradient solve on the CPU in f64, which feeds design checks and the particle routing tables. Every frame while particles are showing: particles step in a WebGPU compute shader and positions are copied back, or they step on the CPU as a fallback; either way an egui mesh of one quad per particle is built and drawn to a WebGL canvas."></a></p>
+<figcaption>Figure 2: What runs when. The solve happens only when the network changes; only the particles are per-frame work.</figcaption>
+</figure>
+</div>
+<p>Two graphics APIs are in play, and they do not talk to each other. egui draws the whole interface through WebGL, which every browser has. A separate WebGPU device, requested in the background after the page loads, runs only the particle compute shader. If that request fails, the particles step on the CPU and nothing else changes. The app never requires WebGPU.</p>
+</section>
+</section>
+<section id="Section3" class="level2">
+<h2 class="anchored" data-anchor-id="Section3">3. The Equations</h2>
+<p>Everything the solver does is two conservation laws and one empirical relation. They fit on a page, and the rest of this post keeps referring back to them.</p>
+<section id="two-laws" class="level3">
+<h3 class="anchored" data-anchor-id="two-laws">Two Laws</h3>
+<p><strong>Mass.</strong> At every node that is not a fixed-pressure outlet, what flows in flows out. With <span class="math inline">\(q_i\)</span> the external inflow at node <span class="math inline">\(i\)</span>:</p>
+<p><span class="math display">\[
+\sum_{j \,\in\, \text{out}(i)} Q_j \;-\; \sum_{j \,\in\, \text{in}(i)} Q_j \;=\; q_i
+\]</span></p>
+<p>Where:</p>
+<ul>
+<li><span class="math inline">\(Q_j\)</span> is the flow in pipe <span class="math inline">\(j\)</span>, in m³/s. It is signed: positive when the fluid runs from the pipe’s start node to its end node, the way the pipe was drawn.</li>
+<li><span class="math inline">\(\text{out}(i)\)</span> is the set of pipes that start at node <span class="math inline">\(i\)</span>, and <span class="math inline">\(\text{in}(i)\)</span> is the set that end there.</li>
+<li><span class="math inline">\(q_i\)</span> is the flow entering the network from outside at node <span class="math inline">\(i\)</span>: the set flow at an inlet, and zero at a plain junction.</li>
+</ul>
+<p><strong>Energy.</strong> Along every pipe, the fall in total head equals the head lost to friction and fittings, less anything a pump adds:</p>
+<p><span class="math display">\[
+H_{\text{start}} - H_{\text{end}} = h_j(Q_j), \qquad H = \frac{P}{\rho g} + z + \frac{V^2}{2g}
+\]</span></p>
+<p>Where:</p>
+<ul>
+<li><span class="math inline">\(H\)</span> is the total head at a node, in meters of the fluid. <span class="math inline">\(H_{\text{start}}\)</span> and <span class="math inline">\(H_{\text{end}}\)</span> are its values at the two ends of pipe <span class="math inline">\(j\)</span>.</li>
+<li><span class="math inline">\(h_j(Q_j)\)</span> is the head-loss law of pipe <span class="math inline">\(j\)</span>: the head it takes to push flow <span class="math inline">\(Q_j\)</span> through it, in meters.</li>
+<li><span class="math inline">\(P\)</span> is the static pressure in Pa, absolute.</li>
+<li><span class="math inline">\(\rho\)</span> is the fluid density in kg/m³, and <span class="math inline">\(g\)</span> is 9.81 m/s².</li>
+<li><span class="math inline">\(z\)</span> is the elevation above a common datum, in meters.</li>
+<li><span class="math inline">\(V\)</span> is the mean velocity in the pipe, in m/s.</li>
+</ul>
+<p>A network with <span class="math inline">\(N\)</span> unknown heads and <span class="math inline">\(M\)</span> pipes has <span class="math inline">\(N\)</span> of the first equation and <span class="math inline">\(M\)</span> of the second, for <span class="math inline">\(N + M\)</span> unknowns. The first set is linear. The second is not, and that is the whole difficulty.</p>
+</section>
+<section id="one-empirical-relation" class="level3">
+<h3 class="anchored" data-anchor-id="one-empirical-relation">One Empirical Relation</h3>
+<p>The head loss in a pipe is Darcy-Weisbach plus fittings:</p>
+<p><span class="math display">\[
+h(Q) = \left(f\,\frac{L}{D} + K\right)\frac{V\,|V|}{2g}, \qquad V = \frac{Q}{A} = \frac{4Q}{\pi D^2}
+\]</span></p>
+<p>Where:</p>
+<ul>
+<li><span class="math inline">\(f\)</span> is the Darcy friction factor, a pure number.</li>
+<li><span class="math inline">\(L\)</span> and <span class="math inline">\(D\)</span> are the pipe’s length and inside diameter, in meters.</li>
+<li><span class="math inline">\(K\)</span> is the sum of the loss coefficients of the fittings charged to this pipe, also a pure number. Section 6 is about where it comes from.</li>
+<li><span class="math inline">\(A\)</span> is the pipe’s cross-sectional area in m².</li>
+<li><span class="math inline">\(V^2/2g\)</span> is the velocity head: the height the fluid’s own speed could lift it.</li>
+</ul>
+<p><span class="math inline">\(V|V|\)</span> in place of <span class="math inline">\(V^2\)</span> is deliberate. It makes the loss change sign with the flow, so a pipe that turns out to flow backwards gives a head <em>rise</em> from start to end and nothing has to be special-cased. The January code handled reversed flow by producing a negative friction factor.</p>
+<p>The friction factor <span class="math inline">\(f\)</span> depends on the Reynolds number and the relative roughness:</p>
+<p><span class="math display">\[
+Re = \frac{V D}{\nu}, \qquad
+f =
+\begin{cases}
+\dfrac{64}{Re} &amp; Re &lt; 2300 \\[2ex]
+\text{linear in } Re \text{ between the two ends} &amp; 2300 \le Re \le 4000 \\[1ex]
+\text{Colebrook-White} &amp; Re &gt; 4000
+\end{cases}
+\]</span></p>
+<p>Where:</p>
+<ul>
+<li><span class="math inline">\(Re\)</span> is the Reynolds number, the ratio of inertia to viscous drag in the flow. It is a pure number.</li>
+<li>$ u$ is the kinematic viscosity of the fluid in m²/s: 1.0 × 10⁻⁶ for water at 20 °C, and about 300 times that for SAE 30 oil.</li>
+<li><span class="math inline">\(f\)</span> is the friction factor from the head-loss equation above.</li>
+</ul>
+<p>The middle branch runs in a straight line from <span class="math inline">\(64/2300\)</span> to the Colebrook-White value at <span class="math inline">\(Re = 4000\)</span>. Colebrook-White is implicit in <span class="math inline">\(f\)</span>:</p>
+<p><span class="math display">\[
+\frac{1}{\sqrt{f}} = -2\log_{10}\!\left(\frac{\varepsilon/D}{3.7} + \frac{2.51}{Re\sqrt{f}}\right)
+\]</span></p>
+<p>Where:</p>
+<ul>
+<li><span class="math inline">\(\varepsilon\)</span> is the absolute roughness of the pipe wall in meters: 0.045 mm for commercial steel.</li>
+<li><span class="math inline">\(\varepsilon/D\)</span> is the relative roughness, a pure number.</li>
+<li><span class="math inline">\(f\)</span> appears on both sides, which is why this has to be solved and cannot just be evaluated.</li>
+</ul>
+<p>The laminar branch is not empirical. Substituting <span class="math inline">\(f = 64/Re\)</span> into Darcy-Weisbach gives Hagen-Poiseuille, which is exact:</p>
+<p><span class="math display">\[
+h = \frac{128\,\nu\,L}{\pi\,g\,D^4}\,Q
+\]</span></p>
+<p>Linear in <span class="math inline">\(Q\)</span>, and fourth power in diameter. Both facts come back later.</p>
+</section>
+<section id="one-pipe-by-hand" class="level3">
+<h3 class="anchored" data-anchor-id="one-pipe-by-hand">One Pipe, By Hand</h3>
+<p>100 m of 50 mm commercial steel pipe (<span class="math inline">\(\varepsilon\)</span> = 0.045 mm) carrying 5 L/s of water at 20 °C (<span class="math inline">\(\nu = 1.002 \times 10^{-6}\)</span> m²/s, <span class="math inline">\(\rho\)</span> = 998 kg/m³):</p>
+<table class="table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Step</th>
+<th>Calculation</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Area</td>
+<td><span class="math inline">\(\pi (0.05)^2 / 4\)</span></td>
+<td>0.0019635 m²</td>
+</tr>
+<tr class="even">
+<td>Velocity</td>
+<td><span class="math inline">\(0.005 / 0.0019635\)</span></td>
+<td>2.5465 m/s</td>
+</tr>
+<tr class="odd">
+<td>Reynolds number</td>
+<td><span class="math inline">\(2.5465 \times 0.05 / 1.002 \times 10^{-6}\)</span></td>
+<td>127,070</td>
+</tr>
+<tr class="even">
+<td>Relative roughness</td>
+<td><span class="math inline">\(0.045 / 50\)</span></td>
+<td>0.0009</td>
+</tr>
+<tr class="odd">
+<td>Friction factor</td>
+<td>Colebrook-White</td>
+<td>0.02135</td>
+</tr>
+<tr class="even">
+<td>Velocity head</td>
+<td><span class="math inline">\(2.5465^2 / (2 \times 9.81)\)</span></td>
+<td>0.3305 m</td>
+</tr>
+<tr class="odd">
+<td>Head loss</td>
+<td><span class="math inline">\(0.02135 \times (100/0.05) \times 0.3305\)</span></td>
+<td>14.112 m</td>
+</tr>
+<tr class="even">
+<td>Pressure drop</td>
+<td><span class="math inline">\(998 \times 9.81 \times 14.112\)</span></td>
+<td>138.2 kPa</td>
+</tr>
+</tbody>
+</table>
+<p>This is the calculation the app’s “Worked Calculation” panel writes out for any pipe you click. It is also the single-pipe validation case from my own specification, where I had written down <span class="math inline">\(f = 0.0200\)</span> and <span class="math inline">\(\Delta P = 129.7\)</span> kPa as the expected answer.</p>
+<p>Those are wrong, and how they are wrong is instructive. I had used the Swamee-Jain explicit approximation,</p>
+<p><span class="math display">\[
+f = \frac{0.25}{\left[\log_{10}\!\left(\dfrac{\varepsilon/D}{3.7} + \dfrac{5.74}{Re^{0.9}}\right)\right]^2}
+\]</span></p>
+<p>which for this pipe gives 0.0215, within 0.7% of Colebrook. The formula was not the problem. The specification evaluates <span class="math inline">\(5.74/Re^{0.9}\)</span> as 0.0000493. It is 0.000146. That one slip turns the squared logarithm from 11.63 into 12.49 and the friction factor from 0.0215 into 0.0200, an expected answer 6% low. (The specification also rounds the velocity to 2.55 m/s before computing the Reynolds number, which is why it has 127,245 where the table above has 127,070. That one is harmless.)</p>
+<p>In fairness to the slip, 6% is honestly not too bad. When I do this by hand I generally read the friction factor off a Moody chart, and I expect eyeballing things like that to be 10% off at a minimum. For the back of an envelope that is fine. It stops being fine when the number is written down as the expected answer a solver gets tested against.</p>
+<p>Add one standard 90° elbow to that pipe and it costs another <span class="math inline">\(0.61 \times 0.3305 = 0.20\)</span> m. Where the 0.61 comes from is Section 6.</p>
+</section>
+</section>
+<section id="Section4" class="level2">
+<h2 class="anchored" data-anchor-id="Section4">4. The First Solver</h2>
+<p>The January version used Hardy-Cross for looped networks and a separate direct solver for trees. I had not used Hardy-Cross before. I was googling around, just looking at methods, and found it; I could not find it in my BSL or in my Çengel and Cimbala. It is the classic hand method for looped networks: guess flows that satisfy continuity, then walk each loop and correct the flows until the head losses around the loop sum to zero. Honestly, the exercise reminds me of electrical engineering coursework, trying to figure out the resistors and other components in a network flowing from A to B.</p>
+<p>Mine did not do that. It did this:</p>
+<ul>
+<li><strong>The loops were oriented wrong.</strong> The closing pipe of each loop was traversed in the same direction as the tree path it was supposed to oppose. The corrections therefore drove loop flows toward zero, and the solver reported convergence when they got there.</li>
+<li><strong>A “continuity enforcement” step hid it.</strong> After the loop corrections, the flows were rescaled back up to match the inlet flow. That made the output look plausible and leaked mass at the junctions.</li>
+<li><strong>Tree networks split flow by D².</strong> Not by length, roughness, elevation or outlet pressure. Two branches of the same diameter got the same flow whether one was 10 m long or 1,000. The equations in Section 3 say what the split should be. Two branches between the same pair of pressures share the same head difference, so in laminar flow <span class="math inline">\(Q \propto D^4/L\)</span>, and in fully turbulent flow <span class="math inline">\(h \propto f L Q^2 / D^5\)</span> gives <span class="math inline">\(Q \propto D^{2.5}/\sqrt{fL}\)</span>. Splitting by <span class="math inline">\(D^2\)</span> is splitting by area, which is assuming every pipe has the same velocity. For the 10 m and 1,000 m pair the right answer is about ten to one in turbulent flow and a hundred to one in laminar flow, not one to one.</li>
+<li><strong>The elevation term in node pressure had the wrong sign.</strong> A validation test asserted the same wrong sign.</li>
+<li><strong>Minor losses were bookkeeping only.</strong> They were added to <code>head_loss</code> but not to <code>pressure_drop</code>, so a globe valve changed neither the flows nor the pressures. A node’s K was also charged to every pipe touching it.</li>
+<li><strong>Reversed flow produced a negative friction factor</strong>, and zero flow produced NaN.</li>
+</ul>
+<section id="why-the-tests-passed" class="level3">
+<h3 class="anchored" data-anchor-id="why-the-tests-passed">Why the Tests Passed</h3>
+<p>None of them compared a solved network against an answer obtained some other way. They checked that numbers landed inside bands, and the bands were wide. Two examples from the January commit:</p>
+<ul>
+<li><strong>The single-pipe case</strong> carried a comment noting that the specification’s 0.0200 was a hand-calculation error and the right value was about 0.0213. It then accepted any friction factor from 0.020 to 0.022 and any pressure drop from 130 to 145 kPa.</li>
+<li><strong>The parallel-pipe case</strong> exists to check one thing: two pipes in parallel have the same pressure drop. The assertion allowed the two to differ by up to 100%, with a comment that a proper solution would need an iterative solve.</li>
+</ul>
+<p>A test that asserts the code’s current output is a regression test. It will tell you when something changes. It cannot tell you whether the thing was right to begin with, and a validation test that shares the code’s sign error is worse than no test, because it turns a bug into a requirement.</p>
+<p>So a quick look in January said the thing was fine, and the quick look was reading tests like these. The doubt I was left with was the accurate part. Realistically, in defense of my earlier decisions, I was working with a skeleton and close enough before hammering in numerical preciseness almost always works out for me. Tol = 1E-3 vs 1E-6 vs 1E-9 if we are talking engineering tolerances for numerical convergence.</p>
+</section>
+<section id="what-else-was-broken" class="level3">
+<h3 class="anchored" data-anchor-id="what-else-was-broken">What Else Was Broken</h3>
+<p>The solver was not the only casualty. The Swamee-Jain exponent in the shader was 0.09 where it should have been 0.9. The browser build could not start, because <code>index.html</code> imported a <code>start</code> function that did not exist. And wgpu 0.19 could no longer create a WebGPU device in current Chrome at all, because it requests a limit Chrome has since removed. Always look at the most up to date version of libraries I guess.</p>
+<p>The interface had its own: the inlet flow slider showed m³/s under a label that said L/s, a factor of a thousand, and node and pipe ids were being used as array indices, which worked until the first time someone deleted a node.</p>
+</section>
+</section>
+<section id="Section5" class="level2">
+<h2 class="anchored" data-anchor-id="Section5">5. The Global Gradient Method</h2>
+<p>The replacement is the global gradient method of Todini and Pilati, the same method EPANET uses. It has one property that matters more than its convergence rate: trees, loops, multiple inlets and outlets and reversed flow all go through one code path. The solver never needs to know what a loop is, so there is no loop orientation to get backwards, and no special case for trees.</p>
+<p>I did not arrive at it by knowing better. It turned up the same way Hardy-Cross had, by searching. I had not heard of EPANET before this project either.</p>
+<p>The unknowns are the total head <span class="math inline">\(H_i\)</span> at every node and the signed flow <span class="math inline">\(Q_j\)</span> in every pipe. Each pipe has a head-loss law <span class="math inline">\(h_j(Q_j)\)</span>. Linearize it about the current flow:</p>
+<p><span class="math display">\[
+Q_j^{\text{new}} = Q_j - \frac{h_j(Q_j) - (H_{\text{start}} - H_{\text{end}})}{h_j'(Q_j)}
+\]</span></p>
+<p>This is one Newton step on the pipe’s energy equation, with the heads left as unknowns. Write <span class="math inline">\(p_j = 1/h_j'(Q_j)\)</span> and <span class="math inline">\(b_j = Q_j - p_j\,h_j(Q_j)\)</span>, so that</p>
+<p><span class="math display">\[
+Q_j^{\text{new}} = b_j + p_j\,(H_{\text{start}} - H_{\text{end}})
+\]</span></p>
+<p>Where:</p>
+<ul>
+<li><span class="math inline">\(Q_j\)</span> is the current estimate of the flow in pipe <span class="math inline">\(j\)</span>, and <span class="math inline">\(Q_j^{\text{new}}\)</span> is the next one.</li>
+<li><span class="math inline">\(h_j'(Q_j)\)</span> is the slope of the head-loss law at the current flow: meters of head per m³/s.</li>
+<li><span class="math inline">\(H_{\text{start}}\)</span> and <span class="math inline">\(H_{\text{end}}\)</span> are the total heads at the two ends of the pipe. They are not known yet; this iteration is about to solve for them.</li>
+<li><span class="math inline">\(p_j\)</span> is the inverse of that slope, in m³/s per meter of head. It says how much more flow the pipe passes for one more meter of head across it, which makes it a conductance.</li>
+<li><span class="math inline">\(b_j\)</span> is the flow the linearized pipe would carry with no head difference across it. It has no physical meaning on its own; it is the intercept of the straight line.</li>
+</ul>
+<p>Substitute that into the mass balance at every node that is not a fixed-pressure outlet, and the flows drop out. For node <span class="math inline">\(i\)</span>, with <span class="math inline">\(n(j)\)</span> the node at the other end of pipe <span class="math inline">\(j\)</span>:</p>
+<p><span class="math display">\[
+\Big(\sum_{j \ni i} p_j\Big) H_i \;-\; \sum_{j \ni i} p_j\,H_{n(j)} \;=\; q_i \;-\; \sum_{j \,\in\, \text{out}(i)} b_j \;+\; \sum_{j \,\in\, \text{in}(i)} b_j
+\]</span></p>
+<p>Where:</p>
+<ul>
+<li><span class="math inline">\(H_i\)</span> is the unknown total head at node <span class="math inline">\(i\)</span>.</li>
+<li><span class="math inline">\(j \ni i\)</span> means every pipe <span class="math inline">\(j\)</span> with node <span class="math inline">\(i\)</span> at one of its ends.</li>
+<li><span class="math inline">\(n(j)\)</span> is the node at the other end of pipe <span class="math inline">\(j\)</span>.</li>
+<li><span class="math inline">\(q_i\)</span>, <span class="math inline">\(\text{out}(i)\)</span> and <span class="math inline">\(\text{in}(i)\)</span> are as in the mass balance of Section 3.</li>
+</ul>
+<p>Where <span class="math inline">\(H_{n(j)}\)</span> belongs to an outlet it is known, and moves to the right-hand side. What is left is one linear system <span class="math inline">\(\mathbf{A}\,\mathbf{H} = \mathbf{r}\)</span> for the unknown heads. Solve it, compute the new flows from the new heads, repeat.</p>
+<p><span class="math inline">\(\mathbf{A}\)</span> has a familiar shape. The diagonal entry for a node is the sum of <span class="math inline">\(p_j\)</span> over its pipes, and the off-diagonal entry for two connected nodes is <span class="math inline">\(-p_j\)</span>. That is the Laplacian of the network graph, weighted by how easily each pipe passes flow, with the outlet rows and columns removed. It is the same matrix as a resistor network with conductances <span class="math inline">\(p_j\)</span>, so the electrical engineering feeling from Section 4 turns out to be exact. That is not a coincidence: one iteration of this method <em>is</em> solving a resistor network with current sources, and the next iteration updates the resistances.</p>
+<p>Two consequences follow. <span class="math inline">\(\mathbf{A}\)</span> is symmetric and positive definite as long as every <span class="math inline">\(p_j &gt; 0\)</span> and every node can reach an outlet, so the linear solve cannot fail on a sensible network. And <span class="math inline">\(p_j &gt; 0\)</span> needs <span class="math inline">\(h_j' &gt; 0\)</span>: head loss must rise with flow. Friction and fittings always satisfy that. A pump does only if its curve never rises with flow, which is why Section 6 is fussy about how pump curves are interpolated. (The code also floors <span class="math inline">\(h_j'\)</span> at a tiny positive number, so a bad curve cannot produce a negative conductance. The arithmetic stays finite, though the answer from a curve like that would still be meaningless.)</p>
+<p>The assembly is short enough to show:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource rust number-lines code-with-copy"><code class="sourceCode rust"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">let</span> q <span class="op">=</span> flows[j]<span class="op">;</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">let</span> h <span class="op">=</span> head_loss(pipe<span class="op">,</span> q<span class="op">,</span> <span class="op">&amp;</span>losses[j])<span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">let</span> dq <span class="op">=</span> (q<span class="op">.</span>abs() <span class="op">*</span> <span class="dv">1e-6</span>)<span class="op">.</span>max(<span class="dv">1e-12</span>)<span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="kw">let</span> gradient <span class="op">=</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a>    (head_loss(pipe<span class="op">,</span> q <span class="op">+</span> dq<span class="op">,</span> <span class="op">&amp;</span>losses[j]) <span class="op">-</span> head_loss(pipe<span class="op">,</span> q <span class="op">-</span> dq<span class="op">,</span> <span class="op">&amp;</span>losses[j])) <span class="op">/</span> (<span class="dv">2.0</span> <span class="op">*</span> dq)<span class="op">;</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="kw">let</span> p <span class="op">=</span> <span class="dv">1.0</span> <span class="op">/</span> gradient<span class="op">.</span>max(<span class="dv">1e-14</span>)<span class="op">;</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a>inv_gradient[j] <span class="op">=</span> p<span class="op">;</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a>base_flow[j] <span class="op">=</span> q <span class="op">-</span> p <span class="op">*</span> h<span class="op">;</span></span>
+<span id="cb1-9"><a href="#cb1-9"></a></span>
+<span id="cb1-10"><a href="#cb1-10"></a><span class="cf">if</span> <span class="kw">let</span> <span class="cn">Some</span>(row) <span class="op">=</span> unknown[start] <span class="op">{</span></span>
+<span id="cb1-11"><a href="#cb1-11"></a>    matrix[row <span class="op">*</span> n_unknown <span class="op">+</span> row] <span class="op">+=</span> p<span class="op">;</span></span>
+<span id="cb1-12"><a href="#cb1-12"></a>    <span class="cf">match</span> unknown[end] <span class="op">{</span></span>
+<span id="cb1-13"><a href="#cb1-13"></a>        <span class="cn">Some</span>(col) <span class="op">=&gt;</span> matrix[row <span class="op">*</span> n_unknown <span class="op">+</span> col] <span class="op">-=</span> p<span class="op">,</span></span>
+<span id="cb1-14"><a href="#cb1-14"></a>        <span class="cn">None</span> <span class="op">=&gt;</span> rhs[row] <span class="op">+=</span> p <span class="op">*</span> heads[end]<span class="op">,</span></span>
+<span id="cb1-15"><a href="#cb1-15"></a>    <span class="op">}</span></span>
+<span id="cb1-16"><a href="#cb1-16"></a>    rhs[row] <span class="op">-=</span> base_flow[j]<span class="op">;</span></span>
+<span id="cb1-17"><a href="#cb1-17"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Three decisions in there are worth explaining.</p>
+<section id="the-gradient-is-numerical" class="level3">
+<h3 class="anchored" data-anchor-id="the-gradient-is-numerical">The Gradient Is Numerical</h3>
+<p>The full head-loss law the solver differentiates is</p>
+<p><span class="math display">\[
+h_j(Q) = \Big(\underbrace{f\,\frac{L}{D}}_{\text{friction}} + \underbrace{K_c + \frac{K_1}{Re} + K_\infty\Big(1 + \frac{1}{D_{\text{in}}}\Big)}_{\text{fittings}}\Big)\frac{V|V|}{2g} \;+\; \underbrace{\Delta h_{\text{tee}}}_{\text{tee}} \;-\; \underbrace{H_{\text{pump}}(Q)}_{\text{pump}}
+\]</span></p>
+<p>Where:</p>
+<ul>
+<li><span class="math inline">\(K_c\)</span> is the sum of the fixed coefficients on this pipe: a sudden expansion or contraction, the velocity head given up at an outlet, any fitting Hooper does not tabulate, and any K the user typed in.</li>
+<li><span class="math inline">\(K_1\)</span> and <span class="math inline">\(K_\infty\)</span> are Hooper’s two constants, summed over the elbows and valves charged to this pipe, and <span class="math inline">\(D_{\text{in}}\)</span> is the pipe’s inside diameter in inches. Section 6 has the method.</li>
+<li><span class="math inline">\(\Delta h_{\text{tee}}\)</span> is the head change across a tee or wye at one end of the pipe, in meters. It is set by the velocity in the tee’s combined leg, not by this pipe’s own velocity, which is why it sits outside the bracket.</li>
+<li><span class="math inline">\(H_{\text{pump}}(Q)\)</span> is the head added by a pump on this pipe, in meters, and zero if there is none.</li>
+<li>Everything else is as in Section 3.</li>
+</ul>
+<p>That is not a formula I can differentiate by hand once and forget. <span class="math inline">\(f\)</span> is a Colebrook solve, the fitting coefficient depends on Reynolds number, and <span class="math inline">\(H_{\text{pump}}\)</span> may be a monotone cubic through a table. An analytic derivative would have to be rewritten every time I add a loss term, and a wrong derivative fails quietly: Newton usually still converges, only slower, and nothing tells you why.</p>
+<p>A central difference costs two extra head-loss evaluations per pipe per iteration and cannot drift out of step with the function it differentiates. Section 9 shows what that costs, and it is not much.</p>
+<p>One term is not differentiated at all. <span class="math inline">\(\Delta h_{\text{tee}}\)</span> depends on the flow split at the tee, which involves other pipes. It is recomputed from the current flows at the top of every iteration, along with which pipes discharge to an outlet and which way each diameter change faces, and then held fixed while the pipes are linearized. That lag is one reason the iteration needs damping.</p>
+</section>
+<section id="continuity-holds-from-the-first-iteration" class="level3">
+<h3 class="anchored" data-anchor-id="continuity-holds-from-the-first-iteration">Continuity Holds From the First Iteration</h3>
+<p>The starting guess is 0.3 m/s along each pipe’s drawn direction. It is a bad guess, and it does not matter, because the linear solve enforces continuity at every node on every iteration. Only the energy equation is being iterated on. There is no continuity step to add afterward, which is where the January solver went wrong.</p>
+</section>
+<section id="convergence-needs-two-things" class="level3">
+<h3 class="anchored" data-anchor-id="convergence-needs-two-things">Convergence Needs Two Things</h3>
+<p>The January solver stopped when the flows stopped changing. Flows also stop changing when you have driven them to zero.</p>
+<p>The new one requires the largest flow change to be negligible <em>and</em> the largest energy residual <span class="math inline">\(|h(Q) - \Delta H|\)</span> across all pipes to be negligible:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource rust number-lines code-with-copy"><code class="sourceCode rust"><span id="cb2-1"><a href="#cb2-1"></a><span class="cf">if</span> flows_settled <span class="op">&amp;&amp;</span> max_residual <span class="op">&lt;=</span> <span class="dv">1e-10</span> <span class="op">+</span> <span class="dv">1e-7</span> <span class="op">*</span> head_scale <span class="op">{</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>    converged <span class="op">=</span> <span class="cn">true</span><span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>    <span class="cf">break</span><span class="op">;</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>If the flow change grows from one iteration to the next, the step is halved, down to a floor of 5%, and allowed to recover when the iteration is contracting again. This matters for the tee correlations in Section 6, which have small steps in them.</p>
+<p>The solve runs in f64. Results are stored as f32, which is one of the open items.</p>
+</section>
+<section id="what-makes-a-network-solvable" class="level3">
+<h3 class="anchored" data-anchor-id="what-makes-a-network-solvable">What Makes a Network Solvable</h3>
+<p>The matrix argument earlier in this section has a condition in it: every node can reach an outlet. It is worth saying why, because it decides what the boundary conditions have to be.</p>
+<p>There are two kinds of boundary. An <strong>inlet</strong> fixes a flow into the network. An <strong>outlet</strong> fixes a pressure, and so a head:</p>
+<p><span class="math display">\[
+H_{\text{outlet}} = \frac{P_{\text{set}}}{\rho g} + z
+\]</span></p>
+<p>Where:</p>
+<ul>
+<li><span class="math inline">\(P_{\text{set}}\)</span> is the pressure the outlet is set to, in Pa absolute: 101,325 for a discharge to atmosphere.</li>
+<li><span class="math inline">\(z\)</span> is the elevation of the outlet, or of the liquid surface if it is a tank.</li>
+</ul>
+<p>Every equation in Section 3 involves heads only as differences. Add ten meters to every head in the network and every equation still holds. Flows alone can never pin down the pressure level, so a network with only inlets has infinitely many solutions, and its matrix is singular: the rows of an untouched graph Laplacian sum to zero. One fixed-pressure node removes that freedom for everything connected to it.</p>
+<p>So before assembling anything, the solver walks outward from the outlets. If any node with a pipe attached is not reached, it reports the network as unsolved instead of handing a singular matrix to the elimination.</p>
+<p>The same reasoning is why an open tank needs no new machinery. A tank is a fixed-pressure node at atmospheric pressure whose elevation is the liquid surface. Nothing in the math says flow must <em>arrive</em> at a fixed-pressure node, so a tank can supply flow as well as receive it, and a network can have no inlet at all: tank, pump, higher tank is solved for its flow. The canvas labels such a node TANK when it turns out to supply and OUT when it receives.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="app_pumped_transfer.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" data-glightbox="description: .lightbox-desc-3" title="Figure 3: The Pumped Transfer template in Advanced mode. There is no inlet; the 5.09 L/s is whatever flow makes the pump’s 21.62 m of head equal the lift plus the losses."><img src="app_pumped_transfer.png" class="img-fluid figure-img" alt="The PipeFlow app in Advanced mode showing a tank, a pump and a higher outlet joined by three pipes. A note reads: no fixed-flow inlet, the flow is set by the pumps and the fixed pressures. The pipe table shows 5.09 L/s in every pipe and a pump adding 21.62 m."></a></p>
+<figcaption>Figure 3: The Pumped Transfer template in Advanced mode. There is no inlet; the 5.09 L/s is whatever flow makes the pump’s 21.62 m of head equal the lift plus the losses.</figcaption>
+</figure>
+</div>
+</section>
+</section>
+<section id="Section6" class="level2">
+<h2 class="anchored" data-anchor-id="Section6">6. The Loss Model</h2>
+<p>Once the solver was right, the loss model was the next thing wrong with the answers. Each of these came from asking what a single fixed K per fitting gets wrong.</p>
+<p>Crane TP-410 is the reference, and I am not going to comment on the fittings themselves. If the math shows something to be true, then it is true in the simulation, and that is all I am claiming. Simulations can be garbage, and should be treated as a high-level overview as opposed to the ground truth of any system.</p>
+<section id="total-head-not-static-head" class="level3">
+<h3 class="anchored" data-anchor-id="total-head-not-static-head">Total Head, Not Static Head</h3>
+<p>Node heads are total heads, <span class="math inline">\(H = P/\rho g + z + V^2/2g\)</span>. Total head is continuous through a junction apart from the fitting loss there, so where the diameter changes, static pressure moves with the velocity head. An outlet fixes the static pressure of the stream leaving, which means a pipe discharging to an outlet gives up its velocity head there. In the solver that is one line: a pipe whose flow discharges into an outlet gets <span class="math inline">\(K = 1\)</span> added. It goes by the direction the flow turned out to have, not the direction the pipe was drawn.</p>
+<p>Going the other way, the pressure the app reports at a node is static pressure, recovered from the total head:</p>
+<p><span class="math display">\[
+P = \rho g\,(H - z) - \tfrac{1}{2}\rho V^2
+\]</span></p>
+<p>Where:</p>
+<ul>
+<li><span class="math inline">\(P\)</span> is the static pressure reported at the node, in Pa absolute.</li>
+<li><span class="math inline">\(H\)</span> is the node’s total head from the solve, and <span class="math inline">\(z\)</span> is its elevation.</li>
+<li><span class="math inline">\(V\)</span> is the velocity in the pipe carrying the most flow at that node.</li>
+</ul>
+<p>Where pipes of different velocity meet, each has its own static pressure, and the node reports the one in the pipe carrying the most flow. A 40 mm pipe expanding to 80 mm slows to a quarter of its velocity, so it keeps one sixteenth of its velocity head and gives up the other fifteen. With a sudden expansion, 0.5625 of the upstream velocity head is lost (the formula is below) and the remaining 0.375 shows up as a <em>rise</em> in static pressure. An app that reports falling pressure through every fitting has this wrong.</p>
+<p>The first version of the rebuilt solver had it wrong too: it ignored velocity head at nodes while counting fitting losses of the same size. That is keeping the small terms you like and dropping the ones you do not.</p>
+</section>
+<section id="elbows-and-valves-hooper-2-k" class="level3">
+<h3 class="anchored" data-anchor-id="elbows-and-valves-hooper-2-k">Elbows and Valves: Hooper 2-K</h3>
+<p><span class="math display">\[
+K = \frac{K_1}{Re} + K_\infty\left(1 + \frac{1}{D_{\text{in}}}\right)
+\]</span></p>
+<p>Where:</p>
+<ul>
+<li><span class="math inline">\(K\)</span> is the loss coefficient of the fitting, multiplying the velocity head of the pipe it is charged to.</li>
+<li><span class="math inline">\(K_1\)</span> is the constant that governs laminar flow. It is roughly the fitting’s <span class="math inline">\(K\)</span> at a Reynolds number of 1.</li>
+<li><span class="math inline">\(K_\infty\)</span> is the coefficient of a very large fitting at a very high Reynolds number.</li>
+<li><span class="math inline">\(D_{\text{in}}\)</span> is the pipe’s inside diameter in inches. The method is defined in inches, so the code converts.</li>
+<li><span class="math inline">\(Re\)</span> is the Reynolds number in that pipe.</li>
+</ul>
+<p>A fixed K is a turbulent-flow number for one pipe size. Hooper’s two constants fix both problems: <span class="math inline">\(K_1/Re\)</span> takes over at low Reynolds number, and the <span class="math inline">\(1/D\)</span> term makes small fittings lossier than large ones, which they are. For a standard 90° elbow, <span class="math inline">\(K_1 = 800\)</span> and <span class="math inline">\(K_\infty = 0.40\)</span>. In a 50 mm pipe (<span class="math inline">\(D\)</span> = 1.969 in):</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Reynolds number</th>
+<th><span class="math inline">\(K_1/Re\)</span></th>
+<th><span class="math inline">\(K_\infty(1 + 1/D_{\text{in}})\)</span></th>
+<th>K</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>127,070</td>
+<td>0.006</td>
+<td>0.603</td>
+<td>0.61</td>
+</tr>
+<tr class="even">
+<td>150</td>
+<td>5.333</td>
+<td>0.603</td>
+<td>5.94</td>
+</tr>
+</tbody>
+</table>
+<p>Nearly ten times higher in laminar flow. The app’s fluid picker includes SAE 30 oil and glycerin, so laminar flow is one click away, and a student comparing water to oil in the same network should see the fittings behave differently. With fixed K they would not.</p>
+</section>
+<section id="tees-crane-tp-410" class="level3">
+<h3 class="anchored" data-anchor-id="tees-crane-tp-410">Tees: Crane TP-410</h3>
+<p>A tee does not have a loss coefficient. It has four, depending on whether flow is combining or dividing and whether you are looking at the run or the branch, and each is a function of the flow split and the area ratio. Some are negative: in a combining tee, the faster stream can drag the slower one along and <em>raise</em> its total head.</p>
+<p>Two of the four, for a 90° tee:</p>
+<p><span class="math display">\[
+K_{\text{run, combining}} = 1.55\,q - q^2
+\qquad
+K_{\text{branch, dividing}} = G\left[1 + H\left(\frac{q}{\beta^2}\right)^2\right]
+\]</span></p>
+<p>Where:</p>
+<ul>
+<li><span class="math inline">\(q\)</span> is the branch flow divided by the combined flow, between 0 and 1. The combined leg is the one carrying everything.</li>
+<li><span class="math inline">\(\beta\)</span> is the branch diameter divided by the combined-leg diameter.</li>
+<li><span class="math inline">\(q/\beta^2\)</span> is then the branch velocity divided by the combined velocity.</li>
+<li><span class="math inline">\(G\)</span> and <span class="math inline">\(H\)</span> are factors that switch on <span class="math inline">\(\beta\)</span>, <span class="math inline">\(q\)</span> and the branch angle. For an equal 90° tee, <span class="math inline">\(H = 0.3\)</span> and <span class="math inline">\(G = 1 + 0.3q^2\)</span>. This <span class="math inline">\(H\)</span> has nothing to do with head.</li>
+<li>Each <span class="math inline">\(K\)</span> multiplies the velocity head in the combined leg.</li>
+</ul>
+<p>A wye adds a third term in the cosine of the branch angle, which vanishes at 90°.</p>
+<p>Take an equal 50 mm tee dividing 10 L/s, 40% to the branch. The combined leg runs at 5.09 m/s, a velocity head of 1.32 m.</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Leg</th>
+<th>K</th>
+<th>Head change</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Combined to branch</td>
+<td>1.10</td>
+<td>1.45 m lost</td>
+</tr>
+<tr class="even">
+<td>Combined to run</td>
+<td>−0.064</td>
+<td>0.08 m <em>gained</em></td>
+</tr>
+</tbody>
+</table>
+<p>The run coefficient is negative, and that is not a quirk of this example. The worked examples in Crane itself come out negative too: Example 7-36, a 45° wye dividing its flow, gives −0.068 for the run, and Example 7-35 gives −0.040 for the branch of a combining tee. (I am quoting those answers from the documentation of the <code>fluids</code> library, which reproduces them.) Total energy still falls; it is only the split between the two legs that is uneven.</p>
+<p>Every coefficient is referenced to the velocity head in the combined leg, not in the pipe the loss is charged to. That is why the head-loss law above has a separate <span class="math inline">\(\Delta h_{\text{tee}}\)</span> term outside the bracket: it is a head change in meters that does not scale with that pipe’s own velocity.</p>
+<p>The correlations apply at a node set to a tee or wye with exactly three pipes. The combined leg is whichever pipe carries the most flow, the run is the pair of pipes drawn most nearly in a straight line, and tees are taken as 90° and wyes as 45°.</p>
+</section>
+<section id="diameter-changes" class="level3">
+<h3 class="anchored" data-anchor-id="diameter-changes">Diameter Changes</h3>
+<p>A sudden expansion is one of the few fitting losses that can be derived. A momentum balance across the step gives Borda-Carnot:</p>
+<p><span class="math display">\[
+K_{\text{expansion}} = \left(1 - \beta^2\right)^2
+\]</span></p>
+<p>Where:</p>
+<ul>
+<li><span class="math inline">\(\beta\)</span> is the smaller diameter divided by the larger, between 0 and 1. <span class="math inline">\(\beta^2\)</span> is then the ratio of the two areas.</li>
+<li><span class="math inline">\(K_{\text{expansion}}\)</span> multiplies the velocity head in the smaller, upstream pipe.</li>
+</ul>
+<p>Doubling the diameter (<span class="math inline">\(\beta\)</span> = 0.5) gives <span class="math inline">\(K = 0.5625\)</span>: more than half the upstream velocity head is lost to the eddy behind the step.</p>
+<p>A contraction cannot be derived the same way, because the loss happens downstream where the jet re-expands. The app uses the Rennels correlation, which gives 0.50 at <span class="math inline">\(\beta\)</span> = 0.5 and tends to 0.57 for a sharp-edged entrance from a tank.</p>
+<p>At a node marked as a sudden expansion or contraction, the app picks between the two from the actual pipe diameters and the direction the flow turned out to go, so a contraction that ends up flowing backwards is charged as an expansion without being told. A node with no fitting is an ideal, lossless connection even where the diameters differ.</p>
+</section>
+<section id="pumps" class="level3">
+<h3 class="anchored" data-anchor-id="pumps">Pumps</h3>
+<p>A pump is a negative head loss: <span class="math inline">\(H_{\text{pump}}(Q)\)</span> is subtracted in the pipe’s energy equation, and the operating point falls out of the same solve as everything else. There is no separate “intersect the pump curve with the system curve” step.</p>
+<p>The simple curve is a parabola through the shutoff head and one duty point, scaled for speed by the affinity laws (<span class="math inline">\(Q \propto n\)</span>, <span class="math inline">\(H \propto n^2\)</span>):</p>
+<p><span class="math display">\[
+H_{\text{pump}}(Q) = n^2 H_0 - (H_0 - H_d)\left(\frac{Q}{Q_d}\right)^2
+\]</span></p>
+<p>Where:</p>
+<ul>
+<li><span class="math inline">\(H_{\text{pump}}\)</span> is the head the pump adds at flow <span class="math inline">\(Q\)</span>, in meters.</li>
+<li><span class="math inline">\(H_0\)</span> is the shutoff head: the head at zero flow, at full speed.</li>
+<li><span class="math inline">\(Q_d\)</span> and <span class="math inline">\(H_d\)</span> are the flow and head at the duty point, at full speed.</li>
+<li><span class="math inline">\(n\)</span> is the speed as a fraction of full speed, so 1 is full speed and 0.8 is 80%.</li>
+</ul>
+<p>The <span class="math inline">\(n\)</span> cancels out of the second term, which is the affinity laws saying that slowing a pump lowers its curve without changing its shape.</p>
+<p>A real pump curve comes as a table. The obvious interpolant is a cubic spline, and a cubic spline through pump data can overshoot between points and produce a stretch where head <em>rises</em> with flow. Section 5 said why that is fatal: <span class="math inline">\(h_j'\)</span> can go negative, the linearization stops meaning anything, and there can be more than one operating point. The app uses monotone cubic interpolation (PCHIP) instead, which passes through every point and never rises if the data does not.</p>
+<p>The interpolant is a cubic on each interval, built from the slopes at the points. PCHIP’s choice of slope at an interior point is a weighted harmonic mean of the two neighboring secant slopes <span class="math inline">\(s_{k-1}\)</span> and <span class="math inline">\(s_k\)</span>, over intervals of width <span class="math inline">\(h_{k-1}\)</span> and <span class="math inline">\(h_k\)</span>:</p>
+<p><span class="math display">\[
+d_k = \frac{w_1 + w_2}{\dfrac{w_1}{s_{k-1}} + \dfrac{w_2}{s_k}}, \qquad w_1 = 2h_k + h_{k-1}, \quad w_2 = h_k + 2h_{k-1}
+\]</span></p>
+<p>Where:</p>
+<ul>
+<li><span class="math inline">\(d_k\)</span> is the slope the interpolant is given at curve point <span class="math inline">\(k\)</span>, in meters of head per m³/s.</li>
+<li><span class="math inline">\(s_{k-1}\)</span> and <span class="math inline">\(s_k\)</span> are the secant slopes of the straight lines into and out of point <span class="math inline">\(k\)</span>.</li>
+<li><span class="math inline">\(h_{k-1}\)</span> and <span class="math inline">\(h_k\)</span> are the widths, in flow, of those two intervals. They are unrelated to the head loss <span class="math inline">\(h\)</span> used everywhere else.</li>
+<li><span class="math inline">\(w_1\)</span> and <span class="math inline">\(w_2\)</span> are the weights, which lean toward the slope of the shorter interval.</li>
+</ul>
+<p>A harmonic mean is dominated by the smaller of the two slopes, which is what stops the overshoot. The implementation follows Fritsch and Carlson and is tested against SciPy’s <code>PchipInterpolator</code>. Past the last point the curve continues in a straight line, so head keeps falling and eventually crosses zero at the pump’s runout flow. Beyond that the pump is a resistance.</p>
+<p>A check valve is assumed. For reverse flow the pump’s term becomes the shutoff head plus <span class="math inline">\(10^{14}\,Q^2\)</span> meters, with <span class="math inline">\(Q\)</span> in m³/s. Pushing one liter per second backwards would take <span class="math inline">\(10^8\)</span> meters of head, so the solver finds a flow of essentially zero without needing a special case for “valve closed.”</p>
+<p>The app refuses a curve it cannot use, and says why: flows must be distinct, and head must fall at every point.</p>
+<p>NPSH available at the pump suction is the total head there, measured above the suction node’s elevation and above the vapor pressure:</p>
+<p><span class="math display">\[
+\text{NPSH}_a = H_s - z_s - \frac{P_v}{\rho g}
+\]</span></p>
+<p>Where:</p>
+<ul>
+<li><span class="math inline">\(\text{NPSH}_a\)</span> is the net positive suction head available, in meters.</li>
+<li><span class="math inline">\(H_s\)</span> is the total head at the pump’s suction node, on an absolute pressure basis.</li>
+<li><span class="math inline">\(z_s\)</span> is the elevation of that node.</li>
+<li><span class="math inline">\(P_v\)</span> is the vapor pressure of the fluid at its temperature, in Pa absolute: 2.34 kPa for water at 20 °C.</li>
+</ul>
+<p>Pressures are absolute throughout, so there is no atmospheric term to remember.</p>
+</section>
+<section id="design-checks" class="level3">
+<h3 class="anchored" data-anchor-id="design-checks">Design Checks</h3>
+<p>A solved network can still be a bad design or a physically impossible one. After every solve the app runs these checks and lists what it finds, most serious first:</p>
+<table class="table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Finding</th>
+<th>Condition</th>
+<th>Severity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Pressure below absolute zero</td>
+<td>lowest pressure in a pipe &lt; 0 Pa</td>
+<td>Error</td>
+</tr>
+<tr class="even">
+<td>Cavitation</td>
+<td>lowest pressure in a pipe &lt; vapor pressure</td>
+<td>Error</td>
+</tr>
+<tr class="odd">
+<td>Pump passing no flow</td>
+<td>flow below 0.01% of rated</td>
+<td>Error</td>
+</tr>
+<tr class="even">
+<td>Pump past runout</td>
+<td>pump head ≤ 0</td>
+<td>Error</td>
+</tr>
+<tr class="odd">
+<td>NPSH shortfall</td>
+<td>NPSH available &lt; NPSH required</td>
+<td>Error</td>
+</tr>
+<tr class="even">
+<td>Pump curve unusable</td>
+<td>see above</td>
+<td>Error</td>
+</tr>
+<tr class="odd">
+<td>NPSH margin thin</td>
+<td>NPSH available &lt; required + 0.5 m</td>
+<td>Warning</td>
+</tr>
+<tr class="even">
+<td>Pump far from duty point</td>
+<td>flow outside 50% to 125% of rated</td>
+<td>Warning</td>
+</tr>
+<tr class="odd">
+<td>Velocity high</td>
+<td>above 3 m/s</td>
+<td>Warning</td>
+</tr>
+<tr class="even">
+<td>Transitional flow</td>
+<td>2300 ≤ Re ≤ 4000</td>
+<td>Note</td>
+</tr>
+</tbody>
+</table>
+<p>The limits are the defaults and can be changed in Advanced mode. The first two matter most for a teaching tool. The equations in Section 3 will happily return a negative absolute pressure, because nothing in them knows that liquids boil. The answer satisfies every equation and cannot happen.</p>
+<p>Vapor pressure is computed for water and can be entered for a custom fluid. Where it is zero, as it is for the preset oils, it is treated as unknown and cavitation and NPSH are not checked.</p>
+</section>
+<section id="water" class="level3">
+<h3 class="anchored" data-anchor-id="water">Water</h3>
+<p>Water properties are functions of temperature rather than a table: Kell’s equation for density, the IAPWS liquid-water correlation for viscosity, and the IAPWS-IF97 saturation equation for vapor pressure. Each is within 0.01% of the full IAPWS-95 formulation from 0 to 100 °C. Viscosity is the one that matters: it falls by a factor of six over that range, and takes the Reynolds number with it.</p>
+</section>
+<section id="friction" class="level3">
+<h3 class="anchored" data-anchor-id="friction">Friction</h3>
+<p>Colebrook-White is solved by Newton’s method on <span class="math inline">\(x = 1/\sqrt{f}\)</span>, with Swamee-Jain as the starting guess rather than as the answer:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource rust number-lines code-with-copy"><code class="sourceCode rust"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">let</span> <span class="kw">mut</span> x <span class="op">=</span> <span class="op">-</span><span class="dv">2.0</span> <span class="op">*</span> (a <span class="op">+</span> <span class="dv">5.74</span> <span class="op">/</span> re<span class="op">.</span>powf(<span class="dv">0.9</span>))<span class="op">.</span>log10()<span class="op">;</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="cf">for</span> _ <span class="kw">in</span> <span class="dv">0</span><span class="op">..</span><span class="dv">50</span> <span class="op">{</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a>    <span class="kw">let</span> arg <span class="op">=</span> a <span class="op">+</span> b <span class="op">*</span> x<span class="op">;</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a>    <span class="kw">let</span> residual <span class="op">=</span> x <span class="op">+</span> <span class="dv">2.0</span> <span class="op">*</span> arg<span class="op">.</span>log10()<span class="op">;</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a>    <span class="kw">let</span> slope <span class="op">=</span> <span class="dv">1.0</span> <span class="op">+</span> <span class="dv">2.0</span> <span class="op">*</span> b <span class="op">/</span> (arg <span class="op">*</span> <span class="pp">std::</span><span class="dt">f64</span><span class="pp">::consts::</span>LN_10)<span class="op">;</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a>    <span class="kw">let</span> step <span class="op">=</span> residual <span class="op">/</span> slope<span class="op">;</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a>    x <span class="op">-=</span> step<span class="op">;</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a>    <span class="cf">if</span> step<span class="op">.</span>abs() <span class="op">&lt;=</span> <span class="dv">1e-14</span> <span class="op">*</span> x<span class="op">.</span>abs() <span class="op">{</span></span>
+<span id="cb3-9"><a href="#cb3-9"></a>        <span class="cf">break</span><span class="op">;</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a>    <span class="op">}</span></span>
+<span id="cb3-11"><a href="#cb3-11"></a><span class="op">}</span></span>
+<span id="cb3-12"><a href="#cb3-12"></a><span class="dv">1.0</span> <span class="op">/</span> (x <span class="op">*</span> x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Swamee-Jain is within a few percent of Colebrook over most of the Moody chart. That is fine for a sizing check and not fine when the point of the test suite is to agree with an independent implementation to five digits.</p>
+</section>
+</section>
+<section id="Section7" class="level2">
+<h2 class="anchored" data-anchor-id="Section7">7. Checking It Against Things I Did Not Write</h2>
+<p>The rule for the new test suite is at the top of <code>tests/solver_accuracy.rs</code>: every test compares solver output against an answer obtained independently of the solver. Three kinds of answer qualify.</p>
+<ol type="1">
+<li><strong>Closed form.</strong> Laminar flow splitting between parallel pipes follows Hagen-Poiseuille exactly.</li>
+<li><strong>A reference written in the test file</strong> that shares no code with the solver. Its Colebrook solve is a fixed-point iteration where the solver’s is Newton, so the two agree only if both are right.</li>
+<li><strong>Numbers from a Python script</strong> that uses the <code>fluids</code> library for Colebrook, the Crane tee correlations and Hooper 2-K, SciPy for network solves, and EPANET 2.2 as a second opinion.</li>
+</ol>
+<section id="the-33-grid" class="level3">
+<h3 class="anchored" data-anchor-id="the-33-grid">The 3×3 Grid</h3>
+<p>Nine nodes, twelve pipes, two inlets, two outlets at different pressures and elevations, mixed diameters, some pipes flowing against the direction they were drawn.</p>
+<table class="table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Compared with</th>
+<th>Flows agree within</th>
+<th>Heads agree within</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>SciPy solve of the same equations</td>
+<td>0.002% (asserted)</td>
+<td>0.002% (asserted)</td>
+</tr>
+<tr class="even">
+<td>EPANET 2.2</td>
+<td>0.29%</td>
+<td>0.57%</td>
+</tr>
+</tbody>
+</table>
+<p>I read the EPANET gap as a difference in equations, not in solving: EPANET uses the Swamee-Jain friction approximation and <span class="math inline">\(g = 9.8146\)</span> where I use Colebrook and 9.81. I have not rerun EPANET with those matched to prove it. What I can say is that given identical equations, SciPy and PipeFlow agree to five digits.</p>
+</section>
+<section id="the-97-pipe-grid" class="level3">
+<h3 class="anchored" data-anchor-id="the-97-pipe-grid">The 97-Pipe Grid</h3>
+<p>For a network too large to have a reference answer, there is a different argument. A flow and head field that satisfies continuity at every node and the head-loss law in every pipe <em>is</em> the solution. So the test solves an 8×7 grid with 97 pipes, then checks all 97 pipe equations with the reference head-loss function (to 0.1%) and all 54 node equations, for four cases: water, water at a flow low enough to mix laminar, transitional and turbulent pipes in one network, SAE 30 oil, and glycerin.</p>
+</section>
+<section id="what-the-app-shows-you" class="level3">
+<h3 class="anchored" data-anchor-id="what-the-app-shows-you">What the App Shows You</h3>
+<p>The same two laws are on screen while you use it. The analysis panel reports the mass-balance residual at every node and an energy-balance error along a path from an inlet to an outlet, colored at 1% and 5%. They are there for teaching: change something and watch both stay at zero.</p>
+</section>
+<section id="correlations" class="level3">
+<h3 class="anchored" data-anchor-id="correlations">Correlations</h3>
+<p>The fitting correlations are unit-tested against the <code>fluids</code> library’s implementations of them: the Crane tee and wye formulas, Hooper’s 2-K constants, and the expansion and contraction formulas. Two of the tee cases use the inputs of worked Examples 7-35 and 7-36 from Crane TP-410. So the chain is my code against <code>fluids</code>, and <code>fluids</code> against Crane. It is not my code against the page.</p>
+<p>The whole suite is 436 tests, all passing. The sheer number of the tests doesn’t really matter: 24 of them are the solver-accuracy tests described above, and those 24 are the ones that would have caught the first solver. More tests shouldn’t instill some over inflated confidence that you are correct.</p>
+</section>
+</section>
+<section id="Section8" class="level2">
+<h2 class="anchored" data-anchor-id="Section8">8. Where the GPU Ended Up</h2>
+<p>The project is called PipeFlow WebGPU. Here is what the GPU does in it today: it moves the tracer particles, and nothing else because I’m dumb and I need to improve linreg-core before I touch this again.</p>
+<section id="what-came-off-the-gpu" class="level3">
+<h3 class="anchored" data-anchor-id="what-came-off-the-gpu">What Came Off the GPU</h3>
+<p>The original plan had a compute shader evaluating the per-pipe physics: velocity, Reynolds number, friction factor, pressure drop. I retired it, for two reasons.</p>
+<p><strong>Precision.</strong> WGSL has no 64-bit float. The solver converges on a relative flow change of <span class="math inline">\(10^{-9}\)</span>, which f32 cannot represent. Either the shader computes something the solver cannot use, or there are two friction-factor implementations that disagree in the seventh digit.</p>
+<p><strong>Size.</strong> A hundred pipes is a hundred small scalar calculations. Section 9 has the numbers: the entire solve for 97 pipes takes about 1.2 ms on one CPU core, and that includes evaluating every pipe’s head loss up to four times in each of seven iterations. One trip to the GPU and back measured 0.3 ms on the same machine. The solver would need at least one per iteration, so the round trips alone would cost more than the whole CPU solve.</p>
+<p>A GPU pays off when you have a very large number of identical independent operations. A hundred pipes is not that. A network solve is not that either: it is a sparse linear solve inside a Newton iteration.</p>
+</section>
+<section id="what-stayed-particles" class="level3">
+<h3 class="anchored" data-anchor-id="what-stayed-particles">What Stayed: Particles</h3>
+<p>Particles are the right shape of problem. Each one moves along its pipe at the pipe’s flow speed, and at a junction picks an outgoing pipe in proportion to flow.</p>
+<p>They are also where that January commit message came from. Everything was working on the CPU, but I wanted the dumb particles effect, and the particles were simply not playing nicely with the rest of the code. I forget exactly what was going on. What I recall is particles not landing in the pipes correctly, and speeds that did not match the flows.</p>
+<p>The CPU does the thinking once per solve. <code>ParticleTopology::from_network</code> orients every pipe along its flow and builds, for each node, a table of outgoing pipes with cumulative flow shares. Picking a pipe is then a uniform random number and a short scan:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource wgsl number-lines code-with-copy"><code class="sourceCode"><span id="cb4-1"><a href="#cb4-1"></a>fn pick_edge(first: u32, count: u32, u: f32) -&gt; u32 {</span>
+<span id="cb4-2"><a href="#cb4-2"></a>    for (var i = 0u; i &lt; count; i++) {</span>
+<span id="cb4-3"><a href="#cb4-3"></a>        let edge = edges[first + i];</span>
+<span id="cb4-4"><a href="#cb4-4"></a>        if (u &lt; edge.cumulative) {</span>
+<span id="cb4-5"><a href="#cb4-5"></a>            return edge.pipe;</span>
+<span id="cb4-6"><a href="#cb4-6"></a>        }</span>
+<span id="cb4-7"><a href="#cb4-7"></a>    }</span>
+<span id="cb4-8"><a href="#cb4-8"></a>    return INVALID_PIPE;</span>
+<span id="cb4-9"><a href="#cb4-9"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The math is small but it has to be right, or the picture lies about the solution. A particle at fraction <span class="math inline">\(s\)</span> along a pipe of length <span class="math inline">\(L\)</span> and speed <span class="math inline">\(V\)</span> reaches the end in</p>
+<p><span class="math display">\[
+t_{\text{end}} = \frac{(1 - s)\,L}{V}
+\]</span></p>
+<p>Where:</p>
+<ul>
+<li><span class="math inline">\(t_{\text{end}}\)</span> is the time until the particle reaches the downstream end of its pipe, in seconds.</li>
+<li><span class="math inline">\(s\)</span> is how far along the pipe the particle is, from 0 at the upstream end to 1 at the downstream end.</li>
+<li><span class="math inline">\(L\)</span> is the pipe’s physical length in meters, and <span class="math inline">\(V\)</span> is the flow speed in it in m/s.</li>
+</ul>
+<p>If the frame’s time step is longer than that, it crosses into the next pipe with the remainder, up to eight pipes per step. At a junction it takes outgoing pipe <span class="math inline">\(k\)</span> with probability</p>
+<p><span class="math display">\[
+P(k) = \frac{Q_k}{Q_{\text{through}}}, \qquad Q_{\text{through}} = \max\Big(\sum_{\text{in}} Q,\; \sum_{\text{out}} Q\Big)
+\]</span></p>
+<p>Where:</p>
+<ul>
+<li><span class="math inline">\(P(k)\)</span> is the probability that a particle arriving at the node leaves by pipe <span class="math inline">\(k\)</span>.</li>
+<li><span class="math inline">\(Q_k\)</span> is the flow in outgoing pipe <span class="math inline">\(k\)</span>.</li>
+<li>The two sums run over the pipes carrying flow into the node and the pipes carrying flow out of it.</li>
+</ul>
+<p>so the particles divide the way the fluid does. Where more arrives at a node than leaves by pipe, the probabilities sum to less than one, and the remainder is the chance the particle leaves the network there. That in turn fixes where they should start. In steady flow a pipe receives particles in proportion to <span class="math inline">\(Q\)</span> and holds each one for <span class="math inline">\(L/V\)</span>, so the number in it settles at <span class="math inline">\(Q \cdot L/V = A\,L\)</span>: the pipe’s volume. Particles are therefore seeded in proportion to volume. Seeded evenly per pipe instead, the short fat pipes would start too sparse and the long thin ones too dense, and the picture would spend its first seconds rearranging itself for reasons that have nothing to do with the flow.</p>
+<p>A particle that leaves re-enters at a source, chosen the same way from a spawn table weighted by the flow entering at each one. Each particle carries its own PCG random state, so there is no shared generator to contend over.</p>
+</section>
+<section id="one-step-written-twice" class="level3">
+<h3 class="anchored" data-anchor-id="one-step-written-twice">One Step, Written Twice</h3>
+<p>The step exists in WGSL and in Rust (<code>step_particle</code>), line for line. The Rust version is the fallback when WebGPU is missing, and it is also the reference the shader is tested against: 10,000 particles, 300 steps, and at least 99% must match the CPU in pipe index and random state exactly and in position along the pipe to one part in a thousand. The two share a random stream, so they can only part ways when float rounding tips a particle across a pipe end on one side and not the other.</p>
+<p>The cost is that every change has to be made twice. The test is what makes that tolerable.</p>
+</section>
+<section id="data-layouts" class="level3">
+<h3 class="anchored" data-anchor-id="data-layouts">Data Layouts</h3>
+<p>The shader and the Rust code share memory, so the structs on both sides have to agree byte for byte. On the Rust side each is <code>#[repr(C)]</code> and derives <code>bytemuck::Pod</code>, which makes the cast to bytes checked at compile time:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource rust number-lines code-with-copy"><code class="sourceCode rust"><span id="cb5-1"><a href="#cb5-1"></a><span class="at">#[</span>repr<span class="at">(</span>C<span class="at">)]</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="at">#[</span>derive<span class="at">(</span><span class="bu">Copy</span><span class="op">,</span> <span class="bu">Clone</span><span class="op">,</span> <span class="bu">Debug</span><span class="op">,</span> <span class="bu">PartialEq</span><span class="op">,</span> Pod<span class="op">,</span> Zeroable<span class="at">)]</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="kw">pub</span> <span class="kw">struct</span> ParticleGPU <span class="op">{</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a>    <span class="kw">pub</span> position_x<span class="op">:</span> <span class="dt">f32</span><span class="op">,</span>    <span class="co">// Canvas X position</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a>    <span class="kw">pub</span> position_y<span class="op">:</span> <span class="dt">f32</span><span class="op">,</span>    <span class="co">// Canvas Y position</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a>    <span class="kw">pub</span> pipe_progress<span class="op">:</span> <span class="dt">f32</span><span class="op">,</span> <span class="co">// Progress through current pipe (0-1, in flow direction)</span></span>
+<span id="cb5-7"><a href="#cb5-7"></a>    <span class="kw">pub</span> speed<span class="op">:</span> <span class="dt">f32</span><span class="op">,</span>         <span class="co">// Flow speed in the current pipe (m/s)</span></span>
+<span id="cb5-8"><a href="#cb5-8"></a>    <span class="kw">pub</span> current_pipe<span class="op">:</span> <span class="dt">u32</span><span class="op">,</span>  <span class="co">// Index into `Network::pipes`, or INVALID_PIPE</span></span>
+<span id="cb5-9"><a href="#cb5-9"></a>    <span class="kw">pub</span> rng_state<span class="op">:</span> <span class="dt">u32</span><span class="op">,</span>     <span class="co">// Per-particle random number generator state</span></span>
+<span id="cb5-10"><a href="#cb5-10"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Six 4-byte fields, 24 bytes, no padding. At 20,000 particles the buffer is 480 kB, and that is what gets copied back for drawing. The shader reads three more read-only buffers (pipes, per-node routing, routing edges) and one small uniform. It runs in workgroups of 256.</p>
+</section>
+<section id="things-the-browser-taught-me" class="level3">
+<h3 class="anchored" data-anchor-id="things-the-browser-taught-me">Things the Browser Taught Me</h3>
+<p>None of these are deep or overly complex. Each cost brain time.</p>
+<ul>
+<li><strong>wgpu 0.19 cannot create a device in current Chrome.</strong> It requests a limit Chrome removed. The fix was moving to wgpu 24.</li>
+<li><strong>wgpu assumes <code>navigator.gpu</code> exists.</strong> It does not cope with a browser that lacks it, so the app looks for the property itself before asking wgpu for anything.</li>
+<li><strong>Requesting a device is asynchronous.</strong> The interface starts the request and checks back each frame; until it resolves, particles step on the CPU.</li>
+<li><strong>A storage buffer may not be empty.</strong> A network with no routing edges has to upload one zeroed entry.</li>
+<li><strong><code>std::time::Instant</code> panics</strong> on <code>wasm32-unknown-unknown</code>. The solve timer uses <code>Date.now()</code> in the browser.</li>
+<li><strong><code>wasm-opt</code> rejects what current Rust emits</strong> unless told about it. Rust 1.87 and later use bulk-memory operations and non-trapping float conversions for WebAssembly, and each needs its <code>--enable-</code> flag.</li>
+<li><strong><code>log10</code> is not a WGSL builtin</strong>, and <code>let</code> bindings cannot be reassigned. The shader now goes through naga, wgpu’s shader compiler, in a unit test, so one that does not validate fails <code>cargo test</code> even on a machine with no GPU.</li>
+</ul>
+</section>
+<section id="getting-positions-back" class="level3">
+<h3 class="anchored" data-anchor-id="getting-positions-back">Getting Positions Back</h3>
+<p>The UI is egui on its WebGL backend, and it draws the particles itself, so positions have to come back to the CPU. Blocking on a buffer map is not possible in a browser and not desirable anywhere, so there is one copy in flight at a time:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode numberSource rust number-lines code-with-copy"><code class="sourceCode rust"><span id="cb6-1"><a href="#cb6-1"></a><span class="co">// Start a copy back to the CPU unless one is still in flight</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="kw">let</span> start_readback <span class="op">=</span> <span class="kw">self</span><span class="op">.</span>readback<span class="op">.</span>is_none()<span class="op">;</span></span>
+<span id="cb6-3"><a href="#cb6-3"></a><span class="cf">if</span> start_readback <span class="op">{</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a>    encoder<span class="op">.</span>copy_buffer_to_buffer(<span class="op">&amp;</span>buffers<span class="op">.</span>particles<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="op">&amp;</span>buffers<span class="op">.</span>readback<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> buffers<span class="op">.</span>readback<span class="op">.</span>size())<span class="op">;</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a><span class="op">}</span></span>
+<span id="cb6-6"><a href="#cb6-6"></a><span class="kw">self</span><span class="op">.</span>queue<span class="op">.</span>submit(<span class="cn">Some</span>(encoder<span class="op">.</span>finish()))<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The positions on screen are therefore slightly stale, and they do not refresh every frame. This is the design’s weak point, and the next section puts a number on it.</p>
+</section>
+</section>
+<section id="Section9" class="level2">
+<h2 class="anchored" data-anchor-id="Section9">9. Performance, Measured</h2>
+<p>The targets I set at the start were a network solve under 5 ms for 100 pipes, 60 FPS with 10,000 particles, and a download under 5 MB gzipped.</p>
+<p>Most of the timings below are native, on a Ryzen 9 5950X and an RTX 3090, single-threaded on the CPU side, built with the same settings as the shipped release (<code>opt-level = "z"</code>, LTO, one codegen unit). <strong>Those are not browser timings.</strong> Native timings are repeatable and can be taken apart piece by piece, which is why most of this section uses them. What the browser actually does comes first, measured as a whole. One caution applies to everything here: a 5950X with an RTX 3090 and 64 GB of memory is not exactly a laptop. I have not measured it on one.</p>
+<section id="what-runs-when" class="level3">
+<h3 class="anchored" data-anchor-id="what-runs-when">What Runs When</h3>
+<p>The first performance decision is about how often each piece of work runs, before how fast it runs.</p>
+<table class="table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Work</th>
+<th>When</th>
+<th>Cost (native)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Request WebGPU device, compile shader</td>
+<td>once, in the background</td>
+<td>not measured</td>
+</tr>
+<tr class="even">
+<td>Solve, design checks</td>
+<td>when the network changes</td>
+<td>1.2 ms at 97 pipes</td>
+</tr>
+<tr class="odd">
+<td>Build particle routing tables</td>
+<td>after each solve</td>
+<td>0.04 ms at 97 pipes</td>
+</tr>
+<tr class="even">
+<td>Reseed particles, re-upload GPU buffers</td>
+<td>after each solve</td>
+<td>not measured</td>
+</tr>
+<tr class="odd">
+<td>Step particles</td>
+<td>every frame, while visible</td>
+<td>0.08 to 0.19 ms at 20,000</td>
+</tr>
+<tr class="even">
+<td>Build draw mesh</td>
+<td>every frame, while visible</td>
+<td>2.0 ms at 20,000</td>
+</tr>
+</tbody>
+</table>
+<p>Nothing about the solve is in the per-frame path. An edit marks the result stale, the next frame re-solves, and everything derived from the flows is rebuilt once. The app asks for continuous repainting only while particles are showing; hide them and it redraws only on input.</p>
+<p>One consequence is visible if you drag the flow slider. Every tick is a new solve, and every solve reseeds the particles from the same seed and creates fresh GPU buffers, so they restart from their seeded positions instead of carrying on. Keeping them where they are and only swapping the routing tables is on the list.</p>
+</section>
+<section id="in-the-browser" class="level3">
+<h3 class="anchored" data-anchor-id="in-the-browser">In the Browser</h3>
+<p>The live site, in Edge 154 (Chromium) on the same machine, on a 60 Hz display. Networks were loaded through share links and each case ran for ten seconds, timing the gap between animation frames. To get the CPU path, <code>navigator.gpu</code> was hidden from the page, which is exactly the case the fallback exists for; the app’s own status line confirmed which path was running each time.</p>
+<table class="table">
+<colgroup>
+<col style="width: 28%">
+<col style="width: 13%">
+<col style="width: 10%">
+<col style="width: 23%">
+<col style="width: 23%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Network</th>
+<th>Particles</th>
+<th>Path</th>
+<th>Frames per second</th>
+<th>Frames over 20 ms</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Single pipe (default)</td>
+<td>100</td>
+<td>WebGPU</td>
+<td>60.0</td>
+<td>0 of 600</td>
+</tr>
+<tr class="even">
+<td>3×3 grid, 12 pipes</td>
+<td>1,200</td>
+<td>WebGPU</td>
+<td>60.0</td>
+<td>1 of 600</td>
+</tr>
+<tr class="odd">
+<td>3×3 grid, 12 pipes</td>
+<td>1,200</td>
+<td>CPU</td>
+<td>60.0</td>
+<td>0 of 600</td>
+</tr>
+<tr class="even">
+<td>8×7 grid, 97 pipes</td>
+<td>9,700</td>
+<td>WebGPU</td>
+<td>59.8</td>
+<td>2 of 598</td>
+</tr>
+<tr class="odd">
+<td>8×7 grid, 97 pipes</td>
+<td>9,700</td>
+<td>CPU</td>
+<td>59.9</td>
+<td>2 of 599</td>
+</tr>
+<tr class="even">
+<td>12×12 grid, 264 pipes</td>
+<td>20,000</td>
+<td>WebGPU</td>
+<td>52.5</td>
+<td>69 of 526</td>
+</tr>
+<tr class="odd">
+<td>12×12 grid, 264 pipes</td>
+<td>20,000</td>
+<td>CPU</td>
+<td>52.8</td>
+<td>66 of 529</td>
+</tr>
+</tbody>
+</table>
+<p>A blank page on the same display measured 59.7, so 60 is the ceiling here and the first five rows are sitting on it.</p>
+<p>The target was 60 FPS with 10,000 particles. At 9,700 particles on a 97-pipe network it holds, on this machine. That says the design is not wasteful; it does not say a laptop will manage it.</p>
+<p>On the 264-pipe grid at 20,000 particles, roughly one frame in eight takes two display intervals. And the two paths are indistinguishable: 52.5 against 52.8. The native numbers predicted that. If the particle step were the bottleneck, moving it to the GPU would show up here. It does not.</p>
+<p>That grid changes two things at once, though: more particles and a much bigger network to draw. To pull them apart I did the opposite by hand, in Chrome with its FPS meter: the small Complex Network template, with the particle count typed in.</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Network</th>
+<th>Particles</th>
+<th>Path</th>
+<th>Frames per second</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Complex Network template</td>
+<td>10,000</td>
+<td>WebGPU</td>
+<td>60.0</td>
+</tr>
+<tr class="even">
+<td>Complex Network template</td>
+<td>20,000</td>
+<td>WebGPU</td>
+<td>60.0</td>
+</tr>
+<tr class="odd">
+<td>Complex Network template</td>
+<td>30,000</td>
+<td>WebGPU</td>
+<td>starts to dip</td>
+</tr>
+</tbody>
+</table>
+<p>So 20,000 particles alone do not cost a frame. On a small network the frame rate holds until about 30,000. What pushed the 264-pipe grid under 60 was the network itself: 264 pipes, 144 nodes, a label on each, and a long list of design findings, all redrawn every frame. The particles are the visible load, and at this size they are not the heavy one. Section 12 has something to say about that.</p>
+<p>The app also reports its own solve time, measured in the browser with a one-millisecond clock:</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Network</th>
+<th>Native</th>
+<th>In the browser</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>12 pipes</td>
+<td>0.11 ms</td>
+<td>1 ms</td>
+</tr>
+<tr class="even">
+<td>97 pipes</td>
+<td>1.2 ms</td>
+<td>5 ms</td>
+</tr>
+<tr class="odd">
+<td>264 pipes</td>
+<td>5.7 ms</td>
+<td>19 ms</td>
+</tr>
+</tbody>
+</table>
+<p>These are single readings at coarse resolution, so read them as “three to four times slower than native.” That changes one conclusion. The 5 ms target for a 100-pipe network is met natively with room to spare, and in the browser it is met with nothing to spare.</p>
+</section>
+<section id="the-solve" class="level3">
+<h3 class="anchored" data-anchor-id="the-solve">The Solve</h3>
+<p>Grids from the test suite’s generator, water at 20 °C, no fittings. Times include the <code>auto_detect_loops</code> call that the tests make before solving, which is about a tenth of the total:</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Grid</th>
+<th>Nodes</th>
+<th>Pipes</th>
+<th>Newton iterations</th>
+<th>Median time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>3×3</td>
+<td>9</td>
+<td>12</td>
+<td>6</td>
+<td>0.11 ms</td>
+</tr>
+<tr class="even">
+<td>5×4</td>
+<td>20</td>
+<td>31</td>
+<td>6</td>
+<td>0.29 ms</td>
+</tr>
+<tr class="odd">
+<td>8×7</td>
+<td>56</td>
+<td>97</td>
+<td>7</td>
+<td>1.2 ms</td>
+</tr>
+<tr class="even">
+<td>12×12</td>
+<td>144</td>
+<td>264</td>
+<td>8</td>
+<td>5.7 ms</td>
+</tr>
+<tr class="odd">
+<td>20×20</td>
+<td>400</td>
+<td>760</td>
+<td>8</td>
+<td>34 ms</td>
+</tr>
+<tr class="even">
+<td>31×31</td>
+<td>961</td>
+<td>1,860</td>
+<td>8</td>
+<td>192 ms</td>
+</tr>
+</tbody>
+</table>
+<p>Natively the 100-pipe target is met with room to spare: 1.2 ms against 5. The iteration count barely moves with size, which is the method working as advertised.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="solve_time.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-4" data-glightbox="description: .lightbox-desc-4" title="Figure 4: Native solve time against network size. The 100-pipe target is met with room to spare; a few hundred nodes is where a solve stops fitting in one frame."><img src="solve_time.svg" class="img-fluid figure-img" alt="Log-log line chart of median solve time against node count: 1.2 ms at 56 nodes, 34 ms at 400 nodes, 192 ms at 961 nodes, with reference lines at 5 ms and 16.7 ms."></a></p>
+<figcaption>Figure 4: Native solve time against network size. The 100-pipe target is met with room to spare; a few hundred nodes is where a solve stops fitting in one frame.</figcaption>
+</figure>
+</div>
+<p>The time does move. It grows roughly with the square of the node count, and the reason is in one function name: <code>solve_dense_linear_system</code>. The head matrix is stored dense and eliminated by Gaussian elimination with partial pivoting. For 961 nodes that is a 7 MB matrix, almost all zeros, refilled and factored eight times.</p>
+<p>The matrix is symmetric and positive definite, with one pair of off-diagonal entries per pipe. EPANET uses sparse Cholesky with a fill-reducing ordering for exactly this reason. I did not, because the app solves on every change and its eight built-in templates have fewer than 40 pipes between them, where the dense solve is well under a millisecond and has no dependencies. The app caps networks at 1,000 nodes. The dense solve stops feeling instant well before that: 34 ms at 400 nodes is already two dropped frames per slider tick.</p>
+<p>Viscous fluids converge faster. Section 3 showed that laminar friction loss is linear in flow, and Newton’s method on a linear equation is exact in one step. This grid has no fittings, so what is left to iterate on is the velocity head given up at the outlets. The same 97-pipe grid takes 7 iterations and 1.2 ms with water, 4 and 0.47 ms with SAE 30 oil, 3 and 0.42 ms with glycerin.</p>
+</section>
+<section id="the-particles" class="level3">
+<h3 class="anchored" data-anchor-id="the-particles">The Particles</h3>
+<p>The same 97-pipe grid, one 1/60 s step. The app sizes the particle count at 100 per pipe, capped at 20,000.</p>
+<table class="table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Particles</th>
+<th>CPU step</th>
+<th>GPU <code>step()</code> call</th>
+<th>GPU step + blocking readback</th>
+<th>Build draw mesh</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1,000</td>
+<td>0.009 ms</td>
+<td>0.07 ms</td>
+<td>0.32 ms</td>
+<td>0.06 ms</td>
+</tr>
+<tr class="even">
+<td>9,700</td>
+<td>0.09 ms</td>
+<td>0.10 ms</td>
+<td>0.34 ms</td>
+<td>0.74 ms</td>
+</tr>
+<tr class="odd">
+<td>20,000</td>
+<td>0.19 ms</td>
+<td>0.08 ms</td>
+<td>0.39 ms</td>
+<td>2.0 ms</td>
+</tr>
+<tr class="even">
+<td>100,000</td>
+<td>0.94 ms</td>
+<td>0.09 ms</td>
+<td>0.80 ms</td>
+<td>11 ms</td>
+</tr>
+<tr class="odd">
+<td>1,000,000</td>
+<td>10 ms</td>
+<td>0.06 ms</td>
+<td>5.3 ms</td>
+<td>111 ms</td>
+</tr>
+</tbody>
+</table>
+<p>The mesh column is not the app’s <code>draw_particles</code> function, which is private; it is the same loop reproduced in the benchmark, one quad per particle into an <code>egui::Mesh</code>.</p>
+<p>Read across the 20,000 row, which is the most the app will create on its own.</p>
+<p>The CPU step costs 9 nanoseconds per particle. Stepping all 20,000 takes a fifth of a millisecond. Handing the job to the GPU costs the main thread 0.08 ms to encode and submit. The compute shader saves about a tenth of a millisecond per frame.</p>
+<p>It also costs something. With one copy in flight at a time, and the benchmark paced at 60 frames a second, a fresh set of positions came back on every second frame at every particle count. On the GPU path the dots move at 30 updates a second. On the CPU path they move at 60. That is the native build; the browser measurement above counts frames, not position updates, so it does not say whether the same holds there.</p>
+<p>Then the last column. Turning positions into a mesh of quads for egui takes 2.0 ms, ten times the step it follows, and that is before egui uploads 80,000 vertices to WebGL. The round trip through the GPU does not beat the CPU until somewhere around 100,000 particles, and by then the mesh alone is 11 ms of a 16.7 ms frame.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="frame_cost.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-5" data-glightbox="description: .lightbox-desc-5" title="Figure 5: Where a frame’s time goes at 20,000 particles."><img src="frame_cost.svg" class="img-fluid figure-img" alt="Bar chart of per-frame cost at 20,000 particles: stepping on the CPU 0.19 ms, submitting the GPU step 0.08 ms, the full GPU round trip 0.39 ms, building the draw mesh 2.01 ms."></a></p>
+<figcaption>Figure 5: Where a frame’s time goes at 20,000 particles.</figcaption>
+</figure>
+</div>
+<p>So the honest summary: <strong>at the particle counts the app uses, the WebGPU compute shader is not what makes it fast.</strong> Drawing is our bottleneck!</p>
+<p>That does not make the shader wasted work. It is the first half of the right design. The second half is to never bring the positions back: draw instanced quads straight from the storage buffer the compute shader writes. Then the per-frame CPU cost is the 0.08 ms submit regardless of particle count, the every-other-frame refresh goes away, and a million particles becomes a GPU question rather than a 111 ms one. That needs the UI on a WebGPU surface, or a second canvas under the egui one, and it is on the list.</p>
+<p>In WebAssembly the CPU step will be slower than 9 ns, which should move the crossover down. The browser table above says it does not move it below 20,000: at that count the two paths ran at the same frame rate.</p>
+</section>
+<section id="size" class="level3">
+<h3 class="anchored" data-anchor-id="size">Size</h3>
+<table class="table">
+<thead>
+<tr class="header">
+<th></th>
+<th>Size</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>.wasm</code></td>
+<td>2.77 MB</td>
+</tr>
+<tr class="even">
+<td>gzipped</td>
+<td>1.38 MB</td>
+</tr>
+<tr class="odd">
+<td>JS glue</td>
+<td>87 kB</td>
+</tr>
+</tbody>
+</table>
+<p>Under the 5 MB target by a wide margin. The release profile optimizes for size, strips symbols, aborts on panic, and runs <code>wasm-opt -Oz</code>. I have not profiled which crates the bytes belong to.</p>
+</section>
+<section id="what-optimizing-for-size-costs" class="level3">
+<h3 class="anchored" data-anchor-id="what-optimizing-for-size-costs">What Optimizing for Size Costs</h3>
+<p>The release profile uses <code>opt-level = "z"</code>. I rebuilt the same benchmark with <code>opt-level = 3</code> and nothing else changed:</p>
+<table class="table">
+<colgroup>
+<col style="width: 41%">
+<col style="width: 36%">
+<col style="width: 21%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><code>opt-level = "z"</code> (shipped)</th>
+<th><code>opt-level = 3</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Solve, 97 pipes</td>
+<td>1.2 ms</td>
+<td>0.98 ms</td>
+</tr>
+<tr class="even">
+<td>Solve, 1,860 pipes</td>
+<td>192 ms</td>
+<td>124 ms</td>
+</tr>
+<tr class="odd">
+<td>CPU particle step, per particle</td>
+<td>9.2 ns</td>
+<td>4.3 ns</td>
+</tr>
+<tr class="even">
+<td>Draw mesh, 20,000 particles</td>
+<td>2.0 ms</td>
+<td>1.1 ms</td>
+</tr>
+</tbody>
+</table>
+<p>Size optimization costs between 1.2× and 2.1× on these four, natively. I have not measured how much larger the <code>.wasm</code> gets at <code>opt-level = 3</code>, or whether the ratio holds in WebAssembly, so for now it is only a lead. With the download at 1.4 MB against a 5 MB budget, and the browser solve sitting right on its 5 ms target, it is the first thing I would try.</p>
+</section>
+</section>
+<section id="Section10" class="level2">
+<h2 class="anchored" data-anchor-id="Section10">10. Keeping It Mine</h2>
+<p>The equations in this tool are public and have been for decades. The program is my work, and I would like it to stay attached to my name.</p>
+<p>So the author and copyright notice is compiled into the binary, and it appears in the footer, the browser console, the report and every saved file and share link.</p>
+<p>There are no license keys, feature tiers or signed tokens. The app is free and has no paid version, so there is nothing to gate. The only thing being protected is attribution.</p>
+<p>A share link is the saved-file JSON, base64url-encoded into the part of the URL after <code>#</code>. Browsers do not send that part to the server, so a shared network never leaves the two machines involved. It also means a link is input from a stranger.</p>
+<p>The other half of the same work is not trusting input. A network can arrive from a file, from browser storage or from a share link someone sent you. All three go through one function that enforces size limits, rejects non-finite or unphysical numbers, checks that pipes join nodes that exist, and throws away any results stored in the file and recomputes them. A refused load leaves the current network untouched.</p>
+</section>
+<section id="Section11" class="level2">
+<h2 class="anchored" data-anchor-id="Section11">11. What It Does Not Do</h2>
+<p>The limits, stated plainly, because a tool that hides its limits is the January version again:</p>
+<ul>
+<li><strong>Steady state only.</strong> No transients, no water hammer, no tank levels changing over time.</li>
+<li><strong>Incompressible, single-phase, isothermal.</strong> No gases, no two-phase flow, no heat transfer.</li>
+<li><strong>The tee correlations have no Reynolds number in them</strong> and are applied at every Reynolds number, laminar included. They also assume both run legs are the same diameter. Junctions of four or more pipes fall back to a single coefficient.</li>
+<li><strong>The Crane branch coefficient has small steps in it.</strong> A solution sitting exactly on one may not converge to full tolerance. The damping in Section 5 exists for this.</li>
+<li><strong>Transitional flow</strong> (Re 2,300 to 4,000) is a linear interpolation between the laminar and turbulent friction factors. That is a convention, not physics.</li>
+<li><strong>No control valves</strong>, pressure regulators or valve Cv input.</li>
+<li><strong>Stored results are f32.</strong> Only the solve itself is f64.</li>
+</ul>
+</section>
+<section id="Section12" class="level2">
+<h2 class="anchored" data-anchor-id="Section12">12. What Is Next</h2>
+<p>This is the part the MVP is for. I have been calling it an MVP for cooler things, and these are the cooler things.</p>
+<ul>
+<li><strong>The simulation.</strong> This is the big one, and it comes in two steps.
+<ul>
+<li><em>Time-stepped solves.</em> Drain and fill operations, tanks whose levels move, a pump or a flow that changes as you watch. Each instant is a steady solve with the boundary conditions moved on a little, so the solver in this article carries over as it is. At a few milliseconds per solve it is already fast enough for small networks.</li>
+<li><em>True transients.</em> Start-up, where a pump comes on and the pipes begin filling, and sudden surges. A steady solver cannot do these at all. Everything in Section 3 assumes the flow has settled, the fluid is incompressible and the pipes are full; a surge is a pressure wave traveling through fluid that is none of those things for a moment. It needs different equations, not a smaller time step.</li>
+<li><em>Further out.</em> This could be the basis for other process simulators. That would be cool, and it is well outside the scope of this project.</li>
+</ul></li>
+<li><strong>Drawing on the GPU.</strong> Section 9 made the case: render particles from the storage buffer and delete the readback.</li>
+<li><strong>Not redrawing what has not changed.</strong> The browser measurements showed that a large network costs more to draw than its particles do. Pipes, nodes and labels only change when the network or the view does, so they do not need rebuilding every frame.</li>
+<li><strong>A sparse solve.</strong> Sparse Cholesky in place of dense elimination, so the 1,000-node cap can come off.</li>
+<li><strong>A cleaner interface.</strong> It is currently a bit ugly and a bit busy. Future me, please note that we (you (me)) need to make the following changes:
+<ul>
+<li>Calm it down. Fewer things on screen at once, and more room for the network.</li>
+<li>Themes and colors.</li>
+<li>A library of custom fluids and custom fittings that sticks around, in place of entering them one at a time.</li>
+<li>The OUT label sits on top of the pipe above the outlet node. Move it.</li>
+<li>Pipe labels are drawn underneath the particles, where nobody can read them.</li>
+<li>A tank that is supplying flow is tagged TANK but the node itself still says “Out”.</li>
+<li>After a network loads from a share link, the template bar still highlights Single Pipe.</li>
+<li>Canvas tooltips are in SI whatever the unit setting says.</li>
+<li>The fitting pickers show the nominal K, not the K actually applied at the current flow.</li>
+<li>Dragging the flow slider restarts the particles on every tick (Section 9).</li>
+</ul></li>
+<li><strong>For engineers:</strong> control valves, Cv, pump efficiency and motor power, NPSH required as a curve, more pipe schedules and materials, a fluid library beyond water.</li>
+<li><strong>For students:</strong> a system curve drawn over the pump curve, and built-in exercises.</li>
+</ul>
+</section>
+<section id="Section13" class="level2">
+<h2 class="anchored" data-anchor-id="Section13">13. Building It</h2>
+<p>The source is not public, so this section is a record of how it is built, not an invitation to clone it. Rust and <a href="https://rustwasm.github.io/wasm-pack/">wasm-pack</a> are the only requirements.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1"></a><span class="co"># Desktop app</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="ex">cargo</span> run <span class="at">--features</span> egui <span class="at">--bin</span> native</span>
+<span id="cb7-3"><a href="#cb7-3"></a></span>
+<span id="cb7-4"><a href="#cb7-4"></a><span class="co"># Browser build for local use, then open http://localhost:8080</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a><span class="ex">wasm-pack</span> build <span class="at">--dev</span> <span class="at">--target</span> web <span class="at">--out-dir</span> web/pkg <span class="at">--</span> <span class="at">--features</span> egui</span>
+<span id="cb7-6"><a href="#cb7-6"></a><span class="bu">cd</span> web <span class="kw">&amp;&amp;</span> <span class="ex">python</span> <span class="at">-m</span> http.server 8080</span>
+<span id="cb7-7"><a href="#cb7-7"></a></span>
+<span id="cb7-8"><a href="#cb7-8"></a><span class="co"># Everything, including the interface tests</span></span>
+<span id="cb7-9"><a href="#cb7-9"></a><span class="ex">cargo</span> test <span class="at">--features</span> egui</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>One thing to know. Plain <code>cargo test</code> without <code>--features egui</code> silently skips the interface tests, which is how about fourteen of them went unrun, one with a wrong expectation.</p>
+<p>The benchmark harness behind Section 9 is a separate small crate that depends on the project and calls only its public API.</p>
+</section>
+<section id="Section14" class="level2">
+<h2 class="anchored" data-anchor-id="Section14">14. Conclusion</h2>
+<p>The solver is the global gradient method, which dates from the 1980s. The loss model is a handful of published correlations. The particle shader is under 140 lines. None of it is novel.</p>
+<p>What took the time was finding out that the thing I had was wrong, and then building enough independent checking that I would find out again.</p>
+<p>It was pretty nice to finally have it all working. Realistically, though, the feeling was not so much a good one as relief. It means I am that much closer to something that actually works, instead of a time sink that resulted in absolutely nothing.</p>
+<p>Three things I would tell myself in January:</p>
+<ol type="1">
+<li><strong>A test needs an answer from somewhere else.</strong> A closed form, a second implementation, a library, a published worked example. If the expected value came from running the code, it is a regression test, and it will faithfully protect a bug. “Ground truth” is usually the wording that I reach for.</li>
+<li><strong>Converged means the equations are satisfied.</strong> Not that the numbers stopped moving.</li>
+<li><strong>Measure before you reach for the GPU.</strong> I put a compute shader in front of a job that costs 9 nanoseconds per item and left the 100-nanosecond job next to it on the CPU.</li>
+</ol>
+<p>The tool is at <a href="https://pipetool.jesse-anderson.net" class="uri">https://pipetool.jesse-anderson.net</a>. If it gives you an answer that disagrees with a hand calculation or another solver, I want to know about it. Checking against answers I did not compute is how this version came to exist. Feel free to email me if you wanna discuss this some more. Email on main site.</p>
+<p>Thanks for reading,</p>
+<p>Jesse</p>
+</section>
+<section id="Section15" class="level2">
+<h2 class="anchored" data-anchor-id="Section15">15. References</h2>
+<p><strong>Network solution</strong></p>
+<ul>
+<li>Todini, E. and Pilati, S. (1988). “A gradient algorithm for the analysis of pipe networks.” In B. Coulbeck and C. H. Orr (eds.), <em>Computer Applications in Water Supply, Vol. 1: Systems Analysis and Simulation</em>, Research Studies Press / John Wiley &amp; Sons, pp.&nbsp;1–20.</li>
+<li>Rossman, L. A., Woo, H., Tryby, M., Shang, F., Janke, R. and Haxton, T. (2020). <em>EPANET 2.2 User Manual</em>. U.S. Environmental Protection Agency, EPA/600/R-20/133.</li>
+</ul>
+<p><strong>Friction</strong></p>
+<ul>
+<li>Colebrook, C. F. (1939). “Turbulent flow in pipes, with particular reference to the transition region between the smooth and rough pipe laws.” <em>Journal of the Institution of Civil Engineers</em>, 11(4), 133–156.</li>
+<li>Swamee, P. K. and Jain, A. K. (1976). “Explicit equations for pipe-flow problems.” <em>Journal of the Hydraulics Division</em>, ASCE, 102(5), 657–664.</li>
+<li>White, F. M. <em>Fluid Mechanics</em>. McGraw-Hill.</li>
+</ul>
+<p><strong>Fittings</strong></p>
+<ul>
+<li>Hooper, W. B. (1981). “The two-K method predicts head losses in pipe fittings.” <em>Chemical Engineering</em>, 88, August 24, 1981, pp.&nbsp;96–100.</li>
+<li>Crane Co.&nbsp;(2009). <em>Flow of Fluids Through Valves, Fittings and Pipe</em>. Technical Paper No.&nbsp;410, 2009 edition.</li>
+<li>Idelchik, I. E. (1994). <em>Handbook of Hydraulic Resistance</em>, 3rd ed.&nbsp;Begell House.</li>
+<li>Rennels, D. C. and Hudson, H. M. (2012). <em>Pipe Flow: A Practical and Comprehensive Guide</em>. Wiley, Hoboken.</li>
+</ul>
+<p><strong>Pumps and fluid properties</strong></p>
+<ul>
+<li>Fritsch, F. N. and Carlson, R. E. (1980). “Monotone piecewise cubic interpolation.” <em>SIAM Journal on Numerical Analysis</em>, 17(2), 238–246.</li>
+<li>Kell, G. S. (1975). “Density, thermal expansivity, and compressibility of liquid water from 0° to 150 °C: correlations and tables for atmospheric pressure and saturation reviewed and expressed on 1968 temperature scale.” <em>Journal of Chemical and Engineering Data</em>, 20(1), 97–105.</li>
+<li>IAPWS R12-08. <em>Release on the IAPWS Formulation 2008 for the Viscosity of Ordinary Water Substance</em>.</li>
+<li>IAPWS SR6-08(2011). <em>Revised Supplementary Release on Properties of Liquid Water at 0.1 MPa</em>. (Its Eq. 7 is the four-term viscosity correlation used here, fitted to R12-08 for liquid water at atmospheric pressure.)</li>
+<li>IAPWS R7-97(2012). <em>Revised Release on the IAPWS Industrial Formulation 1997 for the Thermodynamic Properties of Water and Steam</em>.</li>
+<li>ASME B36.10M. <em>Welded and Seamless Wrought Steel Pipe</em>. (Revised as ASME B36.10-2022, which drops the M.)</li>
+</ul>
+<p><strong>Software</strong></p>
+<ul>
+<li>Bell, C. and contributors. <code>fluids</code>: fluid dynamics component of Chemical Engineering Design Library. <a href="https://github.com/CalebBell/fluids" class="uri">https://github.com/CalebBell/fluids</a></li>
+<li>Virtanen, P. et al.&nbsp;(2020). “SciPy 1.0: fundamental algorithms for scientific computing in Python.” <em>Nature Methods</em>, 17(3), 261–272.</li>
+<li>Jarzynski, M. and Olano, M. (2020). “Hash functions for GPU rendering.” <em>Journal of Computer Graphics Techniques</em>, 9(3), 20–38. (Recommends the <code>pcg</code> hash as a default; it is the one the per-particle random stream uses.)</li>
+<li>O’Neill, M. E. (2014). <em>PCG: A Family of Simple Fast Space-Efficient Statistically Good Algorithms for Random Number Generation</em>. Harvey Mudd College, report HMC-CS-2014-0905. (The generator that hash comes from.)</li>
+<li><a href="https://wgpu.rs/">wgpu</a> and <a href="https://www.egui.rs/">egui</a>.</li>
+</ul>
+
+
+<div class="hidden" aria-hidden="true">
+<span class="glightbox-desc lightbox-desc-1">Figure 1: Standard mode with the Simple Loop template. 5 L/s enters at the top left and splits 1.80 L/s the long way round and 3.20 L/s down the short side. The white dots are the flow particles.</span>
+<span class="glightbox-desc lightbox-desc-2">Figure 2: What runs when. The solve happens only when the network changes; only the particles are per-frame work.</span>
+<span class="glightbox-desc lightbox-desc-3">Figure 3: The Pumped Transfer template in Advanced mode. There is no inlet; the 5.09 L/s is whatever flow makes the pump’s 21.62 m of head equal the lift plus the losses.</span>
+<span class="glightbox-desc lightbox-desc-4">Figure 4: Native solve time against network size. The 100-pipe target is met with room to spare; a few hundred nodes is where a solve stops fitting in one frame.</span>
+<span class="glightbox-desc lightbox-desc-5">Figure 5: Where a frame’s time goes at 20,000 particles.</span>
+</div>
+</section>
+
+</main> <!-- /main -->
+<section class="blog-comments" data-comments>
+    <h3>Comments</h3>
+    <div id="cusdis_thread"
+         data-host="https://cusdis.com"
+         data-app-id="73a29664-ef73-4158-a3a9-3850647de254"
+         data-page-id="/posts/PipeFlow_WebGPU/"
+         data-page-url="https://blog.jesse-anderson.net/posts/PipeFlow_WebGPU/"
+         data-page-title="Jesse Anderson’s Blog - PipeFlow: Fluids go brrrr"
+         data-theme="auto"></div>
+    <script async defer src="https://cusdis.com/js/cusdis.es.js"></script>
+</section>
+
+<div class="latest-posts" data-latest-posts>
+    <h3>Latest Posts</h3>
+    <ul id="latest-posts-list">
+        <li><a href="../Automation_2026/index.html"><img src="../Automation_2026/image.png" alt="" class="latest-post-thumbnail" width="56" height="42" loading="lazy" decoding="async"><span>How I Approach Automation, 2026</span></a></li>
+        <li><a href="../Tooling_2026/index.html"><img src="../Tooling_2026/image.png" alt="" class="latest-post-thumbnail" width="56" height="42" loading="lazy" decoding="async"><span>How I Build Tools, 2026</span></a></li>
+        <li><a href="../Penicillin_Bioreactor/index.html"><img src="../Penicillin_Bioreactor/paa_switch.png" alt="" class="latest-post-thumbnail" width="56" height="42" loading="lazy" decoding="async"><span>Penicillin Bioreactors in the Palm of your Hand</span></a></li>
+        <li><a href="index.html"><img src="app_simple_loop.png" alt="" class="latest-post-thumbnail" width="56" height="42" loading="lazy" decoding="async"><span>PipeFlow: Fluids go brrrr</span></a></li>
+    </ul>
+</div>
+
+<div class="blog-footer-actions">
+    <hr>
+    <h3 class="centered-text">Support my work with a Coffee/Monster</h3>
+    <div class="centered-content">
+        <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="jesseanderson" data-color="#06436e" data-emoji="" data-font="Lato" data-text="Support me" data-outline-color="#ffffff" data-font-color="#ffffff" data-coffee-color="#FFDD00" data-height="40px"></script>
+    </div>
+
+    <h3 class="centered-text">Share</h3>
+    <div id="share-buttons" class="centered-content">
+        <a href="#" class="share-button twitter-share-button" data-size="large" data-hashtags="computerscience" data-via="JesseA7C5" data-show-count="false">Tweet</a>
+        <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+        <div id="fb-root"></div>
+        <script id="facebook-jssdk" async="" defer="" crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&amp;version=v10.0"></script>
+        <div class="fb-share-button share-button" data-href="" data-layout="button_count">
+        </div>
+
+        <script src="https://platform.linkedin.com/in.js" type="text/javascript">lang: en_US</script>
+        <script type="IN/Share" data-url=""></script>
+
+        <a href="#" class="share-button email-share-button" aria-label="Share by email"><i class="bi bi-envelope"></i></a>
+    </div>
+</div>
+
+<footer class="centered-text">
+    <p>Copyright © 2024-<span id="copyright-year"></span> Jesse Anderson</p>
+</footer>
+
+<script>
+    function generateNonce(length = 16) {
+        const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        let text = "";
+        for (let i = 0; i < length; i++) {
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+        }
+        return text;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const facebookSDKScript = document.getElementById('facebook-jssdk');
+        if (facebookSDKScript) {
+            facebookSDKScript.setAttribute('nonce', generateNonce());
+        }
+
+        const currentUrl = window.location.href;
+        const currentTitle = document.title;
+
+        document.querySelectorAll('script[type="IN/Share"]').forEach(elem => {
+            elem.setAttribute('data-url', currentUrl);
+        });
+
+        const facebookButton = document.querySelector('.fb-share-button');
+        if (facebookButton) {
+            facebookButton.setAttribute('data-href', currentUrl);
+        }
+
+        const twitterButton = document.querySelector('.twitter-share-button');
+        if (twitterButton) {
+            twitterButton.setAttribute('href', 'https://twitter.com/share?url=' + encodeURIComponent(currentUrl) + '&hashtags=rstats');
+        }
+
+        const emailButton = document.querySelector('.email-share-button');
+        if (emailButton) {
+            emailButton.setAttribute('href', `mailto:?subject=${encodeURIComponent(currentTitle)}&body=Check out this link: ${encodeURIComponent(currentUrl)}`);
+        }
+
+        const copyrightYear = document.getElementById('copyright-year');
+        if (copyrightYear) {
+            copyrightYear.textContent = new Date().getFullYear();
+        }
+    });
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/blog\.jesse-anderson\.net");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+
+<div class="cookie-consent-footer"><a href="#" id="open_preferences_center">Cookie Preferences</a></div></div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","descPosition":"bottom","loop":false,"openEffect":"zoom","closeEffect":"zoom"});
+window.onload = () => {
+  lightboxQuarto.on('slide_before_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    const href = trigger.getAttribute('href');
+    if (href !== null) {
+      const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+      if (imgEl !== null) {
+        const srcAttr = imgEl.getAttribute("src");
+        if (srcAttr && srcAttr.startsWith("data:")) {
+          slideConfig.href = srcAttr;
+        }
+      }
+    } 
+  });
+
+  lightboxQuarto.on('slide_after_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    if (window.Quarto?.typesetMath) {
+      window.Quarto.typesetMath(slideNode);
+    }
+  });
+
+};
+          </script>
+
+
+
+
+</body></html>

@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="620" viewBox="0 0 1500 620" role="img" aria-labelledby="title desc">
+  <title id="title">Oak Park Crime Project Evolution</title>
+  <desc id="desc">Timeline showing the Oak Park Crime project evolving from a Streamlit CSV prototype to a PyPDF2 parser, a V2 pdfplumber regex pass, and the current V3 pipeline plus browser dashboard.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f7f8fb; }
+      .stage { fill: #ffffff; stroke: #c8d0da; stroke-width: 1.4; }
+      .prototype { fill: #eef4ff; stroke: #5f7faa; stroke-width: 1.4; }
+      .parser { fill: #fff8e6; stroke: #b88b24; stroke-width: 1.4; }
+      .v2 { fill: #f3f7fb; stroke: #7c8a99; stroke-width: 1.4; }
+      .v3 { fill: #edf8f1; stroke: #4f9b6e; stroke-width: 1.4; }
+      .lesson { fill: #fff1ef; stroke: #bd6a5e; stroke-width: 1.4; }
+      .title { fill: #15202b; font-family: Arial, sans-serif; font-size: 30px; font-weight: 700; }
+      .subtitle { fill: #4d5b68; font-family: Arial, sans-serif; font-size: 15px; }
+      .label { fill: #53616e; font-family: Arial, sans-serif; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+      .heading { fill: #17212b; font-family: Arial, sans-serif; font-size: 17px; font-weight: 700; }
+      .text { fill: #3d4a56; font-family: Arial, sans-serif; font-size: 13px; }
+      .small { fill: #53616e; font-family: Arial, sans-serif; font-size: 12px; }
+      .code { fill: #26323d; font-family: Consolas, monospace; font-size: 12px; }
+      .arrowLine { stroke: #46525e; stroke-width: 2.5; stroke-linecap: round; }
+      .arrowHead { fill: #46525e; }
+    </style>
+  </defs>
+
+  <rect class="bg" width="1500" height="620"/>
+  <text class="title" x="48" y="52">Project Evolution</text>
+  <text class="subtitle" x="48" y="78">Each rebuild kept one useful idea and moved the next bottleneck into view.</text>
+
+  <rect class="stage prototype" x="70" y="130" width="285" height="260" rx="8"/>
+  <text class="label" x="96" y="164">Prototype</text>
+  <text class="heading" x="96" y="194">Streamlit + CSV</text>
+  <text class="text" x="96" y="226">pandas DataFrame</text>
+  <text class="text" x="96" y="248">Folium map</text>
+  <text class="text" x="96" y="270">basic filters</text>
+  <text class="small" x="96" y="314">Proved the data was worth</text>
+  <text class="small" x="96" y="333">exploring before building</text>
+  <text class="small" x="96" y="352">a full front end.</text>
+
+  <rect class="stage parser" x="405" y="130" width="285" height="260" rx="8"/>
+  <text class="label" x="431" y="164">V1 Pipeline</text>
+  <text class="heading" x="431" y="194">PyPDF2 + Regex</text>
+  <text class="text" x="431" y="226">download PDFs</text>
+  <text class="text" x="431" y="248">parse complaint blocks</text>
+  <text class="text" x="431" y="270">geocode locations</text>
+  <text class="code" x="431" y="300">summary_report.zip</text>
+  <text class="small" x="431" y="333">Missed records when layout</text>
+  <text class="small" x="431" y="352">damage reached the parser.</text>
+
+  <rect class="stage v2" x="740" y="130" width="285" height="260" rx="8"/>
+  <text class="label" x="766" y="164">V2 Bridge</text>
+  <text class="heading" x="766" y="194">pdfplumber + Cleanup</text>
+  <text class="text" x="766" y="226">preferred extractor</text>
+  <text class="text" x="766" y="248">PyPDF2 fallback</text>
+  <text class="text" x="766" y="270">larger correction rules</text>
+  <text class="small" x="766" y="314">Recovered more records,</text>
+  <text class="small" x="766" y="333">but accumulated too many</text>
+  <text class="small" x="766" y="352">special cases.</text>
+
+  <rect class="stage v3" x="1075" y="130" width="355" height="260" rx="8"/>
+  <text class="label" x="1101" y="164">Current V3</text>
+  <text class="heading" x="1101" y="194">Pipeline + Browser Dashboard</text>
+  <text class="text" x="1101" y="226">pdfplumber, normalize, V1-style parse</text>
+  <text class="text" x="1101" y="248">source-preserving records</text>
+  <text class="text" x="1101" y="270">two-table DuckDB schema</text>
+  <text class="text" x="1101" y="292">DuckDB-WASM, Leaflet, cache layers</text>
+  <text class="small" x="1101" y="333">Extraction, storage, and UI</text>
+  <text class="small" x="1101" y="352">now have separate jobs.</text>
+
+  <line class="arrowLine" x1="355" y1="260" x2="405" y2="260"/>
+  <polygon class="arrowHead" points="405,260 393,253 393,267"/>
+  <line class="arrowLine" x1="690" y1="260" x2="740" y2="260"/>
+  <polygon class="arrowHead" points="740,260 728,253 728,267"/>
+  <line class="arrowLine" x1="1025" y1="260" x2="1075" y2="260"/>
+  <polygon class="arrowHead" points="1075,260 1063,253 1063,267"/>
+
+  <rect class="lesson" x="70" y="445" width="420" height="88" rx="8"/>
+  <text class="heading" x="96" y="477">Interface lesson</text>
+  <text class="text" x="96" y="503">A public dashboard needs to feel like a map app,</text>
+  <text class="text" x="96" y="522">not a Python notebook exposed to the web.</text>
+
+  <rect class="lesson" x="540" y="445" width="420" height="88" rx="8"/>
+  <text class="heading" x="566" y="477">Extraction lesson</text>
+  <text class="text" x="566" y="503">Cleaner text beats endlessly expanding regex</text>
+  <text class="text" x="566" y="522">when the source PDF layout is the real problem.</text>
+
+  <rect class="lesson" x="1010" y="445" width="420" height="88" rx="8"/>
+  <text class="heading" x="1036" y="477">Data lesson</text>
+  <text class="text" x="1036" y="503">Preserve source weirdness and flag uncertainty</text>
+  <text class="text" x="1036" y="522">instead of silently rewriting public records.</text>
+</svg>

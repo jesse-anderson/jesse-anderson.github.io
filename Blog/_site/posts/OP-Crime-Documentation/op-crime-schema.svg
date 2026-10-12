@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="620" viewBox="0 0 1120 620" role="img" aria-labelledby="title desc">
+  <title id="title">Oak Park Crime V3 Two Table Schema</title>
+  <desc id="desc">A schema diagram showing the crimes map table joined to the crime_details lazy detail table by record_id.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f7f8fa; }
+      .table { fill: #ffffff; stroke: #8f9aa6; stroke-width: 1.5; rx: 10; }
+      .headMap { fill: #e8eef5; }
+      .headDetail { fill: #edf7ef; }
+      .title { fill: #17212b; font-family: Arial, sans-serif; font-size: 28px; font-weight: 700; }
+      .heading { fill: #17212b; font-family: Arial, sans-serif; font-size: 19px; font-weight: 700; }
+      .field { fill: #27323d; font-family: Arial, sans-serif; font-size: 14px; }
+      .key { fill: #9a5b00; font-family: Arial, sans-serif; font-size: 14px; font-weight: 700; }
+      .note { fill: #566370; font-family: Arial, sans-serif; font-size: 13px; }
+      .arrowLine { stroke: #42505c; stroke-width: 3; stroke-linecap: round; }
+      .arrowHead { fill: #42505c; }
+    </style>
+  </defs>
+
+  <rect class="bg" width="1120" height="620"/>
+  <text class="title" x="42" y="54">V3 Data Model</text>
+  <text class="note" x="42" y="82">The map loads small fields first. Detail text is fetched only when needed.</text>
+
+  <rect class="table" x="75" y="125" width="390" height="405"/>
+  <rect class="headMap" x="75" y="125" width="390" height="58" rx="10"/>
+  <text class="heading" x="105" y="160">crimes</text>
+  <text class="note" x="190" y="160">map layer</text>
+
+  <text class="key" x="105" y="215">record_id  PRIMARY KEY</text>
+  <text class="field" x="105" y="242">complaint_num  indexed, not unique</text>
+  <text class="field" x="105" y="269">pdf_filename</text>
+  <text class="field" x="105" y="296">pdf_url</text>
+  <text class="field" x="105" y="323">block_position</text>
+  <text class="field" x="105" y="350">offense</text>
+  <text class="field" x="105" y="377">date, year, month, day, date_str</text>
+  <text class="field" x="105" y="404">location</text>
+  <text class="field" x="105" y="431">lat, long</text>
+  <text class="field" x="105" y="458">zone_id, zone_name</text>
+  <text class="note" x="105" y="500">UNIQUE(pdf_filename, block_position)</text>
+
+  <rect class="table" x="655" y="125" width="390" height="405"/>
+  <rect class="headDetail" x="655" y="125" width="390" height="58" rx="10"/>
+  <text class="heading" x="685" y="160">crime_details</text>
+  <text class="note" x="825" y="160">lazy detail layer</text>
+
+  <text class="key" x="685" y="215">record_id  PRIMARY KEY</text>
+  <text class="field" x="685" y="242">time</text>
+  <text class="field" x="685" y="269">victim</text>
+  <text class="field" x="685" y="296">narrative</text>
+  <text class="field" x="685" y="323">date_raw</text>
+  <text class="field" x="685" y="350">source_page</text>
+  <text class="field" x="685" y="377">notes</text>
+  <text class="note" x="685" y="430">Popup detail query; search/export join.</text>
+  <text class="note" x="685" y="455">Keeps narrative text out of normal map queries.</text>
+
+  <line class="arrowLine" x1="465" y1="230" x2="655" y2="230"/>
+  <polygon class="arrowHead" points="655,230 641,222 641,238"/>
+  <text class="note" x="505" y="212">JOIN USING record_id</text>
+
+  <text class="note" x="75" y="580">Why this matters: complaint numbers can repeat, so record_id is the stable browser/database key.</text>
+</svg>

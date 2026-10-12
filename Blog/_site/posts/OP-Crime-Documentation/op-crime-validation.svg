@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="820" viewBox="0 0 1500 820" role="img" aria-labelledby="title desc">
+  <title id="title">Oak Park Crime Validation and Review Workflow</title>
+  <desc id="desc">Workflow diagram showing benchmark validation on a labeled truth set and full-corpus review through flags, chunks, fixes, re-geocoding, and database rebuilds.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f7f8fb; }
+      .lane { fill: #ffffff; stroke: #c8d0da; stroke-width: 1.4; }
+      .truth { fill: #eef4ff; stroke: #5f7faa; stroke-width: 1.4; }
+      .process { fill: #f3f7fb; stroke: #7c8a99; stroke-width: 1.4; }
+      .result { fill: #edf8f1; stroke: #4f9b6e; stroke-width: 1.4; }
+      .review { fill: #fff8e6; stroke: #b88b24; stroke-width: 1.4; }
+      .warning { fill: #fff1ef; stroke: #bd6a5e; stroke-width: 1.4; }
+      .title { fill: #15202b; font-family: Arial, sans-serif; font-size: 30px; font-weight: 700; }
+      .subtitle { fill: #4d5b68; font-family: Arial, sans-serif; font-size: 15px; }
+      .section { fill: #27323c; font-family: Arial, sans-serif; font-size: 15px; font-weight: 700; text-transform: uppercase; }
+      .heading { fill: #17212b; font-family: Arial, sans-serif; font-size: 16px; font-weight: 700; }
+      .text { fill: #3d4a56; font-family: Arial, sans-serif; font-size: 13px; }
+      .small { fill: #53616e; font-family: Arial, sans-serif; font-size: 12px; }
+      .code { fill: #26323d; font-family: Consolas, monospace; font-size: 12px; }
+      .arrowLine { stroke: #46525e; stroke-width: 2.5; stroke-linecap: round; }
+      .arrowHead { fill: #46525e; }
+    </style>
+  </defs>
+
+  <rect class="bg" width="1500" height="820"/>
+  <text class="title" x="48" y="52">Validation and Review Workflow</text>
+  <text class="subtitle" x="48" y="78">The benchmark proves extractor behavior on a labeled set. The review workflow catches full-corpus one-offs.</text>
+
+  <rect class="lane" x="46" y="112" width="1408" height="250" rx="10"/>
+  <text class="section" x="70" y="144">Extractor Benchmark</text>
+
+  <rect class="truth" x="70" y="174" width="250" height="112" rx="8"/>
+  <text class="heading" x="94" y="206">Labeled Truth Set</text>
+  <text class="text" x="94" y="233">50 PDFs</text>
+  <text class="text" x="94" y="253">369 complaints</text>
+  <text class="code" x="94" y="273">eval/truth_manifest.json</text>
+
+  <rect class="process" x="375" y="174" width="250" height="112" rx="8"/>
+  <text class="heading" x="399" y="206">Candidate Extraction</text>
+  <text class="text" x="399" y="233">V3 Candidate A</text>
+  <text class="text" x="399" y="253">pdfplumber + normalize</text>
+  <text class="code" x="399" y="273">eval/candidates/A</text>
+
+  <rect class="process" x="680" y="174" width="250" height="112" rx="8"/>
+  <text class="heading" x="704" y="206">Scorer</text>
+  <text class="text" x="704" y="233">match complaints</text>
+  <text class="text" x="704" y="253">score exact fields</text>
+  <text class="code" x="704" y="273">v3/scorer.py</text>
+
+  <rect class="result" x="985" y="174" width="250" height="112" rx="8"/>
+  <text class="heading" x="1009" y="206">Benchmark Result</text>
+  <text class="text" x="1009" y="233">100% recall / precision</text>
+  <text class="text" x="1009" y="253">100% exact field accuracy</text>
+  <text class="small" x="1009" y="273">0 cascade failures</text>
+
+  <line class="arrowLine" x1="320" y1="230" x2="375" y2="230"/>
+  <polygon class="arrowHead" points="375,230 363,223 363,237"/>
+  <line class="arrowLine" x1="625" y1="230" x2="680" y2="230"/>
+  <polygon class="arrowHead" points="680,230 668,223 668,237"/>
+  <line class="arrowLine" x1="930" y1="230" x2="985" y2="230"/>
+  <polygon class="arrowHead" points="985,230 973,223 973,237"/>
+
+  <rect class="lane" x="46" y="414" width="1408" height="278" rx="10"/>
+  <text class="section" x="70" y="446">Full-Corpus Review</text>
+
+  <rect class="review" x="70" y="476" width="220" height="126" rx="8"/>
+  <text class="heading" x="94" y="508">Review Flags</text>
+  <text class="text" x="94" y="535">726 initial items</text>
+  <text class="small" x="94" y="555">dates, missing fields,</text>
+  <text class="small" x="94" y="574">outside-OP geocodes</text>
+
+  <rect class="review" x="340" y="476" width="220" height="126" rx="8"/>
+  <text class="heading" x="364" y="508">Review Chunks</text>
+  <text class="text" x="364" y="535">8 markdown chunks</text>
+  <text class="small" x="364" y="555">up to 100 items each</text>
+  <text class="code" x="364" y="575">review_chunks/*.md</text>
+
+  <rect class="process" x="610" y="476" width="220" height="126" rx="8"/>
+  <text class="heading" x="634" y="508">Classify / Fix</text>
+  <text class="text" x="634" y="535">OK, FIXED, SKIP</text>
+  <text class="small" x="634" y="555">legit outside OP</text>
+  <text class="small" x="634" y="574">or geocode error</text>
+
+  <rect class="process" x="880" y="476" width="220" height="126" rx="8"/>
+  <text class="heading" x="904" y="508">Re-Geocode Pass</text>
+  <text class="text" x="904" y="535">147 queued items</text>
+  <text class="small" x="904" y="555">141 resolved in OP</text>
+  <text class="small" x="904" y="574">6 left after review</text>
+
+  <rect class="result" x="1150" y="476" width="250" height="126" rx="8"/>
+  <text class="heading" x="1174" y="508">Rebuild Artifacts</text>
+  <text class="text" x="1174" y="535">summary_report.zip</text>
+  <text class="text" x="1174" y="555">DuckDB / Parquet / CSV</text>
+  <text class="small" x="1174" y="574">public dashboard consumes output</text>
+
+  <line class="arrowLine" x1="290" y1="539" x2="340" y2="539"/>
+  <polygon class="arrowHead" points="340,539 328,532 328,546"/>
+  <line class="arrowLine" x1="560" y1="539" x2="610" y2="539"/>
+  <polygon class="arrowHead" points="610,539 598,532 598,546"/>
+  <line class="arrowLine" x1="830" y1="539" x2="880" y2="539"/>
+  <polygon class="arrowHead" points="880,539 868,532 868,546"/>
+  <line class="arrowLine" x1="1100" y1="539" x2="1150" y2="539"/>
+  <polygon class="arrowHead" points="1150,539 1138,532 1138,546"/>
+
+  <rect class="warning" x="70" y="724" width="640" height="56" rx="8"/>
+  <text class="heading" x="94" y="748">Why both lanes exist</text>
+  <text class="text" x="94" y="767">Benchmarks do not catch every source or geocode edge case.</text>
+
+  <rect class="warning" x="760" y="724" width="640" height="56" rx="8"/>
+  <text class="heading" x="784" y="748">Bias in the workflow</text>
+  <text class="text" x="784" y="767">Preserve source text, flag uncertainty, record judgment.</text>
+</svg>
